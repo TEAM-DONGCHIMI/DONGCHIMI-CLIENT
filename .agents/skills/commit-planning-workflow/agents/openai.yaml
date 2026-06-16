@@ -1,0 +1,6 @@
+interface:
+  display_name: '커밋 계획 워크플로'
+  short_description: '변경 diff를 기능/작업 단위 커밋으로 분해'
+  default_prompt: '$commit-planning-workflow로 현재 변경사항을 기능/작업 단위 커밋 계획으로 나눠줘.'
+policy:
+  allow_implicit_invocation: true

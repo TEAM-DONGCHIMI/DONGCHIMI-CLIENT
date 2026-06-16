@@ -1,0 +1,6 @@
+interface:
+  display_name: '프론트엔드 작업 오케스트레이터'
+  short_description: '프론트 작업을 알맞은 흐름으로 라우팅'
+  default_prompt: '$frontend-task-orchestrator로 이 프론트엔드 작업의 유형과 작업 흐름을 분류해줘.'
+policy:
+  allow_implicit_invocation: true

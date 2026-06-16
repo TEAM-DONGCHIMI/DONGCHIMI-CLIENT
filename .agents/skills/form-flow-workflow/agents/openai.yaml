@@ -1,0 +1,6 @@
+interface:
+  display_name: '폼 작업 흐름'
+  short_description: '폼 검증과 submit flow 구현'
+  default_prompt: '$form-flow-workflow로 이 동치미 폼 흐름을 구현해줘.'
+policy:
+  allow_implicit_invocation: true

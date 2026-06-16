@@ -1,0 +1,32 @@
+project_name: 'DONGCHIMI-CLIENT'
+languages:
+  - typescript
+encoding: 'utf-8'
+line_ending: 'lf'
+language_backend: LSP
+ignore_all_files_in_gitignore: true
+ls_specific_settings: {}
+additional_workspace_folders: []
+ignored_paths:
+  - 'node_modules'
+  - 'dist'
+  - 'dist-ssr'
+  - 'storybook-static'
+  - 'coverage'
+  - '.turbo'
+  - '.cache'
+  - '.idea'
+read_only: true
+excluded_tools: []
+included_optional_tools: []
+fixed_tools: []
+default_modes: []
+added_modes: []
+initial_prompt: |
+  DONGCHIMI-CLIENT uses Serena as a semantic navigation aid by default.
+  Prefer symbol overview, symbol search, references, and diagnostics after TypeScript code exists.
+  Follow AGENTS.md, docs/, recipes/, and .agents/skills/ for source-of-truth workflow.
+  Do not use Serena memories as a replacement for repo documents or Jira decisions.
+symbol_info_budget: 10
+read_only_memory_patterns: []
+ignored_memory_patterns: []
