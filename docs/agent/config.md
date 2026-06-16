@@ -56,9 +56,9 @@ ATLASSIAN_API_TOKEN=
 
 ## Git Identity Guard
 
-개인 장비에서 Codex가 이 repo의 commit 또는 push 명령을 실행할 때만 `Tnalxmsk <alstnwkd990@naver.com>` 기준을 강제합니다.
+개인 장비에서 Codex가 이 repo의 commit 또는 push 명령을 실행할 때는 로컬 정책(예: Codex hook 또는 사용자별 git hook)으로 본인 계정 기준을 강제할 수 있습니다.
 
-이 정책은 협업자에게 전파되면 안 되므로 repo의 `.githooks/` 또는 `core.hooksPath`로 관리하지 않습니다.
+이 정책은 협업자에게 전파되지 않도록 해야 하므로 repo의 `.githooks/` 또는 `core.hooksPath`로 관리하지 않습니다.
 개인 Codex hook 설정은 `~/.codex/hooks.json` 또는 사용자 전역 Codex config에 둡니다.
 
 팀 전체에 적용해야 하는 hook은 별도 합의 후 `.codex/hooks.json`에 추가하고, PR에서 영향 범위와 trust 요구사항을 명시합니다.
