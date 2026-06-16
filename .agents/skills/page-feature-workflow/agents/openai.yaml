@@ -1,0 +1,6 @@
+interface:
+  display_name: '페이지 기능 작업 흐름'
+  short_description: '동치미 앱 페이지 구현과 검증 흐름'
+  default_prompt: '$page-feature-workflow로 이 동치미 페이지 또는 라우트를 구현해줘.'
+policy:
+  allow_implicit_invocation: true

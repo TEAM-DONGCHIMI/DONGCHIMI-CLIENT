@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Turbo Generator Workflow'
+  short_description: '동치미 generator script와 scaffold 구조를 추가하고 검증'
+  default_prompt: '$turbo-generator-workflow로 이 generator 변경의 script, template, 문서, 샘플 검증 흐름을 정리해줘.'
+policy:
+  allow_implicit_invocation: true
