@@ -57,6 +57,9 @@ importers:
         specifier: 'catalog:'
         version: 19.2.7(react@19.2.7)
     devDependencies:
+      '@dongchimi/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.2
@@ -75,6 +78,8 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+
+  packages/typescript-config: {}
 
 packages:
 
