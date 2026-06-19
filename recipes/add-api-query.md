@@ -20,8 +20,8 @@ Use this when adding a query hook, mutation hook, endpoint helper, or API type.
 4. 새 domain scaffold가 필요하면 matching generator를 사용합니다.
 
    ```bash
-   npm run gen:domain-query -- --args <client|design-system-web|admin> <domain> <QueryName>
-   npm run gen:domain-mutation -- --args <client|design-system-web|admin> <domain> <MutationName>
+   pnpm gen:domain-query -- --args <client|design-system-web|admin> <domain> <QueryName>
+   pnpm gen:domain-mutation -- --args <client|design-system-web|admin> <domain> <MutationName>
    ```
 
 5. request/response type을 API boundary 가까이에 둡니다.
@@ -53,8 +53,8 @@ const reservationListQueryKey = {
 
 ```bash
 git diff --check
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
 ```

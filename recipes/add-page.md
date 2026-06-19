@@ -10,7 +10,7 @@ Use this when adding or changing a route page.
 4. 새 page면 generator가 준비된 뒤 scaffold를 생성합니다.
 
    ```bash
-   npm run gen:domain-page -- --args <client|design-system-web|admin> <domain> <page> <PageName>
+   pnpm gen:domain-page -- --args <client|design-system-web|admin> <domain> <page> <PageName>
    ```
 
 5. `templates/page.spec.md`를 기준으로 가장 가까운 `page.spec.md`를 작성 또는 갱신합니다.
@@ -35,10 +35,10 @@ Use this when adding or changing a route page.
 
 ```bash
 git diff --check
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
 ```
 
 package script가 없으면 실행하지 못한 명령과 이유를 기록합니다.

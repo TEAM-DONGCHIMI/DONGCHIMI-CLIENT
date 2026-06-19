@@ -1,13 +1,38 @@
 # Local Development
 
-현재 DONGCHIMI-CLIENT는 package manager와 app script가 확정되지 않았습니다. 이 문서는 확정 전후의 검증 기준을 나눠 기록합니다.
+DONGCHIMI-CLIENT는 pnpm workspace와 Turborepo를 기준으로 로컬 개발과 검증을 실행합니다.
 
-## Current Minimum
+## Runtime
 
-문서-only 변경:
+- Node.js: `.node-version`
+- pnpm: root `package.json`의 `packageManager`
+- workspace: `pnpm-workspace.yaml`
+- task runner: `turbo.json`
+
+## Setup
+
+```bash
+pnpm install
+```
+
+root script는 암묵적 install을 실행하지 않도록 설정되어 있습니다. dependency나 lockfile이 바뀌면 검증 전에 install을 먼저 실행합니다.
+
+CI와 같은 lockfile 검증이 필요하면 아래 명령을 사용합니다.
+
+```bash
+pnpm install --frozen-lockfile
+```
+
+## Root Verification
+
+변경 범위가 명확하지 않거나 PR 전 전체 검증이 필요하면 아래 순서로 실행합니다.
 
 ```bash
 git diff --check
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
 ```
 
 문서 링크와 agent skill 구조를 바꾼 경우:
@@ -16,20 +41,15 @@ git diff --check
 rg -n "docs/agent|\\.agents|templates/|recipes/" AGENTS.md README.md docs recipes templates
 find .agents/skills -maxdepth 3 -name SKILL.md -print
 git diff --check
+pnpm format:check
 ```
 
-## After Package Setup
+## Commit-Time Verification
 
-package script가 생기면 아래 목적의 검증을 추가합니다.
+Husky pre-commit hook은 `pnpm lint-staged`를 실행합니다.
+staged 파일은 Prettier로 정리하고, `apps/client` 코드 파일은 ESLint `--fix`를 함께 적용합니다.
 
-```bash
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
-```
-
-실제 package manager가 npm이 아니면 명령을 해당 도구로 바꾸고, `docs/conventions/package-management.md`와 `.agents/skills/frontend-quality-verification/SKILL.md`를 함께 갱신합니다.
+pre-commit hook은 빠른 로컬 가드이며, CI와 PR 전 root verification을 대체하지 않습니다.
 
 ## Targeted Verification
 

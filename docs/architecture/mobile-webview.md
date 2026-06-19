@@ -13,9 +13,9 @@
 앱이 생성되면 실제 script 이름으로 갱신합니다.
 
 ```bash
-npm run mobile:start
-npm run mobile:android
-npm run mobile:ios
+pnpm mobile:start
+pnpm mobile:android
+pnpm mobile:ios
 ```
 
 ## Verification Rule

@@ -23,7 +23,7 @@ Use this when extracting or adding non-trivial state, effect, form, query, mutat
 
 ```bash
 git diff --check
-npm run format:check
-npm run lint
-npm run typecheck
+pnpm format:check
+pnpm lint
+pnpm typecheck
 ```

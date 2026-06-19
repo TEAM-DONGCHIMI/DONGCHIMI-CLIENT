@@ -46,8 +46,8 @@ Jira issue type, parent 참조, 하위 작업 분해, 본문 템플릿은 `docs/
    - 접근성과 focus-visible 동작을 확인했습니다.
    - 긴 텍스트와 반응형 제약이 레이아웃을 깨지 않습니다.
 10. 검증합니다.
-   - 문서만 변경: `git diff --check`
-   - package script가 있는 코드 변경: `docs/workflows/local-development.md` 기준 검증
+    - 문서만 변경: `git diff --check`
+    - package script가 있는 코드 변경: `docs/workflows/local-development.md` 기준 검증
 11. 구조 개선이 필요하면 관련 없는 refactor와 분리해서 최소 범위로 수행합니다.
 12. 커밋, 푸시, PR을 준비합니다.
 13. Jira 이슈를 리뷰중 상태로 전환하고 코드 리뷰를 진행합니다.

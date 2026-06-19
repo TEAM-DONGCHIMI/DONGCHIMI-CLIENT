@@ -42,17 +42,17 @@ ATLASSIAN_API_TOKEN=
 
 ## Responsibility Split
 
-| Setting type | Location | Rule |
-| --- | --- | --- |
-| model preference | `~/.codex/config.toml` | 개인 설정 |
-| context window | `~/.codex/config.toml` | 개인 설정 |
-| approval/sandbox preference | `~/.codex/config.toml` | 개인 설정, 팀 합의 전 repo 금지 |
-| Jira REST token | `.env.local` 또는 repo 밖 개인 env file | 개인 secret, repo 금지 |
-| Codex hook policy | `~/.codex/hooks.json` 또는 개인 Codex config | 개인 자동화, repo 금지 |
-| shared hook policy | `.codex/hooks.json` | 팀 정책이 있을 때만 |
-| shared fallback filenames | `.codex/config.toml` | repo 문서 구조가 요구할 때만 |
-| Serena MCP client entry | `~/.codex/config.toml` | 개인 설정, repo에는 등록하지 않음 |
-| Serena project policy | `.serena/project.yml` | 팀 공용 semantic navigation 설정 |
+| Setting type                | Location                                     | Rule                              |
+| --------------------------- | -------------------------------------------- | --------------------------------- |
+| model preference            | `~/.codex/config.toml`                       | 개인 설정                         |
+| context window              | `~/.codex/config.toml`                       | 개인 설정                         |
+| approval/sandbox preference | `~/.codex/config.toml`                       | 개인 설정, 팀 합의 전 repo 금지   |
+| Jira REST token             | `.env.local` 또는 repo 밖 개인 env file      | 개인 secret, repo 금지            |
+| Codex hook policy           | `~/.codex/hooks.json` 또는 개인 Codex config | 개인 자동화, repo 금지            |
+| shared hook policy          | `.codex/hooks.json`                          | 팀 정책이 있을 때만               |
+| shared fallback filenames   | `.codex/config.toml`                         | repo 문서 구조가 요구할 때만      |
+| Serena MCP client entry     | `~/.codex/config.toml`                       | 개인 설정, repo에는 등록하지 않음 |
+| Serena project policy       | `.serena/project.yml`                        | 팀 공용 semantic navigation 설정  |
 
 ## Git Identity Guard
 

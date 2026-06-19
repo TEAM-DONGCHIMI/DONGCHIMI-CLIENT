@@ -33,7 +33,7 @@
 인자 기반 실행:
 
 ```bash
-npm run gen:app-component -- --args client UserProfileCard ui user-profile-card
+pnpm gen:app-component -- --args client UserProfileCard ui user-profile-card
 ```
 
 인자 순서:

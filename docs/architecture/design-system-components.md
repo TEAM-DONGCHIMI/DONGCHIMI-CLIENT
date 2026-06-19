@@ -4,7 +4,7 @@
 
 ## Structure
 
-새 component scaffold는 `npm run gen:ds-component`가 생긴 뒤 사용합니다.
+새 component scaffold는 `pnpm gen:ds-component`가 생긴 뒤 사용합니다.
 
 ```text
 packages/design-system/src/components/{ui|layout}/{component-folder}/
@@ -118,10 +118,10 @@ export type { ButtonProps } from './button';
 ## Verification
 
 ```bash
-npm run lint --workspace @dongchimi/design-system
-npm run typecheck --workspace @dongchimi/design-system
-npm run build --workspace @dongchimi/design-system
-npm run build-storybook --workspace @dongchimi/design-system
+pnpm --filter @dongchimi/design-system lint
+pnpm --filter @dongchimi/design-system typecheck
+pnpm --filter @dongchimi/design-system build
+pnpm --filter @dongchimi/design-system build-storybook
 git diff --check
 ```
 

@@ -57,6 +57,7 @@ git diff --name-only
 - 없음
 
 Residual risk:
+
 - 확인하지 못한 범위
 ```
 

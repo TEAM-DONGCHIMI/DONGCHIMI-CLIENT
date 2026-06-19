@@ -6,13 +6,13 @@
 
 ## Document Map
 
-| 문서 | 역할 |
-| --- | --- |
-| [Design System Components](./design-system-components.md) | 컴포넌트 분류, public API, spec, Storybook, 접근성, 검증 기준 |
-| [Design System Component Plan](./design-system-component-plan.md) | 동치미 Figma 기준 공통 컴포넌트 분류와 구현 순서 |
-| [Design System Icons](./design-system-icons.md) | 아이콘 디렉터리, 생성 명령, SVG 보안 검증, public export 기준 |
-| [Styling And Design Tokens](./styling-and-design-tokens.md) | Tailwind entry, token source, font/color token 기준 |
-| [Spec Writing](../workflows/spec-writing.md) | public component spec 작성 기준 |
+| 문서                                                              | 역할                                                          |
+| ----------------------------------------------------------------- | ------------------------------------------------------------- |
+| [Design System Components](./design-system-components.md)         | 컴포넌트 분류, public API, spec, Storybook, 접근성, 검증 기준 |
+| [Design System Component Plan](./design-system-component-plan.md) | 동치미 Figma 기준 공통 컴포넌트 분류와 구현 순서              |
+| [Design System Icons](./design-system-icons.md)                   | 아이콘 디렉터리, 생성 명령, SVG 보안 검증, public export 기준 |
+| [Styling And Design Tokens](./styling-and-design-tokens.md)       | Tailwind entry, token source, font/color token 기준           |
+| [Spec Writing](../workflows/spec-writing.md)                      | public component spec 작성 기준                               |
 
 ## Package Role
 

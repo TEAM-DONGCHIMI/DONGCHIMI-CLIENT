@@ -19,7 +19,7 @@ Detailed rules:
 3. component group을 선택합니다.
    - `ui`: product-agnostic UI primitives
    - `layout`: product-agnostic layout primitives
-4. generator가 준비되면 `npm run gen:ds-component`로 scaffold를 만듭니다.
+4. generator가 준비되면 `pnpm gen:ds-component`로 scaffold를 만듭니다.
 5. 생성된 `ComponentName.spec.md`를 먼저 채웁니다.
 6. 가장 작은 stable public API를 구현합니다.
 7. `ComponentName.stories.tsx`에 meaningful states와 variants를 추가합니다.
@@ -30,7 +30,7 @@ Detailed rules:
 ## Generator Usage
 
 ```bash
-npm run gen:ds-component -- --args Button ui button
+pnpm gen:ds-component -- --args Button ui button
 ```
 
 Argument order:
@@ -75,11 +75,11 @@ Each public component story should cover the meaningful subset of:
 
 ```bash
 git diff --check
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
-npm run build-storybook:design-system
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
+pnpm build-storybook:design-system
 ```
 
 package script가 없으면 실행하지 못한 이유를 기록합니다.

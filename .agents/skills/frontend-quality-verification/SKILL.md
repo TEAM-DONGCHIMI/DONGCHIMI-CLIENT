@@ -52,13 +52,13 @@ git diff --check
 package script가 생긴 뒤에는 가벼운 검증에서 무거운 검증으로 진행합니다.
 
 ```bash
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
 ```
 
-실제 package manager가 npm이 아니면 `docs/conventions/package-management.md`를 먼저 갱신합니다.
+package manager는 `docs/conventions/package-management.md`를 따릅니다.
 
 코드 품질 자체를 검토해야 하면 명령 검증과 별도로 `frontend-fundamentals-review`를 실행합니다.
 

@@ -43,12 +43,12 @@ DOCS, WORKFLOW
 
 앱별 Jira project key를 먼저 확인한 뒤 branch, commit, PR 제목에 같은 key를 사용합니다.
 
-| 변경 범위 | Jira project key |
-| --- | --- |
-| root 및 디자인 시스템 제외한 packages | `DCMFE-*` |
-| `apps/client` 동치미 클라이언트 웹 | `DCMCL-*` |
-| `apps/design-system-web` 디자인시스템 배포 웹 사이트 | `DCMDSW-*` |
-| `packages/design-system` 디자인 시스템 | `DCMDS-*` |
+| 변경 범위                                            | Jira project key |
+| ---------------------------------------------------- | ---------------- |
+| root 및 디자인 시스템 제외한 packages                | `DCMFE-*`        |
+| `apps/client` 동치미 클라이언트 웹                   | `DCMCL-*`        |
+| `apps/design-system-web` 디자인시스템 배포 웹 사이트 | `DCMDSW-*`       |
+| `packages/design-system` 디자인 시스템               | `DCMDS-*`        |
 
 여러 앱, `packages/*`, 루트 설정, 문서, generator, CI처럼 제품 루트 변경은 `DCMFE-*`를 우선 사용합니다.
 새 이슈를 만들어야 하면 변경을 주도하는 제품 또는 팀의 Jira project에 생성합니다.
@@ -158,10 +158,10 @@ DOCS, WORKFLOW
 
 ## 검증
 
-- [ ] `npm run format:check`
-- [ ] `npm run lint`
-- [ ] `npm run typecheck`
-- [ ] `npm run build`
+- [ ] `pnpm format:check`
+- [ ] `pnpm lint`
+- [ ] `pnpm typecheck`
+- [ ] `pnpm build`
 - [ ] browser route:
 
 ## 확인 필요

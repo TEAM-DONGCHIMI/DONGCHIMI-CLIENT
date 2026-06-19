@@ -30,6 +30,13 @@
 - 반응형 레이아웃에서 텍스트 overflow와 클릭 영역을 확인합니다.
 - 디자인시스템은 public API와 app wrapper 책임을 분리합니다.
 
+## Tooling
+
+- Prettier 설정은 root `prettier.config.mjs`를 source of truth로 삼습니다.
+- ESLint 공통 설정은 `@dongchimi/eslint-config`의 `base`, `react`, `next` export를 사용합니다.
+- TypeScript 공통 설정은 `@dongchimi/typescript-config`의 `base`, `nextjs` export를 사용합니다.
+- TypeScript `target`은 Node 22와 Next 16 기준에 맞춰 `ES2022`를 사용합니다.
+
 ## Frontend Fundamentals Review
 
 코드 구현 후 또는 PR 전에는 필요에 따라 `$frontend-fundamentals-review`를 사용합니다.
@@ -57,13 +64,13 @@
 git diff --check
 ```
 
-package script가 생긴 뒤:
+전체 품질 검증:
 
 ```bash
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
 ```
 
-실제 package manager가 npm이 아니면 이 섹션을 먼저 갱신합니다.
+커밋 전에는 Husky가 `pnpm lint-staged`를 실행합니다. 이 검증은 staged 파일 기준의 빠른 가드이며, 전체 검증을 대체하지 않습니다.

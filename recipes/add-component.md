@@ -9,9 +9,9 @@ Use this when adding a route-local, app-shared, or design-system component.
 3. 새 scaffold를 추가할 때는 matching generator를 사용합니다.
 
    ```bash
-   npm run gen:domain-component -- --args <client|design-system-web|admin> <domain> <page> <ComponentName> <component-folder>
-   npm run gen:domain-section -- --args <client|design-system-web|admin> <domain> <page> <SectionName> <section-folder>
-   npm run gen:app-component -- --args <client|design-system-web|admin> <ComponentName> <ui|layout> <component-folder>
+   pnpm gen:domain-component -- --args <client|design-system-web|admin> <domain> <page> <ComponentName> <component-folder>
+   pnpm gen:domain-section -- --args <client|design-system-web|admin> <domain> <page> <SectionName> <section-folder>
+   pnpm gen:app-component -- --args <client|design-system-web|admin> <ComponentName> <ui|layout> <component-folder>
    ```
 
 4. `templates/component.spec.md` 기준으로 spec을 작성 또는 갱신합니다.
@@ -32,8 +32,8 @@ Use this when adding a route-local, app-shared, or design-system component.
 
 ```bash
 git diff --check
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
 ```

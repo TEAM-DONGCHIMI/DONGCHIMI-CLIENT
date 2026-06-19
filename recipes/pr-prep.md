@@ -45,10 +45,10 @@ git diff --check
 package script가 있는 코드 변경:
 
 ```bash
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
 ```
 
 6. PR 본문 작성
