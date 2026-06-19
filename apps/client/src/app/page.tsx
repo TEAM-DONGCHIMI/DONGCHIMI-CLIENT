@@ -1,4 +1,4 @@
-export default function HomePage() {
+const HomePage = () => {
   return (
     <main>
       <section>
@@ -6,4 +6,6 @@ export default function HomePage() {
       </section>
     </main>
   );
-}
+};
+
+export default HomePage;
