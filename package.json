@@ -8,6 +8,17 @@
   },
   "scripts": {
     "prepare": "husky",
+    "gen": "turbo gen",
+    "gen:ds-component": "turbo gen ds-component",
+    "gen:app-component": "turbo gen app-component",
+    "gen:next-page": "turbo gen next-page",
+    "gen:react-page": "turbo gen react-page",
+    "gen:domain-component": "turbo gen domain-component",
+    "gen:domain-section": "turbo gen domain-section",
+    "gen:domain-query": "turbo gen domain-query",
+    "gen:domain-mutation": "turbo gen domain-mutation",
+    "check:generators": "tsc -p turbo/generators/tsconfig.json",
+    "build:design-system": "pnpm --filter @dongchimi/design-system build",
     "dev:web": "turbo run dev --filter=client",
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -18,9 +29,12 @@
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
+    "@turbo/gen": "catalog:",
+    "@types/node": "catalog:",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7",
     "prettier": "3.8.4",
-    "turbo": "catalog:"
+    "turbo": "catalog:",
+    "typescript": "catalog:"
   }
 }

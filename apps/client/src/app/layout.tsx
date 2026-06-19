@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
+import { AppProviders } from './providers';
+
 export const metadata: Metadata = {
   title: 'DONGCHIMI Client',
   description: 'DONGCHIMI client app',
@@ -13,7 +15,9 @@ type RootLayoutProps = Readonly<{
 const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <html lang='ko'>
-      <body>{children}</body>
+      <body>
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 };

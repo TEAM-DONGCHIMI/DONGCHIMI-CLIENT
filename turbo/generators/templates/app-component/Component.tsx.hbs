@@ -1,0 +1,7 @@
+import { type ComponentPropsWithoutRef } from 'react';
+
+export type {{componentName}}Props = ComponentPropsWithoutRef<'div'>;
+
+export const {{componentName}} = ({ children, ...props }: {{componentName}}Props) => {
+  return <div {...props}>{children}</div>;
+};

@@ -14,3 +14,4 @@ storybook-static
 dist
 dist-ssr
 pnpm-lock.yaml
+turbo/generators/templates/**/*.hbs
