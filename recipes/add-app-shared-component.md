@@ -5,7 +5,7 @@
 ## 흐름
 
 1. 컴포넌트 위치를 결정합니다.
-   - page-only: `apps/{app}/src/pages/{domain}/{page}/components`
+   - page-only: `apps/{app}/src/domains/{domain}/{page}/components`
    - app shared: `apps/{app}/src/shared/components/{ui|layout}`
    - cross-app primitive: `packages/design-system`
 2. 대상 앱을 선택합니다.
@@ -33,7 +33,7 @@
 인자 기반 실행:
 
 ```bash
-pnpm gen:app-component -- --args client UserProfileCard ui user-profile-card
+pnpm gen:app-component --args client UserProfileCard ui user-profile-card
 ```
 
 인자 순서:

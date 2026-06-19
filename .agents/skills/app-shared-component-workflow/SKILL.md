@@ -30,7 +30,7 @@ description: apps/client, apps/design-system-web, 선택적 apps/admin 내부의
 
 | 위치 | 사용 기준 |
 | --- | --- |
-| `apps/{app}/src/pages/{domain}/{page}/components` | 한 페이지 또는 라우트에서만 쓰는 컴포넌트 |
+| `apps/{app}/src/domains/{domain}/{page}/components` | 한 페이지 또는 라우트에서만 쓰는 컴포넌트 |
 | `apps/{app}/src/shared/components/{ui|layout}` | 한 앱 안에서 여러 페이지가 재사용하는 컴포넌트 |
 | `packages/design-system` | 앱/도메인과 무관하고 여러 앱에서 재사용할 공통 primitive |
 

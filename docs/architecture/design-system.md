@@ -1,8 +1,8 @@
 # Design System
 
-`packages/design-system`은 여러 앱에서 공유할 수 있는 제품 비의존 UI 컴포넌트를 관리하는 후보 package입니다.
+`packages/design-system`은 여러 앱에서 공유할 수 있는 제품 비의존 UI 컴포넌트를 관리하는 package입니다.
 
-초기에는 `apps/client` 구현을 우선하고, 실제 재사용이나 Figma 공통 컴포넌트 근거가 생기면 `packages/design-system`을 생성합니다.
+현재 package는 generator와 public export 경계를 검증하기 위한 최소 골격만 제공합니다. 실제 component 구현은 Figma 공통 컴포넌트 근거 또는 cross-app reuse가 확인된 작업에서 추가합니다.
 
 ## Document Map
 
@@ -32,7 +32,7 @@
 - API, query, mutation, routing, navigation
 - 제품별 copy, logging, analytics, side effect
 
-## Package Structure Candidate
+## Package Structure
 
 ```text
 packages/design-system/src/
@@ -45,9 +45,9 @@ packages/design-system/src/
       index.ts
   icons/
     index.ts
-    svg/
-    generated/
 ```
+
+아이콘 source, generated output, Storybook 설정은 아직 연결하지 않습니다.
 
 ## Implementation Boundary
 

@@ -4,38 +4,48 @@
 
 ## Current Direction
 
-아직 실제 dependency가 확정되지 않았습니다. 현재 workflow 문서는 아래 조합을 기본 후보로 둡니다.
+`apps/client`의 REST API와 서버 상태 관리는 아래 조합을 기준으로 합니다.
 
-- 서버 상태: TanStack Query 후보
-- HTTP client: Ky 또는 fetch wrapper 후보
-- API base URL: app별 environment variable 후보
+- 서버 상태: TanStack Query
+- HTTP client: Ky
+- API base URL: `NEXT_PUBLIC_API_BASE_URL`
 
-dependency가 실제로 추가되면 이 문서와 `docs/conventions/package-management.md`를 함께 갱신합니다.
+Next.js의 server-side fetch cache 또는 `revalidate` 동작이 필요한 경로에서는 Next `fetch`를 직접 사용합니다. Ky는 client-side REST helper와 TanStack Query query/mutation 함수의 기본 transport로 사용합니다.
 
 ## Query Client
 
-- QueryClient는 앱별 `src/shared/query` 후보 위치에서 구성합니다.
-- 기본 옵션은 앱의 사용성 요구사항에 맞춰 명시합니다.
+- QueryClient는 앱별 `src/shared/query` 위치에서 구성합니다.
+- `apps/client` 기본 옵션은 `staleTime: 30_000`, `retry: 2`, `refetchOnWindowFocus: false`입니다.
+- 인증/검증 에러는 기본 retry 대상에서 제외합니다.
+- mutation 기본 retry는 끕니다.
 - query key에는 API 응답을 바꾸는 인자를 포함합니다.
+- React Query Devtools는 초기 baseline dependency에 포함하지 않습니다. 실제 디버깅 필요가 생기면 별도 dependency로 추가합니다.
 
 ## HTTP Client
 
-- HTTP client는 앱별 `src/shared/api` 후보 위치에서 구성합니다.
-- 인증, 에러 처리, retry 정책은 임의로 전역화하지 않습니다.
+- HTTP client는 앱별 `src/shared/api` 위치에서 구성합니다.
+- `apps/client/src/shared/api/http-client.ts`는 `NEXT_PUBLIC_API_BASE_URL`을 prefix URL로 사용합니다.
+- request timeout은 10초로 둡니다.
+- Ky transport retry는 기본 0회로 두고, query retry는 TanStack Query에서 제어합니다.
+- API error는 `auth`, `configuration`, `network`, `server`, `unknown`, `validation`으로 정규화합니다.
+- 인증 side effect, refresh, redirect는 아직 전역화하지 않습니다.
 - 공통화가 필요해도 먼저 앱 요구사항을 확인합니다.
 
 ## Domain API Boundary
 
-화면 도메인에 묶인 API helper, query/mutation hook, query key는 먼저 앱 page domain 안에 둡니다.
+화면 도메인에 묶인 API helper, query/mutation hook, query key는 먼저 앱 domain 안에 둡니다.
 
 ```text
-apps/{app}/src/pages/{domain}/api/
-apps/{app}/src/pages/{domain}/hooks/
-apps/{app}/src/pages/{domain}/query-keys.ts
+apps/{app}/src/domains/{domain}/api/
+apps/{app}/src/domains/{domain}/hooks/
+apps/{app}/src/domains/{domain}/model/
+apps/{app}/src/domains/{domain}/query-keys.ts
 ```
 
 - `query-keys.ts`에는 response-changing params를 포함하는 named query key factory를 둡니다.
-- page 폴더 아래에 API helper나 query hook을 만들지 않습니다.
+- `model/`에는 domain type, API response/request type, schema, mapper 후보를 둡니다.
+- page 폴더 아래에 API helper, query hook, domain model을 만들지 않습니다.
+- endpoint helper는 `httpClient`를 호출하고, hook은 endpoint helper를 query/mutation function으로 사용합니다.
 - 여러 도메인 또는 여러 앱에서 실제로 재사용될 때만 앱 `src/shared` 또는 `packages/shared` 승격을 검토합니다.
 
 ## Promotion Rule

@@ -63,6 +63,7 @@ apps/mobile/** -> web check와 별도 mobile command
 packages/design-system/** -> design-system lint/typecheck/build/storybook
 packages/shared/** -> 소비 app build 필요 여부 확인
 docs/**, recipes/**, templates/** -> git diff --check + format check
+turbo/generators/** -> pnpm check:generators + sample generation
 ```
 
 ## Verification Log Rule
