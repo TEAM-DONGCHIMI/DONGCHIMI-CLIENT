@@ -36,6 +36,9 @@ coverage
 .playwright-mcp
 playwright-report
 test-results
+.next
+next-env.d.ts
+tsconfig.tsbuildinfo
 
 # Serena MCP keeps runtime data under .serena. Commit only the project config.
 .serena/*
