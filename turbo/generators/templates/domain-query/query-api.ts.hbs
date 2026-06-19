@@ -1,0 +1,9 @@
+import { httpClient } from '../../../shared/api';
+
+export type {{queryName}}Params = Record<string, never>;
+
+export type {{queryName}}Response = unknown;
+
+export const get{{queryName}} = async (_params: {{queryName}}Params) => {
+  return httpClient.get<{{queryName}}Response>('TODO_ENDPOINT');
+};

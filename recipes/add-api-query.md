@@ -12,24 +12,28 @@ Use this when adding a query hook, mutation hook, endpoint helper, or API type.
    - error shape when available
 2. `templates/hook.spec.md` 기준으로 가장 가까운 spec을 작성 또는 갱신합니다.
 3. owning location을 결정합니다.
-   - Domain API: `apps/{app}/src/pages/{domain}/api`
-   - Domain query/mutation hook: `apps/{app}/src/pages/{domain}/hooks`
-   - Domain query keys: `apps/{app}/src/pages/{domain}/query-keys.ts`
-   - App shared API/query: real reuse가 생긴 뒤
+   - Domain API: `apps/{app}/src/domains/{domain}/api`
+   - Domain query/mutation hook: `apps/{app}/src/domains/{domain}/hooks`
+   - Domain model/schema: `apps/{app}/src/domains/{domain}/model`
+   - Domain query keys: `apps/{app}/src/domains/{domain}/query-keys.ts`
+   - App shared API/query: base client와 provider만 `apps/{app}/src/shared/{api,query}`에 둠
    - Cross-app helper: real reuse가 생긴 뒤 `packages/shared`
 4. 새 domain scaffold가 필요하면 matching generator를 사용합니다.
 
    ```bash
-   pnpm gen:domain-query -- --args <client|design-system-web|admin> <domain> <QueryName>
-   pnpm gen:domain-mutation -- --args <client|design-system-web|admin> <domain> <MutationName>
+   pnpm gen:domain-query --args client <domain> <QueryName>
+   pnpm gen:domain-mutation --args client <domain> <MutationName>
    ```
 
-5. request/response type을 API boundary 가까이에 둡니다.
-6. endpoint helper는 endpoint contract가 확인된 뒤 작성합니다.
+5. request/response type은 작으면 API helper 가까이에 두고, page와 hook이 함께 쓰는 계약이면 `model/`로 분리합니다.
+6. endpoint helper는 endpoint contract가 확인된 뒤 작성하고, `apps/{app}/src/shared/api`의 `httpClient`를 사용합니다.
 7. query 또는 mutation hook에는 explicit query key를 둡니다.
 8. response-changing params를 query key에 모두 포함합니다.
 9. loading, error, empty, success 상태는 usage site에서 구분합니다.
-10. cache invalidation, optimistic update, retry policy는 필요한 근거가 있을 때만 추가합니다.
+10. cache invalidation은 mutation 성공 후 영향을 받는 query key 기준으로 명시합니다.
+11. `setQueryData`는 서버 응답으로 캐시를 즉시 동기화할 수 있을 때만 사용합니다.
+12. optimistic update는 rollback 기준과 실패 UX가 정리된 경우에만 사용합니다.
+13. endpoint별 retry policy는 필요한 근거가 있을 때만 기본값을 override합니다.
 
 ## Query Key Rule
 
@@ -48,6 +52,7 @@ const reservationListQueryKey = {
 - Prefer server-provided messages when available.
 - Keep user-facing fallback messages explicit.
 - Decide whether the hook returns error state or lets the query library expose the error.
+- Auth and validation errors should not retry by default.
 
 ## Verification
 

@@ -5,6 +5,10 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
     },
+    "@dongchimi/design-system#build": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },

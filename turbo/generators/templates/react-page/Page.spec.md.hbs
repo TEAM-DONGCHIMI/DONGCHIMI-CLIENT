@@ -1,0 +1,46 @@
+# React Page Spec: `{{pageName}}`
+
+## Metadata
+
+- App: `{{app}}`
+- Domain: `{{domain}}`
+- Page: `{{page}}`
+- Path: `apps/{{app}}/src/domains/{{domain}}/{{page}}/{{pageName}}.tsx`
+- Status: Draft
+
+## Purpose
+
+- TODO
+
+## Ownership
+
+- Route-independent page composition lives in this domain page.
+- Next.js route entry, if needed, imports this page from `src/app`.
+
+## UI States
+
+- loading:
+- empty:
+- error:
+- success:
+
+## Data
+
+- query:
+- mutation:
+- fixture:
+- model:
+
+## Accessibility
+
+- heading order:
+- keyboard:
+- focus:
+
+## Verification
+
+- [ ] `git diff --check`
+- [ ] `pnpm format:check`
+- [ ] `pnpm lint`
+- [ ] `pnpm typecheck`
+- [ ] route smoke check, if a route entry exists

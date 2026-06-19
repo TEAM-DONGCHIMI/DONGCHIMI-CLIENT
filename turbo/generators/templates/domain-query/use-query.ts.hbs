@@ -1,0 +1,13 @@
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+
+import { get{{queryName}}, type {{queryName}}Params } from '../api/{{queryKebabName}}-api';
+import { {{queryKeyName}} } from '../query-keys';
+
+export const use{{queryName}}Query = (params: {{queryName}}Params) => {
+  return useQuery({
+    queryKey: {{queryKeyName}}.query(params),
+    queryFn: () => get{{queryName}}(params),
+  });
+};

@@ -24,13 +24,14 @@ Detailed rules:
 6. 가장 작은 stable public API를 구현합니다.
 7. `ComponentName.stories.tsx`에 meaningful states와 variants를 추가합니다.
 8. explicit exports와 public prop types를 검토합니다.
-9. Storybook 또는 시각 검증을 실행합니다.
-10. 검증을 실행합니다.
+9. Storybook 설정이 추가되기 전까지는 package build/typecheck/lint로 정적 검증합니다.
+10. Storybook 또는 시각 검증이 연결된 뒤에는 story 검증을 추가합니다.
+11. 검증을 실행합니다.
 
 ## Generator Usage
 
 ```bash
-pnpm gen:ds-component -- --args Button ui button
+pnpm gen:ds-component --args Button ui button
 ```
 
 Argument order:
@@ -79,7 +80,6 @@ pnpm format:check
 pnpm lint
 pnpm typecheck
 pnpm build
-pnpm build-storybook:design-system
 ```
 
-package script가 없으면 실행하지 못한 이유를 기록합니다.
+Storybook script가 없으면 실행하지 못한 이유를 기록합니다.

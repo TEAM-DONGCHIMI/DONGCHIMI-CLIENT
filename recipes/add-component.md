@@ -9,9 +9,9 @@ Use this when adding a route-local, app-shared, or design-system component.
 3. 새 scaffold를 추가할 때는 matching generator를 사용합니다.
 
    ```bash
-   pnpm gen:domain-component -- --args <client|design-system-web|admin> <domain> <page> <ComponentName> <component-folder>
-   pnpm gen:domain-section -- --args <client|design-system-web|admin> <domain> <page> <SectionName> <section-folder>
-   pnpm gen:app-component -- --args <client|design-system-web|admin> <ComponentName> <ui|layout> <component-folder>
+   pnpm gen:domain-component --args client <domain> <page> <ComponentName> <component-folder>
+   pnpm gen:domain-section --args client <domain> <page> <SectionName> <section-folder>
+   pnpm gen:app-component --args client <ComponentName> <ui|layout> <component-folder>
    ```
 
 4. `templates/component.spec.md` 기준으로 spec을 작성 또는 갱신합니다.
@@ -23,8 +23,8 @@ Use this when adding a route-local, app-shared, or design-system component.
 
 ## Placement
 
-- Page-only component: `apps/{app}/src/pages/{domain}/{page}/components`
-- Page-only section: `apps/{app}/src/pages/{domain}/{page}/sections`
+- Page-only component: `apps/{app}/src/domains/{domain}/{page}/components`
+- Page-only section: `apps/{app}/src/domains/{domain}/{page}/sections`
 - App-shared component: `apps/{app}/src/shared/components/{ui|layout}`
 - Cross-app UI component: `packages/design-system`
 

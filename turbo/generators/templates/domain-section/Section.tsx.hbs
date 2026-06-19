@@ -1,0 +1,7 @@
+import { type ComponentPropsWithoutRef } from 'react';
+
+export type {{sectionName}}Props = ComponentPropsWithoutRef<'section'>;
+
+export const {{sectionName}} = ({ children, ...props }: {{sectionName}}Props) => {
+  return <section {...props}>{children}</section>;
+};

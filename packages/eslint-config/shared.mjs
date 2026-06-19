@@ -8,6 +8,25 @@ import tseslint from 'typescript-eslint';
 const sourceFiles = ['**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'];
 const typescriptFiles = ['**/*.{ts,tsx,mts,cts}'];
 const reactFiles = ['**/*.{jsx,tsx}'];
+const reactSettings = {
+  react: {
+    version: 'detect',
+  },
+};
+
+const withReactFiles = (config) => {
+  return {
+    ...config,
+    files: reactFiles,
+    settings: {
+      ...config.settings,
+      react: {
+        ...(config.settings?.react ?? {}),
+        version: 'detect',
+      },
+    },
+  };
+};
 
 export const formattingConfig = eslintConfigPrettier;
 
@@ -79,21 +98,20 @@ export const baseConfig = [
 ];
 
 export const reactRecommendedConfig = [
-  react.configs.flat.recommended,
-  react.configs.flat['jsx-runtime'],
+  withReactFiles(react.configs.flat.recommended),
+  withReactFiles(react.configs.flat['jsx-runtime']),
   reactHooks.configs.flat.recommended,
-  jsxA11y.flatConfigs.recommended,
+  {
+    ...jsxA11y.flatConfigs.recommended,
+    files: reactFiles,
+  },
 ];
 
 export const reactConventions = [
   {
     name: '@dongchimi/eslint-config/react-conventions',
     files: reactFiles,
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
+    settings: reactSettings,
     rules: {
       'react/function-component-definition': [
         'error',

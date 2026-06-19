@@ -1,0 +1,31 @@
+{
+  "name": "@dongchimi/design-system",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components": "./src/components/index.ts",
+    "./icons": "./src/icons/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@dongchimi/eslint-config": "workspace:*",
+    "@dongchimi/typescript-config": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:"
+  }
+}

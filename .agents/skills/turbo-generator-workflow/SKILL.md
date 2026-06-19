@@ -54,7 +54,7 @@ description: 동치미 Turborepo generator script, template, scaffold 구조, sa
 
 - 첫 번째 arg는 app 이름입니다. 기본 후보는 `client`, `design-system-web`, 선택적 `admin`입니다.
 - app arg 누락 시 기본 앱으로 fallback하지 않습니다.
-- domain 최상위에는 `api/`, `hooks/`, `query-keys.ts`만 둡니다.
+- domain 최상위에는 `api/`, `hooks/`, `model/`, `query-keys.ts`를 둡니다.
 - page 폴더 아래에는 `components/`, `sections/`, `utils/`만 둡니다.
 - query/mutation scaffold는 API 계약 확인 전까지 TODO와 throwing helper를 유지합니다.
 - app shared API/query generator는 만들지 않습니다.

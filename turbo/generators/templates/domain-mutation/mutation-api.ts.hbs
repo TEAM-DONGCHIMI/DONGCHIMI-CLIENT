@@ -1,0 +1,9 @@
+import { httpClient } from '../../../shared/api';
+
+export type {{mutationName}}Payload = Record<string, never>;
+
+export type {{mutationName}}Response = unknown;
+
+export const {{mutationCamelName}} = async (_payload: {{mutationName}}Payload) => {
+  return httpClient.post<{{mutationName}}Response>('TODO_ENDPOINT');
+};
