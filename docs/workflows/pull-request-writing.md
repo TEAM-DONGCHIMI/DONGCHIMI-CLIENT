@@ -179,7 +179,7 @@ Reviewer가 중점적으로 봐야 할 지점을 좁혀 줍니다.
 - 실행하지 못한 명령은 unchecked로 두거나 "미실행: 이유"를 적습니다.
 - screenshot, trace, network log가 없으면 있다고 쓰지 않습니다.
 - local production 측정과 dev server 확인을 구분합니다.
-- package script가 아직 없으면 `npm run build`를 성공한 것처럼 쓰지 않습니다.
+- package script가 아직 없으면 `pnpm build`를 성공한 것처럼 쓰지 않습니다.
 
 ## Risk / Follow-up
 

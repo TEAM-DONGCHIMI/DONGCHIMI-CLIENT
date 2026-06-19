@@ -2,12 +2,12 @@
 
 ## File And Folder
 
-| Target | Convention | Example |
-| --- | --- | --- |
-| Folder | `kebab-case` | `user-profile/` |
-| Component file | `PascalCase` | `UserCard.tsx` |
+| Target         | Convention   | Example                                        |
+| -------------- | ------------ | ---------------------------------------------- |
+| Folder         | `kebab-case` | `user-profile/`                                |
+| Component file | `PascalCase` | `UserCard.tsx`                                 |
 | Hook/API/Utils | `kebab-case` | `use-auth.ts`, `auth-api.ts`, `format-date.ts` |
-| TanStack Query | `kebab-case` | `use-user-query.ts`, `use-user-mutation.ts` |
+| TanStack Query | `kebab-case` | `use-user-query.ts`, `use-user-mutation.ts`    |
 
 ## Component
 
@@ -35,7 +35,7 @@ export const UserCard = () => {
 
 - 타입 이름은 `PascalCase`를 사용합니다.
 - Props 타입은 `Props` suffix를 사용합니다.
-- 일반 `type` 이름은 필요할 때 의미가 드러나는 suffix를 사용합니다.
+- 일반 `type` 이름은 `Types` suffix를 사용합니다.
 - API 응답처럼 확장 가능한 객체 계약은 `interface` 사용을 우선 검토합니다.
 
 ## Accessibility

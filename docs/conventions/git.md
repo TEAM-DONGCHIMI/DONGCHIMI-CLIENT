@@ -22,12 +22,12 @@ chore/root/DCMFE-4-repo-setup
 
 앱별 Jira project key를 먼저 확인한 뒤 branch, commit, PR 제목에 같은 key를 사용합니다.
 
-| 변경 범위 | Jira project key |
-| --- | --- |
-| root, docs, CI, repo workflow | `DCMFE-*` |
-| `apps/client` 동치미 클라이언트 웹 | `DCMCL-*` |
-| `apps/design-system-web` 디자인시스템 배포 웹 | `DCMDSW-*` |
-| `packages/design-system` 디자인 시스템 | `DCMDS-*` |
+| 변경 범위                                     | Jira project key |
+| --------------------------------------------- | ---------------- |
+| root, docs, CI, repo workflow                 | `DCMFE-*`        |
+| `apps/client` 동치미 클라이언트 웹            | `DCMCL-*`        |
+| `apps/design-system-web` 디자인시스템 배포 웹 | `DCMDSW-*`       |
+| `packages/design-system` 디자인 시스템        | `DCMDS-*`        |
 
 여러 앱, `packages/*`, 루트 설정, 문서, generator, CI처럼 제품 루트 변경은 `DCMFE-*`를 우선 사용합니다.
 새 이슈를 만들어야 하면 변경을 주도하는 제품 또는 팀의 Jira project에 생성합니다.
@@ -85,40 +85,40 @@ test(apps/client): DCMCL-3 홈 화면 story와 검증 추가
 
 ## Scope
 
-| Scope | Use when |
-| --- | --- |
-| `root` | 루트 설정, package manager, repo-wide config 변경 |
-| `apps/client` | 동치미 클라이언트 앱 변경 |
-| `apps/design-system-web` | 디자인시스템 배포 웹 변경 |
-| `apps/admin` | 동치미 관리자 앱 변경, 앱이 생성된 뒤 사용 |
-| `apps/mobile` | React Native WebView 앱 변경, 앱이 생성된 뒤 사용 |
-| `packages/design-system` | 디자인시스템 패키지 변경 |
-| `packages/shared` | 공통 유틸, 타입, 상수, API 보조 코드 변경 |
-| `packages/tailwind-config` | Tailwind entry, token, font asset 변경 |
-| `packages/eslint-config` | 공통 ESLint config 변경 |
-| `packages/typescript-config` | 공통 TypeScript config 변경 |
-| `docs` | `docs/*` 문서 변경 |
-| `recipes` | `recipes/*` 작업 절차 변경 |
-| `templates` | `templates/*` spec template 변경 |
-| `github` | `.github/*` template, workflow, labeler 변경 |
+| Scope                        | Use when                                          |
+| ---------------------------- | ------------------------------------------------- |
+| `root`                       | 루트 설정, package manager, repo-wide config 변경 |
+| `apps/client`                | 동치미 클라이언트 앱 변경                         |
+| `apps/design-system-web`     | 디자인시스템 배포 웹 변경                         |
+| `apps/admin`                 | 동치미 관리자 앱 변경, 앱이 생성된 뒤 사용        |
+| `apps/mobile`                | React Native WebView 앱 변경, 앱이 생성된 뒤 사용 |
+| `packages/design-system`     | 디자인시스템 패키지 변경                          |
+| `packages/shared`            | 공통 유틸, 타입, 상수, API 보조 코드 변경         |
+| `packages/tailwind-config`   | Tailwind entry, token, font asset 변경            |
+| `packages/eslint-config`     | 공통 ESLint config 변경                           |
+| `packages/typescript-config` | 공통 TypeScript config 변경                       |
+| `docs`                       | `docs/*` 문서 변경                                |
+| `recipes`                    | `recipes/*` 작업 절차 변경                        |
+| `templates`                  | `templates/*` spec template 변경                  |
+| `github`                     | `.github/*` template, workflow, labeler 변경      |
 
 여러 surface가 함께 바뀌는 경우 가장 중요한 변경 범위를 scope로 잡고, 나머지는 body에 적습니다. unrelated 변경이면 커밋을 나눕니다.
 
 ## Prefix
 
-| Prefix | Description |
-| --- | --- |
-| `feat` | 새로운 기능 추가 |
-| `refactor` | 코드 리팩토링 |
-| `fix` | 버그 수정 |
-| `test` | 테스트, story, fixture, 검증 코드 추가 및 변경 |
-| `style` | 코드 동작 변경이 없는 formatting 변경 |
-| `name` | 파일 또는 폴더명 수정 |
-| `file` | 파일 또는 폴더 이동 |
-| `remove` | 파일 삭제만 수행 |
-| `comment` | 필요한 주석 추가 및 변경 |
-| `docs` | 문서 수정 |
-| `chore` | 패키지 매니저, 설정, 기타 작업 |
+| Prefix     | Description                                    |
+| ---------- | ---------------------------------------------- |
+| `feat`     | 새로운 기능 추가                               |
+| `refactor` | 코드 리팩토링                                  |
+| `fix`      | 버그 수정                                      |
+| `test`     | 테스트, story, fixture, 검증 코드 추가 및 변경 |
+| `style`    | 코드 동작 변경이 없는 formatting 변경          |
+| `name`     | 파일 또는 폴더명 수정                          |
+| `file`     | 파일 또는 폴더 이동                            |
+| `remove`   | 파일 삭제만 수행                               |
+| `comment`  | 필요한 주석 추가 및 변경                       |
+| `docs`     | 문서 수정                                      |
+| `chore`    | 패키지 매니저, 설정, 기타 작업                 |
 
 ## PR
 

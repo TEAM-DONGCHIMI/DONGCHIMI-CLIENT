@@ -27,8 +27,8 @@ Use this when changing existing component structure without adding new behavior.
 
 ```bash
 git diff --check
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
 ```

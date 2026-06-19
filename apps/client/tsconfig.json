@@ -1,12 +1,5 @@
 {
   "extends": "@dongchimi/typescript-config/nextjs",
-  "compilerOptions": {
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
-  },
   "include": [
     "next-env.d.ts",
     "**/*.ts",

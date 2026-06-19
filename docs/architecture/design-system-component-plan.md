@@ -15,12 +15,12 @@
 
 컴포넌트를 아래 중 하나로 분류합니다.
 
-| 분류 | 의미 | 위치 |
-| --- | --- | --- |
-| DS primitive | 제품 의미가 없는 기본 UI | `packages/design-system` |
-| DS compound primitive | 제품 의미 없이 여러 primitive를 조합 | `packages/design-system` |
-| app wrapper | DS primitive에 제품 copy/data/action을 주입 | `apps/{app}` |
-| app-only component | 특정 화면이나 제품 흐름에만 사용 | `apps/{app}` |
+| 분류                  | 의미                                        | 위치                     |
+| --------------------- | ------------------------------------------- | ------------------------ |
+| DS primitive          | 제품 의미가 없는 기본 UI                    | `packages/design-system` |
+| DS compound primitive | 제품 의미 없이 여러 primitive를 조합        | `packages/design-system` |
+| app wrapper           | DS primitive에 제품 copy/data/action을 주입 | `apps/{app}`             |
+| app-only component    | 특정 화면이나 제품 흐름에만 사용            | `apps/{app}`             |
 
 ## Implementation Order
 
@@ -57,8 +57,8 @@
 ## Verification
 
 ```bash
-npm run build-storybook --workspace @dongchimi/design-system
-npm run lint --workspace @dongchimi/design-system
-npm run typecheck --workspace @dongchimi/design-system
+pnpm --filter @dongchimi/design-system build-storybook
+pnpm --filter @dongchimi/design-system lint
+pnpm --filter @dongchimi/design-system typecheck
 git diff --check
 ```

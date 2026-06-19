@@ -8,14 +8,14 @@ Jira 이슈를 만들거나 보강할 때 사용하는 기준입니다.
 
 이 기준은 DONGCHIMI-CLIENT에서 프론트엔드 작업을 Jira로 만들거나 시작할 때 적용합니다.
 
-| 변경 범위 | Jira project key |
-| --- | --- |
-| root, docs, CI, repo workflow | `DCMFE-*` |
-| client web | `DCMCL-*` |
-| design-system web | `DCMDSW-*` |
-| design-system package | `DCMDS-*` |
-| admin web | `DCMFE-*` 기본, 별도 project가 생기면 갱신 |
-| mobile WebView | `DCMFE-*` 기본, 별도 project가 생기면 갱신 |
+| 변경 범위                     | Jira project key                           |
+| ----------------------------- | ------------------------------------------ |
+| root, docs, CI, repo workflow | `DCMFE-*`                                  |
+| client web                    | `DCMCL-*`                                  |
+| design-system web             | `DCMDSW-*`                                 |
+| design-system package         | `DCMDS-*`                                  |
+| admin web                     | `DCMFE-*` 기본, 별도 project가 생기면 갱신 |
+| mobile WebView                | `DCMFE-*` 기본, 별도 project가 생기면 갱신 |
 
 Jira/Figma/사진 기반 구현은 항상 이 문서로 이슈 구조를 정리한 뒤, `jira-design-implementation-workflow`로 착수 순서를 확인합니다.
 
@@ -162,16 +162,16 @@ Jira Component 필드가 사용 가능하면 `frontend` 또는 담당 surface를
 
 필요할 때만 보조 label을 추가합니다.
 
-| Label | Use when |
-| --- | --- |
-| `API` | endpoint, query, mutation, cache invalidation, API error mapping이 포함됩니다. |
-| `DS` | 디자인시스템 package 또는 public design-system component가 포함됩니다. |
-| `FORM` | 입력 검증, submit, mutation, form state가 핵심입니다. |
-| `A11Y` | keyboard, focus, aria, semantic markup 검증이 핵심입니다. |
-| `PERF` | rendering cost, bundle, layout shift, virtualization, memoization이 핵심입니다. |
-| `WORKFLOW` | docs, recipes, agent skill, PR/Jira 기준 같은 작업 절차를 바꿉니다. |
-| `ROUTE` | router, top-level route, app shell, navigation 구조를 바꿉니다. |
-| `FIXTURE` | real API 없이 fixture 또는 mock data 기반 UI를 구현합니다. |
+| Label      | Use when                                                                        |
+| ---------- | ------------------------------------------------------------------------------- |
+| `API`      | endpoint, query, mutation, cache invalidation, API error mapping이 포함됩니다.  |
+| `DS`       | 디자인시스템 package 또는 public design-system component가 포함됩니다.          |
+| `FORM`     | 입력 검증, submit, mutation, form state가 핵심입니다.                           |
+| `A11Y`     | keyboard, focus, aria, semantic markup 검증이 핵심입니다.                       |
+| `PERF`     | rendering cost, bundle, layout shift, virtualization, memoization이 핵심입니다. |
+| `WORKFLOW` | docs, recipes, agent skill, PR/Jira 기준 같은 작업 절차를 바꿉니다.             |
+| `ROUTE`    | router, top-level route, app shell, navigation 구조를 바꿉니다.                 |
+| `FIXTURE`  | real API 없이 fixture 또는 mock data 기반 UI를 구현합니다.                      |
 
 ## Implementation Workflow
 

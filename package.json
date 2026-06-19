@@ -2,14 +2,25 @@
   "name": "dongchimi-client",
   "private": true,
   "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": "22.19.0",
+    "pnpm": "11.7.0"
+  },
   "scripts": {
+    "prepare": "husky",
     "dev:web": "turbo run dev --filter=client",
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "lint": "turbo run lint",
+    "lint-staged": "lint-staged",
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
+    "prettier": "3.8.4",
     "turbo": "catalog:"
   }
 }

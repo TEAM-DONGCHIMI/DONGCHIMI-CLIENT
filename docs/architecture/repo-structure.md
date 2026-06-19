@@ -21,14 +21,14 @@ templates/
 
 아래 영역은 Jira 템플릿 기준으로 예약되어 있지만, 실제 디렉터리가 생기기 전까지 확정된 구조로 간주하지 않습니다.
 
-| Area | Jira key | Notes |
-| --- | --- | --- |
-| root / repo workflow | `DCMFE-*` | 문서, CI, 설정, 전체 구조 |
-| client web | `DCMCL-*` | 동치미 클라이언트 웹 |
-| design system package | `DCMDS-*` | 공용 디자인 시스템 |
-| design system web | `DCMDSW-*` | 디자인시스템 문서/배포 웹 |
-| admin web | `DCMFE-*` 기본 | 제품 요구사항 확정 뒤 별도 key가 생기면 갱신 |
-| mobile WebView | `DCMFE-*` 기본 | WebView shell 필요 시 추가 |
+| Area                  | Jira key       | Notes                                        |
+| --------------------- | -------------- | -------------------------------------------- |
+| root / repo workflow  | `DCMFE-*`      | 문서, CI, 설정, 전체 구조                    |
+| client web            | `DCMCL-*`      | 동치미 클라이언트 웹                         |
+| design system package | `DCMDS-*`      | 공용 디자인 시스템                           |
+| design system web     | `DCMDSW-*`     | 디자인시스템 문서/배포 웹                    |
+| admin web             | `DCMFE-*` 기본 | 제품 요구사항 확정 뒤 별도 key가 생기면 갱신 |
+| mobile WebView        | `DCMFE-*` 기본 | WebView shell 필요 시 추가                   |
 
 ## Planned Layout Candidate
 

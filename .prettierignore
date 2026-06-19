@@ -1,0 +1,16 @@
+node_modules
+.pnpm-store
+.agents
+
+.next
+.turbo
+.cache
+
+coverage
+playwright-report
+test-results
+storybook-static
+
+dist
+dist-ssr
+pnpm-lock.yaml

@@ -1,19 +1,21 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "DONGCHIMI Client",
-  description: "DONGCHIMI client app",
+  title: 'DONGCHIMI Client',
+  description: 'DONGCHIMI client app',
 };
 
 type RootLayoutProps = Readonly<{
   children: React.ReactNode;
 }>;
 
-export default function RootLayout({ children }: RootLayoutProps) {
+const RootLayout = ({ children }: RootLayoutProps) => {
   return (
-    <html lang="ko">
+    <html lang='ko'>
       <body>{children}</body>
     </html>
   );
-}
+};
+
+export default RootLayout;

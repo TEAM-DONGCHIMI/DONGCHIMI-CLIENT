@@ -48,7 +48,7 @@ pages/{domain}/
 
 ## Placement Rules
 
-- 새 page scaffold는 `npm run gen:domain-page`가 생긴 뒤 우선 사용합니다.
+- 새 page scaffold는 `pnpm gen:domain-page`가 생긴 뒤 우선 사용합니다.
 - 페이지 내부에서만 쓰는 컴포넌트는 `apps/{app}/src/pages/{domain}/{page}/components`에 둡니다.
 - 앱 안에서 여러 페이지가 공유하는 UI 또는 layout 컴포넌트는 `src/shared/components/{ui|layout}`로 이동합니다.
 - 여러 앱이 공유하면 `packages/shared` 또는 `packages/design-system`으로 이동합니다.

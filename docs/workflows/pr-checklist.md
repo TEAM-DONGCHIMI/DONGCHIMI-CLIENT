@@ -58,10 +58,10 @@ git diff --check
 프론트엔드 코드 변경 후 package script가 있을 때:
 
 ```bash
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
 ```
 
 ## PR Body

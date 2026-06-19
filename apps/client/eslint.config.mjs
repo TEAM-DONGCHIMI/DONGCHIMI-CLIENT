@@ -1,5 +1,3 @@
-import nextVitals from 'eslint-config-next/core-web-vitals';
-
-const config = [...nextVitals];
+import config from '@dongchimi/eslint-config/next';
 
 export default config;

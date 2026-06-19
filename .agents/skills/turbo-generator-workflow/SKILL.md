@@ -64,10 +64,10 @@ description: 동치미 Turborepo generator script, template, scaffold 구조, sa
 ```bash
 npx tsc -p turbo/generators/tsconfig.json
 git diff --check
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
 ```
 
 실제 script가 없으면 실행하지 못한 명령과 이유를 최종 요약에 남깁니다.

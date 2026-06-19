@@ -46,10 +46,10 @@ Blocked input:
 ## Verification
 
 ```bash
-npm run check:icons --workspace @dongchimi/design-system
-npm run lint --workspace @dongchimi/design-system
-npm run typecheck --workspace @dongchimi/design-system
-npm run build --workspace @dongchimi/design-system
+pnpm --filter @dongchimi/design-system check:icons
+pnpm --filter @dongchimi/design-system lint
+pnpm --filter @dongchimi/design-system typecheck
+pnpm --filter @dongchimi/design-system build
 git diff --check
 ```
 

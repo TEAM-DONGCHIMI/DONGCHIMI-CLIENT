@@ -1,0 +1,26 @@
+{
+  "name": "@dongchimi/eslint-config",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "lint": "node --check base.mjs && node --check react.mjs && node --check next.mjs && node --check shared.mjs"
+  },
+  "exports": {
+    "./base": "./base.mjs",
+    "./react": "./react.mjs",
+    "./next": "./next.mjs"
+  },
+  "dependencies": {
+    "@eslint/js": "catalog:",
+    "eslint-config-next": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-jsx-a11y": "catalog:",
+    "eslint-plugin-react": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "peerDependencies": {
+    "eslint": ">=9"
+  }
+}
