@@ -1,5 +1,4 @@
 version: 1
-appendOnly: true
 labels:
   - label: 'FIX'
     title: '(?i)(\bfix\b|\bbug\b|버그|수정)'
