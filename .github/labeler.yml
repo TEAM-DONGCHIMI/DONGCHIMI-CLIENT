@@ -1,71 +1,60 @@
+version: 1
+appendOnly: true
 labels:
-  'FIX':
-    include: ['\bFix\b', '\bfix\b', '\bFIX\b', '\bBug\b', '\bbug\b', '\bBUG\b', '버그', '수정']
+  - label: 'FIX'
+    title: '(?i)(\bfix\b|\bbug\b|버그|수정)'
+  - label: 'FIX'
+    branch: '(?i)^fix/'
 
-  'FEAT':
-    include:
-      ['\bFeat\b', '\bFEAT\b', '\bfeat\b', '\bFeature\b', '\bFEATURE\b', '\bfeature\b', '기능']
+  - label: 'FEAT'
+    title: '(?i)(\bfeat\b|\bfeature\b|기능)'
+  - label: 'FEAT'
+    branch: '(?i)^feat/'
 
-  'DOCS':
-    include: ['\bDocs\b', '\bDOCS\b', '\bdocs\b', '\bDoc\b', '\bDOC\b', '\bdoc\b', '문서']
+  - label: 'DOCS'
+    title: '(?i)(\bdocs?\b|문서)'
+  - label: 'DOCS'
+    branch: '(?i)^docs/'
 
-  'CHORE':
-    include:
-      [
-        '\bCHORE\b',
-        '\bChore\b',
-        '\bchore\b',
-        '\bCI\b',
-        '\bci\b',
-        '\bConfig\b',
-        '\bCONFIG\b',
-        '\bconfig\b',
-      ]
+  - label: 'CHORE'
+    title: '(?i)(\bchore\b|\bci\b|\bconfig\b)'
+  - label: 'CHORE'
+    branch: '(?i)^chore/'
 
-  'REFACTOR':
-    include: ['\bRefactor\b', '\bREFACTOR\b', '\brefactor\b', '리팩터', '리팩토링']
+  - label: 'REFACTOR'
+    title: '(?i)(\brefactor\b|리팩터|리팩토링)'
+  - label: 'REFACTOR'
+    branch: '(?i)^refactor/'
 
-  'REMOVE':
-    include:
-      ['\bRemove\b', '\bREMOVE\b', '\bremove\b', '\bDelete\b', '\bDELETE\b', '\bdelete\b', '삭제']
+  - label: 'REMOVE'
+    title: '(?i)(\bremove\b|\bdelete\b|삭제)'
+  - label: 'REMOVE'
+    branch: '(?i)^remove/'
 
-  'RENAME':
-    include:
-      ['\bRename\b', '\bRENAME\b', '\brename\b', '\bMove\b', '\bMOVE\b', '\bmove\b', '이름', '이동']
+  - label: 'RENAME'
+    title: '(?i)(\brename\b|\bmove\b|이름|이동)'
+  - label: 'RENAME'
+    branch: '(?i)^rename/'
 
-  'STYLE':
-    include:
-      [
-        '\bStyle\b',
-        '\bSTYLE\b',
-        '\bstyle\b',
-        '\bFormat\b',
-        '\bFORMAT\b',
-        '\bformat\b',
-        '\bPrettier\b',
-        '\bprettier\b',
-        '포맷',
-      ]
+  - label: 'STYLE'
+    title: '(?i)(\bstyle\b|\bformat\b|\bprettier\b|포맷)'
+  - label: 'STYLE'
+    branch: '(?i)^style/'
 
-  'wontfix':
-    include: ['\bwontfix\b', '\bWONTFIX\b', '\bWon''t Fix\b', '\bwon''t fix\b', '작업하지 않음']
+  - label: 'wontfix'
+    title: '(?i)(\bwontfix\b|won''t fix|작업하지 않음)'
 
-  '민수':
-    authors:
-      - 'Tnalxmsk'
+  - label: '민수'
+    authors: ['Tnalxmsk']
 
-  '소이':
-    authors:
-      - 'soyyyyy'
+  - label: '소이'
+    authors: ['soyyyyy']
 
-  '다경':
-    authors:
-      - 'hdg0116'
+  - label: '다경'
+    authors: ['hdg0116']
 
-  '채원':
-    authors:
-      - 'chaewon41'
+  - label: '채원'
+    authors: ['chaewon41']
 
-  '현종':
-    authors:
-      - 'Navi-Up'
+  - label: '현종'
+    authors: ['Navi-Up']
