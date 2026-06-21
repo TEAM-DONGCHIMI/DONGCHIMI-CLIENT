@@ -3,9 +3,10 @@ name: Pull Request Labeler
 permissions:
   contents: read
   issues: write
+  pull-requests: write
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - '**'
     types:
@@ -17,9 +18,12 @@ on:
 jobs:
   labeler:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
 
       - uses: srvaroa/labeler@v1.13.0
