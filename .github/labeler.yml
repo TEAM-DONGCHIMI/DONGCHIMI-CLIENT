@@ -1,0 +1,71 @@
+labels:
+  'FIX':
+    include: ['\bFix\b', '\bfix\b', '\bFIX\b', '\bBug\b', '\bbug\b', '\bBUG\b', '버그', '수정']
+
+  'FEAT':
+    include:
+      ['\bFeat\b', '\bFEAT\b', '\bfeat\b', '\bFeature\b', '\bFEATURE\b', '\bfeature\b', '기능']
+
+  'DOCS':
+    include: ['\bDocs\b', '\bDOCS\b', '\bdocs\b', '\bDoc\b', '\bDOC\b', '\bdoc\b', '문서']
+
+  'CHORE':
+    include:
+      [
+        '\bCHORE\b',
+        '\bChore\b',
+        '\bchore\b',
+        '\bCI\b',
+        '\bci\b',
+        '\bConfig\b',
+        '\bCONFIG\b',
+        '\bconfig\b',
+      ]
+
+  'REFACTOR':
+    include: ['\bRefactor\b', '\bREFACTOR\b', '\brefactor\b', '리팩터', '리팩토링']
+
+  'REMOVE':
+    include:
+      ['\bRemove\b', '\bREMOVE\b', '\bremove\b', '\bDelete\b', '\bDELETE\b', '\bdelete\b', '삭제']
+
+  'RENAME':
+    include:
+      ['\bRename\b', '\bRENAME\b', '\brename\b', '\bMove\b', '\bMOVE\b', '\bmove\b', '이름', '이동']
+
+  'STYLE':
+    include:
+      [
+        '\bStyle\b',
+        '\bSTYLE\b',
+        '\bstyle\b',
+        '\bFormat\b',
+        '\bFORMAT\b',
+        '\bformat\b',
+        '\bPrettier\b',
+        '\bprettier\b',
+        '포맷',
+      ]
+
+  'wontfix':
+    include: ['\bwontfix\b', '\bWONTFIX\b', '\bWon''t Fix\b', '\bwon''t fix\b', '작업하지 않음']
+
+  '민수':
+    authors:
+      - 'Tnalxmsk'
+
+  '소이':
+    authors:
+      - 'soyyyyy'
+
+  '다경':
+    authors:
+      - 'hdg0116'
+
+  '채원':
+    authors:
+      - 'chaewon41'
+
+  '현종':
+    authors:
+      - 'Navi-Up'
