@@ -29,6 +29,7 @@ jobs:
       - uses: srvaroa/labeler@v1.13.0
         with:
           config_path: .github/labeler.yml
+          fail_on_error: true
           use_local_config: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
