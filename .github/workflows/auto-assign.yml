@@ -30,5 +30,5 @@ jobs:
                 assignees: [author],
               })
             } catch (error) {
-              core.setFailed(`Failed to add assignee: ${error.message}`)
+              core.warning(`Failed to add assignee: ${error.message}`)
             }
