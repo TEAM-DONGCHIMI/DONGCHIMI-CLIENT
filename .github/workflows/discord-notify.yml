@@ -1,0 +1,63 @@
+name: Discord Notify
+
+on:
+  pull_request:
+    types: [opened, closed]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    name: Notify Discord
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened' || github.event.pull_request.merged == true
+    steps:
+      - name: Send PR event to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_PR }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          IS_MERGED: ${{ github.event.pull_request.merged }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "DISCORD_WEBHOOK_PR secret이 없어 알림을 건너뜁니다."
+            exit 0
+          fi
+
+          if [ "$IS_MERGED" = "true" ]; then
+            STATUS="PR 머지됨"
+            COLOR=10181046
+          else
+            STATUS="PR 오픈"
+            COLOR=3447003
+          fi
+
+          PAYLOAD=$(jq -n \
+            --arg status "$STATUS" \
+            --arg title "#${PR_NUMBER} ${PR_TITLE}" \
+            --arg url "$PR_URL" \
+            --arg author "$PR_AUTHOR" \
+            --arg branch "${HEAD_REF} → ${BASE_REF}" \
+            --arg repo "$REPO" \
+            --argjson color "$COLOR" \
+            '{embeds:[{
+               author: {name: $status},
+               title: $title,
+               url: $url,
+               color: $color,
+               fields: [
+                 {name: "작성자", value: $author, inline: true},
+                 {name: "브랜치", value: $branch, inline: true}
+               ],
+               footer: {text: $repo}
+             }]}')
+
+          curl -sf -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"
