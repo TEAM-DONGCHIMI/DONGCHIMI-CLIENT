@@ -33,6 +33,9 @@ catalogs:
     '@vanilla-extract/next-plugin':
       specifier: ^2.5.2
       version: 2.5.2
+    '@vitejs/plugin-react':
+      specifier: ^6.0.2
+      version: 6.0.2
     eslint:
       specifier: ^9.34.0
       version: 9.39.4
@@ -72,6 +75,9 @@ catalogs:
     typescript-eslint:
       specifier: ^8.61.1
       version: 8.61.1
+    vite:
+      specifier: ^8.0.16
+      version: 8.0.16
 
 importers:
 
@@ -144,6 +150,40 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+
+  apps/market-owner:
+    dependencies:
+      react:
+        specifier: 'catalog:'
+        version: 19.2.7
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.7(react@19.2.7)
+    devDependencies:
+      '@dongchimi/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@dongchimi/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.3(@types/react@19.2.17)
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 6.0.2(vite@8.0.16(@types/node@24.13.2)(terser@5.48.0)(yaml@2.9.0))
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.4
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 8.0.16(@types/node@24.13.2)(terser@5.48.0)(yaml@2.9.0)
 
   packages/design-system:
     devDependencies:
@@ -1463,6 +1503,19 @@ packages:
     resolution: {integrity: sha512-i/GFQPifTkGYXYpkVYzScBPwXB82f+5GMLg9rh9UBgTG6M/YUebIDVjVOC9Mn5VMvc8Fk2w/FmagDRLugHA09w==}
     peerDependencies:
       webpack: ^4.30.0 || ^5.20.2
+
+  '@vitejs/plugin-react@6.0.2':
+    resolution: {integrity: sha512-DlSMqo4WhThw4vB8Mpn0Woe9J+Jfq1geJ61AKW0QEgLzGMNwtIMdxbDUzLxcun8W7NbJO0e2Jg/Nxm3cCSVzzg==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    peerDependencies:
+      '@rolldown/plugin-babel': ^0.1.7 || ^0.2.0
+      babel-plugin-react-compiler: ^1.0.0
+      vite: ^8.0.0
+    peerDependenciesMeta:
+      '@rolldown/plugin-babel':
+        optional: true
+      babel-plugin-react-compiler:
+        optional: true
 
   '@webassemblyjs/ast@1.14.1':
     resolution: {integrity: sha512-nuBEDgQfm1ccRp/8bCQrx1frohyufl4JlbMMZ4P1wpeOfDhF6FQkxZJ1b/e+PLwr6X1Nhw6OLme5usuBWYBvuQ==}
@@ -4502,6 +4555,11 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
+
+  '@vitejs/plugin-react@6.0.2(vite@8.0.16(@types/node@24.13.2)(terser@5.48.0)(yaml@2.9.0))':
+    dependencies:
+      '@rolldown/pluginutils': 1.0.1
+      vite: 8.0.16(@types/node@24.13.2)(terser@5.48.0)(yaml@2.9.0)
 
   '@webassemblyjs/ast@1.14.1':
     dependencies:

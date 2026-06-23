@@ -1,6 +1,7 @@
 # App Structure
 
-동치미 웹 앱은 Next App Router를 라우팅/렌더링 경계로 사용하고, 제품 기능 코드는 `src/domains`에 둡니다.
+동치미 클라이언트 웹 앱은 Next App Router를 라우팅/렌더링 경계로 사용하고, 제품 기능 코드는 `src/domains`에 둡니다.
+사장님 사이트는 `apps/market-owner`의 Vite React 앱으로 시작하며, 제품 라우팅/도메인 구조는 요구사항이 확정된 뒤 별도 이슈에서 확장합니다.
 이 문서는 generator, spec, Jira issue가 같은 구조를 가리키게 하는 source of truth입니다.
 
 ## Planned Apps
@@ -8,16 +9,27 @@
 ```text
 apps/
   client/              동치미 클라이언트 웹
+  market-owner/        마트 사장님 사이트 웹
   design-system-web/   디자인시스템 문서/미리보기 웹
   admin/               필요 시 추가
   mobile/              필요 시 React Native WebView shell로 추가
 ```
 
-처음부터 모든 앱을 만들지 않습니다. 초기 제품 요구사항은 `apps/client`를 중심으로 시작하고, admin, mobile, landing은 요구사항이 명확해진 뒤 추가합니다.
+처음부터 모든 앱을 만들지 않습니다. 초기 제품 요구사항은 `apps/client`와 `apps/market-owner`를 중심으로 시작하고, admin, mobile, landing은 요구사항이 명확해진 뒤 추가합니다.
+
+## Market Owner App
+
+`apps/market-owner`는 사장님 사이트의 React 앱 workspace입니다.
+
+- Jira key는 `DCMSM-*`를 사용합니다.
+- package name은 `market-owner`입니다.
+- 초기 scaffold는 Vite + React + TypeScript만 포함합니다.
+- 제품 route, API 연동, 디자인 토큰, 공통 component 승격은 별도 Jira 이슈에서 결정합니다.
+- 앱 내부 구조가 확정되기 전까지 코드는 app-local에 두고, 실제 재사용이 확인된 뒤 `packages/*`로 승격합니다.
 
 ## Base Structure
 
-`src/app`은 Next가 해석하는 route entry와 layout을 위한 공간입니다. 실제 화면 조립, API, query, model은 `src/domains`와 `src/shared`로 분리합니다.
+`apps/client`의 `src/app`은 Next가 해석하는 route entry와 layout을 위한 공간입니다. 실제 화면 조립, API, query, model은 `src/domains`와 `src/shared`로 분리합니다.
 
 ```text
 src/

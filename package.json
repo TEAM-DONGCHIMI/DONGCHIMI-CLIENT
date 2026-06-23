@@ -20,6 +20,8 @@
     "check:generators": "tsc -p turbo/generators/tsconfig.json",
     "build:design-system": "pnpm --filter @dongchimi/design-system build",
     "icons:generate": "pnpm --filter @dongchimi/design-system icons:generate",
+    "build:market-owner": "pnpm --filter market-owner build",
+    "dev:market-owner": "turbo run dev --filter=market-owner",
     "dev:web": "turbo run dev --filter=client",
     "build": "turbo run build",
     "dev": "turbo run dev",

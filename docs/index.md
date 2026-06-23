@@ -7,6 +7,7 @@
 
 - [Repo Structure](./architecture/repo-structure.md)
 - [App Structure](./architecture/app-structure.md)
+- [Market Owner App](./architecture/market-owner-app.md)
 - [Data Layer](./architecture/data-layer.md)
 - [Design System](./architecture/design-system.md)
 - [Design System Components](./architecture/design-system-components.md)

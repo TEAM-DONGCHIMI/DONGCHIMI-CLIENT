@@ -27,6 +27,7 @@ pnpm gen:react-page --args client <domain> <page> <PageName>
 ```
 
 - 현재 generator가 허용하는 app은 실제 존재하는 `client`뿐입니다.
+- `market-owner`는 Vite React 앱이므로 현재 Next route generator의 대상이 아닙니다.
 - `design-system-web`, `admin`, `mobile`은 실제 앱이 생성된 뒤 generator choice에 추가합니다.
 - `mobile`은 WebView native shell 특성이 있으므로 별도 generator 필요성을 먼저 검토합니다.
 - app arg가 빠지면 기본 앱으로 fallback하지 않습니다.
