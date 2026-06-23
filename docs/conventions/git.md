@@ -11,6 +11,7 @@ Examples:
 ```text
 docs/root/DCMFE-1-agent-harness
 feat/apps-client/DCMCL-2-client-home
+chore/apps-market-owner/DCMSM-1-react-app-setup
 feat/packages-design-system/DCMDS-3-button-component
 chore/root/DCMFE-4-repo-setup
 ```
@@ -26,6 +27,7 @@ chore/root/DCMFE-4-repo-setup
 | --------------------------------------------- | ---------------- |
 | root, docs, CI, repo workflow                 | `DCMFE-*`        |
 | `apps/client` 동치미 클라이언트 웹            | `DCMCL-*`        |
+| `apps/market-owner` 마트 사장님 사이트 웹     | `DCMSM-*`        |
 | `apps/design-system-web` 디자인시스템 배포 웹 | `DCMDSW-*`       |
 | `packages/design-system` 디자인 시스템        | `DCMDS-*`        |
 
@@ -46,6 +48,7 @@ Examples:
 docs(docs): DCMFE-1 agent harness 문서 구조 추가
 chore(root): DCMFE-2 기본 패키지 설정 추가
 feat(apps/client): DCMCL-3 홈 화면 구현
+chore(apps/market-owner): DCMSM-1 React 앱 초기 세팅
 feat(packages/design-system): DCMDS-4 Button 컴포넌트 구현
 ```
 
@@ -89,6 +92,7 @@ test(apps/client): DCMCL-3 홈 화면 story와 검증 추가
 | ---------------------------- | ------------------------------------------------- |
 | `root`                       | 루트 설정, package manager, repo-wide config 변경 |
 | `apps/client`                | 동치미 클라이언트 앱 변경                         |
+| `apps/market-owner`          | 마트 사장님 사이트 앱 변경                        |
 | `apps/design-system-web`     | 디자인시스템 배포 웹 변경                         |
 | `apps/admin`                 | 동치미 관리자 앱 변경, 앱이 생성된 뒤 사용        |
 | `apps/mobile`                | React Native WebView 앱 변경, 앱이 생성된 뒤 사용 |
@@ -133,5 +137,6 @@ Example:
 ```text
 [DOCS](docs): DCMFE-1 agent harness 문서 구조 추가
 [FEAT](apps/client): DCMCL-3 홈 화면 구현
+[CHORE](apps/market-owner): DCMSM-1 React 앱 초기 세팅
 [FEAT](packages/design-system): DCMDS-4 Button 컴포넌트 구현
 ```

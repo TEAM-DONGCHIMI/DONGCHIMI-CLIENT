@@ -1,6 +1,6 @@
 # 동치미 클라이언트
 
-동치미 클라이언트 저장소입니다. 현재는 구현 전 단계의 문서, agent harness, Jira/spec workflow 골격을 먼저 관리합니다.
+동치미 클라이언트 저장소입니다. pnpm workspace와 Turborepo를 기준으로 클라이언트 앱, 사장님 사이트 앱, 공통 package, agent harness, Jira/spec workflow를 관리합니다.
 
 ## 문서
 
