@@ -19,6 +19,7 @@
     "gen:domain-mutation": "turbo gen domain-mutation",
     "check:generators": "tsc -p turbo/generators/tsconfig.json",
     "build:design-system": "pnpm --filter @dongchimi/design-system build",
+    "icons:generate": "pnpm --filter @dongchimi/design-system icons:generate",
     "dev:web": "turbo run dev --filter=client",
     "build": "turbo run build",
     "dev": "turbo run dev",
