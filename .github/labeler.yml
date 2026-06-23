@@ -1,0 +1,59 @@
+version: 1
+labels:
+  - label: 'FIX'
+    title: '(?i)^\[?(fix|hotfix|bugfix)\]?([(:\s]|$)'
+  - label: 'FIX'
+    branch: '(?i)^(fix|hotfix|bugfix)/'
+
+  - label: 'FEAT'
+    title: '(?i)^\[?(feat|feature)\]?([(:\s]|$)'
+  - label: 'FEAT'
+    branch: '(?i)^(feat|feature)/'
+
+  - label: 'DOCS'
+    title: '(?i)^\[?docs?\]?([(:\s]|$)'
+  - label: 'DOCS'
+    branch: '(?i)^docs?/'
+
+  - label: 'CHORE'
+    title: '(?i)^\[?(chore|ci|config)\]?([(:\s]|$)'
+  - label: 'CHORE'
+    branch: '(?i)^(chore|ci|config)/'
+
+  - label: 'REFACTOR'
+    title: '(?i)^\[?refactor\]?([(:\s]|$)'
+  - label: 'REFACTOR'
+    branch: '(?i)^refactor/'
+
+  - label: 'REMOVE'
+    title: '(?i)^\[?(remove|delete)\]?([(:\s]|$)'
+  - label: 'REMOVE'
+    branch: '(?i)^(remove|delete)/'
+
+  - label: 'RENAME'
+    title: '(?i)^\[?(rename|move)\]?([(:\s]|$)'
+  - label: 'RENAME'
+    branch: '(?i)^(rename|move)/'
+
+  - label: 'STYLE'
+    title: '(?i)^\[?(style|format|prettier)\]?([(:\s]|$)'
+  - label: 'STYLE'
+    branch: '(?i)^(style|format|prettier)/'
+
+  - label: 'wontfix'
+    title: '(?i)(\bwontfix\b|won''t fix|작업하지 않음)'
+
+  - label: '민수'
+    authors: ['Tnalxmsk']
+
+  - label: '소이'
+    authors: ['soyyyyy']
+
+  - label: '다경'
+    authors: ['hdg0116']
+
+  - label: '채원'
+    authors: ['chaewon41']
+
+  - label: '현종'
+    authors: ['Navi-Up']
