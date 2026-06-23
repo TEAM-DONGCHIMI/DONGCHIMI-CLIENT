@@ -7,11 +7,14 @@
 - Product: 동치미 클라이언트
 - Jira root key: `DCMFE-*`
 - Client web key: `DCMCL-*`
+- Market owner web key: `DCMSM-*`
 - Design system key: `DCMDS-*`
 - Design system web key: `DCMDSW-*`
-- 예정 구조: `apps/client`, `apps/design-system-web`, 선택적 `apps/admin`, `apps/mobile`
-- 예정 package: `packages/design-system`, `packages/shared`, `packages/tailwind-config`, `packages/eslint-config`, `packages/typescript-config`
-- Package manager, app layout, build system은 실제 `package.json`, `pnpm-workspace.yaml`, `turbo.json`이 생긴 뒤 확정합니다.
+- 현재 app: `apps/client`, `apps/market-owner`
+- 예정 app: `apps/design-system-web`, 선택적 `apps/admin`, `apps/mobile`
+- 현재 package: `packages/design-system`, `packages/eslint-config`, `packages/typescript-config`
+- 예정 package: `packages/shared`, `packages/tailwind-config`
+- Package manager, app layout, build system은 실제 `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `docs/architecture/*`를 source of truth로 봅니다.
 
 ## 기본 순서
 
