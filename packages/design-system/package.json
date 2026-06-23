@@ -15,21 +15,32 @@
   "scripts": {
     "build": "tsc --noEmit",
     "lint": "eslint . --max-warnings=0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "chromatic": "chromatic --build-script-name build-storybook --exit-zero-on-changes"
   },
   "peerDependencies": {
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^5.2.1",
     "@dongchimi/eslint-config": "workspace:*",
     "@dongchimi/typescript-config": "workspace:*",
+    "@storybook/addon-a11y": "^10.4.6",
+    "@storybook/addon-docs": "^10.4.6",
+    "@storybook/react-vite": "^10.4.6",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/css": "catalog:",
+    "@vanilla-extract/vite-plugin": "^5.2.2",
+    "chromatic": "^17.5.0",
     "eslint": "catalog:",
+    "eslint-plugin-storybook": "^10.4.6",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "storybook": "^10.4.6",
     "typescript": "catalog:"
   }
 }
