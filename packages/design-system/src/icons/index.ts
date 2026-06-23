@@ -1,2 +1,3 @@
-// Icon generation is intentionally not wired until the icon source and token policy are confirmed.
+// This barrel file is auto-generated. Do not edit it manually.
+// Run `pnpm icons:generate` to rebuild icon exports.
 export {};
