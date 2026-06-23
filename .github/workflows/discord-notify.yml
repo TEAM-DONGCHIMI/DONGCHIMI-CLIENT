@@ -1,0 +1,80 @@
+name: Discord Notify
+
+on:
+  pull_request:
+    types: [opened, closed]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    name: Notify Discord
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened' || github.event.pull_request.merged == true
+    steps:
+      - name: Send PR event to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_PR }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          IS_MERGED: ${{ github.event.pull_request.merged }}
+          REVIEWERS_JSON: ${{ toJSON(github.event.pull_request.requested_reviewers) }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "DISCORD_WEBHOOK_PR secret is not set; skipping notification."
+            exit 0
+          fi
+
+          if [ "$IS_MERGED" = "true" ]; then
+            STATUS="PR Merged"
+            COLOR=10181046
+          else
+            STATUS="PR Opened"
+            COLOR=3447003
+          fi
+
+          REVIEWERS=$(printf '%s' "$REVIEWERS_JSON" | jq -r 'if length == 0 then "None" else map(.login) | join(", ") end')
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          PAYLOAD=$(jq -n \
+            --arg status "$STATUS" \
+            --arg title "#${PR_NUMBER} ${PR_TITLE}" \
+            --arg url "$PR_URL" \
+            --arg body "$PR_BODY" \
+            --arg author "$PR_AUTHOR" \
+            --arg branch "${HEAD_REF} → ${BASE_REF}" \
+            --arg reviewers "$REVIEWERS" \
+            --arg footer "${REPO} · GitHub Actions" \
+            --arg ts "$NOW" \
+            --argjson color "$COLOR" \
+            '{
+              embeds: [{
+                author: { name: $status, icon_url: ("https://github.com/" + $author + ".png") },
+                title: $title,
+                url: $url,
+                description: (
+                  if ($body | length) == 0 then "_(No description)_"
+                  elif ($body | length) > 200 then (($body | .[0:200]) + " …")
+                  else $body end
+                ),
+                color: $color,
+                fields: [
+                  { name: "Author", value: $author, inline: true },
+                  { name: "Branch", value: $branch, inline: true },
+                  { name: "Reviewers", value: $reviewers, inline: true }
+                ],
+                footer: { text: $footer },
+                timestamp: $ts
+              }]
+            }')
+
+          curl -sf -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"
