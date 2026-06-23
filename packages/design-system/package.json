@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "sideEffects": [
+    "**/*.css.ts"
+  ],
   "exports": {
     ".": "./src/index.ts",
     "./components": "./src/components/index.ts",
@@ -23,6 +26,7 @@
     "@dongchimi/typescript-config": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@vanilla-extract/css": "catalog:",
     "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

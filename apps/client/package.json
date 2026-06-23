@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@dongchimi/design-system": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "ky": "catalog:",
     "next": "catalog:",
@@ -20,6 +21,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@vanilla-extract/next-plugin": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
   }

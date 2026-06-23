@@ -1,27 +1,26 @@
 # Styling And Design Tokens
 
-동치미 styling system은 실제 앱과 디자인시스템 package가 생긴 뒤 확정합니다.
+동치미 기본 styling authoring은 vanilla-extract를 사용합니다.
 
-## Candidate Direction
+## Current Direction
 
-- Tailwind를 사용한다면 `packages/tailwind-config`에서 entry CSS와 token을 관리합니다.
-- Tailwind를 사용하지 않는다면 이 문서는 실제 styling system 기준으로 갱신합니다.
-- font asset과 color token은 외부 CDN보다 repo-local 또는 package-local 관리 여부를 먼저 결정합니다.
+- `packages/design-system`은 `@vanilla-extract/css`로 package-local style을 작성합니다.
+- Next.js 앱은 `@vanilla-extract/next-plugin`을 `next.config.mjs`에 연결한 뒤 디자인시스템의 `.css.ts` 파일을 소비합니다.
+- 새 앱이 디자인시스템 style을 소비하려면 해당 앱의 bundler 설정에 vanilla-extract plugin을 먼저 연결합니다.
+- font asset, color token, theme contract는 아직 확정하지 않습니다.
 
-## Package Structure Candidate
+## Package Structure
 
 ```text
-packages/tailwind-config/src/
-  assets/fonts/
-  entry/
-  tokens/base.css
-  tokens/colors/
-  tokens/typography/
+packages/design-system/src/
+  styles/
+    layers.css.ts
 ```
 
 ## Token Rules
 
-- 사용 가능한 token이나 CSS variable이 있으면 hard-coded value보다 우선합니다.
+- 이 문서는 vanilla-extract 빌드 통합과 style authoring 위치만 확정합니다.
+- 컬러, typography, spacing token과 theme contract는 별도 Jira에서 확정합니다.
+- token 또는 CSS variable이 확정되기 전에는 product palette나 semantic token을 임의로 만들지 않습니다.
 - 외부 CDN font는 기본으로 추가하지 않습니다.
-- styling dependency를 추가하기 전에 app 전용인지 package 공통인지 구분합니다.
 - 디자인시스템 컴포넌트의 책임 경계는 [Design System](./design-system.md)을 따릅니다.
