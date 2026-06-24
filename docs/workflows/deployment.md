@@ -35,14 +35,14 @@ pnpm dlx vercel@latest --version
 사용자 웹:
 
 ```bash
-vercel link --project dongchimi-client --yes --scope jangminsus-projects
+pnpm dlx vercel@latest link --project dongchimi-client --yes --scope jangminsus-projects
 pnpm dlx vercel@latest deploy --yes --scope jangminsus-projects
 ```
 
 사장님 웹:
 
 ```bash
-vercel link --project dongchimi-market-owner --yes --scope jangminsus-projects
+pnpm dlx vercel@latest link --project dongchimi-market-owner --yes --scope jangminsus-projects
 pnpm dlx vercel@latest deploy --yes --scope jangminsus-projects
 ```
 
@@ -65,8 +65,9 @@ pnpm build
 배포 후 확인:
 
 - Vercel deployment state가 `READY`인지 확인합니다.
-- `apps/client`는 `DONGCHIMI CLIENT` 텍스트가 보이는지 확인합니다.
+- `apps/client`는 브라우저 title이 `DONGCHIMI Client`이고, root page에 `DONGCHIMI CLIENT` 텍스트가 보이는지 확인합니다.
 - `apps/market-owner`는 `DONGCHIMI Market Owner` heading이 보이는지 확인합니다.
+- `apps/market-owner`는 존재하지 않는 경로가 `404` status와 임시 not found 화면으로 응답하는지 확인합니다.
 - 공개 production URL에서 브라우저 콘솔 error가 없는지 확인합니다.
 
 ## Git Integration
