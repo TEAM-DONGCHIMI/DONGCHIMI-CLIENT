@@ -69,15 +69,18 @@ pnpm build
 - `apps/market-owner`는 `DONGCHIMI Market Owner` heading이 보이는지 확인합니다.
 - 공개 production URL에서 브라우저 콘솔 error가 없는지 확인합니다.
 
-## Current Blocker
+## Git Integration
 
-GitHub 자동 배포 연결은 아직 완료되지 않았습니다.
+두 Vercel Project는 GitHub repository에 연결되어 있습니다.
 
-`vercel git connect https://github.com/TEAM-DONGCHIMI/DONGCHIMI-CLIENT.git` 실행 시 Vercel GitHub App이 `TEAM-DONGCHIMI/DONGCHIMI-CLIENT` private repository에 접근하지 못해 실패했습니다.
+- Repository: `TEAM-DONGCHIMI/DONGCHIMI-CLIENT`
+- Production branch: `main`
+- `dongchimi-client` preview check: `Vercel – dongchimi-client`
+- `dongchimi-market-owner` preview check: `Vercel – dongchimi-market-owner`
 
-해결 후 확인할 항목:
+GitHub 연동 확인 항목:
 
 - Vercel GitHub App이 `TEAM-DONGCHIMI/DONGCHIMI-CLIENT` repository에 설치되어 있습니다.
 - 두 Vercel Project가 같은 GitHub repository에 연결되어 있습니다.
-- Production branch는 팀 배포 정책에 맞춰 `main` 또는 `develop` 중 하나로 고정되어 있습니다.
 - PR preview deployment가 두 앱에 대해 자동 생성됩니다.
+- Production branch는 `main`입니다. 팀 정책상 `develop` merge를 production deploy로 볼 경우 Vercel Project settings에서 production branch를 변경합니다.
