@@ -263,7 +263,7 @@ pnpm format:check
 | ------ | ------------------------------------------------------------------------------------------------------------------------ |
 | Branch | `prefix/{scope}/{JIRAKEY}-work-summary`                                                                                  |
 | Commit | `prefix(scope): {JIRAKEY} work summary`                                                                                  |
-| PR     | `[PREFIX](scope): {JIRAKEY} work summary`                                                                                |
+| PR     | `PREFIX(scope): {JIRAKEY} work summary` 형태이며, 실제 제목에서는 `PREFIX`를 대괄호로 감쌉니다.                          |
 | Jira   | root/docs/CI/workflow는 `DCMFE-*`, client는 `DCMCL-*`, design-system package는 `DCMDS-*`, design-system web은 `DCMDSW-*` |
 
 예시:
