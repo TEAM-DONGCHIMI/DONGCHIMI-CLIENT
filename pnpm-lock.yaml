@@ -30,6 +30,9 @@ catalogs:
     '@vanilla-extract/next-plugin':
       specifier: ^2.5.2
       version: 2.5.2
+    '@vanilla-extract/recipes':
+      specifier: ^0.5.7
+      version: 0.5.7
     '@vitejs/plugin-react':
       specifier: ^6.0.2
       version: 6.0.2
@@ -199,6 +202,9 @@ importers:
       '@vanilla-extract/css':
         specifier: 'catalog:'
         version: 1.20.1
+      '@vanilla-extract/recipes':
+        specifier: 'catalog:'
+        version: 0.5.7(@vanilla-extract/css@1.20.1)
       eslint:
         specifier: 'catalog:'
         version: 9.39.4
@@ -1402,6 +1408,11 @@ packages:
 
   '@vanilla-extract/private@1.0.9':
     resolution: {integrity: sha512-gT2jbfZuaaCLrAxwXbRgIhGhcXbRZCG3v4TTUnjw0EJ7ArdBRxkq4msNJkbuRkCgfIK5ATmprB5t9ljvLeFDEA==}
+
+  '@vanilla-extract/recipes@0.5.7':
+    resolution: {integrity: sha512-Fvr+htdyb6LVUu+PhH61UFPhwkjgDEk8L4Zq9oIdte42sntpKrgFy90MyTRtGwjVALmrJ0pwRUVr8UoByYeW8A==}
+    peerDependencies:
+      '@vanilla-extract/css': ^1.0.0
 
   '@vanilla-extract/turbopack-plugin@0.1.3':
     resolution: {integrity: sha512-ZTViI5/3xAviQ3aRzZMjYG50NIFVsXqvsavZF+rMxl/RYZQ42ufBT2jDRlScrIvig2V27ODESDEJRQcEX/u3+Q==}
@@ -4183,6 +4194,10 @@ snapshots:
       - yaml
 
   '@vanilla-extract/private@1.0.9': {}
+
+  '@vanilla-extract/recipes@0.5.7(@vanilla-extract/css@1.20.1)':
+    dependencies:
+      '@vanilla-extract/css': 1.20.1
 
   '@vanilla-extract/turbopack-plugin@0.1.3(@types/node@24.13.2)(next@16.2.9(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(terser@5.48.0)(yaml@2.9.0)':
     dependencies:
