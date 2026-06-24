@@ -5,11 +5,7 @@ on:
     paths:
       - 'packages/design-system/**'
       - 'pnpm-lock.yaml'
-      - '.github/workflows/chromatic.yaml'
-  push:
-    branches:
-      - main
-      - develop
+      - '.github/workflows/chromatic.yml'
 
 permissions:
   contents: read
