@@ -20,6 +20,9 @@ const config: StorybookConfig = {
     getAbsolutePath('@storybook/addon-docs'),
   ],
   framework: getAbsolutePath('@storybook/react-vite'),
+  typescript: {
+    reactDocgen: 'react-docgen-typescript',
+  },
   viteFinal: async (config) => {
     config.plugins = [...(config.plugins ?? []), vanillaExtractPlugin()];
 
