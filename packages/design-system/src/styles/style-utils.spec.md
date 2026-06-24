@@ -35,7 +35,13 @@
 ## Public API
 
 ```ts
-import { cn, recipe, type RecipeVariantProps } from '@dongchimi/design-system/styles';
+import {
+  cn,
+  recipe,
+  type RecipeClassNameTypes,
+  type RecipeVariantProps,
+  type RecipeVariantSelectionTypes,
+} from '@dongchimi/design-system/styles';
 ```
 
 - `cn(...values)`: `clsx` 기반으로 className 값을 공백 기준 문자열로 조합합니다.
@@ -56,21 +62,72 @@ import { cn, recipe, type RecipeVariantProps } from '@dongchimi/design-system/st
 
 ## Usage
 
+공통 recipe는 컴포넌트 style 파일에서 선언합니다.
+
 ```ts
 const buttonRecipe = recipe({
+  base: 'baseClassName',
   variants: {
     size: {
-      sm: {},
-      md: {},
+      sm: 'smallClassName',
+      md: 'mediumClassName',
+    },
+    tone: {
+      primary: 'primaryClassName',
+      neutral: 'neutralClassName',
     },
   },
+  defaultVariants: {
+    size: 'md',
+    tone: 'primary',
+  },
 });
+```
 
+### `cn`
+
+`cn`은 recipe가 만든 className과 호출부에서 받은 className, 조건부 className을 한 번에 조합하기 위해 추가했습니다. 디자인시스템 컴포넌트가 `className` override를 받을 때 같은 조합 방식을 사용하게 만드는 것이 목적입니다.
+
+```ts
+const className = cn(buttonRecipe({ size: 'sm' }), props.className, {
+  'is-disabled': props.disabled,
+});
+```
+
+### `RecipeVariantProps`
+
+`RecipeVariantProps`는 recipe variants를 컴포넌트 public props에 그대로 노출하기 위해 추가했습니다. variant 이름과 값이 recipe와 props에서 따로 정의되면 둘 중 하나가 바뀌었을 때 타입이 쉽게 어긋나기 때문에, recipe 정의에서 props 타입을 추출합니다.
+
+```ts
 type ButtonVariantProps = RecipeVariantProps<typeof buttonRecipe>;
 
-const className = cn(buttonRecipe({ size: 'sm' }), {
-  'is-disabled': false,
-});
+interface ButtonProps extends ButtonVariantProps {
+  className?: string;
+  disabled?: boolean;
+}
+```
+
+### `RecipeVariantSelectionTypes`
+
+`RecipeVariantSelectionTypes`는 컴포넌트 props가 아니라 recipe 호출 옵션을 변수, mapper, helper에 넘길 때 사용합니다. recipe 자체는 options 없이 호출될 수 있으므로 optional selection 타입을 유지합니다.
+
+```ts
+const defaultButtonVariants: RecipeVariantSelectionTypes<typeof buttonRecipe> = {
+  size: 'md',
+  tone: 'primary',
+};
+```
+
+### `RecipeClassNameTypes`
+
+`RecipeClassNameTypes`는 recipe 호출 결과를 반환하는 helper의 반환 타입을 recipe와 동기화하기 위해 추가했습니다. 현재 recipe 결과는 string이지만, helper에서 반환 타입을 직접 `string`으로 반복하지 않고 recipe 정의와 연결해 둡니다.
+
+```ts
+const getButtonClassName = (
+  variants: RecipeVariantSelectionTypes<typeof buttonRecipe>,
+): RecipeClassNameTypes<typeof buttonRecipe> => {
+  return buttonRecipe(variants);
+};
 ```
 
 ## Verification
