@@ -18,6 +18,9 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "clsx": "catalog:"
+  },
   "peerDependencies": {
     "react": "catalog:",
     "react-dom": "catalog:"

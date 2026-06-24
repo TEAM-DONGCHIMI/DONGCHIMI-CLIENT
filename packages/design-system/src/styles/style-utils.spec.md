@@ -19,7 +19,7 @@
 
 ## Scope
 
-- `cn`으로 문자열, 조건부 object, 배열 기반 className을 조합합니다.
+- `cn`으로 `clsx` 기반 className을 조합합니다.
 - `recipe`와 관련 타입을 styles subpath에서 명시적으로 export합니다.
 - `RecipeVariantProps`로 recipe variant props 타입을 컴포넌트 props에 재사용합니다.
 - `RecipeVariantSelectionTypes`로 optional variant selection 타입을 유지합니다.
@@ -38,8 +38,8 @@
 import { cn, recipe, type RecipeVariantProps } from '@dongchimi/design-system/styles';
 ```
 
-- `cn(...values)`: className 값을 공백 기준 문자열로 조합합니다.
-- `ClassValueTypes`: `cn` 입력 타입입니다.
+- `cn(...values)`: `clsx` 기반으로 className 값을 공백 기준 문자열로 조합합니다.
+- `ClassValueTypes`: `clsx`의 `ClassValue`를 재사용한 `cn` 입력 타입입니다.
 - `recipe`: vanilla-extract recipe factory re-export입니다.
 - `RecipeVariantProps<TRecipe>`: 컴포넌트 props에 사용하는 non-nullable variant 타입입니다.
 - `RecipeVariantSelectionTypes<TRecipe>`: recipe call에 넘기는 optional variant selection 타입입니다.
@@ -48,7 +48,7 @@ import { cn, recipe, type RecipeVariantProps } from '@dongchimi/design-system/st
 ## Behavior
 
 - falsy 값은 className에 포함하지 않습니다.
-- string과 number는 문자열로 포함합니다.
+- string, number, bigint는 문자열로 포함합니다.
 - 배열은 중첩 값을 순서대로 펼칩니다.
 - object는 value가 truthy인 key만 포함합니다.
 - `cn`은 중복 className을 제거하지 않습니다.
