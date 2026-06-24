@@ -12,6 +12,7 @@ allowBuilds:
 
 catalog:
   '@eslint/js': ^9.34.0
+  '@playwright/test': ^1.61.1
   '@tanstack/react-query': ^5.101.0
   '@turbo/gen': ^2.9.18
   '@vitejs/plugin-react': ^6.0.2
@@ -34,3 +35,8 @@ catalog:
   typescript-eslint: ^8.61.1
   '@vanilla-extract/css': ^1.20.1
   '@vanilla-extract/next-plugin': ^2.5.2
+
+minimumReleaseAgeExclude:
+  - '@playwright/test@1.61.1'
+  - playwright-core@1.61.1
+  - playwright@1.61.1

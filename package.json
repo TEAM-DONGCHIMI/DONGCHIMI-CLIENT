@@ -22,6 +22,11 @@
     "build:market-owner": "pnpm --filter market-owner build",
     "dev:market-owner": "turbo run dev --filter=market-owner",
     "dev:web": "turbo run dev --filter=client",
+    "e2e": "playwright test",
+    "e2e:install": "playwright install --with-deps",
+    "e2e:report": "playwright show-report",
+    "e2e:smoke": "playwright test --project=client-chromium --project=market-owner-chromium",
+    "e2e:ui": "playwright test --ui",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "format": "prettier . --write",
@@ -31,6 +36,7 @@
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
+    "@playwright/test": "catalog:",
     "@turbo/gen": "catalog:",
     "@types/node": "catalog:",
     "husky": "^9.1.7",
