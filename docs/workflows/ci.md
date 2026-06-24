@@ -28,9 +28,28 @@ pnpm typecheck
 pnpm build
 ```
 
+## E2E Workflow
+
+E2E는 기본 CI와 분리된 `.github/workflows/e2e.yml`에서 실행합니다. 기준은 [E2E Testing](./e2e-testing.md)을 따릅니다.
+
+`pull_request`에서는 Chromium smoke만 실행합니다.
+
+```bash
+pnpm e2e:smoke
+```
+
+`workflow_dispatch`에서는 전체 Playwright project를 실행합니다.
+
+```bash
+pnpm e2e
+```
+
+실패 시 `playwright-report`와 `test-results`를 artifact로 업로드합니다.
+
 ## Scope
 
 - web build와 native mobile build를 같은 성공 조건으로 보지 않습니다.
+- PR blocking E2E는 초기에는 Chromium smoke로 제한합니다.
 - Markdown 파일은 root Prettier 검증 대상입니다.
 - Turborepo remote cache 또는 CI cache는 별도 Jira 이슈로 다룹니다.
 - secret, token, raw `.env` 값은 CI log에 출력하지 않습니다.

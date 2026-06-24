@@ -28,6 +28,7 @@
 
 - [Local Development](./workflows/local-development.md)
 - [CI](./workflows/ci.md)
+- [E2E Testing](./workflows/e2e-testing.md)
 - [Jira Issue Authoring](./workflows/jira-issue-authoring.md)
 - [Spec Writing](./workflows/spec-writing.md)
 - [Turbo Generators](./workflows/turbo-generators.md)
