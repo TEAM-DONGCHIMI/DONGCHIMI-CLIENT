@@ -34,6 +34,7 @@ pnpm build
 - Markdown 파일은 root Prettier 검증 대상입니다.
 - Turborepo remote cache 또는 CI cache는 별도 Jira 이슈로 다룹니다.
 - secret, token, raw `.env` 값은 CI log에 출력하지 않습니다.
+- Vercel Git 연동이 활성화되면 배포는 [Deployment](./deployment.md) 기준을 따릅니다.
 
 ## When CI Fails
 

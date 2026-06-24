@@ -83,6 +83,10 @@ turbo/generators/** -> pnpm check:generators + sample generation
 | `apps/client`       | `pnpm dev:web`          | `pnpm --filter client lint`, `pnpm --filter client typecheck`, `pnpm --filter client build`                   |
 | `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner build` |
 
+## Deployment
+
+Vercel 프로젝트와 앱별 root directory 기준은 [Deployment](./deployment.md)를 따릅니다.
+
 ## Verification Log Rule
 
 최종 요약 또는 PR에는 실제 실행한 명령만 적습니다.
