@@ -2,6 +2,10 @@ name: Chromatic
 
 on:
   pull_request:
+    paths:
+      - 'packages/design-system/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/chromatic.yaml'
   push:
     branches:
       - main
