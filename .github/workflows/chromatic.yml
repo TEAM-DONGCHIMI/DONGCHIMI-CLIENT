@@ -7,6 +7,10 @@ on:
       - 'pnpm-lock.yaml'
       - '.github/workflows/chromatic.yml'
 
+concurrency:
+  group: chromatic-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   pull-requests: write
