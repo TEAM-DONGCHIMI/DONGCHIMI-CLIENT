@@ -12,6 +12,7 @@ Jira 이슈를 만들거나 보강할 때 사용하는 기준입니다.
 | ----------------------------- | ------------------------------------------ |
 | root, docs, CI, repo workflow | `DCMFE-*`                                  |
 | client web                    | `DCMCL-*`                                  |
+| market owner web              | `DCMSM-*`                                  |
 | design-system web             | `DCMDSW-*`                                 |
 | design-system package         | `DCMDS-*`                                  |
 | admin web                     | `DCMFE-*` 기본, 별도 project가 생기면 갱신 |
@@ -146,6 +147,7 @@ Examples:
 
 ```text
 [FE][홈] DCM-HOME-001 홈 화면 구현
+[FE][사장님 사이트] React 앱 초기 프로젝트 세팅
 [FE][예약] DCM-RESERVE-001 예약 요청 화면 구현
 [FE][API][예약] 예약 요청 mutation 연동
 [FE][Docs][workflow] Agent harness 문서 구조 정리
