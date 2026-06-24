@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@sentry/react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
