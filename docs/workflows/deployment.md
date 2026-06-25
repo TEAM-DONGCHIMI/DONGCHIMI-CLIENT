@@ -11,7 +11,7 @@ DONGCHIMI-CLIENT는 하나의 GitHub monorepo를 유지하고, 사용자 웹과 
 
 공통 설정:
 
-- Team: `Jangminsu's projects`
+- Team: `Jangminsu's projects` (현재 연결된 Vercel Team입니다. 팀 공용 Vercel Team으로 이전하면 Team 이름과 CLI `--scope`를 함께 교체합니다.)
 - Node.js: `22.x`
 - `sourceFilesOutsideRootDirectory`: enabled
 - `enableAffectedProjectsDeployments`: enabled
@@ -80,6 +80,7 @@ pnpm build
 - Production branch: `main`
 - `dongchimi-client` preview check: `Vercel – dongchimi-client`
 - `dongchimi-market-owner` preview check: `Vercel – dongchimi-market-owner`
+- Vercel bot PR message는 앱별 최신 preview URL과 feedback URL을 한 곳에서 확인하기 위해 유지합니다. PR timeline 노이즈가 커지면 preview deployment 자체를 끄지 말고 각 Vercel Project의 Git settings에서 bot comment 노출 범위를 조정합니다.
 
 GitHub 연동 확인 항목:
 
