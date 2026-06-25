@@ -32,6 +32,8 @@ pnpm install --frozen-lockfile
 | `apps/client`       | `3000` | `pnpm dev:web`          | Next dev script에서 `--port 3000` 명시  |
 | `apps/market-owner` | `5173` | `pnpm dev:market-owner` | Vite `strictPort: true`로 fallback 차단 |
 
+E2E도 같은 포트를 사용합니다. 자세한 기준은 [E2E Testing](./e2e-testing.md)을 따릅니다.
+
 ## Root Verification
 
 변경 범위가 명확하지 않거나 PR 전 전체 검증이 필요하면 아래 순서로 실행합니다.
@@ -43,6 +45,12 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+```
+
+E2E smoke까지 확인해야 하는 변경이면 아래 명령을 추가로 실행합니다.
+
+```bash
+pnpm e2e:smoke
 ```
 
 문서 링크와 agent skill 구조를 바꾼 경우:
@@ -85,6 +93,16 @@ turbo/generators/** -> pnpm check:generators + sample generation
 | `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner test`, `pnpm --filter market-owner build` |
 
 테스트 종류별 명령과 작성 기준은 [Testing](./testing.md)을 따릅니다.
+
+## E2E Scripts
+
+| Script             | Purpose                            |
+| ------------------ | ---------------------------------- |
+| `pnpm e2e:install` | Playwright browser dependency 설치 |
+| `pnpm e2e:smoke`   | PR용 Chromium smoke 실행           |
+| `pnpm e2e`         | 전체 Playwright project 실행       |
+| `pnpm e2e:ui`      | 로컬 디버깅 UI 실행                |
+| `pnpm e2e:report`  | HTML report 확인                   |
 
 ## Verification Log Rule
 
