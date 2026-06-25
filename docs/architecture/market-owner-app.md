@@ -24,9 +24,34 @@
 
 - 실제 사장님 사이트 페이지 기능
 - API 연동
-- route 설계
 - 디자인 토큰 또는 vanilla-extract styling scaffold
 - 공용 component 승격
+
+## Routing Scope
+
+DCMSM-5부터 사장님 앱은 React Router 7을 SPA 라우팅 기준으로 사용합니다.
+초기 라우팅 범위는 app bootstrap을 검증하는 root route와 fallback route로 제한합니다.
+
+```text
+src/
+  app/
+    App.tsx
+    router.tsx
+    router.spec.md
+  pages/
+    home/
+      HomePage.tsx
+    not-found/
+      NotFoundPage.tsx
+  shared/
+    constants/
+      routes.ts
+```
+
+- `src/app`은 router assembly와 provider wiring처럼 앱 실행 경계를 담당합니다.
+- `src/pages`는 route에 연결되는 app-local page component를 담당합니다.
+- `src/shared/constants/routes.ts`는 route path 상수를 담당합니다.
+- 제품 domain, nested route, protected route는 요구사항 확정 후 별도 DCMSM Jira에서 추가합니다.
 
 ## Local Commands
 
@@ -41,5 +66,5 @@ pnpm --filter market-owner build
 
 ## Structure Rule
 
-제품 route와 domain 구조는 요구사항이 확정된 뒤 별도 DCMSM Jira 이슈에서 추가합니다.
+제품 domain 구조는 요구사항이 확정된 뒤 별도 DCMSM Jira 이슈에서 추가합니다.
 초기에는 app-local 코드를 우선하고, 실제 재사용이 확인되기 전에는 `packages/shared` 또는 `packages/design-system`으로 옮기지 않습니다.
