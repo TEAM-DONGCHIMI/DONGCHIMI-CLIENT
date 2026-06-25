@@ -6,6 +6,9 @@ import { AppProviders } from './providers';
 export const metadata: Metadata = {
   title: 'DONGCHIMI Client',
   description: 'DONGCHIMI client app',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 type RootLayoutProps = Readonly<{
