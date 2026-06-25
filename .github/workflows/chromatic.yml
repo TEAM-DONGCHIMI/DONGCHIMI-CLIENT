@@ -13,12 +13,14 @@ concurrency:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   publish:
     name: Publish Design System Storybook
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout
