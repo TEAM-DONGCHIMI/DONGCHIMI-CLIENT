@@ -2,7 +2,6 @@ import { defineConfig } from 'vitest/config';
 
 const commonTestConfig = {
   environment: 'jsdom',
-  passWithNoTests: true,
   setupFiles: ['./src/test/setup.ts'],
 };
 
