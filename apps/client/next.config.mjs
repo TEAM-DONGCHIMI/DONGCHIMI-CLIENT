@@ -23,9 +23,4 @@ export default withSentryConfig(withVanillaExtract(nextConfig), {
   sourcemaps: {
     disable: !isSentrySourceMapUploadEnabled,
   },
-  webpack: {
-    treeshake: {
-      removeDebugLogging: true,
-    },
-  },
 });
