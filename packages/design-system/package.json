@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@vanilla-extract/recipes": "catalog:",
     "clsx": "catalog:"
   },
   "peerDependencies": {
@@ -31,7 +32,6 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/css": "catalog:",
-    "@vanilla-extract/recipes": "catalog:",
     "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
