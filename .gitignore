@@ -34,6 +34,9 @@ storybook-static
 .turbo
 .cache
 coverage
+.vercel
+.lighthouseci
+lighthouse-report
 .playwright-mcp
 playwright-report
 test-results

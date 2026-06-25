@@ -28,6 +28,7 @@
 
 - [Local Development](./workflows/local-development.md)
 - [CI](./workflows/ci.md)
+- [Performance Budget](./workflows/performance-budget.md)
 - [Jira Issue Authoring](./workflows/jira-issue-authoring.md)
 - [Spec Writing](./workflows/spec-writing.md)
 - [Turbo Generators](./workflows/turbo-generators.md)

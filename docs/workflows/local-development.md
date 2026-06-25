@@ -44,6 +44,14 @@ pnpm typecheck
 pnpm build
 ```
 
+성능 예산과 Lighthouse report를 확인해야 하면 전체 build 뒤 아래 명령을 실행합니다.
+
+```bash
+pnpm perf
+```
+
+자세한 기준은 [Performance Budget](./performance-budget.md)을 따릅니다.
+
 문서 링크와 agent skill 구조를 바꾼 경우:
 
 ```bash
