@@ -31,11 +31,19 @@ dist-ssr
 *storybook.log
 storybook-static
 
+# Deployment tool state
+.vercel
+
 .turbo
 .cache
 coverage
+
 .lighthouseci
 lighthouse-report
+
+.vercel
+apps/*/.vercel
+
 .playwright-mcp
 playwright-report
 test-results
@@ -48,3 +56,4 @@ tsconfig.tsbuildinfo
 # Serena MCP keeps runtime data under .serena. Commit only the project config.
 .serena/*
 !.serena/project.yml
+.vercel

@@ -24,8 +24,28 @@ apps/
 - Jira key는 `DCMSM-*`를 사용합니다.
 - package name은 `market-owner`입니다.
 - 초기 scaffold는 Vite + React + TypeScript만 포함합니다.
-- 제품 route, API 연동, 디자인 토큰, 공통 component 승격은 별도 Jira 이슈에서 결정합니다.
+- DCMSM-5부터 React Router 7을 사용해 root route와 fallback route를 제공합니다.
+- 제품 domain route, API 연동, 디자인 토큰, 공통 component 승격은 별도 Jira 이슈에서 결정합니다.
 - 앱 내부 구조가 확정되기 전까지 코드는 app-local에 두고, 실제 재사용이 확인된 뒤 `packages/*`로 승격합니다.
+
+Market Owner의 초기 React Router 구조는 다음을 기준으로 합니다.
+
+```text
+src/
+  app/          app shell, provider, router assembly, boundary, layout
+  domains/      제품 domain과 route page composition
+  shared/       앱 내부 공통 API, assets, components, config, constants, query, state, style, type, util 후보
+```
+
+- route path는 `src/shared/constants/routes.ts`에 상수로 둡니다.
+- `src/app/router.tsx`는 route object와 `createBrowserRouter` 생성만 담당합니다.
+- `@/*` alias는 `apps/market-owner/src/*`를 가리키며 app-local import에 사용합니다.
+- `src/domains/{domain}`은 domain API, hooks, model, query key를 두는 기능 경계입니다.
+- `src/domains/{domain}/{page}`는 route page composition을 두는 화면 경계입니다.
+- `src/domains/{domain}/{page}`는 필요할 때 `components`, `sections`, `hooks`, `fixtures`, `utils`를 page-local 확장 지점으로 둡니다.
+- `src/domains/{domain}/hooks`는 도메인 여러 page가 공유하는 query/mutation/use-case hook을 담당하고, `src/domains/{domain}/{page}/hooks`는 해당 page 안에서만 쓰는 UI 상태, URL state, form interaction hook을 담당합니다.
+- 여러 page에서 재사용되는 UI는 `src/shared/components/{ui|layout}`로 올리고, 제품 전반 재사용이 확인되기 전에는 package로 승격하지 않습니다.
+- 제품 IA가 확정되기 전에는 root route와 fallback route만 유지합니다.
 
 ## Base Structure
 

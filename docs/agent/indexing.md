@@ -85,6 +85,8 @@ Codex는 처음에는 skill의 이름, 설명, 경로만 컨텍스트에 넣고,
 - `templates/`: 구현 전 spec 작성 형식
 - `.github/`: PR template과 GitHub workflow가 생기면 관련 기준
 
+Sentry 설정과 알림 운영 기준은 `docs/workflows/sentry.md`를 참조합니다.
+
 이 파일들은 실행 지침이 아니라 근거 문서입니다. 모든 내용을 `AGENTS.md`에 복사하지 않고 링크로 유지합니다.
 
 ## Path Rules

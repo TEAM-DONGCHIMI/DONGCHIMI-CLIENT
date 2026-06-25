@@ -1,4 +1,4 @@
-const App = () => {
+export const HomePage = () => {
   return (
     <main>
       <section aria-labelledby='market-owner-title'>
@@ -8,5 +8,3 @@ const App = () => {
     </main>
   );
 };
-
-export default App;
