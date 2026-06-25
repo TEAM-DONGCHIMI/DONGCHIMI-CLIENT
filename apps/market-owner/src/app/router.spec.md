@@ -16,8 +16,7 @@
 ## Source Of Truth
 
 - Jira: DCMSM-5
-- Decision: README Tech Stack의 사장님 Route는 React Router 7로 결정합니다.
-- Architecture: `docs/architecture/market-owner-app.md`, `docs/architecture/app-structure.md`
+- Decision / Architecture: `docs/architecture/app-structure.md`, `docs/architecture/market-owner-app.md`
 
 ## Scope
 
@@ -76,6 +75,7 @@
 - [ ] `pnpm --filter market-owner build`
 - [ ] browser route: `/`
 - [ ] browser route: unknown path renders Not Found
+- [ ] browser route: Not Found -> 홈 링크 클릭 -> `/` 복귀
 
 ## Open Questions
 
