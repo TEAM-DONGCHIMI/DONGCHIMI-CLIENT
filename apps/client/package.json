@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@dongchimi/design-system": "workspace:*",
+    "@sentry/nextjs": "catalog:",
     "@tanstack/react-query": "catalog:",
     "ky": "catalog:",
     "next": "catalog:",
