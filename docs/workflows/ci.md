@@ -25,6 +25,7 @@ pnpm install --frozen-lockfile
 pnpm format:check
 pnpm lint
 pnpm typecheck
+pnpm test
 pnpm build
 ```
 
@@ -58,5 +59,5 @@ pnpm e2e
 
 1. 실패한 step을 먼저 확인합니다.
 2. package manager 또는 lockfile 문제면 clean install부터 재현합니다.
-3. lint/typecheck/build 문제면 해당 workspace로 좁혀 봅니다.
+3. lint/typecheck/test/build 문제면 해당 workspace로 좁혀 봅니다.
 4. native mobile 문제면 web pipeline과 분리해서 봅니다.

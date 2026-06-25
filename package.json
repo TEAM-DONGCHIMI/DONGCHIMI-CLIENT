@@ -33,6 +33,11 @@
     "format:check": "prettier . --check",
     "lint": "turbo run lint",
     "lint-staged": "lint-staged",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "test:integration": "turbo run test:integration",
+    "test:unit": "turbo run test:unit",
+    "test:watch": "turbo run test:watch",
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
