@@ -23,7 +23,7 @@
 
 - `apps/market-owner`에 React Router 7을 연결합니다.
 - `src/app`은 app shell, provider, router assembly를 담당합니다.
-- `src/pages`는 route에 연결되는 app-local page component를 담당합니다.
+- `src/domains/{domain}/{page}`는 route에 연결되는 app-local page component를 담당합니다.
 - route path는 `src/shared/constants/routes.ts`에서 상수화합니다.
 - `/`는 사장님 앱 bootstrap smoke 화면을 보여줍니다.
 - 존재하지 않는 경로는 app 내부 Not Found 화면을 보여줍니다.
@@ -38,8 +38,8 @@
 
 ## Layout And Sections
 
-- `/`: `HomePage`가 `main` 안에 서비스 식별 text와 heading을 렌더링합니다.
-- `*`: `NotFoundPage`가 404 상태 안내와 홈 이동 링크를 렌더링합니다.
+- `/`: `domains/home/overview/HomePage`가 `main` 안에 서비스 식별 text와 heading을 렌더링합니다.
+- `*`: `domains/not-found/fallback/NotFoundPage`가 404 상태 안내와 홈 이동 링크를 렌더링합니다.
 
 ## States
 

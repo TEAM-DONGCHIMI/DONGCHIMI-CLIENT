@@ -38,19 +38,64 @@ src/
     App.tsx
     router.tsx
     router.spec.md
-  pages/
+    boundaries/
+    layouts/
+    providers/
+    routes/
+  domains/
     home/
-      HomePage.tsx
+      overview/
+        HomePage.tsx
+        components/
+        sections/
+        hooks/
+        fixtures/
+        utils/
     not-found/
-      NotFoundPage.tsx
+      fallback/
+        NotFoundPage.tsx
+        components/
+        sections/
+        hooks/
+        fixtures/
+        utils/
+    {domain}/
+      api/
+      hooks/
+      model/
+      query-keys.ts
+      {page}/
+        {PageName}.tsx
+        {PageName}.spec.md
+        components/
+        sections/
+        fixtures/
+        utils/
   shared/
+    api/
+    assets/
+      icons/
+      images/
+    components/
+      layout/
+      ui/
+    config/
     constants/
       routes.ts
+    hooks/
+    query/
+    stores/
+    styles/
+    types/
+    utils/
 ```
 
 - `src/app`은 router assembly와 provider wiring처럼 앱 실행 경계를 담당합니다.
-- `src/pages`는 route에 연결되는 app-local page component를 담당합니다.
+- `src/domains/{domain}`은 제품 기능 단위의 API, query hook, model, query key를 담당합니다.
+- `src/domains/{domain}/{page}`는 route에 연결되는 app-local page component와 page-local 모듈을 담당합니다.
+- `src/domains/{domain}/{page}/components`는 page 내부 UI 조각, `sections`는 화면 구획, `hooks`는 page-local 상태/상호작용 hook, `fixtures`는 page-local fixture, `utils`는 page-local 순수 보조 함수를 담당합니다.
 - `src/shared/constants/routes.ts`는 route path 상수를 담당합니다.
+- `src/shared`는 여러 page에서 실제로 재사용되는 앱 내부 공통 API, assets, components, query, state, style, type, util 후보만 담당합니다.
 - 제품 domain, nested route, protected route는 요구사항 확정 후 별도 DCMSM Jira에서 추가합니다.
 
 ## Local Commands
