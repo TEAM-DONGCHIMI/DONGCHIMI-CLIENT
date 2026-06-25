@@ -1,6 +1,7 @@
 {
   "extends": "@dongchimi/typescript-config/base",
   "compilerOptions": {
+    "baseUrl": ".",
     "jsx": "react-jsx",
     "types": ["vite/client"],
     "paths": {

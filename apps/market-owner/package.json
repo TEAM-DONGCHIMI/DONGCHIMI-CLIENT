@@ -16,7 +16,8 @@
   "dependencies": {
     "@sentry/react": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "react-router": "catalog:"
   },
   "devDependencies": {
     "@dongchimi/eslint-config": "workspace:*",
