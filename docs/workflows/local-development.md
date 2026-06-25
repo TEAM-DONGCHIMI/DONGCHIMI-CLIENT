@@ -41,6 +41,7 @@ git diff --check
 pnpm format:check
 pnpm lint
 pnpm typecheck
+pnpm test
 pnpm build
 ```
 
@@ -65,12 +66,12 @@ pre-commit hook은 빠른 로컬 가드이며, CI와 PR 전 root verification을
 workspace 구조가 생기면 변경 위치 기준으로 targeted 검증을 우선합니다.
 
 ```text
-apps/client/** -> client lint/typecheck/build
-apps/market-owner/** -> market-owner lint/typecheck/build
+apps/client/** -> client lint/typecheck/test/build
+apps/market-owner/** -> market-owner lint/typecheck/test/build
 apps/design-system-web/** -> design-system web lint/typecheck/build
 apps/admin/** -> admin lint/typecheck/build, 앱이 생성된 뒤 적용
 apps/mobile/** -> web check와 별도 mobile command
-packages/design-system/** -> design-system lint/typecheck/build/storybook
+packages/design-system/** -> design-system lint/typecheck/test/build/storybook
 packages/shared/** -> 소비 app build 필요 여부 확인
 docs/**, recipes/**, templates/** -> git diff --check + format check
 turbo/generators/** -> pnpm check:generators + sample generation
@@ -78,10 +79,12 @@ turbo/generators/** -> pnpm check:generators + sample generation
 
 ## App Scripts
 
-| Workspace           | Dev                     | Targeted verification                                                                                         |
-| ------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `apps/client`       | `pnpm dev:web`          | `pnpm --filter client lint`, `pnpm --filter client typecheck`, `pnpm --filter client build`                   |
-| `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner build` |
+| Workspace           | Dev                     | Targeted verification                                                                                                                            |
+| ------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `apps/client`       | `pnpm dev:web`          | `pnpm --filter client lint`, `pnpm --filter client typecheck`, `pnpm --filter client test`, `pnpm --filter client build`                         |
+| `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner test`, `pnpm --filter market-owner build` |
+
+테스트 종류별 명령과 작성 기준은 [Testing](./testing.md)을 따릅니다.
 
 ## Verification Log Rule
 
