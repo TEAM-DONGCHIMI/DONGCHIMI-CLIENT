@@ -27,6 +27,7 @@ DONGCHIMI-CLIENT는 하나의 GitHub monorepo를 유지하고, 사용자 웹과 
 ## Manual Deployment
 
 로컬 CLI는 최신 Vercel CLI를 임시 실행합니다. 전역 CLI가 오래되면 upload endpoint에서 실패할 수 있습니다.
+수동 배포는 앱별 Vercel Project link context가 섞이지 않도록 각 앱 디렉터리에서 실행합니다.
 
 ```bash
 pnpm dlx vercel@latest --version
@@ -35,15 +36,15 @@ pnpm dlx vercel@latest --version
 사용자 웹:
 
 ```bash
-pnpm dlx vercel@latest link --project dongchimi-client --yes --scope jangminsus-projects
-pnpm dlx vercel@latest deploy --yes --scope jangminsus-projects
+(cd apps/client && pnpm dlx vercel@latest link --project dongchimi-client --yes --scope jangminsus-projects)
+(cd apps/client && pnpm dlx vercel@latest deploy --yes --scope jangminsus-projects)
 ```
 
 사장님 웹:
 
 ```bash
-pnpm dlx vercel@latest link --project dongchimi-market-owner --yes --scope jangminsus-projects
-pnpm dlx vercel@latest deploy --yes --scope jangminsus-projects
+(cd apps/market-owner && pnpm dlx vercel@latest link --project dongchimi-market-owner --yes --scope jangminsus-projects)
+(cd apps/market-owner && pnpm dlx vercel@latest deploy --yes --scope jangminsus-projects)
 ```
 
 검증된 preview를 production으로 승격할 때:
@@ -73,6 +74,7 @@ pnpm build
 ## Git Integration
 
 두 Vercel Project는 GitHub repository에 연결되어 있습니다.
+배포는 GitHub Actions workflow가 아니라 Vercel Git Integration이 담당합니다.
 
 - Repository: `TEAM-DONGCHIMI/DONGCHIMI-CLIENT`
 - Production branch: `main`
@@ -84,4 +86,5 @@ GitHub 연동 확인 항목:
 - Vercel GitHub App이 `TEAM-DONGCHIMI/DONGCHIMI-CLIENT` repository에 설치되어 있습니다.
 - 두 Vercel Project가 같은 GitHub repository에 연결되어 있습니다.
 - PR preview deployment가 두 앱에 대해 자동 생성됩니다.
+- `main`에 push 또는 merge되면 production deployment가 생성됩니다.
 - Production branch는 `main`입니다. 팀 정책상 `develop` merge를 production deploy로 볼 경우 Vercel Project settings에서 production branch를 변경합니다.
