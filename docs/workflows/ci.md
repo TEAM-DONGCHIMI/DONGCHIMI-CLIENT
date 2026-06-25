@@ -25,12 +25,32 @@ pnpm install --frozen-lockfile
 pnpm format:check
 pnpm lint
 pnpm typecheck
+pnpm test
 pnpm build
 ```
+
+## E2E Workflow
+
+E2E는 기본 CI와 분리된 `.github/workflows/e2e.yml`에서 실행합니다. 기준은 [E2E Testing](./e2e-testing.md)을 따릅니다.
+
+`pull_request`에서는 Chromium smoke만 실행합니다.
+
+```bash
+pnpm e2e:smoke
+```
+
+`workflow_dispatch`에서는 전체 Playwright project를 실행합니다.
+
+```bash
+pnpm e2e
+```
+
+실패 시 `playwright-report`와 `test-results`를 artifact로 업로드합니다.
 
 ## Scope
 
 - web build와 native mobile build를 같은 성공 조건으로 보지 않습니다.
+- PR blocking E2E는 초기에는 Chromium smoke로 제한합니다.
 - Markdown 파일은 root Prettier 검증 대상입니다.
 - Turborepo remote cache 또는 CI cache는 별도 Jira 이슈로 다룹니다.
 - secret, token, raw `.env` 값은 CI log에 출력하지 않습니다.
@@ -40,5 +60,5 @@ pnpm build
 
 1. 실패한 step을 먼저 확인합니다.
 2. package manager 또는 lockfile 문제면 clean install부터 재현합니다.
-3. lint/typecheck/build 문제면 해당 workspace로 좁혀 봅니다.
+3. lint/typecheck/test/build 문제면 해당 workspace로 좁혀 봅니다.
 4. native mobile 문제면 web pipeline과 분리해서 봅니다.
