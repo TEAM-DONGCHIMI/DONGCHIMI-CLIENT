@@ -4,7 +4,11 @@ import { dirname } from 'node:path';
 import type { PlopTypes } from '@turbo/gen';
 
 type ComponentCategoryTypes = 'layout' | 'ui';
-type AppNameTypes = 'client';
+const APP_NAME_CHOICES = ['client', 'market-owner'] as const;
+const CLIENT_APP_NAME_CHOICES = ['client'] as const;
+
+type AppNameTypes = (typeof APP_NAME_CHOICES)[number];
+type ClientAppNameTypes = (typeof CLIENT_APP_NAME_CHOICES)[number];
 
 interface DesignSystemComponentAnswers {
   category: ComponentCategoryTypes;
@@ -23,7 +27,8 @@ interface ReactPageAnswers {
   pageName: string;
 }
 
-interface NextPageAnswers extends ReactPageAnswers {
+interface NextPageAnswers extends Omit<ReactPageAnswers, 'app'> {
+  app: ClientAppNameTypes;
   routePath: string;
 }
 
@@ -44,13 +49,13 @@ interface DomainSectionAnswers {
 }
 
 interface DomainQueryAnswers {
-  app: AppNameTypes;
+  app: ClientAppNameTypes;
   domain: string;
   queryName: string;
 }
 
 interface DomainMutationAnswers {
-  app: AppNameTypes;
+  app: ClientAppNameTypes;
   domain: string;
   mutationName: string;
 }
@@ -96,8 +101,11 @@ const isKebabCase = (value: string) => {
   return /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(value);
 };
 
-const isAppName = (value: string): value is AppNameTypes => {
-  return value === 'client';
+const isAppName = <AppTypes extends string>(
+  value: string,
+  appNames: readonly AppTypes[],
+): value is AppTypes => {
+  return appNames.includes(value as AppTypes);
 };
 
 const isValidNextRoutePath = (value: string) => {
@@ -121,11 +129,14 @@ const getRequiredString = (value: unknown, fieldName: string) => {
   return nextValue;
 };
 
-const getRequiredAppName = (value: unknown) => {
+const getRequiredAppName = <AppTypes extends string>(
+  value: unknown,
+  appNames: readonly AppTypes[],
+) => {
   const app = String(value ?? '').trim();
 
-  if (!isAppName(app)) {
-    throw new Error('Provide app as client. Extend the generator after the app exists.');
+  if (!isAppName(app, appNames)) {
+    throw new Error(`Provide app as ${appNames.join(' or ')}.`);
   }
 
   return app;
@@ -247,7 +258,7 @@ const getAppComponentAnswers = (answers: PlopTypes.Answers | undefined): AppComp
   const componentName = getComponentName(answers?.componentName);
 
   return {
-    app: getRequiredAppName(answers?.app),
+    app: getRequiredAppName(answers?.app, APP_NAME_CHOICES),
     category: getComponentCategory(answers?.category),
     componentFolder: getComponentFolder(answers?.componentFolder, componentName),
     componentName,
@@ -256,7 +267,7 @@ const getAppComponentAnswers = (answers: PlopTypes.Answers | undefined): AppComp
 
 const getReactPageAnswers = (answers: PlopTypes.Answers | undefined): ReactPageAnswers => {
   return {
-    app: getRequiredAppName(answers?.app),
+    app: getRequiredAppName(answers?.app, APP_NAME_CHOICES),
     domain: getDomainName(answers?.domain),
     page: getPageFolder(answers?.page),
     pageName: getPageName(answers?.pageName),
@@ -265,7 +276,10 @@ const getReactPageAnswers = (answers: PlopTypes.Answers | undefined): ReactPageA
 
 const getNextPageAnswers = (answers: PlopTypes.Answers | undefined): NextPageAnswers => {
   return {
-    ...getReactPageAnswers(answers),
+    app: getRequiredAppName(answers?.app, CLIENT_APP_NAME_CHOICES),
+    domain: getDomainName(answers?.domain),
+    page: getPageFolder(answers?.page),
+    pageName: getPageName(answers?.pageName),
     routePath: getRoutePath(answers?.routePath),
   };
 };
@@ -276,7 +290,7 @@ const getDomainComponentAnswers = (
   const componentName = getComponentName(answers?.componentName);
 
   return {
-    app: getRequiredAppName(answers?.app),
+    app: getRequiredAppName(answers?.app, APP_NAME_CHOICES),
     componentFolder: getComponentFolder(answers?.componentFolder, componentName),
     componentName,
     domain: getDomainName(answers?.domain),
@@ -288,7 +302,7 @@ const getDomainSectionAnswers = (answers: PlopTypes.Answers | undefined): Domain
   const sectionName = getSectionName(answers?.sectionName);
 
   return {
-    app: getRequiredAppName(answers?.app),
+    app: getRequiredAppName(answers?.app, APP_NAME_CHOICES),
     domain: getDomainName(answers?.domain),
     page: getPageFolder(answers?.page),
     sectionFolder: getComponentFolder(answers?.sectionFolder, sectionName),
@@ -298,7 +312,7 @@ const getDomainSectionAnswers = (answers: PlopTypes.Answers | undefined): Domain
 
 const getDomainQueryAnswers = (answers: PlopTypes.Answers | undefined): DomainQueryAnswers => {
   return {
-    app: getRequiredAppName(answers?.app),
+    app: getRequiredAppName(answers?.app, CLIENT_APP_NAME_CHOICES),
     domain: getDomainName(answers?.domain),
     queryName: getQueryName(answers?.queryName),
   };
@@ -308,7 +322,7 @@ const getDomainMutationAnswers = (
   answers: PlopTypes.Answers | undefined,
 ): DomainMutationAnswers => {
   return {
-    app: getRequiredAppName(answers?.app),
+    app: getRequiredAppName(answers?.app, CLIENT_APP_NAME_CHOICES),
     domain: getDomainName(answers?.domain),
     mutationName: getMutationName(answers?.mutationName),
   };
@@ -588,7 +602,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         type: 'list',
         name: 'app',
         message: 'Target app',
-        choices: ['client'],
+        choices: [...APP_NAME_CHOICES],
       },
       {
         type: 'input',
@@ -666,7 +680,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         type: 'list',
         name: 'app',
         message: 'Target app',
-        choices: ['client'],
+        choices: [...CLIENT_APP_NAME_CHOICES],
       },
       {
         type: 'input',
@@ -743,6 +757,8 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
           ensureQueryKeysFile(`${data.domainRoot}/query-keys.ts`);
           ensureGitkeepDirectory(`${data.pageRoot}/components`);
           ensureGitkeepDirectory(`${data.pageRoot}/sections`);
+          ensureGitkeepDirectory(`${data.pageRoot}/hooks`);
+          ensureGitkeepDirectory(`${data.pageRoot}/fixtures`);
           ensureGitkeepDirectory(`${data.pageRoot}/utils`);
 
           return `Prepared ${data.app} Next route ${data.routePath} and ${data.domain}/${data.page} domain scaffold.`;
@@ -758,7 +774,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         type: 'list',
         name: 'app',
         message: 'Target app',
-        choices: ['client'],
+        choices: [...APP_NAME_CHOICES],
       },
       {
         type: 'input',
@@ -809,6 +825,8 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
           ensureQueryKeysFile(`${data.domainRoot}/query-keys.ts`);
           ensureGitkeepDirectory(`${data.pageRoot}/components`);
           ensureGitkeepDirectory(`${data.pageRoot}/sections`);
+          ensureGitkeepDirectory(`${data.pageRoot}/hooks`);
+          ensureGitkeepDirectory(`${data.pageRoot}/fixtures`);
           ensureGitkeepDirectory(`${data.pageRoot}/utils`);
 
           return `Prepared ${data.app} ${data.domain}/${data.page} React domain page scaffold.`;
@@ -824,7 +842,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         type: 'list',
         name: 'app',
         message: 'Target app',
-        choices: ['client'],
+        choices: [...APP_NAME_CHOICES],
       },
       {
         type: 'input',
@@ -893,7 +911,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         type: 'list',
         name: 'app',
         message: 'Target app',
-        choices: ['client'],
+        choices: [...APP_NAME_CHOICES],
       },
       {
         type: 'input',
@@ -965,7 +983,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         type: 'list',
         name: 'app',
         message: 'Target app',
-        choices: ['client'],
+        choices: [...CLIENT_APP_NAME_CHOICES],
       },
       {
         type: 'input',
@@ -1025,7 +1043,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         type: 'list',
         name: 'app',
         message: 'Target app',
-        choices: ['client'],
+        choices: [...CLIENT_APP_NAME_CHOICES],
       },
       {
         type: 'input',

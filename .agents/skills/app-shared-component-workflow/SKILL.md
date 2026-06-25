@@ -1,6 +1,6 @@
 ---
 name: app-shared-component-workflow
-description: apps/client, apps/design-system-web, 선택적 apps/admin 내부의 앱 전용 shared 컴포넌트를 생성, 스펙 작성, export, 검증할 때 사용합니다.
+description: apps/client, apps/market-owner, apps/design-system-web, 선택적 apps/admin 내부의 앱 전용 shared 컴포넌트를 생성, 스펙 작성, export, 검증할 때 사용합니다.
 ---
 
 # 앱 shared 컴포넌트 작업 흐름
@@ -13,7 +13,7 @@ description: apps/client, apps/design-system-web, 선택적 apps/admin 내부의
 
 ### 필수 입력
 
-- 대상 앱: `client`, `design-system-web`, 필요 시 `admin`
+- 대상 앱: `client`, `market-owner`, `design-system-web`, 필요 시 `admin`
 - 컴포넌트 이름: PascalCase
 - 카테고리: `ui` 또는 `layout`
 - 앱 내부 재사용 근거

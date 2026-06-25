@@ -10,8 +10,11 @@ Use this when adding a route-local, app-shared, or design-system component.
 
    ```bash
    pnpm gen:domain-component --args client <domain> <page> <ComponentName> <component-folder>
+   pnpm gen:domain-component --args market-owner <domain> <page> <ComponentName> <component-folder>
    pnpm gen:domain-section --args client <domain> <page> <SectionName> <section-folder>
+   pnpm gen:domain-section --args market-owner <domain> <page> <SectionName> <section-folder>
    pnpm gen:app-component --args client <ComponentName> <ui|layout> <component-folder>
+   pnpm gen:app-component --args market-owner <ComponentName> <ui|layout> <component-folder>
    ```
 
 4. `templates/component.spec.md` 기준으로 spec을 작성 또는 갱신합니다.

@@ -25,6 +25,8 @@ Use this when adding a query hook, mutation hook, endpoint helper, or API type.
    pnpm gen:domain-mutation --args client <domain> <MutationName>
    ```
 
+   `market-owner`는 API/query baseline이 준비되기 전까지 query/mutation generator 대상이 아닙니다. 먼저 `ky`, TanStack Query, `src/shared/api`, `src/shared/query` 기준을 별도 이슈에서 확정한 뒤 generator를 확장합니다.
+
 5. request/response type은 작으면 API helper 가까이에 두고, page와 hook이 함께 쓰는 계약이면 `model/`로 분리합니다.
 6. endpoint helper는 endpoint contract가 확인된 뒤 작성하고, `apps/{app}/src/shared/api`의 `httpClient`를 사용합니다.
 7. query 또는 mutation hook에는 explicit query key를 둡니다.
