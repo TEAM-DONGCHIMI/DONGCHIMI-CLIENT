@@ -31,6 +31,9 @@ dist-ssr
 *storybook.log
 storybook-static
 
+# Deployment tool state
+.vercel
+
 .turbo
 .cache
 coverage
