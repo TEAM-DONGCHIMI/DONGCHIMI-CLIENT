@@ -104,6 +104,10 @@ turbo/generators/** -> pnpm check:generators + sample generation
 | `pnpm e2e:ui`      | 로컬 디버깅 UI 실행                |
 | `pnpm e2e:report`  | HTML report 확인                   |
 
+## Deployment
+
+Vercel 프로젝트와 앱별 root directory 기준은 [Deployment](./deployment.md)를 따릅니다.
+
 ## Verification Log Rule
 
 최종 요약 또는 PR에는 실제 실행한 명령만 적습니다.
