@@ -10,7 +10,7 @@ const SvgIcChevronRight = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElemen
     {...props}
   >
     <path
-      stroke='#000'
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={2}
