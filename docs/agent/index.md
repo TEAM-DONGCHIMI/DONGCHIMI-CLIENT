@@ -53,6 +53,7 @@ templates/
 - 커밋 분해와 stage/commit 계획은 `commit-planning-workflow`에 둡니다.
 - verify skill도 `.agents/skills/verify-<name>/SKILL.md`에 직접 둡니다. 현재 기본 verify skill은 `verify-agent-docs`입니다.
 - 구조, 정책, 작업 절차는 `docs/`, `recipes/`, `templates/`로 분리합니다.
+- Sentry 설정과 알림 운영 기준은 `docs/workflows/sentry.md`에 둡니다.
 - 개인 선호 설정은 repo에 커밋하지 않고 사용자 전역 Codex config에 둡니다.
 - repo-local config와 hook은 팀 공통 정책이 필요할 때만 추가합니다.
 - Serena MCP는 repo-local `.serena/project.yml`과 사용자별 MCP 설정을 분리합니다.
