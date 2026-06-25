@@ -39,9 +39,18 @@ Repo-scoped Codex skill은 `.agents/skills` 아래에 둡니다.
   refactor-evaluator/SKILL.md
   sequential-thinking/SKILL.md
   architecture-review/SKILL.md
+  browser-pr-review-workflow/SKILL.md
   manage-skills/SKILL.md
+  project-monitoring-workflow/SKILL.md
   verify-implementation/SKILL.md
   verify-agent-docs/SKILL.md
+  verify-design-system-icons/SKILL.md
+  verify-design-system-styles/SKILL.md
+  verify-github-workflows/SKILL.md
+  verify-deployment/SKILL.md
+  verify-route-boundaries/SKILL.md
+  verify-e2e-smoke/SKILL.md
+  verify-performance-budget/SKILL.md
 ```
 
 각 skill은 `SKILL.md` frontmatter에 `name`과 `description`을 가져야 합니다.
@@ -56,7 +65,13 @@ Codex는 처음에는 skill의 이름, 설명, 경로만 컨텍스트에 넣고,
   manage-skills/SKILL.md
   verify-implementation/SKILL.md
   verify-agent-docs/SKILL.md
-  verify-api-contract/SKILL.md
+  verify-design-system-icons/SKILL.md
+  verify-design-system-styles/SKILL.md
+  verify-github-workflows/SKILL.md
+  verify-deployment/SKILL.md
+  verify-route-boundaries/SKILL.md
+  verify-e2e-smoke/SKILL.md
+  verify-performance-budget/SKILL.md
 ```
 
 폴더가 많아지는 경우에도 nested grouping 대신 skill 이름 prefix로 정렬합니다.

@@ -30,9 +30,18 @@ AGENTS.md
     refactor-evaluator/SKILL.md
     sequential-thinking/SKILL.md
     architecture-review/SKILL.md
+    browser-pr-review-workflow/SKILL.md
     manage-skills/SKILL.md
+    project-monitoring-workflow/SKILL.md
     verify-implementation/SKILL.md
     verify-agent-docs/SKILL.md
+    verify-design-system-icons/SKILL.md
+    verify-design-system-styles/SKILL.md
+    verify-github-workflows/SKILL.md
+    verify-deployment/SKILL.md
+    verify-route-boundaries/SKILL.md
+    verify-e2e-smoke/SKILL.md
+    verify-performance-budget/SKILL.md
     verify-<name>/SKILL.md
 docs/
 recipes/
@@ -51,7 +60,9 @@ templates/
 - 프론트엔드 workflow와 검증 범위 선택은 `frontend-*` 및 `*-workflow` skill에 둡니다.
 - Toss Frontend Fundamentals 기반 코드 품질 리뷰는 `frontend-fundamentals-review`에 둡니다.
 - 커밋 분해와 stage/commit 계획은 `commit-planning-workflow`에 둡니다.
-- verify skill도 `.agents/skills/verify-<name>/SKILL.md`에 직접 둡니다. 현재 기본 verify skill은 `verify-agent-docs`입니다.
+- 브라우저 PR 리뷰의 증거 구분은 `browser-pr-review-workflow`에 둡니다.
+- Jira/PR/Notion/check 상태 모니터링 기준은 `project-monitoring-workflow`에 둡니다.
+- verify skill도 `.agents/skills/verify-<name>/SKILL.md`에 직접 둡니다. 통합 실행은 `verify-implementation`이 담당합니다.
 - 구조, 정책, 작업 절차는 `docs/`, `recipes/`, `templates/`로 분리합니다.
 - 개인 선호 설정은 repo에 커밋하지 않고 사용자 전역 Codex config에 둡니다.
 - repo-local config와 hook은 팀 공통 정책이 필요할 때만 추가합니다.
