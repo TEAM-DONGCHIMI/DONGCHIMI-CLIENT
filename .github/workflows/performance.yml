@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -53,3 +54,10 @@ jobs:
             lighthouse-report
             .lighthouseci
           if-no-files-found: ignore
+
+      - name: Comment Lighthouse summary
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: pnpm perf:comment

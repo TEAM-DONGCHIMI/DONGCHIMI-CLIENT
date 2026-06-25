@@ -95,10 +95,13 @@ Trigger:
 - `.lighthouseci`
 
 산출물은 Git에 커밋하지 않습니다.
+PR에서는 측정 완료 후 Lighthouse 요약 댓글을 남깁니다.
+댓글은 같은 PR 안에서 누적 생성하지 않고, `dongchimi-performance-report` 마커가 있는 기존 댓글을 업데이트합니다.
 
 ## Review Rule
 
 성능 관련 PR은 PR 본문 Evidence의 Performance 항목에 Lighthouse 결과를 적습니다.
+자동화된 PR 댓글은 CI에서 측정한 최신 결과를 확인하는 용도로 사용합니다.
 수치가 악화되었지만 threshold가 warning이라 CI가 통과한 경우에도 악화 이유나 후속 작업을 남깁니다.
 
 ## Follow-up

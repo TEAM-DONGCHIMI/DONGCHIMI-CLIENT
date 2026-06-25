@@ -30,6 +30,7 @@
     "lint-staged": "lint-staged",
     "perf": "lhci autorun --config=./lighthouserc.cjs",
     "perf:assert": "lhci assert --config=./lighthouserc.cjs",
+    "perf:comment": "node scripts/performance/comment-pr.mjs",
     "perf:collect": "lhci collect --config=./lighthouserc.cjs",
     "typecheck": "turbo run typecheck"
   },
