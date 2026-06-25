@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from 'react';
 
 import { button, size as sizeClass, tone } from './button.css';
 
-export interface ButtonProps extends Pick<ButtonHTMLAttributes<HTMLButtonElement>, 'disabled'> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Is this the principal call to action on the page? */
   primary?: boolean;
   /** What background color to use */
@@ -17,8 +17,6 @@ export interface ButtonProps extends Pick<ButtonHTMLAttributes<HTMLButtonElement
   error?: boolean;
   /** Is this button showing an invalid state? */
   invalid?: boolean;
-  /** Optional click handler */
-  onClick?: () => void;
 }
 
 /** Primary UI component for user interaction */
@@ -31,19 +29,23 @@ export const Button = ({
   error = false,
   invalid = false,
   disabled = false,
+  type = 'button',
+  className,
+  style,
   ...props
 }: ButtonProps) => {
   const variant = primary ? 'primary' : 'secondary';
   const state = error ? 'error' : invalid ? 'invalid' : loading ? 'loading' : undefined;
+  const buttonStyle = backgroundColor === undefined ? style : { ...style, backgroundColor };
 
   return (
     <button
-      type='button'
+      type={type}
       aria-busy={loading || undefined}
-      className={[button, sizeClass[size], tone[variant]].join(' ')}
+      className={[button, sizeClass[size], tone[variant], className].filter(Boolean).join(' ')}
       data-state={state}
       disabled={disabled || loading}
-      style={{ backgroundColor }}
+      style={buttonStyle}
       {...props}
     >
       {label}
