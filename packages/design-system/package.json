@@ -15,6 +15,8 @@
   "types": "./src/index.ts",
   "scripts": {
     "build": "tsc --noEmit",
+    "check:icons": "node scripts/check-icons.mjs",
+    "icons:generate": "node scripts/generate-icons.mjs",
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
@@ -34,6 +36,7 @@
   "devDependencies": {
     "@dongchimi/eslint-config": "workspace:*",
     "@dongchimi/typescript-config": "workspace:*",
+    "@svgr/cli": "catalog:",
     "@testing-library/dom": "catalog:",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",
