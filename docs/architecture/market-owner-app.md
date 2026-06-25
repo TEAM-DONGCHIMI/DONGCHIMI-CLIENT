@@ -96,6 +96,7 @@ src/
 - `src/domains/{domain}/{page}/components`는 page 내부 UI 조각, `sections`는 화면 구획, `hooks`는 page-local 상태/상호작용 hook, `fixtures`는 page-local fixture, `utils`는 page-local 순수 보조 함수를 담당합니다.
 - `src/shared/constants/routes.ts`는 route path 상수를 담당합니다.
 - `src/shared`는 여러 page에서 실제로 재사용되는 앱 내부 공통 API, assets, components, query, state, style, type, util 후보만 담당합니다.
+- `@/*` alias는 `apps/market-owner/src/*`를 가리키며 app-local 절대 경로 import에 사용합니다.
 - 제품 domain, nested route, protected route는 요구사항 확정 후 별도 DCMSM Jira에서 추가합니다.
 
 ## Local Commands

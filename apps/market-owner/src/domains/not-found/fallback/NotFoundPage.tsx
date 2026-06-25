@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 
-import { MARKET_OWNER_ROUTES } from '../../../shared/constants/routes';
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 export const NotFoundPage = () => {
   return (

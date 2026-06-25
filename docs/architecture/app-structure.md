@@ -39,6 +39,7 @@ src/
 
 - route path는 `src/shared/constants/routes.ts`에 상수로 둡니다.
 - `src/app/router.tsx`는 route object와 `createBrowserRouter` 생성만 담당합니다.
+- `@/*` alias는 `apps/market-owner/src/*`를 가리키며 app-local import에 사용합니다.
 - `src/domains/{domain}`은 domain API, hooks, model, query key를 두는 기능 경계입니다.
 - `src/domains/{domain}/{page}`는 route page composition을 두는 화면 경계입니다.
 - `src/domains/{domain}/{page}`는 필요할 때 `components`, `sections`, `hooks`, `fixtures`, `utils`를 page-local 확장 지점으로 둡니다.
