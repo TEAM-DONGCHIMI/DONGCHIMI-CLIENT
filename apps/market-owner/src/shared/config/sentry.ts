@@ -30,6 +30,7 @@ export function getSentryReactRootOptions() {
 
   return {
     onUncaughtError: Sentry.reactErrorHandler(),
+    onCaughtError: Sentry.reactErrorHandler(),
     onRecoverableError: Sentry.reactErrorHandler(),
   };
 }
