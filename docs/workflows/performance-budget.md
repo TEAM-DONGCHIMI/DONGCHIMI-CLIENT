@@ -97,6 +97,7 @@ Trigger:
 산출물은 Git에 커밋하지 않습니다.
 PR에서는 측정 완료 후 Lighthouse 요약 댓글을 남깁니다.
 댓글은 같은 PR 안에서 누적 생성하지 않고, `dongchimi-performance-report` 마커가 있는 기존 댓글을 업데이트합니다.
+댓글 작성에는 workflow `issues: write`, `pull-requests: write` 권한이 필요합니다.
 
 ## Review Rule
 
