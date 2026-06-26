@@ -17,6 +17,7 @@ Use this when adding or changing a route page.
 
    ```bash
    pnpm gen:react-page --args client <domain> <page> <PageName>
+   pnpm gen:react-page --args market-owner <domain> <page> <PageName>
    ```
 
 5. `templates/page.spec.md` 또는 생성된 spec을 기준으로 가장 가까운 `page.spec.md`를 작성 또는 갱신합니다.
@@ -31,11 +32,13 @@ Use this when adding or changing a route page.
 ## DONGCHIMI Rules
 
 - 앱별 Jira key를 확인합니다: `DCMCL-*`, `DCMDSW-*`, `DCMFE-*`.
+- 사장님 사이트 작업은 `apps/market-owner` 범위이면 `DCMSM-*`, root/generator/docs 범위이면 `DCMFE-*`를 사용합니다.
 - app-specific code는 실제 reuse 전까지 app 내부에 둡니다.
 - Next route entry는 `apps/{app}/src/app/{route-path}/page.tsx`에 둡니다.
+- `market-owner`는 Vite React SPA이므로 Next route entry를 만들지 않습니다. page composition은 `gen:react-page --args market-owner ...`로 만들고, route object 연결은 제품 IA가 확정된 뒤 `apps/market-owner/src/app/router.tsx`에서 별도로 수행합니다.
 - 새 page 구조는 `apps/{app}/src/domains/{domain}/{page}/{PageName}.tsx`를 후보로 둡니다.
 - Domain API helpers, query hooks, model, query keys는 `apps/{app}/src/domains/{domain}/{api|hooks|model|query-keys.ts}`에 둡니다.
-- Page-local components와 sections는 `apps/{app}/src/domains/{domain}/{page}/{components|sections}`에 둡니다.
+- Page-local components, sections, hooks, fixtures, utils는 `apps/{app}/src/domains/{domain}/{page}/{components|sections|hooks|fixtures|utils}`에 둡니다.
 - Route group은 layout 경계가 필요할 때만 `app/(group)`으로 사용하고, URL path 설계와 domain 이름을 억지로 맞추지 않습니다.
 - generator script details는 `docs/workflows/turbo-generators.md`를 따릅니다.
 

@@ -1,7 +1,7 @@
 # App Structure
 
 동치미 클라이언트 웹 앱은 Next App Router를 라우팅/렌더링 경계로 사용하고, 제품 기능 코드는 `src/domains`에 둡니다.
-사장님 사이트는 `apps/market-owner`의 Vite React 앱으로 시작하며, 제품 라우팅/도메인 구조는 요구사항이 확정된 뒤 별도 이슈에서 확장합니다.
+사장님 사이트는 `apps/market-owner`의 Vite React 앱으로 시작하며, DCMSM-5부터 React Router와 domain 구조를 사용합니다.
 이 문서는 generator, spec, Jira issue가 같은 구조를 가리키게 하는 source of truth입니다.
 
 ## Planned Apps
@@ -46,6 +46,8 @@ src/
 - `src/domains/{domain}/hooks`는 도메인 여러 page가 공유하는 query/mutation/use-case hook을 담당하고, `src/domains/{domain}/{page}/hooks`는 해당 page 안에서만 쓰는 UI 상태, URL state, form interaction hook을 담당합니다.
 - 여러 page에서 재사용되는 UI는 `src/shared/components/{ui|layout}`로 올리고, 제품 전반 재사용이 확인되기 전에는 package로 승격하지 않습니다.
 - 제품 IA가 확정되기 전에는 root route와 fallback route만 유지합니다.
+- `gen:react-page`, `gen:app-component`, `gen:domain-component`, `gen:domain-section`은 `market-owner`를 지원합니다.
+- `gen:domain-query`, `gen:domain-mutation`은 `market-owner`의 API/query baseline이 생긴 뒤 확장합니다.
 
 ## Base Structure
 
@@ -81,12 +83,16 @@ src/
         ReservationListPage.spec.md
         components/
         sections/
+        hooks/
+        fixtures/
         utils/
       detail/
         ReservationDetailPage.tsx
         ReservationDetailPage.spec.md
         components/
         sections/
+        hooks/
+        fixtures/
         utils/
 
   shared/
@@ -137,13 +143,15 @@ domains/{domain}/
     {PageName}.spec.md
     components/
     sections/
+    hooks/
+    fixtures/
     utils/
 ```
 
 - `api/`, `hooks/`, `model/`, `query-keys.ts`는 같은 도메인 안의 여러 page가 공유하는 서버 통신 경계입니다.
 - `model/`에는 domain type, API DTO 변환, schema처럼 page와 API가 같이 쓰는 도메인 계약을 둡니다.
-- page 전용 UI 조각은 `{page}/components`, 화면 구획은 `{page}/sections`, page 전용 순수 보조 함수는 `{page}/utils`에 둡니다.
-- page 폴더 아래에 `api/`, `hooks/`, `model/`, `query-keys.ts`를 만들지 않습니다.
+- page 전용 UI 조각은 `{page}/components`, 화면 구획은 `{page}/sections`, page-local 상태와 상호작용 hook은 `{page}/hooks`, fixture는 `{page}/fixtures`, page 전용 순수 보조 함수는 `{page}/utils`에 둡니다.
+- page 폴더 아래에 `api/`, `model/`, `query-keys.ts`를 만들지 않습니다.
 
 ## Server And Client Boundary
 
@@ -178,6 +186,7 @@ packages/design-system -> domains
 
 - Next route가 필요한 새 page는 `pnpm gen:next-page`를 우선 사용합니다.
 - route 없이 도메인 page만 필요한 경우 `pnpm gen:react-page`를 사용합니다.
+- `market-owner`의 새 route page composition은 `pnpm gen:react-page --args market-owner <domain> <page> <PageName>`로 먼저 만들고, route object 연결은 제품 IA 확정 후 `src/app/router.tsx`에서 별도로 수행합니다.
 - 페이지 내부에서만 쓰는 컴포넌트는 `apps/{app}/src/domains/{domain}/{page}/components`에 둡니다.
 - 앱 안에서 여러 페이지가 공유하는 UI 또는 layout 컴포넌트는 `src/shared/components/{ui|layout}`로 이동합니다.
 - 여러 앱이 공유하면 `packages/shared` 또는 `packages/design-system`으로 이동합니다.
