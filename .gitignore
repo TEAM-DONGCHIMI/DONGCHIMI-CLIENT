@@ -37,13 +37,18 @@ storybook-static
 .turbo
 .cache
 coverage
+
 .lighthouseci
 lighthouse-report
+
 apps/*/.vercel
+
 .playwright-mcp
 playwright-report
 test-results
 .next
+.vercel
+apps/*/.vercel
 next-env.d.ts
 tsconfig.tsbuildinfo
 

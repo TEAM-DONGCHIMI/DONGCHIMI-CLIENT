@@ -67,9 +67,18 @@
 - [Sequential Thinking](../.agents/skills/sequential-thinking/SKILL.md)
 - [Refactor Evaluator](../.agents/skills/refactor-evaluator/SKILL.md)
 - [Architecture Review](../.agents/skills/architecture-review/SKILL.md)
+- [Browser PR Review Workflow](../.agents/skills/browser-pr-review-workflow/SKILL.md)
+- [Project Monitoring Workflow](../.agents/skills/project-monitoring-workflow/SKILL.md)
 - [Manage Skills](../.agents/skills/manage-skills/SKILL.md)
 - [Verify Implementation](../.agents/skills/verify-implementation/SKILL.md)
 - [Verify Agent Docs](../.agents/skills/verify-agent-docs/SKILL.md)
+- [Verify Design System Icons](../.agents/skills/verify-design-system-icons/SKILL.md)
+- [Verify Design System Styles](../.agents/skills/verify-design-system-styles/SKILL.md)
+- [Verify GitHub Workflows](../.agents/skills/verify-github-workflows/SKILL.md)
+- [Verify Deployment](../.agents/skills/verify-deployment/SKILL.md)
+- [Verify Route Boundaries](../.agents/skills/verify-route-boundaries/SKILL.md)
+- [Verify E2E Smoke](../.agents/skills/verify-e2e-smoke/SKILL.md)
+- [Verify Performance Budget](../.agents/skills/verify-performance-budget/SKILL.md)
 
 ## Recipes
 
