@@ -2,6 +2,7 @@ import ky, { type KyInstance, type Options } from 'ky';
 
 import { getMarketOwnerEnv } from '../config';
 import { createApiConfigurationError, normalizeApiError } from './api-error';
+import { HTTP_STATUS } from './http-status';
 
 type HttpMethodTypes = 'delete' | 'get' | 'patch' | 'post' | 'put';
 
@@ -51,9 +52,25 @@ export const getHttpClient = () => {
   return cachedHttpClient;
 };
 
+const parseJsonResponse = async <ResponseDataTypes>(response: Response) => {
+  if (response.status === HTTP_STATUS.NO_CONTENT) {
+    return undefined as ResponseDataTypes;
+  }
+
+  const text = await response.text();
+
+  if (!text) {
+    return undefined as ResponseDataTypes;
+  }
+
+  return JSON.parse(text) as ResponseDataTypes;
+};
+
 const request = async <ResponseDataTypes>(path: string, options?: Options) => {
   try {
-    return await getHttpClient()<ResponseDataTypes>(path, options).json();
+    const response = await getHttpClient()(path, options);
+
+    return await parseJsonResponse<ResponseDataTypes>(response);
   } catch (error) {
     throw await normalizeApiError(error);
   }
