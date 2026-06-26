@@ -18,6 +18,9 @@
     "check:icons": "node scripts/check-icons.mjs",
     "icons:generate": "node scripts/generate-icons.mjs",
     "lint": "eslint . --max-warnings=0",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "chromatic": "chromatic --build-script-name build-storybook --exit-zero-on-changes",
     "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
     "test:integration": "vitest run --project integration --passWithNoTests",
@@ -34,8 +37,12 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^5.2.1",
     "@dongchimi/eslint-config": "workspace:*",
     "@dongchimi/typescript-config": "workspace:*",
+    "@storybook/addon-a11y": "^10.4.6",
+    "@storybook/addon-docs": "^10.4.6",
+    "@storybook/react-vite": "^10.4.6",
     "@svgr/cli": "catalog:",
     "@testing-library/dom": "catalog:",
     "@testing-library/jest-dom": "catalog:",
@@ -44,11 +51,15 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/css": "catalog:",
+    "@vanilla-extract/vite-plugin": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "chromatic": "^16.10.0",
     "eslint": "catalog:",
+    "eslint-plugin-storybook": "^10.4.6",
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "storybook": "^10.4.6",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }
