@@ -19,11 +19,11 @@ const shouldRetryQuery = (failureCount: number, error: Error) => {
 };
 
 const handleQueryError = () => {
-  // TODO: 공통 query 실패 처리 정책이 정해지면 toast 또는 Sentry capture를 연결합니다.
+  // TODO: 추후 query 요청 실패 시 공통 에러 처리 로직 추가
 };
 
 const handleMutationError = () => {
-  // TODO: 공통 mutation 실패 처리 정책이 정해지면 toast 또는 Sentry capture를 연결합니다.
+  // TODO: mutation 실패 시 공통 에러 처리 로직 추가
 };
 
 export const queryClientDefaultOptions = {
