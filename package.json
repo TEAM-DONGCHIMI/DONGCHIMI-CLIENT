@@ -37,6 +37,10 @@
     "format:check": "prettier . --check",
     "lint": "turbo run lint",
     "lint-staged": "lint-staged",
+    "perf": "lhci autorun --config=./lighthouserc.cjs",
+    "perf:assert": "lhci assert --config=./lighthouserc.cjs",
+    "perf:comment": "node scripts/performance/comment-pr.mjs",
+    "perf:collect": "lhci collect --config=./lighthouserc.cjs",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
     "test:integration": "turbo run test:integration",
@@ -45,6 +49,7 @@
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
+    "@lhci/cli": "catalog:",
     "@playwright/test": "catalog:",
     "@turbo/gen": "catalog:",
     "@types/node": "catalog:",

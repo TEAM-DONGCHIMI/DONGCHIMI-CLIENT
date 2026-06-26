@@ -37,16 +37,21 @@ storybook-static
 .turbo
 .cache
 coverage
-.vercel
+
+.lighthouseci
+lighthouse-report
+
 apps/*/.vercel
+
 .playwright-mcp
 playwright-report
 test-results
 .next
+.vercel
+apps/*/.vercel
 next-env.d.ts
 tsconfig.tsbuildinfo
 
 # Serena MCP keeps runtime data under .serena. Commit only the project config.
 .serena/*
 !.serena/project.yml
-.vercel

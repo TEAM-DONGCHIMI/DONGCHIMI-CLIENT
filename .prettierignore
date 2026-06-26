@@ -3,10 +3,14 @@ node_modules
 .agents
 
 .next
+.vercel
+apps/*/.vercel
 .turbo
 .cache
 
 coverage
+.lighthouseci
+lighthouse-report
 playwright-report
 test-results
 storybook-static

@@ -51,11 +51,15 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/css": "catalog:",
+    "@vanilla-extract/vite-plugin": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "chromatic": "^16.10.0",
     "eslint": "catalog:",
+    "eslint-plugin-storybook": "^10.4.6",
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "storybook": "^10.4.6",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

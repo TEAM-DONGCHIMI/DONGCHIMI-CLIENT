@@ -32,9 +32,16 @@ verify skill은 `.agents/skills` 아래에 직접 둡니다.
 
 ## Execution Targets
 
-| # | Skill | Description |
-| --- | --- | --- |
-| 1 | `verify-agent-docs` | agent harness와 markdown 문서 구조 검증 |
+| #   | Skill                         | Description                                                      |
+| --- | ----------------------------- | ---------------------------------------------------------------- |
+| 1   | `verify-agent-docs`           | agent harness와 markdown 문서 구조 검증                          |
+| 2   | `verify-design-system-icons`  | 디자인시스템 아이콘 source/generated/export/SVG 정책 검증        |
+| 3   | `verify-design-system-styles` | 디자인시스템 style helper와 vanilla-extract public boundary 검증 |
+| 4   | `verify-github-workflows`     | GitHub workflow, labeler, CODEOWNERS, PR template 검증           |
+| 5   | `verify-deployment`           | app별 배포 설정, Vercel smoke, 404 fallback 검증                 |
+| 6   | `verify-route-boundaries`     | app/domains/shared/packages 책임과 import 방향 검증              |
+| 7   | `verify-e2e-smoke`            | Playwright E2E smoke 설정과 app별 smoke spec 검증                |
+| 8   | `verify-performance-budget`   | Lighthouse CI report-only baseline과 성능 workflow 검증          |
 
 `verify-implementation` 자신과 `manage-skills`는 실행 대상에 포함하지 않습니다.
 
@@ -72,9 +79,9 @@ verify skill은 `.agents/skills` 아래에 직접 둡니다.
 
 ### 요약
 
-| Skill | Status | Issues | Detail |
-| --- | --- | --- | --- |
-| `verify-<name>` | PASS | 0 | 모든 검사 통과 |
+| Skill           | Status | Issues | Detail         |
+| --------------- | ------ | ------ | -------------- |
+| `verify-<name>` | PASS   | 0      | 모든 검사 통과 |
 ```
 
 ## Output Format
@@ -90,11 +97,11 @@ verify skill은 `.agents/skills` 아래에 직접 둡니다.
 
 ## Related Files
 
-| File | Purpose |
-| --- | --- |
-| `.agents/skills/manage-skills/SKILL.md` | verify skill 등록 목록을 관리 |
-| `.agents/skills/verify-implementation/SKILL.md` | 이 skill 자체 |
-| `.agents/skills/verify-*/SKILL.md` | 실행 대상 verify skill |
+| File                                            | Purpose                       |
+| ----------------------------------------------- | ----------------------------- |
+| `.agents/skills/manage-skills/SKILL.md`         | verify skill 등록 목록을 관리 |
+| `.agents/skills/verify-implementation/SKILL.md` | 이 skill 자체                 |
+| `.agents/skills/verify-*/SKILL.md`              | 실행 대상 verify skill        |
 
 ## Exceptions
 
