@@ -71,11 +71,7 @@ const getErrorType = (status: number): ApiErrorCategoryTypes => {
 };
 
 const readErrorBody = async (error: HTTPError) => {
-  try {
-    return await error.response.clone().json();
-  } catch {
-    return undefined;
-  }
+  return error.data;
 };
 
 export const isApiError = (error: unknown): error is ApiError => {
