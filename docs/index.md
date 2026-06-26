@@ -28,6 +28,7 @@
 
 - [Local Development](./workflows/local-development.md)
 - [CI](./workflows/ci.md)
+- [Performance Budget](./workflows/performance-budget.md)
 - [Deployment](./workflows/deployment.md)
 - [Sentry Workflow](./workflows/sentry.md)
 - [Testing](./workflows/testing.md)

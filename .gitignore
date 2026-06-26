@@ -41,7 +41,6 @@ coverage
 .lighthouseci
 lighthouse-report
 
-.vercel
 apps/*/.vercel
 
 .playwright-mcp
@@ -56,4 +55,3 @@ tsconfig.tsbuildinfo
 # Serena MCP keeps runtime data under .serena. Commit only the project config.
 .serena/*
 !.serena/project.yml
-.vercel
