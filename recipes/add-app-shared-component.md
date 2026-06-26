@@ -10,6 +10,7 @@
    - cross-app primitive: `packages/design-system`
 2. 대상 앱을 선택합니다.
    - `client`
+   - `market-owner`
    - `design-system-web`
    - `admin`, 앱이 생성된 뒤
 3. 카테고리를 선택합니다.
@@ -34,11 +35,12 @@
 
 ```bash
 pnpm gen:app-component --args client UserProfileCard ui user-profile-card
+pnpm gen:app-component --args market-owner StoreSummaryCard ui store-summary-card
 ```
 
 인자 순서:
 
-1. `app`: `client`, `design-system-web`, `admin`
+1. `app`: `client`, `market-owner`
 2. `componentName`: PascalCase component name
 3. `category`: `ui` or `layout`
 4. `componentFolder`: kebab-case folder name

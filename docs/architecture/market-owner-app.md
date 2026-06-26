@@ -99,6 +99,24 @@ src/
 - `@/*` alias는 `apps/market-owner/src/*`를 가리키며 app-local 절대 경로 import에 사용합니다.
 - 제품 domain, nested route, protected route는 요구사항 확정 후 별도 DCMSM Jira에서 추가합니다.
 
+## Generator Scope
+
+사장님 앱은 Vite React SPA이므로 Next App Router route entry를 생성하는 `gen:next-page` 대상이 아닙니다.
+
+사용 가능한 generator:
+
+```bash
+pnpm gen:react-page --args market-owner <domain> <page> <PageName>
+pnpm gen:domain-component --args market-owner <domain> <page> <ComponentName> <component-folder>
+pnpm gen:domain-section --args market-owner <domain> <page> <SectionName> <section-folder>
+pnpm gen:app-component --args market-owner <ComponentName> <ui|layout> <component-folder>
+```
+
+- `gen:react-page`는 `src/domains/{domain}/{page}` 아래에 page component, spec, page-local `components`, `sections`, `hooks`, `fixtures`, `utils`를 생성합니다.
+- `gen:domain-component`와 `gen:domain-section`은 route page 내부 UI 조각만 생성하고 React Router route object를 수정하지 않습니다.
+- `gen:app-component`는 여러 page에서 실제로 재사용되는 앱 내부 공통 UI만 `src/shared/components/{ui|layout}`에 생성합니다.
+- `gen:domain-query`, `gen:domain-mutation`은 market-owner의 `ky`, TanStack Query, `src/shared/api`, `src/shared/query` baseline이 생긴 뒤 별도 이슈에서 열어야 합니다.
+
 ## Local Commands
 
 ```bash
