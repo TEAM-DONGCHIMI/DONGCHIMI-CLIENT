@@ -1,4 +1,4 @@
-import { MutationCache, QueryCache, QueryClient, type DefaultOptions } from '@tanstack/react-query';
+import { QueryClient, type DefaultOptions } from '@tanstack/react-query';
 
 import { HTTP_STATUS, isApiError } from '../api';
 
@@ -18,14 +18,6 @@ const shouldRetryQuery = (failureCount: number, error: Error) => {
   return true;
 };
 
-const handleQueryError = () => {
-  // TODO: 추후 query 요청 실패 시 공통 에러 처리 로직 추가
-};
-
-const handleMutationError = () => {
-  // TODO: mutation 실패 시 공통 에러 처리 로직 추가
-};
-
 export const queryClientDefaultOptions = {
   queries: {
     gcTime: QUERY_GC_TIME_MS,
@@ -40,12 +32,6 @@ export const queryClientDefaultOptions = {
 
 export const createQueryClient = () => {
   return new QueryClient({
-    queryCache: new QueryCache({
-      onError: handleQueryError,
-    }),
-    mutationCache: new MutationCache({
-      onError: handleMutationError,
-    }),
     defaultOptions: queryClientDefaultOptions,
   });
 };
