@@ -1,5 +1,7 @@
 const getPublicEnv = (key: keyof ImportMetaEnv) => {
-  return import.meta.env[key]?.trim();
+  const value = import.meta.env[key]?.trim();
+
+  return value === '' ? undefined : value;
 };
 
 export const getMarketOwnerEnv = () => {
