@@ -52,10 +52,13 @@ description: 동치미 Turborepo generator script, template, scaffold 구조, sa
 
 ## 도메인 Generator 기준
 
-- 첫 번째 arg는 app 이름입니다. 기본 후보는 `client`, `design-system-web`, 선택적 `admin`입니다.
+- 첫 번째 arg는 app 이름입니다. React page/component 계열 기본 후보는 `client`, `market-owner`입니다.
+- `gen:next-page`, `gen:domain-query`, `gen:domain-mutation`은 현재 `client`만 허용합니다.
+- `market-owner` query/mutation generator는 앱의 API/query baseline이 생긴 뒤 추가합니다.
 - app arg 누락 시 기본 앱으로 fallback하지 않습니다.
 - domain 최상위에는 `api/`, `hooks/`, `model/`, `query-keys.ts`를 둡니다.
-- page 폴더 아래에는 `components/`, `sections/`, `utils/`만 둡니다.
+- page 폴더 아래에는 `components/`, `sections/`, `hooks/`, `fixtures/`, `utils/`를 둡니다.
+- page-local `hooks/`는 해당 page 안에서만 쓰는 UI state, URL state, form interaction을 담당합니다.
 - query/mutation scaffold는 API 계약 확인 전까지 TODO와 throwing helper를 유지합니다.
 - app shared API/query generator는 만들지 않습니다.
 

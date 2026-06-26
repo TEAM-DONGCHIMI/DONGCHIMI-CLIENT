@@ -32,6 +32,8 @@ pnpm install --frozen-lockfile
 | `apps/client`       | `3000` | `pnpm dev:web`          | Next dev script에서 `--port 3000` 명시  |
 | `apps/market-owner` | `5173` | `pnpm dev:market-owner` | Vite `strictPort: true`로 fallback 차단 |
 
+E2E도 같은 포트를 사용합니다. 자세한 기준은 [E2E Testing](./e2e-testing.md)을 따릅니다.
+
 ## Root Verification
 
 변경 범위가 명확하지 않거나 PR 전 전체 검증이 필요하면 아래 순서로 실행합니다.
@@ -41,7 +43,14 @@ git diff --check
 pnpm format:check
 pnpm lint
 pnpm typecheck
+pnpm test
 pnpm build
+```
+
+E2E smoke까지 확인해야 하는 변경이면 아래 명령을 추가로 실행합니다.
+
+```bash
+pnpm e2e:smoke
 ```
 
 성능 예산과 Lighthouse report를 확인해야 하면 전체 build 뒤 아래 명령을 실행합니다.
@@ -73,12 +82,12 @@ pre-commit hook은 빠른 로컬 가드이며, CI와 PR 전 root verification을
 workspace 구조가 생기면 변경 위치 기준으로 targeted 검증을 우선합니다.
 
 ```text
-apps/client/** -> client lint/typecheck/build
-apps/market-owner/** -> market-owner lint/typecheck/build
+apps/client/** -> client lint/typecheck/test/build
+apps/market-owner/** -> market-owner lint/typecheck/test/build
 apps/design-system-web/** -> design-system web lint/typecheck/build
 apps/admin/** -> admin lint/typecheck/build, 앱이 생성된 뒤 적용
 apps/mobile/** -> web check와 별도 mobile command
-packages/design-system/** -> design-system lint/typecheck/build/storybook
+packages/design-system/** -> design-system lint/typecheck/test/build/storybook
 packages/shared/** -> 소비 app build 필요 여부 확인
 docs/**, recipes/**, templates/** -> git diff --check + format check
 turbo/generators/** -> pnpm check:generators + sample generation
@@ -86,10 +95,26 @@ turbo/generators/** -> pnpm check:generators + sample generation
 
 ## App Scripts
 
-| Workspace           | Dev                     | Targeted verification                                                                                         |
-| ------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `apps/client`       | `pnpm dev:web`          | `pnpm --filter client lint`, `pnpm --filter client typecheck`, `pnpm --filter client build`                   |
-| `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner build` |
+| Workspace           | Dev                     | Targeted verification                                                                                                                            |
+| ------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `apps/client`       | `pnpm dev:web`          | `pnpm --filter client lint`, `pnpm --filter client typecheck`, `pnpm --filter client test`, `pnpm --filter client build`                         |
+| `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner test`, `pnpm --filter market-owner build` |
+
+테스트 종류별 명령과 작성 기준은 [Testing](./testing.md)을 따릅니다.
+
+## E2E Scripts
+
+| Script             | Purpose                            |
+| ------------------ | ---------------------------------- |
+| `pnpm e2e:install` | Playwright browser dependency 설치 |
+| `pnpm e2e:smoke`   | PR용 Chromium smoke 실행           |
+| `pnpm e2e`         | 전체 Playwright project 실행       |
+| `pnpm e2e:ui`      | 로컬 디버깅 UI 실행                |
+| `pnpm e2e:report`  | HTML report 확인                   |
+
+## Deployment
+
+Vercel 프로젝트와 앱별 root directory 기준은 [Deployment](./deployment.md)를 따릅니다.
 
 ## Verification Log Rule
 

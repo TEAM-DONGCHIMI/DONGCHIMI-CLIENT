@@ -31,12 +31,15 @@ dist-ssr
 *storybook.log
 storybook-static
 
+# Deployment tool state
+.vercel
+
 .turbo
 .cache
 coverage
-.vercel
 .lighthouseci
 lighthouse-report
+apps/*/.vercel
 .playwright-mcp
 playwright-report
 test-results

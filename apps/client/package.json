@@ -6,10 +6,16 @@
     "build": "next build",
     "start": "next start --hostname 127.0.0.1 --port 3000",
     "lint": "eslint .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:integration": "vitest run --project integration",
+    "test:unit": "vitest run --project unit",
+    "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@dongchimi/design-system": "workspace:*",
+    "@sentry/nextjs": "catalog:",
     "@tanstack/react-query": "catalog:",
     "ky": "catalog:",
     "next": "catalog:",
@@ -19,11 +25,19 @@
   "devDependencies": {
     "@dongchimi/eslint-config": "workspace:*",
     "@dongchimi/typescript-config": "workspace:*",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/next-plugin": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
+    "jsdom": "catalog:",
+    "msw": "catalog:",
+    "vitest": "catalog:",
     "typescript": "catalog:"
   }
 }
