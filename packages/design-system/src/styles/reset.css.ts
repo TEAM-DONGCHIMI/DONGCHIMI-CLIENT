@@ -30,12 +30,14 @@ globalStyle('button', {
   padding: 0,
   border: 'none',
   background: 'none',
+});
+
+globalStyle('button:enabled', {
   cursor: 'pointer',
 });
 
 globalStyle('a', {
   color: 'inherit',
-  textDecoration: 'none',
 });
 
 globalStyle('ul, ol', {
