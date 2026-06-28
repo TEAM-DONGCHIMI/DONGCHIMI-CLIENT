@@ -2,8 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { atomic, semantic, shadow, text } from '../styles';
 
-import '../styles/reset.css';
-
 const neutralSteps = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90] as const;
 
 const semanticColors = [
@@ -47,7 +45,7 @@ const Swatch = ({ name, color }: { name: string; color: string }) => (
 const Foundations = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 40, padding: 24 }}>
     <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <p className={text['heading-2-semibold']}>Color · Atomic / Neutral</p>
+      <h2 className={text['heading-2-semibold']}>Color · Atomic / Neutral</h2>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
         {neutralSteps.map((step) => (
           <Swatch key={step} name={String(step)} color={atomic.neutral[step]} />
@@ -56,7 +54,7 @@ const Foundations = () => (
     </section>
 
     <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <p className={text['heading-2-semibold']}>Color · Semantic</p>
+      <h2 className={text['heading-2-semibold']}>Color · Semantic</h2>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
         {semanticColors.map(([name, color]) => (
           <Swatch key={name} name={name} color={color} />
@@ -65,7 +63,7 @@ const Foundations = () => (
     </section>
 
     <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <p className={text['heading-2-semibold']}>Typography</p>
+      <h2 className={text['heading-2-semibold']}>Typography</h2>
       {textSteps.map((key) => (
         <p key={key} className={text[key]}>
           {key} · 동치미 디자인 시스템
@@ -74,7 +72,7 @@ const Foundations = () => (
     </section>
 
     <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <p className={text['heading-2-semibold']}>Shadow</p>
+      <h2 className={text['heading-2-semibold']}>Shadow</h2>
       <div style={{ display: 'flex', gap: 32 }}>
         {shadowSteps.map((step) => (
           <div key={step} style={{ textAlign: 'center' }}>
@@ -94,9 +92,9 @@ const Foundations = () => (
     </section>
 
     <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <p className={text['body-1-medium']}>Reset</p>
+      <h2 className={text['heading-2-semibold']}>Reset</h2>
       <ul>
-        <li className={text['body-1-medium']}>ul · li - 불릿/기본 패딩 없음</li>
+        <li className={text['body-1-medium']}>ul · li — 불릿/기본 패딩 없음</li>
         <li className={text['body-1-medium']}>적용 안 됐으면 여기에 점(•)이 보임</li>
       </ul>
       <button className={text['body-1-medium']}>
