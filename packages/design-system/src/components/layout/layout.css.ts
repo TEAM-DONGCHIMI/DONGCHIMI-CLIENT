@@ -1,4 +1,6 @@
-import { style, styleVariants } from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
+
+import { styleVariants, type StyleVariantProps } from '../../styles';
 
 const space = {
   none: '0',
@@ -11,11 +13,11 @@ const space = {
   '2xl': 'var(--dongchimi-space-2xl, 2.5rem)',
 } as const;
 
-export type LayoutGapTypes = keyof typeof space;
-
 export const gapClassNames = styleVariants(space, (gap) => ({
   gap,
 }));
+
+export type LayoutGapTypes = StyleVariantProps<typeof gapClassNames>;
 
 export const boxDisplayClassNames = styleVariants({
   block: {
@@ -29,7 +31,7 @@ export const boxDisplayClassNames = styleVariants({
   },
 });
 
-export type BoxDisplayTypes = keyof typeof boxDisplayClassNames;
+export type BoxDisplayTypes = StyleVariantProps<typeof boxDisplayClassNames>;
 
 export const flexDisplayClassNames = styleVariants({
   block: {
@@ -55,7 +57,7 @@ export const flexDirectionClassNames = styleVariants({
   },
 });
 
-export type FlexDirectionTypes = keyof typeof flexDirectionClassNames;
+export type FlexDirectionTypes = StyleVariantProps<typeof flexDirectionClassNames>;
 
 export const flexAlignClassNames = styleVariants({
   start: {
@@ -75,7 +77,7 @@ export const flexAlignClassNames = styleVariants({
   },
 });
 
-export type FlexAlignTypes = keyof typeof flexAlignClassNames;
+export type FlexAlignTypes = StyleVariantProps<typeof flexAlignClassNames>;
 
 export const flexJustifyClassNames = styleVariants({
   start: {
@@ -98,7 +100,7 @@ export const flexJustifyClassNames = styleVariants({
   },
 });
 
-export type FlexJustifyTypes = keyof typeof flexJustifyClassNames;
+export type FlexJustifyTypes = StyleVariantProps<typeof flexJustifyClassNames>;
 
 export const flexWrapClassNames = styleVariants({
   nowrap: {
@@ -112,7 +114,7 @@ export const flexWrapClassNames = styleVariants({
   },
 });
 
-export type FlexWrapTypes = keyof typeof flexWrapClassNames;
+export type FlexWrapTypes = StyleVariantProps<typeof flexWrapClassNames>;
 
 export const gridDisplayClassNames = styleVariants({
   block: {
@@ -161,7 +163,7 @@ export const gridAutoFitClassNames = styleVariants({
   },
 });
 
-export type GridAutoFitTypes = keyof typeof gridAutoFitClassNames;
+export type GridAutoFitTypes = StyleVariantProps<typeof gridAutoFitClassNames>;
 
 export const gridAlignClassNames = styleVariants({
   start: {
@@ -178,7 +180,7 @@ export const gridAlignClassNames = styleVariants({
   },
 });
 
-export type GridAlignTypes = keyof typeof gridAlignClassNames;
+export type GridAlignTypes = StyleVariantProps<typeof gridAlignClassNames>;
 
 export const gridJustifyClassNames = styleVariants({
   start: {
@@ -195,7 +197,7 @@ export const gridJustifyClassNames = styleVariants({
   },
 });
 
-export type GridJustifyTypes = keyof typeof gridJustifyClassNames;
+export type GridJustifyTypes = StyleVariantProps<typeof gridJustifyClassNames>;
 
 export const centerClassName = style({
   placeItems: 'center',
@@ -210,7 +212,7 @@ export const centerMinHeightClassNames = styleVariants({
   },
 });
 
-export type CenterMinHeightTypes = keyof typeof centerMinHeightClassNames;
+export type CenterMinHeightTypes = StyleVariantProps<typeof centerMinHeightClassNames>;
 
 export const containerBaseClassName = style({
   width: '100%',
@@ -238,7 +240,7 @@ export const containerSizeClassNames = styleVariants({
   },
 });
 
-export type ContainerSizeTypes = keyof typeof containerSizeClassNames;
+export type ContainerSizeTypes = StyleVariantProps<typeof containerSizeClassNames>;
 
 export const containerGutterClassNames = styleVariants({
   none: {
@@ -268,4 +270,4 @@ export const containerGutterClassNames = styleVariants({
   },
 });
 
-export type ContainerGutterTypes = keyof typeof containerGutterClassNames;
+export type ContainerGutterTypes = StyleVariantProps<typeof containerGutterClassNames>;
