@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { atomic, semantic, shadow, text } from '../styles';
+import { atomic, semantic, shadow, text } from '../tokens';
 
 const neutralSteps = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90] as const;
 

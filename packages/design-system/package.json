@@ -11,7 +11,8 @@
     "./components": "./src/components/index.ts",
     "./icons": "./src/icons/index.ts",
     "./styles": "./src/styles/index.ts",
-    "./styles/reset.css": "./src/styles/reset.css.ts"
+    "./styles/reset.css": "./src/styles/reset.css.ts",
+    "./tokens": "./src/tokens/index.ts"
   },
   "types": "./src/index.ts",
   "scripts": {
