@@ -3,7 +3,6 @@ import { style, styleVariants } from '@vanilla-extract/css';
 const base = style({
   fontFamily: '"Pretendard", sans-serif',
   fontStyle: 'normal',
-  margin: 0,
 });
 
 export const text = styleVariants({
