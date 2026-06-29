@@ -2,28 +2,32 @@
 
 ## Metadata
 
-- Jira: DCMFE-29
+- Jira: DCMFE-29, DCMFE-40
 - Surface: `@dongchimi/design-system/styles`
 - Owner: Frontend
 - Status: Implemented
 
 ## Purpose
 
-`packages/design-system`에서 vanilla-extract 기반 컴포넌트를 만들 때 반복되는 className 조합과 recipe variant type 추출을 표준화합니다.
+`packages/design-system`에서 vanilla-extract 기반 컴포넌트를 만들 때 반복되는 className 조합, recipe variant type 추출, style variant key/className type 추출을 표준화합니다.
 
 ## Source Of Truth
 
 - Styling policy: `docs/architecture/styling-and-design-tokens.md`
 - Design system boundary: `docs/architecture/design-system.md`
+- vanilla-extract css: `@vanilla-extract/css`
 - vanilla-extract recipes: `@vanilla-extract/recipes`
 
 ## Scope
 
 - `cn`으로 `clsx` 기반 className을 조합합니다.
 - `recipe`와 관련 타입을 styles subpath에서 명시적으로 export합니다.
+- `styleVariants`와 관련 타입을 styles subpath에서 명시적으로 export합니다.
 - `RecipeVariantProps`로 recipe variant props 타입을 컴포넌트 props에 재사용합니다.
 - `RecipeVariantSelectionTypes`로 optional variant selection 타입을 유지합니다.
 - `RecipeClassNameTypes`로 recipe runtime return type을 추출합니다.
+- `StyleVariantProps`로 style variant key 타입을 컴포넌트 props에 재사용합니다.
+- `StyleVariantClassNameTypes`로 style variant className value 타입을 추출합니다.
 
 ## Out Of Scope
 
@@ -38,18 +42,24 @@
 import {
   cn,
   recipe,
+  styleVariants,
   type RecipeClassNameTypes,
   type RecipeVariantProps,
   type RecipeVariantSelectionTypes,
+  type StyleVariantClassNameTypes,
+  type StyleVariantProps,
 } from '@dongchimi/design-system/styles';
 ```
 
 - `cn(...values)`: `clsx` 기반으로 className 값을 공백 기준 문자열로 조합합니다.
 - `ClassValueTypes`: `clsx`의 `ClassValue`를 재사용한 `cn` 입력 타입입니다.
 - `recipe`: vanilla-extract recipe factory re-export입니다.
+- `styleVariants`: vanilla-extract style variant factory re-export입니다.
 - `RecipeVariantProps<TRecipe>`: 컴포넌트 props에 사용하는 non-nullable variant 타입입니다.
 - `RecipeVariantSelectionTypes<TRecipe>`: recipe call에 넘기는 optional variant selection 타입입니다.
 - `RecipeClassNameTypes<TRecipe>`: recipe className return 타입입니다.
+- `StyleVariantProps<TStyleVariants>`: style variant 결과 객체의 key 타입입니다.
+- `StyleVariantClassNameTypes<TStyleVariants>`: style variant 결과 객체의 className value 타입입니다.
 
 ## Behavior
 
@@ -127,6 +137,43 @@ const getButtonClassName = (
   variants: RecipeVariantSelectionTypes<typeof buttonRecipe>,
 ): RecipeClassNameTypes<typeof buttonRecipe> => {
   return buttonRecipe(variants);
+};
+```
+
+### `styleVariants`
+
+`styleVariants`는 vanilla-extract style variant factory를 styles subpath에서 가져오도록 추가했습니다. 컴포넌트 style 파일은 style variant 생성과 관련 타입 추출을 같은 public boundary에서 사용합니다.
+
+```ts
+const sizeClassNames = styleVariants({
+  sm: {
+    minHeight: '2rem',
+  },
+  md: {
+    minHeight: '2.5rem',
+  },
+});
+```
+
+### `StyleVariantProps`
+
+`StyleVariantProps`는 `styleVariants` 결과 객체에서 key 타입을 추출합니다. variant key를 props 타입으로 별도 반복하지 않아 style 정의와 컴포넌트 props가 함께 바뀌도록 유지합니다.
+
+```ts
+type SizeTypes = StyleVariantProps<typeof sizeClassNames>;
+
+interface BoxProps {
+  size?: SizeTypes;
+}
+```
+
+### `StyleVariantClassNameTypes`
+
+`StyleVariantClassNameTypes`는 `styleVariants` 결과 객체의 className value 타입을 추출합니다. style variant className을 반환하는 helper가 결과 객체와 같은 타입을 바라보게 할 때 사용합니다.
+
+```ts
+const getSizeClassName = (size: SizeTypes): StyleVariantClassNameTypes<typeof sizeClassNames> => {
+  return sizeClassNames[size];
 };
 ```
 
