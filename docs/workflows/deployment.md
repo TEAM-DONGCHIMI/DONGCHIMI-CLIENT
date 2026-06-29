@@ -12,7 +12,7 @@ DONGCHIMI-CLIENT는 하나의 GitHub monorepo를 유지하고, 사용자 웹과 
 공통 설정:
 
 - Team: `Jangminsu's projects` (현재 연결된 Vercel Team입니다. 팀 공용 Vercel Team으로 이전하면 Team 이름과 CLI `--scope`를 함께 교체합니다.)
-- Node.js: `22.x`
+- Node.js: `24.x`
 - `sourceFilesOutsideRootDirectory`: enabled
 - `enableAffectedProjectsDeployments`: enabled
 - Install/build/output command: framework auto-detect

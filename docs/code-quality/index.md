@@ -35,7 +35,7 @@
 - Prettier 설정은 root `prettier.config.mjs`를 source of truth로 삼습니다.
 - ESLint 공통 설정은 `@dongchimi/eslint-config`의 `base`, `react`, `next` export를 사용합니다.
 - TypeScript 공통 설정은 `@dongchimi/typescript-config`의 `base`, `nextjs` export를 사용합니다.
-- TypeScript `target`은 Node 22와 Next 16 기준에 맞춰 `ES2022`를 사용합니다.
+- TypeScript `target`은 Node 24 LTS와 Next 16 기준에 맞춰 `ES2022`를 사용합니다.
 
 ## Frontend Fundamentals Review
 
