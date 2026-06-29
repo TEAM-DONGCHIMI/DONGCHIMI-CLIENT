@@ -1,6 +1,6 @@
 import { QueryClient, type DefaultOptions } from '@tanstack/react-query';
 
-import { isApiError } from '../api';
+import { isApiError } from '@/shared/api';
 
 const DEFAULT_STALE_TIME_MS = 30_000;
 const MAX_QUERY_RETRY_COUNT = 2;

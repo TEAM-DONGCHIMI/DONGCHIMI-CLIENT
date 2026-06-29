@@ -1,8 +1,23 @@
 import { expect, test } from '@playwright/test';
 
-test('client home page renders', async ({ page }) => {
+test('client root route redirects to login', async ({ page }) => {
   await page.goto('/');
 
   await expect(page).toHaveTitle('DONGCHIMI Client');
-  await expect(page.getByText('DONGCHIMI CLIENT')).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(page.getByRole('heading', { name: '동치미 로그인' })).toBeVisible();
+});
+
+test('client mobile web route shells render', async ({ page }) => {
+  await page.goto('/markets');
+
+  await expect(page.getByRole('heading', { name: '내 주변 마트' })).toBeVisible();
+
+  await page.goto('/markets/mangwon-fresh');
+
+  await expect(page.getByRole('heading', { name: '마트 전단 상품' })).toBeVisible();
+
+  await page.goto('/markets/mangwon-fresh/products/samgyeopsal-500g');
+
+  await expect(page.getByRole('heading', { name: '상품 상세' })).toBeVisible();
 });

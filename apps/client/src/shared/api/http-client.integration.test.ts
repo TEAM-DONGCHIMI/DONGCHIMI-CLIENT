@@ -1,7 +1,7 @@
 import { HttpResponse, http } from 'msw';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { server } from '../../test';
+import { server } from '@/test';
 import { httpClient } from './http-client';
 
 const API_BASE_URL = 'https://api.test';
