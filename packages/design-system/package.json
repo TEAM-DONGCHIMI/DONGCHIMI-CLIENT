@@ -10,7 +10,9 @@
     ".": "./src/index.ts",
     "./components": "./src/components/index.ts",
     "./icons": "./src/icons/index.ts",
-    "./styles": "./src/styles/index.ts"
+    "./styles": "./src/styles/index.ts",
+    "./styles/reset.css": "./src/styles/reset.css.ts",
+    "./tokens": "./src/tokens/index.ts"
   },
   "types": "./src/index.ts",
   "scripts": {
@@ -29,6 +31,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@vanilla-extract/css": "catalog:",
     "@vanilla-extract/recipes": "catalog:",
     "clsx": "catalog:"
   },
@@ -50,7 +53,6 @@
     "@testing-library/user-event": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vanilla-extract/css": "catalog:",
     "@vanilla-extract/vite-plugin": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "chromatic": "^16.10.0",
