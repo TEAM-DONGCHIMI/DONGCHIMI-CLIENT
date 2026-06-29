@@ -13,11 +13,11 @@ test('client mobile web route shells render', async ({ page }) => {
 
   await expect(page.getByRole('heading', { name: '내 주변 마트' })).toBeVisible();
 
-  await page.goto('/markets/mangwon-fresh');
+  await page.getByRole('link', { name: '망원 신선마트 전단 보기' }).click();
 
   await expect(page.getByRole('heading', { name: '마트 전단 상품' })).toBeVisible();
 
-  await page.goto('/markets/mangwon-fresh/products/samgyeopsal-500g');
+  await page.getByRole('link', { name: '삼겹살 500g 상세 보기' }).click();
 
   await expect(page.getByRole('heading', { name: '상품 상세' })).toBeVisible();
 });

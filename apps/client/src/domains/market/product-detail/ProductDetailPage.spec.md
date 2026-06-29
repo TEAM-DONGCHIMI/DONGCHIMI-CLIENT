@@ -69,6 +69,7 @@
 ## Verification
 
 - [ ] `git diff --check`
+- [ ] `pnpm format:check`
 - [ ] `pnpm --filter client lint`
 - [ ] `pnpm --filter client typecheck`
 - [ ] `pnpm --filter client build`
