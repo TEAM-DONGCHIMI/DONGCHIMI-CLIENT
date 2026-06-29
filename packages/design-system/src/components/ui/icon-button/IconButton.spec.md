@@ -88,6 +88,7 @@ IconButton
 - icon: `solid`, `outlined`는 20px, `ghost`는 24px 슬롯입니다.
 - variants: `solid`, `outlined`, `ghost`
 - colors: `primary`, `assistive`, `negative`
+- color/variant matrix: `primary`, `assistive`, `negative`와 `solid`, `outlined`, `ghost` 조합을 렌더링할 수 있습니다.
 - ghost: 배경과 테두리를 렌더링하지 않습니다.
 - focus/disabled: `focus-visible` outline, disabled opacity를 제공합니다.
 - token usage: DCMFE-35 token merge 전까지 Figma 색상값을 `IconButton.css.ts`에만 둡니다.
@@ -106,8 +107,9 @@ IconButton
 - [x] Assistive outlined
 - [x] Negative outlined
 - [x] Assistive ghost
+- [x] `aria-labelledby` accessible name example
 - [x] Disabled
-- [x] Variant/color matrix
+- [x] Full variant/color matrix
 
 ## Public API
 

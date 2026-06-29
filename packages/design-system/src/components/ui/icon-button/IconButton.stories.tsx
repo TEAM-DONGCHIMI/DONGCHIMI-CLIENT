@@ -5,6 +5,9 @@ import { fn } from 'storybook/test';
 import { IcChevronRight } from '../../../icons';
 import { IconButton } from './IconButton';
 
+const iconButtonColors = ['primary', 'assistive', 'negative'] as const;
+const iconButtonVariants = ['solid', 'outlined', 'ghost'] as const;
+
 const meta = {
   title: 'Design System/UI/IconButton',
   component: IconButton,
@@ -69,6 +72,19 @@ export const AssistiveGhost: StoryTypes = {
   },
 };
 
+export const AriaLabelledBy: StoryTypes = {
+  render: () => {
+    const labelId = 'icon-button-labelled-by-story';
+
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span id={labelId}>다음 단계</span>
+        <IconButton aria-labelledby={labelId} icon={<IcChevronRight />} />
+      </div>
+    );
+  },
+};
+
 export const Disabled: StoryTypes = {
   args: {
     color: 'assistive',
@@ -80,26 +96,24 @@ export const Disabled: StoryTypes = {
 export const VariantMatrix: StoryTypes = {
   render: () => {
     return (
-      <div style={{ display: 'flex', gap: 16 }}>
-        <IconButton aria-label='primary solid' color='primary' icon={<IcChevronRight />} />
-        <IconButton
-          aria-label='assistive outlined'
-          color='assistive'
-          icon={<IcChevronRight />}
-          variant='outlined'
-        />
-        <IconButton
-          aria-label='negative outlined'
-          color='negative'
-          icon={<IcChevronRight />}
-          variant='outlined'
-        />
-        <IconButton
-          aria-label='assistive ghost'
-          color='assistive'
-          icon={<IcChevronRight />}
-          variant='ghost'
-        />
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, max-content)',
+          gap: 16,
+        }}
+      >
+        {iconButtonVariants.flatMap((variant) =>
+          iconButtonColors.map((color) => (
+            <IconButton
+              key={`${color}-${variant}`}
+              aria-label={`${color} ${variant}`}
+              color={color}
+              icon={<IcChevronRight />}
+              variant={variant}
+            />
+          )),
+        )}
       </div>
     );
   },
