@@ -2,6 +2,18 @@
 
 이 디렉터리는 DONGCHIMI-CLIENT에서 Codex와 다른 coding agent가 읽는 문서, skill, config, hook의 역할을 정리합니다.
 
+## Layer Model
+
+| Layer           | Source of truth                      | Role                                 |
+| --------------- | ------------------------------------ | ------------------------------------ |
+| Entry point     | `AGENTS.md`                          | agent가 먼저 읽는 짧은 라우팅 허브   |
+| Project guide   | `README.md`, `docs/index.md`         | 사람이 빠르게 보는 프로젝트 진입점   |
+| Detailed docs   | `docs/**`                            | 아키텍처, 컨벤션, workflow 기준      |
+| Repeatable flow | `recipes/**`, `templates/**`         | 반복 작업 절차와 spec/Jira 작성 형식 |
+| Agent workflow  | `.agents/skills/*/SKILL.md`          | 작업 유형별 agent 실행 절차          |
+| Automation      | `.github/**`, `turbo/generators/**`  | CI, PR 자동화, generator 실행 기준   |
+| Runtime source  | `.node-version`, root `package.json` | Node runtime과 package manager 기준  |
+
 ## Documents
 
 - [Indexing](./indexing.md): `AGENTS.md`, `.agents/skills`, `docs`, `recipes`, `templates`의 인덱싱 기준입니다.
@@ -43,9 +55,20 @@ AGENTS.md
     verify-e2e-smoke/SKILL.md
     verify-performance-budget/SKILL.md
     verify-<name>/SKILL.md
+.github/
+apps/
+  client/
+  market-owner/
 docs/
+packages/
+  design-system/
+  shared/
+  eslint-config/
+  typescript-config/
 recipes/
 templates/
+turbo/
+  generators/
 ```
 
 ## Maintenance Rule
@@ -68,6 +91,17 @@ templates/
 - 개인 선호 설정은 repo에 커밋하지 않고 사용자 전역 Codex config에 둡니다.
 - repo-local config와 hook은 팀 공통 정책이 필요할 때만 추가합니다.
 - Serena MCP는 repo-local `.serena/project.yml`과 사용자별 MCP 설정을 분리합니다.
+- Node runtime과 package manager는 Codex config가 아니라 `.node-version`과 root `package.json`을 따릅니다.
+
+## Refresh Checklist
+
+AGENTS, README, agent harness 문서를 갱신할 때는 아래 순서로 확인합니다.
+
+- 실제 workspace와 script는 `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `.github/workflows`, `turbo/generators`에서 먼저 확인합니다.
+- 문서 구조는 `docs/index.md`, `docs/agent/index.md`, `docs/agent/indexing.md`가 같은 계층을 설명하는지 확인합니다.
+- 새 workflow나 검증 기준이 생기면 `.agents/skills/*/SKILL.md`와 `docs/index.md` 링크를 함께 확인합니다.
+- 오래된 runtime, PR template, compatibility 문구는 `verify-agent-docs`의 stale reference 검사에 추가합니다.
+- 문서-only 변경도 `git diff --check`와 `pnpm format:check`를 실행합니다.
 
 ## Official References
 

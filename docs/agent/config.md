@@ -14,6 +14,15 @@ Repo에는 기본적으로 `.codex/config.toml`을 두지 않습니다.
 
 Serena MCP도 같은 원칙을 따릅니다. Codex MCP server 등록은 개인 `~/.codex/config.toml`에 두고, repo에는 팀 공용 project 설정인 `.serena/project.yml`과 운영 문서만 둡니다. 자세한 기준은 [Serena MCP](./serena-mcp.md)를 따릅니다.
 
+Node runtime과 pnpm 버전은 Codex config가 아니라 repo의 runtime source 파일을 따릅니다.
+
+```text
+.node-version
+package.json
+pnpm-workspace.yaml
+turbo.json
+```
+
 Jira REST 접근을 위한 email, API token, site URL은 repo에 커밋하지 않습니다. 로컬에서는 `.env.local` 또는 repo 밖 개인 파일을 사용합니다.
 
 ```text
@@ -48,6 +57,8 @@ ATLASSIAN_API_TOKEN=
 | context window              | `~/.codex/config.toml`                       | 개인 설정                         |
 | approval/sandbox preference | `~/.codex/config.toml`                       | 개인 설정, 팀 합의 전 repo 금지   |
 | Jira REST token             | `.env.local` 또는 repo 밖 개인 env file      | 개인 secret, repo 금지            |
+| Node runtime                | `.node-version`                              | 팀 공통 runtime source of truth   |
+| pnpm version                | root `package.json`                          | 팀 공통 package manager 기준      |
 | Codex hook policy           | `~/.codex/hooks.json` 또는 개인 Codex config | 개인 자동화, repo 금지            |
 | shared hook policy          | `.codex/hooks.json`                          | 팀 정책이 있을 때만               |
 | shared fallback filenames   | `.codex/config.toml`                         | repo 문서 구조가 요구할 때만      |
