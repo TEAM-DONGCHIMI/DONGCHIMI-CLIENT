@@ -28,10 +28,11 @@ chore/root/DCMFE-4-repo-setup
 | root, docs, CI, repo workflow                 | `DCMFE-*`        |
 | `apps/client` 동치미 클라이언트 웹            | `DCMCL-*`        |
 | `apps/market-owner` 마트 사장님 사이트 웹     | `DCMSM-*`        |
-| `apps/design-system-web` 디자인시스템 배포 웹 | `DCMDSW-*`       |
+| `apps/design-system-web` 디자인시스템 배포 웹 | `DCMDS-*`        |
 | `packages/design-system` 디자인 시스템        | `DCMDS-*`        |
 
 여러 앱, `packages/*`, 루트 설정, 문서, generator, CI처럼 제품 루트 변경은 `DCMFE-*`를 우선 사용합니다.
+디자인시스템 package와 design-system-web은 같은 `DCMDS-*` project를 사용하고, 필요한 경우 Jira Component 또는 label로 surface를 구분합니다.
 새 이슈를 만들어야 하면 변경을 주도하는 제품 또는 팀의 Jira project에 생성합니다.
 
 ## Commit

@@ -50,7 +50,7 @@ PASS: broken relative link가 없습니다.
 ### Step 4: 오래된 참조 검사
 
 ```bash
-rg -n "docs/code-quality\\.md|Test Checklist|What is this PR\\?|Spec / Docs|22\\.19\\.0|Node 22|package script가 생긴 뒤|app/package 구조가 생긴 뒤" AGENTS.md README.md docs recipes templates .agents .github --glob '!**/verify-agent-docs/SKILL.md'
+rg -n "docs/code-quality\\.md|Test Checklist|What is this PR\\?|Spec / Docs|22\\.19\\.0|Node 22|DCMDSW|package script가 생긴 뒤|app/package 구조가 생긴 뒤" AGENTS.md README.md docs recipes templates .agents .github --glob '!**/verify-agent-docs/SKILL.md'
 ```
 
 PASS: 의도적으로 남긴 compatibility 문서 외 stale reference가 없습니다.

@@ -8,8 +8,7 @@
 - Jira root key: `DCMFE-*`
 - Client web key: `DCMCL-*`
 - Market owner web key: `DCMSM-*`
-- Design system key: `DCMDS-*`
-- Design system web key: `DCMDSW-*`
+- Design system package/web key: `DCMDS-*`
 - 현재 app: `apps/client`, `apps/market-owner`
 - 예정 app: `apps/design-system-web`, 선택적 `apps/admin`, `apps/mobile`
 - 현재 package: `packages/design-system`, `packages/shared`, `packages/eslint-config`, `packages/typescript-config`
