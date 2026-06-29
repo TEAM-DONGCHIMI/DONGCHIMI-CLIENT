@@ -1,8 +1,6 @@
-import { pretendardFontClass } from '@dongchimi/design-system/styles/fonts.css';
-
 const HomePage = () => {
   return (
-    <main className={pretendardFontClass}>
+    <main>
       <section>
         <p>DONGCHIMI CLIENT</p>
       </section>

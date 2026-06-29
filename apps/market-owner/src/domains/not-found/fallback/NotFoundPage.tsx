@@ -1,11 +1,10 @@
-import { pretendardFontClass } from '@dongchimi/design-system/styles/fonts.css';
 import { Link } from 'react-router';
 
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 export const NotFoundPage = () => {
   return (
-    <main className={pretendardFontClass}>
+    <main>
       <section aria-labelledby='market-owner-not-found-title'>
         <p>404</p>
         <h1 id='market-owner-not-found-title'>페이지를 찾을 수 없습니다.</h1>

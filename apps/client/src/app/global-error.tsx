@@ -1,6 +1,5 @@
 'use client';
 
-import { pretendardFontClass } from '@dongchimi/design-system/styles/fonts.css';
 import * as Sentry from '@sentry/nextjs';
 import { useEffect } from 'react';
 
@@ -17,7 +16,7 @@ const GlobalError = ({ error, reset }: GlobalErrorProps) => {
   return (
     <html lang='ko'>
       <body>
-        <main className={pretendardFontClass}>
+        <main>
           <section aria-labelledby='global-error-title'>
             <h1 id='global-error-title'>문제가 발생했습니다.</h1>
             <button type='button' onClick={reset}>

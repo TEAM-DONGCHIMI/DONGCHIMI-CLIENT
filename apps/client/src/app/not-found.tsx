@@ -1,9 +1,6 @@
-import { pretendardFontClass } from '@dongchimi/design-system/styles/fonts.css';
-
 const NotFoundPage = () => {
   return (
     <main
-      className={pretendardFontClass}
       style={{
         display: 'grid',
         minHeight: '100vh',
