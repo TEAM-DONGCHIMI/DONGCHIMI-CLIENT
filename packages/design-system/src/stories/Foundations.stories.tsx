@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { atomic, semantic, shadow, text } from '../tokens';
+import { atomic, semantic, shadow, text, typography } from '../tokens';
 
 const neutralSteps = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90] as const;
 
@@ -9,19 +9,14 @@ const semanticColors = [
   ['primary/strong', semantic.primary.strong],
   ['primary/light', semantic.primary.light],
   ['status/positive', semantic.status.positive],
+  ['status/positiveLight', semantic.status.positiveLight],
   ['status/cautionary', semantic.status.cautionary],
   ['status/negative', semantic.status.negative],
+  ['status/negativeLight', semantic.status.negativeLight],
   ['overlay/dimmer', semantic.overlay.dimmer],
 ] as const;
 
-const textSteps = [
-  'display-1-bold',
-  'title-1-semibold',
-  'heading-1-semibold',
-  'body-1-medium',
-  'body-2-regular',
-  'caption-1-regular',
-] as const;
+const textSteps = Object.keys(typography) as (keyof typeof typography)[];
 
 const shadowSteps = ['small', 'medium'] as const;
 
