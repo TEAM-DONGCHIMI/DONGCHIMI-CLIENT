@@ -26,6 +26,21 @@ import {
 
 `cn`은 Tailwind conflict merge를 수행하지 않습니다. Tailwind를 사용하지 않는 현재 구조에서는 `clsx` 기반 className 조합만 담당합니다.
 
+## Global Styles
+
+전역 CSS side effect는 필요한 runtime entry에서 명시적으로 import합니다.
+
+```ts
+import '@dongchimi/design-system/styles/reset.css';
+import '@dongchimi/design-system/styles/fonts.css';
+```
+
+- `reset.css`: 공통 reset과 기본 element 스타일을 적용합니다.
+- `fonts.css`: Pretendard `@font-face`와 `html, body` 기본 font-family를 적용합니다.
+
+`fonts.css`는 `packages/design-system/src/assets/fonts/pretendard/PretendardVariable.woff2`를 직접 import합니다.
+각 앱과 Storybook의 bundler가 해당 asset을 자체 build output으로 내보내므로 앱별 `public` 디렉터리에 같은 폰트 파일을 복사하지 않습니다.
+
 ## Usage
 
 ```ts
