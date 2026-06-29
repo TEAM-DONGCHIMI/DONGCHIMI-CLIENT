@@ -11,7 +11,7 @@
 ## General
 
 - 요구사항은 Jira, Figma, 첨부 이미지, 로컬 문서 중 확인 가능한 근거를 우선합니다.
-- app/package 구조가 생기기 전에는 특정 프레임워크 관행을 문서만으로 강제하지 않습니다.
+- 새 app/package 구조는 실제 workspace, script, source of truth 문서를 확인한 뒤 적용합니다.
 - 관련 없는 refactor와 metadata churn을 피합니다.
 - 새 abstraction은 실제 중복, 책임 경계, 검증 가능성이 있을 때만 추가합니다.
 - 민감 정보는 repo에 커밋하지 않습니다.

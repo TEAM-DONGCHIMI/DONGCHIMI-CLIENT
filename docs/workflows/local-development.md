@@ -79,7 +79,7 @@ pre-commit hook은 빠른 로컬 가드이며, CI와 PR 전 root verification을
 
 ## Targeted Verification
 
-workspace 구조가 생기면 변경 위치 기준으로 targeted 검증을 우선합니다.
+workspace별 변경은 위치 기준으로 targeted 검증을 우선합니다.
 
 ```text
 apps/client/** -> client lint/typecheck/test/build

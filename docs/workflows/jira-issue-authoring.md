@@ -13,10 +13,12 @@ Jira 이슈를 만들거나 보강할 때 사용하는 기준입니다.
 | root, docs, CI, repo workflow | `DCMFE-*`                                  |
 | client web                    | `DCMCL-*`                                  |
 | market owner web              | `DCMSM-*`                                  |
-| design-system web             | `DCMDSW-*`                                 |
+| design-system web             | `DCMDS-*`                                  |
 | design-system package         | `DCMDS-*`                                  |
 | admin web                     | `DCMFE-*` 기본, 별도 project가 생기면 갱신 |
 | mobile WebView                | `DCMFE-*` 기본, 별도 project가 생기면 갱신 |
+
+디자인시스템 package와 design-system web은 같은 `DCMDS-*` Jira project를 사용합니다. 둘은 변경 흐름이 강하게 묶이므로 별도 project key로 나누지 않고, 필요한 경우 Jira Component 또는 label로 `package`, `design-system-web`, `storybook`, `tokens`, `icons` 같은 surface를 구분합니다.
 
 Jira/Figma/사진 기반 구현은 항상 이 문서로 이슈 구조를 정리한 뒤, `jira-design-implementation-workflow`로 착수 순서를 확인합니다.
 
@@ -119,7 +121,7 @@ Sub-task로 만들지 말아야 하는 경우:
 
 Child 본문에는 최소한 아래를 적습니다.
 
-- Parent: `DCMFE-###`, `DCMCL-###`, `DCMDS-###`, `DCMDSW-###`
+- Parent: `DCMFE-###`, `DCMCL-###`, `DCMDS-###`
 - Screen ID 또는 route
 - 직접 관련된 FRS ID / 결정 / Figma frame
 - 완료 기준과 검증
