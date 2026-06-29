@@ -29,12 +29,12 @@ Box
 
 ## Props
 
-| prop             | type                                     | required | description                     |
-| ---------------- | ---------------------------------------- | -------- | ------------------------------- |
-| `as`             | `ElementType`                            | false    | 렌더링할 HTML element/component |
-| `display`        | `'block' \| 'contents' \| 'inlineBlock'` | false    | 최소 display preset             |
-| `className`      | `string`                                 | false    | 호출부 className escape hatch   |
-| native div props | `ComponentPropsWithoutRef<'div'>`        | false    | 기본 HTML 속성                  |
+| prop             | type                              | required | description                     |
+| ---------------- | --------------------------------- | -------- | ------------------------------- |
+| `as`             | `ElementType`                     | false    | 렌더링할 HTML element/component |
+| `display`        | `'block' \| 'inlineBlock'`        | false    | 최소 display preset             |
+| `className`      | `string`                          | false    | 호출부 className escape hatch   |
+| native div props | `ComponentPropsWithoutRef<'div'>` | false    | 기본 HTML 속성                  |
 
 ## States
 
@@ -67,7 +67,7 @@ Box
 
 - [x] Default
 - [x] Semantic element
-- [x] Display contents
+- [x] Inline block
 
 ## Public API
 

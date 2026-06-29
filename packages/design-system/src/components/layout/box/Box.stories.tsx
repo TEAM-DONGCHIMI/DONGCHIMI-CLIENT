@@ -30,12 +30,14 @@ export const SemanticElement: StoryTypes = {
   },
 };
 
-export const DisplayContents: StoryTypes = {
+export const InlineBlock: StoryTypes = {
   render: () => (
     <div className={storySurfaceClassName}>
-      <Box display='contents'>
-        <span className={storyBlockClassName}>contents child</span>
-      </Box>
+      Text before{' '}
+      <Box display='inlineBlock'>
+        <span className={storyBlockClassName}>inline block</span>
+      </Box>{' '}
+      text after
     </div>
   ),
 };

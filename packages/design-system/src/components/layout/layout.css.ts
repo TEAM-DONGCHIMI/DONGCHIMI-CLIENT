@@ -23,9 +23,6 @@ export const boxDisplayClassNames = styleVariants({
   block: {
     display: 'block',
   },
-  contents: {
-    display: 'contents',
-  },
   inlineBlock: {
     display: 'inline-block',
   },
