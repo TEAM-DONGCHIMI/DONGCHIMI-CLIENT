@@ -20,6 +20,7 @@
 - [x] public props와 상태를 명확히 정의합니다.
 - [x] 아이콘 전용 버튼이므로 `aria-label` 또는 `aria-labelledby` 중 하나를 필수로 받습니다.
 - [x] Figma에서 확인된 `solid`, `outlined`, `ghost` 케이스를 지원합니다.
+- [x] Figma에서 확인된 `rounded=true` 원형 케이스를 지원합니다.
 - [x] 현재 `develop`에는 컬러 token이 없어 Figma 근거값을 component-local style에만 캡슐화합니다.
 
 ## UI Structure
@@ -62,6 +63,12 @@ IconButton
 - default: `'large'`
 - description: 현재 Figma 기준 40px 버튼만 지원합니다. `solid`, `outlined`는 20px 아이콘 슬롯, `ghost`는 24px 아이콘 슬롯을 사용합니다.
 
+### rounded
+
+- type: `RecipeVariantProps<typeof iconButton>['rounded']`
+- default: `false`
+- description: Figma `rounded=true` 케이스처럼 버튼 외곽을 원형으로 렌더링할지 결정합니다.
+
 ### native button props
 
 - type: `ComponentPropsWithoutRef<'button'>`
@@ -83,12 +90,12 @@ IconButton
 ## Styling
 
 - layout: inline-flex 버튼입니다.
-- radius: Figma `rounded=false` 케이스 기준 12px입니다.
+- radius: Figma `rounded=false` 케이스는 12px, `rounded=true` 케이스는 100px입니다.
 - size: large 기준 width 40px, height 40px입니다.
 - icon: `solid`, `outlined`는 20px, `ghost`는 24px 슬롯입니다.
 - variants: `solid`, `outlined`, `ghost`
 - colors: `primary`, `assistive`, `negative`
-- color/variant matrix: `primary`, `assistive`, `negative`와 `solid`, `outlined`, `ghost` 조합을 렌더링할 수 있습니다.
+- color/variant/rounded matrix: `primary`, `assistive`, `negative`와 `solid`, `outlined`, `ghost`, `rounded` 조합을 렌더링할 수 있습니다.
 - ghost: 배경과 테두리를 렌더링하지 않습니다.
 - focus/disabled: `focus-visible` outline, disabled opacity를 제공합니다.
 - token usage: `atomic`, `semantic` color token을 사용합니다. focus ring은 `semantic.primary.normal`을 기반으로 한 `color-mix`를 사용합니다.
@@ -106,10 +113,11 @@ IconButton
 - [x] Primary solid
 - [x] Assistive outlined
 - [x] Negative outlined
+- [x] Negative outlined rounded
 - [x] Assistive ghost
 - [x] `aria-labelledby` accessible name example
 - [x] Disabled
-- [x] Full variant/color matrix
+- [x] Full variant/color/rounded matrix
 
 ## Public API
 

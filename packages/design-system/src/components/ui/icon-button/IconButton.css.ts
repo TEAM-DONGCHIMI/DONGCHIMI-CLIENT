@@ -13,7 +13,6 @@ export const iconButton = recipe({
     boxSizing: 'border-box',
     borderStyle: 'solid',
     borderWidth: 0,
-    borderRadius: 12,
     backgroundColor: 'transparent',
     color: 'inherit',
     cursor: 'pointer',
@@ -54,6 +53,14 @@ export const iconButton = recipe({
       primary: {},
       assistive: {},
       negative: {},
+    },
+    rounded: {
+      false: {
+        borderRadius: 12,
+      },
+      true: {
+        borderRadius: 100,
+      },
     },
   },
   compoundVariants: [
@@ -147,6 +154,7 @@ export const iconButton = recipe({
   ],
   defaultVariants: {
     color: 'primary',
+    rounded: false,
     size: 'large',
     variant: 'solid',
   },

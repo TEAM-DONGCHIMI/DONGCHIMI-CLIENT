@@ -27,6 +27,9 @@ const meta = {
       control: 'select',
       options: ['large'],
     },
+    rounded: {
+      control: 'boolean',
+    },
     variant: {
       control: 'select',
       options: ['solid', 'outlined', 'ghost'],
@@ -36,6 +39,7 @@ const meta = {
     'aria-label': '다음',
     icon: <IcChevronRight />,
     onClick: fn(),
+    rounded: false,
   },
 } satisfies Meta<typeof IconButton>;
 
@@ -60,6 +64,15 @@ export const NegativeOutlined: StoryTypes = {
   args: {
     'aria-label': '삭제',
     color: 'negative',
+    variant: 'outlined',
+  },
+};
+
+export const NegativeOutlinedRounded: StoryTypes = {
+  args: {
+    'aria-label': '삭제',
+    color: 'negative',
+    rounded: true,
     variant: 'outlined',
   },
 };
@@ -99,20 +112,23 @@ export const VariantMatrix: StoryTypes = {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, max-content)',
+          gridTemplateColumns: 'repeat(6, max-content)',
           gap: 16,
         }}
       >
         {iconButtonVariants.flatMap((variant) =>
-          iconButtonColors.map((color) => (
-            <IconButton
-              key={`${color}-${variant}`}
-              aria-label={`${color} ${variant}`}
-              color={color}
-              icon={<IcChevronRight />}
-              variant={variant}
-            />
-          )),
+          iconButtonColors.flatMap((color) =>
+            [false, true].map((rounded) => (
+              <IconButton
+                key={`${color}-${variant}-${rounded ? 'rounded' : 'default'}`}
+                aria-label={`${color} ${variant} ${rounded ? 'rounded' : 'default'}`}
+                color={color}
+                icon={<IcChevronRight />}
+                rounded={rounded}
+                variant={variant}
+              />
+            )),
+          ),
         )}
       </div>
     );
