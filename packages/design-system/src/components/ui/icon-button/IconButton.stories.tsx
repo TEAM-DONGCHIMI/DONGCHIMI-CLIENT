@@ -26,7 +26,7 @@ const meta = {
     },
     variant: {
       control: 'select',
-      options: ['solid', 'outlined'],
+      options: ['solid', 'outlined', 'ghost'],
     },
   },
   args: {
@@ -61,6 +61,14 @@ export const NegativeOutlined: StoryTypes = {
   },
 };
 
+export const AssistiveGhost: StoryTypes = {
+  args: {
+    'aria-label': '닫기',
+    color: 'assistive',
+    variant: 'ghost',
+  },
+};
+
 export const Disabled: StoryTypes = {
   args: {
     color: 'assistive',
@@ -85,6 +93,12 @@ export const VariantMatrix: StoryTypes = {
           color='negative'
           icon={<IcChevronRight />}
           variant='outlined'
+        />
+        <IconButton
+          aria-label='assistive ghost'
+          color='assistive'
+          icon={<IcChevronRight />}
+          variant='ghost'
         />
       </div>
     );

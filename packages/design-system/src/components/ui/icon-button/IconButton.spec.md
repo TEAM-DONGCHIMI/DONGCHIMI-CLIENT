@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`IconButton`은 텍스트 없이 아이콘만으로 동작을 표현하는 원형 버튼 primitive입니다.
+`IconButton`은 텍스트 없이 아이콘만으로 동작을 표현하는 버튼 primitive입니다.
 디자인시스템 안에서는 외형, native button 동작, disabled 상태, 접근 가능한 이름 계약만 책임집니다.
 제품별 동작, 라우팅, 로깅, copy 선택은 호출부가 주입합니다.
 
@@ -19,6 +19,7 @@
 - [x] 제품 도메인 데이터, route, API, logging, analytics에 의존하지 않습니다.
 - [x] public props와 상태를 명확히 정의합니다.
 - [x] 아이콘 전용 버튼이므로 `aria-label` 또는 `aria-labelledby` 중 하나를 필수로 받습니다.
+- [x] Figma에서 확인된 `solid`, `outlined`, `ghost` 케이스를 지원합니다.
 - [x] 현재 `develop`에는 컬러 token이 없어 Figma 근거값을 component-local style에만 캡슐화합니다.
 
 ## UI Structure
@@ -47,7 +48,7 @@ IconButton
 
 - type: `RecipeVariantProps<typeof iconButton>['variant']`
 - default: `'solid'`
-- description: 채움 버튼 또는 외곽선 버튼 표현입니다.
+- description: 채움, 외곽선, 또는 배경/테두리 없는 버튼 표현입니다.
 
 ### color
 
@@ -59,7 +60,7 @@ IconButton
 
 - type: `RecipeVariantProps<typeof iconButton>['size']`
 - default: `'large'`
-- description: 현재 Figma 기준 40px 버튼과 20px 아이콘만 지원합니다.
+- description: 현재 Figma 기준 40px 버튼만 지원합니다. `solid`, `outlined`는 20px 아이콘 슬롯, `ghost`는 24px 아이콘 슬롯을 사용합니다.
 
 ### native button props
 
@@ -68,7 +69,7 @@ IconButton
 
 ## States
 
-- default: `variant`, `color`, `size`에 맞는 원형 아이콘 버튼을 렌더링합니다.
+- default: `variant`, `color`, `size`에 맞는 아이콘 버튼을 렌더링합니다.
 - disabled: native `disabled`를 사용하며 pointer interaction을 막고 opacity를 낮춥니다.
 - loading: 지원하지 않습니다.
 - invalid/error: 별도 상태 prop은 지원하지 않고 `color='negative'`로 위험 동작을 표현합니다.
@@ -81,10 +82,13 @@ IconButton
 
 ## Styling
 
-- layout: inline-flex 원형 버튼입니다.
-- size: large 기준 width 40px, height 40px, padding 10px, icon 20px입니다.
-- variants: `solid`, `outlined`
+- layout: inline-flex 버튼입니다.
+- radius: Figma `rounded=false` 케이스 기준 12px입니다.
+- size: large 기준 width 40px, height 40px입니다.
+- icon: `solid`, `outlined`는 20px, `ghost`는 24px 슬롯입니다.
+- variants: `solid`, `outlined`, `ghost`
 - colors: `primary`, `assistive`, `negative`
+- ghost: 배경과 테두리를 렌더링하지 않습니다.
 - focus/disabled: `focus-visible` outline, disabled opacity를 제공합니다.
 - token usage: DCMFE-35 token merge 전까지 Figma 색상값을 `IconButton.css.ts`에만 둡니다.
 
@@ -101,6 +105,7 @@ IconButton
 - [x] Primary solid
 - [x] Assistive outlined
 - [x] Negative outlined
+- [x] Assistive ghost
 - [x] Disabled
 - [x] Variant/color matrix
 
