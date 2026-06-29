@@ -1,4 +1,7 @@
 import { recipe } from '../../../styles/recipe';
+import { atomic, semantic } from '../../../tokens';
+
+const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
 export const iconButton = recipe({
   base: {
@@ -18,7 +21,7 @@ export const iconButton = recipe({
       'background-color 160ms ease, border-color 160ms ease, color 160ms ease, opacity 160ms ease, outline-color 160ms ease',
     selectors: {
       '&:focus-visible': {
-        outline: '3px solid rgba(21, 196, 126, 0.34)',
+        outline: `3px solid ${focusOutlineColor}`,
         outlineOffset: 2,
       },
       '&:disabled': {
@@ -41,7 +44,7 @@ export const iconButton = recipe({
       outlined: {
         padding: 10,
         borderWidth: 1,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: atomic.common[0],
       },
       solid: {
         padding: 10,
@@ -60,8 +63,8 @@ export const iconButton = recipe({
         variant: 'solid',
       },
       style: {
-        backgroundColor: '#15C47E',
-        color: '#FFFFFF',
+        backgroundColor: semantic.primary.normal,
+        color: atomic.common[0],
       },
     },
     {
@@ -70,8 +73,8 @@ export const iconButton = recipe({
         variant: 'solid',
       },
       style: {
-        backgroundColor: '#F2F4F6',
-        color: '#171719',
+        backgroundColor: atomic.neutral[10],
+        color: atomic.neutral[90],
       },
     },
     {
@@ -80,8 +83,8 @@ export const iconButton = recipe({
         variant: 'solid',
       },
       style: {
-        backgroundColor: '#FF4242',
-        color: '#FFFFFF',
+        backgroundColor: semantic.status.negative,
+        color: atomic.common[0],
       },
     },
     {
@@ -90,8 +93,8 @@ export const iconButton = recipe({
         variant: 'outlined',
       },
       style: {
-        borderColor: '#15C47E',
-        color: '#15C47E',
+        borderColor: semantic.primary.normal,
+        color: semantic.primary.normal,
       },
     },
     {
@@ -100,8 +103,8 @@ export const iconButton = recipe({
         variant: 'outlined',
       },
       style: {
-        borderColor: '#B0B8C1',
-        color: '#171719',
+        borderColor: atomic.neutral[40],
+        color: atomic.neutral[90],
       },
     },
     {
@@ -110,8 +113,8 @@ export const iconButton = recipe({
         variant: 'outlined',
       },
       style: {
-        borderColor: '#FF6362',
-        color: '#FF4242',
+        borderColor: semantic.status.negativeLight,
+        color: semantic.status.negative,
       },
     },
     {
@@ -120,7 +123,7 @@ export const iconButton = recipe({
         variant: 'ghost',
       },
       style: {
-        color: '#15C47E',
+        color: semantic.primary.normal,
       },
     },
     {
@@ -129,7 +132,7 @@ export const iconButton = recipe({
         variant: 'ghost',
       },
       style: {
-        color: '#171719',
+        color: atomic.neutral[90],
       },
     },
     {
@@ -138,7 +141,7 @@ export const iconButton = recipe({
         variant: 'ghost',
       },
       style: {
-        color: '#FF4242',
+        color: semantic.status.negative,
       },
     },
   ],

@@ -91,7 +91,7 @@ IconButton
 - color/variant matrix: `primary`, `assistive`, `negative`와 `solid`, `outlined`, `ghost` 조합을 렌더링할 수 있습니다.
 - ghost: 배경과 테두리를 렌더링하지 않습니다.
 - focus/disabled: `focus-visible` outline, disabled opacity를 제공합니다.
-- token usage: DCMFE-35 token merge 전까지 Figma 색상값을 `IconButton.css.ts`에만 둡니다.
+- token usage: `atomic`, `semantic` color token을 사용합니다. focus ring은 `semantic.primary.normal`을 기반으로 한 `color-mix`를 사용합니다.
 
 ## Accessibility
 
