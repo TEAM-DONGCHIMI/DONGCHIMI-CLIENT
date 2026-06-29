@@ -38,6 +38,9 @@ import '@dongchimi/design-system/styles/fonts.css';
 - `reset.css`: 공통 reset과 기본 element 스타일을 적용합니다.
 - `fonts.css`: Pretendard `@font-face`와 `html, body` 기본 font-family를 적용합니다.
 
+`reset.css`는 브라우저 기본 margin, heading typography, list, link, form control, table, fieldset/dialog 기본 스타일을 초기화합니다.
+제품별 시각 스타일과 typography scale은 reset이 아니라 token 또는 component style에서 명시합니다.
+
 `fonts.css`는 `packages/design-system/src/assets/fonts/pretendard/PretendardVariable.woff2`를 직접 import합니다.
 각 앱과 Storybook의 bundler가 해당 asset을 자체 build output으로 내보내므로 앱별 `public` 디렉터리에 같은 폰트 파일을 복사하지 않습니다.
 
