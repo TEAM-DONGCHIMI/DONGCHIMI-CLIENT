@@ -58,10 +58,13 @@ AGENTS.md
 .github/
 apps/
   client/
+    AGENTS.md
   market-owner/
+    AGENTS.md
 docs/
 packages/
   design-system/
+    AGENTS.md
   shared/
   eslint-config/
   typescript-config/
@@ -74,6 +77,7 @@ turbo/
 ## Maintenance Rule
 
 - `AGENTS.md`는 agent가 어디를 먼저 읽을지 알려주는 짧은 허브로 유지합니다.
+- 하위 `AGENTS.md`는 root `AGENTS.md`와 다른 workspace-local 불변량이 있을 때만 둡니다.
 - 상세 규칙은 `docs/`, `recipes/`, `templates/`, `.agents/skills/`의 가장 가까운 source of truth에 둡니다.
 - 실행 지침은 가장 가까운 `AGENTS.md`에 두되, 다른 문서 내용을 길게 복사하지 않습니다.
 - 재사용 가능한 사고 프레임은 `.agents/skills/*/SKILL.md`에 둡니다.

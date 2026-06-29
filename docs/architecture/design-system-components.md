@@ -120,8 +120,8 @@ export type { ButtonProps } from './button';
 ```bash
 pnpm --filter @dongchimi/design-system lint
 pnpm --filter @dongchimi/design-system typecheck
+pnpm --filter @dongchimi/design-system test
 pnpm --filter @dongchimi/design-system build
+pnpm --filter @dongchimi/design-system build-storybook
 git diff --check
 ```
-
-Storybook은 아직 package에 연결하지 않았습니다. Storybook 설정을 추가한 뒤에 `build-storybook` 검증을 별도 작업에서 추가합니다.
