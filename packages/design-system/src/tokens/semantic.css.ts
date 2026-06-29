@@ -8,8 +8,10 @@ export const semantic = createGlobalTheme(':root', {
   },
   status: {
     positive: '#0066FF',
+    positiveLight: '#3385FF',
     cautionary: '#FF9200',
     negative: '#FF4242',
+    negativeLight: '#FF6362',
   },
   overlay: {
     dimmer: 'rgba(25, 31, 40, 0.55)',
