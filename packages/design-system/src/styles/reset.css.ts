@@ -9,6 +9,7 @@ globalStyle('*', {
 });
 
 globalStyle('html', {
+  fontSize: '62.5%',
   WebkitTextSizeAdjust: '100%',
   tabSize: 4,
 });
