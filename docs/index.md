@@ -43,6 +43,7 @@
 ## Decisions
 
 - [Decision Log Guide](./decisions/index.md)
+- [Client route entry and domain page boundary](./decisions/2026-06-29-client-route-domain-boundary.md)
 
 ## Agent Harness
 
