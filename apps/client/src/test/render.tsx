@@ -2,7 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { render, type RenderOptions, type RenderResult } from '@testing-library/react';
 import type { ReactElement, ReactNode } from 'react';
 
-import { createQueryClient } from '../shared/query';
+import { createQueryClient } from '@/shared/query';
 
 type TestRenderOptionsTypes = Omit<RenderOptions, 'wrapper'> & {
   queryClient?: ReturnType<typeof createQueryClient>;
