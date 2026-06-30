@@ -17,3 +17,5 @@ export { Container } from './components/layout/container';
 export type { ContainerProps } from './components/layout/container';
 export { Button } from './components/ui/button';
 export type { ButtonProps } from './components/ui/button';
+export { NumButton } from './components/ui/num-button';
+export type { NumButtonProps } from './components/ui/num-button';
