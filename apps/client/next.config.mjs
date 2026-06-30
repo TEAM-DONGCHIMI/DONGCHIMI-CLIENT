@@ -12,6 +12,19 @@ const nextConfig = {
   turbopack: {
     root: path.join(__dirname, '../..'),
   },
+  webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /\.woff2$/i,
+      type: 'asset/resource',
+      generator: isServer
+        ? {
+            emit: false,
+          }
+        : undefined,
+    });
+
+    return config;
+  },
 };
 
 export default withSentryConfig(withVanillaExtract(nextConfig), {

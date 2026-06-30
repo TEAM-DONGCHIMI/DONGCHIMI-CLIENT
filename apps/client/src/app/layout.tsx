@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import '@dongchimi/design-system/styles/reset.css';
+import '@dongchimi/design-system/styles/fonts.css';
 import './globals.css';
 
 import { AppProviders } from './providers';

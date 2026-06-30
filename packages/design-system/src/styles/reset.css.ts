@@ -8,13 +8,21 @@ globalStyle('*', {
   margin: 0,
 });
 
+globalStyle('html', {
+  fontSize: '62.5%',
+  WebkitTextSizeAdjust: '100%',
+  tabSize: 4,
+});
+
 globalStyle('html, body', {
   height: '100%',
 });
 
 globalStyle('body', {
   lineHeight: 1.5,
+  textRendering: 'optimizeLegibility',
   WebkitFontSmoothing: 'antialiased',
+  MozOsxFontSmoothing: 'grayscale',
 });
 
 globalStyle('img, picture, video, canvas, svg', {
@@ -23,7 +31,12 @@ globalStyle('img, picture, video, canvas, svg', {
 });
 
 globalStyle('input, button, textarea, select', {
+  color: 'inherit',
   font: 'inherit',
+});
+
+globalStyle('input, textarea, select', {
+  borderRadius: 0,
 });
 
 globalStyle('button', {
@@ -38,6 +51,7 @@ globalStyle('button:enabled', {
 
 globalStyle('a', {
   color: 'inherit',
+  textDecoration: 'none',
 });
 
 globalStyle('ul, ol', {
@@ -47,5 +61,29 @@ globalStyle('ul, ol', {
 });
 
 globalStyle('p, h1, h2, h3, h4, h5, h6', {
+  font: 'inherit',
+});
+
+globalStyle('p, h1, h2, h3, h4, h5, h6', {
   overflowWrap: 'break-word',
+});
+
+globalStyle('table', {
+  borderCollapse: 'collapse',
+  borderSpacing: 0,
+});
+
+globalStyle('fieldset', {
+  margin: 0,
+  padding: 0,
+  border: 0,
+});
+
+globalStyle('legend', {
+  padding: 0,
+});
+
+globalStyle('dialog', {
+  padding: 0,
+  border: 'none',
 });

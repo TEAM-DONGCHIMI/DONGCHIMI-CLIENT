@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@dongchimi/design-system": "workspace:*",
     "@sentry/react": "catalog:",
     "@tanstack/react-query": "catalog:",
     "ky": "catalog:",
@@ -32,6 +33,7 @@
     "@tanstack/react-query-devtools": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@vanilla-extract/vite-plugin": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
