@@ -9,7 +9,7 @@ const buttonPresets = [
   { color: 'assistive', disabled: false, variant: 'outlined' },
   { color: 'assistiveLight', disabled: false, variant: 'outlined' },
   { color: 'negative', disabled: false, variant: 'outlined' },
-  { color: 'primary', disabled: false, variant: 'outlined' },
+  { color: 'primary', disabled: false, variant: 'soft' },
   { color: 'primary', disabled: true, variant: 'solid' },
   { color: 'assistive', disabled: false, variant: 'solid' },
 ] as const;
@@ -40,7 +40,7 @@ const meta = {
     },
     variant: {
       control: 'select',
-      options: ['solid', 'outlined'],
+      options: ['solid', 'outline', 'soft'],
     },
   },
   args: {

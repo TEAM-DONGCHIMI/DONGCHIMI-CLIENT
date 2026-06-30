@@ -67,6 +67,9 @@ export const button = recipe({
       outlined: {
         borderWidth: 1,
       },
+      soft: {
+        borderWidth: 1,
+      },
     },
     color: {
       primary: {},
@@ -99,7 +102,7 @@ export const button = recipe({
     {
       variants: {
         color: 'primary',
-        variant: 'outlined',
+        variant: 'soft',
       },
       style: {
         borderColor: semantic.primary.normal,
