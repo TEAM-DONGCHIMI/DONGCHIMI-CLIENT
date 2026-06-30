@@ -13,7 +13,6 @@ export const button = recipe({
     justifySelf: 'start',
     alignItems: 'center',
     justifyContent: 'center',
-    boxSizing: 'border-box',
     borderStyle: 'solid',
     borderWidth: 0,
     maxWidth: '100%',
