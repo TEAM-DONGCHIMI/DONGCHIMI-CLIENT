@@ -31,7 +31,8 @@ Use this when adding or changing a route page.
 
 ## DONGCHIMI Rules
 
-- 앱별 Jira key를 확인합니다: `DCMCL-*`, `DCMDSW-*`, `DCMFE-*`.
+- 앱별 Jira key를 확인합니다: `DCMCL-*`, `DCMDS-*`, `DCMFE-*`.
+- `apps/design-system-web` 페이지는 디자인시스템 package와 같은 `DCMDS-*`에서 관리합니다.
 - 사장님 사이트 작업은 `apps/market-owner` 범위이면 `DCMSM-*`, root/generator/docs 범위이면 `DCMFE-*`를 사용합니다.
 - app-specific code는 실제 reuse 전까지 app 내부에 둡니다.
 - Next route entry는 `apps/{app}/src/app/{route-path}/page.tsx`에 둡니다.

@@ -36,6 +36,10 @@ YYYY-MM-DD-short-decision-title.md
 2026-06-16-jira-rest-access-policy.md
 ```
 
+## Logs
+
+- [2026-06-29 Design System Jira Project](./2026-06-29-design-system-jira-project.md)
+
 ## Template
 
 ```markdown

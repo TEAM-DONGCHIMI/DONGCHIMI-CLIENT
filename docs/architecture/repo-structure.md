@@ -32,15 +32,15 @@ turbo.json
 
 아래 영역은 Jira 템플릿과 현재 workspace 경계를 맞추기 위한 매핑입니다. 실제 app/package 책임은 디렉터리, package manifest, 관련 architecture 문서가 함께 생긴 뒤 확정합니다.
 
-| Area                  | Jira key       | Notes                                        |
-| --------------------- | -------------- | -------------------------------------------- |
-| root / repo workflow  | `DCMFE-*`      | 문서, CI, 설정, 전체 구조                    |
-| client web            | `DCMCL-*`      | 동치미 클라이언트 웹                         |
-| market owner web      | `DCMSM-*`      | 마트 사장님 사이트 웹                        |
-| design system package | `DCMDS-*`      | 공용 디자인 시스템                           |
-| design system web     | `DCMDSW-*`     | 디자인시스템 문서/배포 웹                    |
-| admin web             | `DCMFE-*` 기본 | 제품 요구사항 확정 뒤 별도 key가 생기면 갱신 |
-| mobile WebView        | `DCMFE-*` 기본 | WebView shell 필요 시 추가                   |
+| Area                  | Jira key       | Notes                                          |
+| --------------------- | -------------- | ---------------------------------------------- |
+| root / repo workflow  | `DCMFE-*`      | 문서, CI, 설정, 전체 구조                      |
+| client web            | `DCMCL-*`      | 동치미 클라이언트 웹                           |
+| market owner web      | `DCMSM-*`      | 마트 사장님 사이트 웹                          |
+| design system package | `DCMDS-*`      | 공용 디자인 시스템                             |
+| design system web     | `DCMDS-*`      | 디자인시스템 문서/배포 웹, DCMDS에서 함께 관리 |
+| admin web             | `DCMFE-*` 기본 | 제품 요구사항 확정 뒤 별도 key가 생기면 갱신   |
+| mobile WebView        | `DCMFE-*` 기본 | WebView shell 필요 시 추가                     |
 
 ## Workspace Layout
 
