@@ -34,7 +34,8 @@ pnpm gen:react-page --args market-owner <domain> <page> <PageName>
 - `design-system-web`, `admin`, `mobile`은 실제 앱이 생성된 뒤 generator choice에 추가합니다.
 - `mobile`은 WebView native shell 특성이 있으므로 별도 generator 필요성을 먼저 검토합니다.
 - app arg가 빠지면 기본 앱으로 fallback하지 않습니다.
-- 앱별 Jira key는 `apps/client` = `DCMCL-*`, `apps/design-system-web` = `DCMDSW-*`, `packages/design-system` = `DCMDS-*`를 따릅니다.
+- 앱별 Jira key는 `apps/client` = `DCMCL-*`, `apps/design-system-web` = `DCMDS-*`, `packages/design-system` = `DCMDS-*`를 따릅니다.
+- 디자인시스템 package와 design-system-web은 같은 `DCMDS-*` project를 사용하고, generator 또는 Storybook 작업은 Jira Component/label로 surface를 구분합니다.
 - 여러 앱, `packages/*`, 루트 설정, 문서, generator 변경은 `DCMFE-*`를 우선 사용합니다.
 
 ## Page And Domain Structure

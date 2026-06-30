@@ -49,7 +49,7 @@ find .agents/skills -maxdepth 3 -name SKILL.md -print
 git diff --check
 ```
 
-package script가 생긴 뒤에는 가벼운 검증에서 무거운 검증으로 진행합니다.
+package script가 있는 변경은 가벼운 검증에서 무거운 검증으로 진행합니다.
 
 ```bash
 pnpm format:check

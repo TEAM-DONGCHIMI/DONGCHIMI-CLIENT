@@ -9,3 +9,5 @@ export type {
   RecipeVariantSelectionTypes,
   RuntimeFn,
 } from './recipe';
+export { styleVariants } from './style-variant';
+export type { StyleVariantClassNameTypes, StyleVariantProps } from './style-variant';
