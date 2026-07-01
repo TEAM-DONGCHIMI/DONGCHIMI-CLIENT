@@ -7,12 +7,35 @@ import { button, buttonIcon } from './Button.css';
 type NativeButtonProps = Omit<ComponentPropsWithoutRef<'button'>, 'children' | 'color'>;
 
 type ButtonVariantProps = RecipeVariantProps<typeof button>;
+type ButtonSizeTypes = NonNullable<ButtonVariantProps['size']>;
+type ButtonColorTypes = NonNullable<ButtonVariantProps['color']>;
+type ButtonVariantTypes = NonNullable<ButtonVariantProps['variant']>;
 
-export interface ButtonProps extends NativeButtonProps, ButtonVariantProps {
-  children: ReactNode;
-  leftIcon?: ReactNode;
-  rightIcon?: ReactNode;
-}
+type ButtonPresetProps =
+  | {
+      color?: Extract<ButtonColorTypes, 'primary' | 'assistive'>;
+      variant?: Extract<ButtonVariantTypes, 'solid'>;
+    }
+  | {
+      color: Extract<ButtonColorTypes, 'assistive' | 'assistiveLight' | 'negative'>;
+      variant: Extract<ButtonVariantTypes, 'outlined'>;
+    }
+  | {
+      color?: Extract<ButtonColorTypes, 'primary'>;
+      variant: Extract<ButtonVariantTypes, 'soft'>;
+    };
+
+export type ButtonProps = NativeButtonProps &
+  ButtonPresetProps & {
+    size?: ButtonSizeTypes;
+    children: ReactNode;
+    leftIcon?: ReactNode;
+    rightIcon?: ReactNode;
+  };
+
+const hasRenderableIcon = (icon: ReactNode) => {
+  return icon !== null && icon !== undefined && icon !== false;
+};
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -29,7 +52,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref,
   ) => {
-    const canRenderIcon = size !== 'mobile';
+    const hasLeftIcon = hasRenderableIcon(leftIcon);
+    const hasRightIcon = hasRenderableIcon(rightIcon);
 
     return (
       <button
@@ -38,13 +62,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         type={type}
         {...props}
       >
-        {canRenderIcon && leftIcon !== undefined ? (
+        {hasLeftIcon ? (
           <span aria-hidden='true' className={buttonIcon}>
             {leftIcon}
           </span>
         ) : null}
         <span>{children}</span>
-        {canRenderIcon && rightIcon !== undefined ? (
+        {hasRightIcon ? (
           <span aria-hidden='true' className={buttonIcon}>
             {rightIcon}
           </span>

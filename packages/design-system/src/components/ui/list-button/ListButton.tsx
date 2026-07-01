@@ -17,6 +17,10 @@ export interface ListButtonProps extends NativeButtonProps, ListButtonPublicVari
   leftIcon?: ReactNode;
 }
 
+const hasRenderableIcon = (icon: ReactNode) => {
+  return icon != null && icon !== false;
+};
+
 export const ListButton = forwardRef<HTMLButtonElement, ListButtonProps>(
   (
     {
@@ -30,18 +34,17 @@ export const ListButton = forwardRef<HTMLButtonElement, ListButtonProps>(
     },
     ref,
   ) => {
+    const hasLeftIcon = hasRenderableIcon(leftIcon);
+
     return (
       <button
         ref={ref}
-        className={cn(
-          listButton({ color, hasLeftIcon: leftIcon !== undefined, selected }),
-          className,
-        )}
+        className={cn(listButton({ color, hasLeftIcon, selected }), className)}
         {...props}
         aria-pressed={selected}
         type={type}
       >
-        {leftIcon !== undefined ? (
+        {hasLeftIcon ? (
           <span aria-hidden='true' className={listButtonIcon}>
             {selected ? leftIcon : null}
           </span>
