@@ -91,10 +91,10 @@ Toast
 ## Styling
 
 - layout: inline-flex, center aligned
-- size: Figma 기준 `18.4rem x 4.8rem`
+- size: Figma 기준 최소 `18.4rem x 4.8rem`, 최대 폭 `33.4rem`
 - spacing: 좌우 `1.8rem`, 상하 `1.2rem`, icon/message 간격 `0.4rem`
 - radius: `0.8rem`
-- responsive: viewport보다 넓어지지 않게 `max-width`를 제한합니다.
+- responsive: viewport보다 넓어지지 않게 `max-width`를 `min(33.4rem, calc(100vw - 3.2rem))`로 제한합니다.
 - overflow: message는 한 줄 말줄임 처리합니다.
 - color: completed `atomic.neutral[90]`, error `semantic.status.negativeLight`, text `atomic.common[0]`, dashed icon `atomic.common[100]`
 - icon: `2.4rem` slot 안에 `1.93rem x 1.93rem` dashed icon을 렌더링합니다.

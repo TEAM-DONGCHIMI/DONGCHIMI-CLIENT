@@ -46,6 +46,18 @@ describe('Toast', () => {
     expect(toast).toHaveAttribute('aria-live', 'off');
   });
 
+  it('keeps status-based aria-live when only role is overridden', () => {
+    render(
+      <Toast role='note' status='error'>
+        링크가 복사되지 않았어요
+      </Toast>,
+    );
+
+    const toast = screen.getByRole('note');
+
+    expect(toast).toHaveAttribute('aria-live', 'assertive');
+  });
+
   it('passes a ref prop to the root element', () => {
     const ref = createRef<HTMLDivElement>();
 

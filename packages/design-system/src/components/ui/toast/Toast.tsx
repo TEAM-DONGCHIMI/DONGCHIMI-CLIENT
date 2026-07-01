@@ -1,12 +1,7 @@
 import { type ComponentPropsWithRef, type ReactNode } from 'react';
 
 import { cn } from '../../../styles/class-name';
-import {
-  toast,
-  toastDefaultIconClassName,
-  toastIconClassName,
-  toastMessageClassName,
-} from './Toast.css';
+import * as S from './Toast.css';
 
 type ToastStatusTypes = 'completed' | 'error';
 
@@ -37,23 +32,23 @@ export const Toast = ({
   ...props
 }: ToastProps) => {
   const resolvedRole = role ?? getDefaultRole(status);
-  const resolvedAriaLive = ariaLive ?? (role == null ? getDefaultAriaLive(status) : undefined);
-  const resolvedIcon = icon === undefined ? <span className={toastDefaultIconClassName} /> : icon;
+  const resolvedAriaLive = ariaLive ?? getDefaultAriaLive(status);
+  const resolvedIcon = icon === undefined ? <span className={S.toastDefaultIconClassName} /> : icon;
 
   return (
     <div
       ref={ref}
       aria-live={resolvedAriaLive}
-      className={cn(toast({ status }), className)}
+      className={cn(S.toast({ status }), className)}
       role={resolvedRole}
       {...props}
     >
       {resolvedIcon != null && resolvedIcon !== false && (
-        <span aria-hidden='true' className={toastIconClassName}>
+        <span aria-hidden='true' className={S.toastIconClassName}>
           {resolvedIcon}
         </span>
       )}
-      <span className={toastMessageClassName}>{children}</span>
+      <span className={S.toastMessageClassName}>{children}</span>
     </div>
   );
 };
