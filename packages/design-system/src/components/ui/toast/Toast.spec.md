@@ -96,9 +96,9 @@ Toast
 - radius: `0.8rem`
 - responsive: viewport보다 넓어지지 않게 `max-width`를 제한합니다.
 - overflow: message는 한 줄 말줄임 처리합니다.
-- color: completed `#191F28`, error `#FF6362`, text `#FFFFFF`, dashed icon `#171719`
+- color: completed `atomic.neutral[90]`, error `semantic.status.negativeLight`, text `atomic.common[0]`, dashed icon `atomic.common[100]`
 - icon: `2.4rem` slot 안에 `1.93rem x 1.93rem` dashed icon을 렌더링합니다.
-- typography: Pretendard Regular `1.4rem`, line-height `140%`, letter-spacing `-2%`
+- typography: `typography['body-3-regular']`
 
 ## Accessibility
 

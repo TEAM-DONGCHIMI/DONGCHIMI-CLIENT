@@ -1,16 +1,11 @@
 import { style } from '@vanilla-extract/css';
 
 import { recipe } from '../../../styles/recipe';
-import { atomic, semantic } from '../../../tokens';
+import { atomic, semantic, typography } from '../../../tokens';
 
 export const toast = recipe({
   base: {
-    fontFamily: '"Pretendard", sans-serif',
-    fontSize: '1.4rem',
-    fontStyle: 'normal',
-    fontWeight: 400,
-    lineHeight: 1.4,
-    letterSpacing: '-0.028rem',
+    ...typography['body-3-regular'],
     display: 'inline-flex',
     alignItems: 'center',
     boxSizing: 'border-box',
@@ -45,7 +40,7 @@ export const toastIconClassName = style({
   width: '2.4rem',
   height: '2.4rem',
   lineHeight: 0,
-  color: '#171719',
+  color: atomic.common[100],
 });
 
 export const toastDefaultIconClassName = style({
@@ -53,7 +48,7 @@ export const toastDefaultIconClassName = style({
   boxSizing: 'border-box',
   width: '1.93rem',
   height: '1.93rem',
-  border: '0.2rem dashed #171719',
+  border: `0.2rem dashed ${atomic.common[100]}`,
   borderRadius: '0.6rem',
 });
 
