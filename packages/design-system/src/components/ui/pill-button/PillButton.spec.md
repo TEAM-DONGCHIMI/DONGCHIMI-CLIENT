@@ -109,7 +109,6 @@ PillButton
 - [ ] Mobile outlined-light
 - [ ] Mobile filled
 - [ ] With trailing icon
-- [ ] Disabled
 - [ ] platform × variant matrix
 
 ## Public API

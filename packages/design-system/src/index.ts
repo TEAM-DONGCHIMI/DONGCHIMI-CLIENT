@@ -15,3 +15,5 @@ export { Center } from './components/layout/center';
 export type { CenterProps } from './components/layout/center';
 export { Container } from './components/layout/container';
 export type { ContainerProps } from './components/layout/container';
+export { PillButton } from './components/ui/pill-button';
+export type { PillButtonProps } from './components/ui/pill-button';
