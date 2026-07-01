@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { createVar, style } from '@vanilla-extract/css';
 
 import { styleVariants, type StyleVariantProps } from '../../styles';
 
@@ -196,6 +196,103 @@ export const gridJustifyClassNames = styleVariants({
 
 export type GridJustifyTypes = StyleVariantProps<typeof gridJustifyClassNames>;
 
+export const gridItemBaseClassName = style({
+  minWidth: 0,
+});
+
+export type GridItemColumnSpanTypes = 1 | 2 | 3 | 4 | 5 | 6 | 12 | 'full';
+
+export const gridItemColumnSpanClassNames: Record<GridItemColumnSpanTypes, string> = {
+  1: style({
+    gridColumn: 'span 1 / span 1',
+  }),
+  2: style({
+    gridColumn: 'span 2 / span 2',
+  }),
+  3: style({
+    gridColumn: 'span 3 / span 3',
+  }),
+  4: style({
+    gridColumn: 'span 4 / span 4',
+  }),
+  5: style({
+    gridColumn: 'span 5 / span 5',
+  }),
+  6: style({
+    gridColumn: 'span 6 / span 6',
+  }),
+  12: style({
+    gridColumn: 'span 12 / span 12',
+  }),
+  full: style({
+    gridColumn: '1 / -1',
+  }),
+};
+
+export type GridItemRowSpanTypes = 1 | 2 | 3 | 4 | 5 | 6;
+
+export const gridItemRowSpanClassNames: Record<GridItemRowSpanTypes, string> = {
+  1: style({
+    gridRow: 'span 1 / span 1',
+  }),
+  2: style({
+    gridRow: 'span 2 / span 2',
+  }),
+  3: style({
+    gridRow: 'span 3 / span 3',
+  }),
+  4: style({
+    gridRow: 'span 4 / span 4',
+  }),
+  5: style({
+    gridRow: 'span 5 / span 5',
+  }),
+  6: style({
+    gridRow: 'span 6 / span 6',
+  }),
+};
+
+export type GridItemColumnStartTypes = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+
+export const gridItemColumnStartClassNames: Record<GridItemColumnStartTypes, string> = {
+  1: style({
+    gridColumnStart: '1',
+  }),
+  2: style({
+    gridColumnStart: '2',
+  }),
+  3: style({
+    gridColumnStart: '3',
+  }),
+  4: style({
+    gridColumnStart: '4',
+  }),
+  5: style({
+    gridColumnStart: '5',
+  }),
+  6: style({
+    gridColumnStart: '6',
+  }),
+  7: style({
+    gridColumnStart: '7',
+  }),
+  8: style({
+    gridColumnStart: '8',
+  }),
+  9: style({
+    gridColumnStart: '9',
+  }),
+  10: style({
+    gridColumnStart: '10',
+  }),
+  11: style({
+    gridColumnStart: '11',
+  }),
+  12: style({
+    gridColumnStart: '12',
+  }),
+};
+
 export const centerClassName = style({
   placeItems: 'center',
 });
@@ -210,6 +307,23 @@ export const centerMinHeightClassNames = styleVariants({
 });
 
 export type CenterMinHeightTypes = StyleVariantProps<typeof centerMinHeightClassNames>;
+
+export const sectionSpacingClassNames = styleVariants({
+  none: {
+    paddingBlock: 0,
+  },
+  sm: {
+    paddingBlock: space.lg,
+  },
+  md: {
+    paddingBlock: space.xl,
+  },
+  lg: {
+    paddingBlock: space['2xl'],
+  },
+});
+
+export type SectionSpacingTypes = StyleVariantProps<typeof sectionSpacingClassNames>;
 
 export const containerBaseClassName = style({
   width: '100%',
@@ -268,3 +382,54 @@ export const containerGutterClassNames = styleVariants({
 });
 
 export type ContainerGutterTypes = StyleVariantProps<typeof containerGutterClassNames>;
+
+const listGapVar = createVar();
+
+export const listBaseClassName = style({
+  minWidth: 0,
+  vars: {
+    [listGapVar]: space.sm,
+  },
+});
+
+export const listGapClassNames = styleVariants(space, (gap) => ({
+  vars: {
+    [listGapVar]: gap,
+  },
+}));
+
+export const listMarkerClassNames = styleVariants({
+  none: {
+    listStyle: 'none',
+  },
+  disc: {
+    listStyle: 'disc',
+  },
+  decimal: {
+    listStyle: 'decimal',
+  },
+});
+
+export type ListMarkerTypes = StyleVariantProps<typeof listMarkerClassNames>;
+
+export const listMarkerPositionClassNames = styleVariants({
+  inside: {
+    listStylePosition: 'inside',
+  },
+  outside: {
+    listStylePosition: 'outside',
+    paddingInlineStart: '1.5em',
+  },
+});
+
+export type ListMarkerPositionTypes = StyleVariantProps<typeof listMarkerPositionClassNames>;
+
+export const listItemClassName = style({
+  minWidth: 0,
+  overflowWrap: 'break-word',
+  selectors: {
+    '& + &': {
+      marginBlockStart: listGapVar,
+    },
+  },
+});
