@@ -7,7 +7,6 @@ import * as S from './DesktopHeader.css';
 export type DesktopHeaderModeTypes = 'default' | 'onlyHome';
 
 interface DesktopHeaderSearchProps {
-  defaultSearchValue?: string;
   searchValue?: string;
   onSearch?: SearchBarProps['onSearch'];
   onSearchValueChange?: SearchBarProps['onValueChange'];
@@ -34,13 +33,11 @@ export type DesktopHeaderProps = DesktopHeaderBaseProps &
 const searchIcon = <span aria-hidden='true' className={S.searchIconClassName} />;
 
 const renderSearchBar = ({
-  defaultSearchValue,
   searchValue,
   onSearch,
   onSearchValueChange,
 }: DesktopHeaderSearchProps) => (
   <SearchBar
-    defaultValue={defaultSearchValue}
     icon={searchIcon}
     onSearch={onSearch}
     onValueChange={onSearchValueChange}
@@ -49,7 +46,7 @@ const renderSearchBar = ({
 );
 
 export const DesktopHeader = (props: DesktopHeaderProps) => {
-  const { className, defaultSearchValue, searchValue, onSearch, onSearchValueChange } = props;
+  const { className, searchValue, onSearch, onSearchValueChange } = props;
 
   return (
     <Flex align='center' as='header' className={cn(S.headerClassName, className)} justify='between'>
@@ -67,7 +64,7 @@ export const DesktopHeader = (props: DesktopHeaderProps) => {
         </Flex>
       )}
 
-      {renderSearchBar({ defaultSearchValue, searchValue, onSearch, onSearchValueChange })}
+      {renderSearchBar({ searchValue, onSearch, onSearchValueChange })}
     </Flex>
   );
 };

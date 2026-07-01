@@ -11,7 +11,6 @@ export type UploadSegmentTypes = 'total' | 'completed' | 'needsEdit';
 export interface DesktopUploadHeaderProps {
   className?: string;
   completedCount: number;
-  defaultSearchValue?: string;
   needsEditCount: number;
   searchValue?: string;
   selectedCount?: number;
@@ -111,7 +110,6 @@ const SortButton = ({ onSortClick }: { onSortClick?: MouseEventHandler<HTMLButto
 export const DesktopUploadHeader = ({
   className,
   completedCount,
-  defaultSearchValue,
   needsEditCount,
   searchValue,
   selectedCount = 0,
@@ -137,7 +135,6 @@ export const DesktopUploadHeader = ({
         <SelectedProductAction selectedCount={selectedCount} onDeleteSelected={onDeleteSelected} />
         <SortButton onSortClick={onSortClick} />
         <SearchBar
-          defaultValue={defaultSearchValue}
           icon={searchIcon}
           onSearch={onSearch}
           onValueChange={onSearchValueChange}

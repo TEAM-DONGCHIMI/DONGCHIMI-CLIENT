@@ -15,6 +15,7 @@ type NativeSearchFormProps = Omit<
 >;
 
 const SEARCH_MAX_LENGTH = 17;
+const SEARCH_INPUT_NAME = 'search';
 
 export type SearchBarSizeTypes = 'small' | 'medium';
 
@@ -58,7 +59,7 @@ export const SearchBar = ({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const searchInput = event.currentTarget.elements[0];
+    const searchInput = event.currentTarget.elements.namedItem(SEARCH_INPUT_NAME);
     const searchValue = searchInput instanceof HTMLInputElement ? searchInput.value : '';
 
     onSearch?.(searchValue, event);
@@ -82,6 +83,7 @@ export const SearchBar = ({
         className={S.inputClassName}
         defaultValue={defaultValue}
         maxLength={SEARCH_MAX_LENGTH}
+        name={SEARCH_INPUT_NAME}
         onChange={handleChange}
         placeholder={placeholder}
         type='search'

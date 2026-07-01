@@ -113,6 +113,7 @@ export const deleteButtonRecipe = recipe({
     active: {
       true: {
         color: semantic.status.negative,
+        cursor: 'pointer',
       },
     },
   },
