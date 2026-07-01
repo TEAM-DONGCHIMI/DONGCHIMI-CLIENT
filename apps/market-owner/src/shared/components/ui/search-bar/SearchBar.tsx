@@ -30,7 +30,6 @@ export interface SearchBarProps extends NativeSearchFormProps {
   icon?: ReactNode;
   placeholder?: string;
   size?: SearchBarSizeTypes;
-  defaultValue?: string;
   value?: string;
   isError?: boolean;
   onValueChange?: SearchBarValueChangeHandlerTypes;
@@ -43,7 +42,6 @@ export const SearchBar = ({
   icon,
   placeholder = '상품 검색...',
   size = 'small',
-  defaultValue,
   value,
   isError = false,
   onValueChange,
@@ -81,7 +79,6 @@ export const SearchBar = ({
         aria-invalid={isError || undefined}
         aria-label={accessibleName}
         className={S.inputClassName}
-        defaultValue={defaultValue}
         maxLength={SEARCH_MAX_LENGTH}
         name={SEARCH_INPUT_NAME}
         onChange={handleChange}

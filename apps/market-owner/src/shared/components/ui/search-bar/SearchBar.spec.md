@@ -52,14 +52,14 @@ SearchBar
   - `icon`: 검색 아이콘 영역에 렌더링할 ReactNode입니다.
   - `placeholder`: input placeholder입니다. 기본값은 `상품 검색...`입니다.
   - `size`: `small` 또는 `medium`입니다. 기본값은 `small`입니다.
-  - `defaultValue`: uncontrolled input 초기값입니다.
   - `value`: controlled input 값입니다.
   - `isError`: error border와 `aria-invalid`를 적용합니다.
   - `onValueChange`: input 값이 바뀔 때 현재 값을 전달합니다.
   - `onSearch`: form submit 시 현재 검색어를 전달합니다.
   - native form props: `children`, `onSubmit`, `role`을 제외한 form props를 전달할 수 있습니다.
 - caller responsibility:
-  - controlled로 사용할 경우 `value`와 `onValueChange`를 함께 관리합니다.
+  - 검색어 값을 제어해야 하는 화면은 `value`와 `onValueChange`를 함께 관리합니다.
+  - 초기 검색어가 필요하면 호출부 state의 초기값으로 설정합니다.
   - `onSearch`에서 실제 검색 동작을 처리합니다.
   - 화면 맥락에 맞는 icon을 전달합니다.
 - non-owned behavior:

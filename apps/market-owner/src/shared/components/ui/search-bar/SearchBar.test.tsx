@@ -3,7 +3,13 @@ import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent } from '../../../../test';
-import { SearchBar } from './SearchBar';
+import { SearchBar, type SearchBarProps } from './SearchBar';
+
+const ControlledSearchBar = (props: Omit<SearchBarProps, 'onValueChange' | 'value'>) => {
+  const [value, setValue] = useState('');
+
+  return <SearchBar {...props} value={value} onValueChange={setValue} />;
+};
 
 describe('SearchBar', () => {
   it('renders accessible search input with the default placeholder', () => {
@@ -21,7 +27,21 @@ describe('SearchBar', () => {
     const handleValueChange = vi.fn();
     const user = userEvent.setup();
 
-    render(<SearchBar onValueChange={handleValueChange} />);
+    const ControlledSearchBarWithChangeHandler = () => {
+      const [value, setValue] = useState('');
+
+      return (
+        <SearchBar
+          value={value}
+          onValueChange={(nextValue, event) => {
+            setValue(nextValue);
+            handleValueChange(nextValue, event);
+          }}
+        />
+      );
+    };
+
+    render(<ControlledSearchBarWithChangeHandler />);
 
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '양파');
 
@@ -32,7 +52,7 @@ describe('SearchBar', () => {
     const handleSearch = vi.fn();
     const user = userEvent.setup();
 
-    render(<SearchBar onSearch={handleSearch} />);
+    render(<ControlledSearchBar onSearch={handleSearch} />);
 
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '감자');
     await user.keyboard('{Enter}');
@@ -43,7 +63,7 @@ describe('SearchBar', () => {
   it('limits the search keyword to 17 characters', async () => {
     const user = userEvent.setup();
 
-    render(<SearchBar />);
+    render(<ControlledSearchBar />);
 
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '123456789012345678');
 
@@ -52,12 +72,6 @@ describe('SearchBar', () => {
 
   it('supports controlled value changes with the 17 character limit', async () => {
     const user = userEvent.setup();
-
-    const ControlledSearchBar = () => {
-      const [value, setValue] = useState('');
-
-      return <SearchBar value={value} onValueChange={setValue} />;
-    };
 
     render(<ControlledSearchBar />);
 
