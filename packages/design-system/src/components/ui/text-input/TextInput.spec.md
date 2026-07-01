@@ -33,7 +33,7 @@ Addable Field, Inline Field, Search Field는 목적과 구조가 다른 별도 p
 - placeholder, controlled/uncontrolled value, native input event와 ref를 지원합니다.
 - 입력창 오른쪽에 선택적인 비상호작용 장식 아이콘을 렌더링합니다.
 - 일반 안내 문구와 오류 문구를 input에 접근성 있게 연결합니다.
-- Figma의 `default`, `hover`, `focus`, `error`, `success`, `disabled`, `readOnly` 상태를 지원합니다.
+- Figma의 `default`, `hover`, `focus`, `error`, `success` visual과 native `disabled`, `readOnly` semantics를 지원합니다.
 - public component와 public prop type만 명시적으로 export합니다.
 
 ## Out Of Scope
@@ -42,7 +42,7 @@ Addable Field, Inline Field, Search Field는 목적과 구조가 다른 별도 p
 - submit, mutation, API error mapping, route, logging, analytics
 - multiline 입력; 별도 `TextArea`가 책임집니다.
 - Addable Field, Inline Field, Search Field
-- prefix/suffix button처럼 자체 focus와 click behavior를 갖는 interactive adornment
+- Addable Field처럼 양쪽에 여러 action을 배치하는 구조
 - Figma에 근거가 없는 size variant
 - 전역 color/token contract 변경
 
@@ -56,8 +56,9 @@ TextInput
   InputContainer
     input
     TrailingIcon (optional, decorative)
+    TrailingAction (optional, interactive)
   SupportingText (optional)
-    ErrorStatusIcon (error only)
+    ErrorIconSlot (error only, reserved)
     HelperText | ErrorMessage
 ```
 
@@ -69,7 +70,7 @@ TextInput
   placeholder='텍스트를 입력하세요'
   helperText='입력할 내용을 안내합니다'
   errorMessage='입력값을 확인해주세요'
-  trailingIcon={<SomeIcon />}
+  trailingAction={<IconButton aria-label='비밀번호 보기' />}
   required
 />
 ```
@@ -96,7 +97,7 @@ TextInput
 
 - type: `ReactNode`
 - required: `false`
-- description: `status='error'`일 때 helper text 대신 오류 아이콘과 함께 표시하는 오류 문구입니다.
+- description: `status='error'`일 때 helper text 대신 예약된 오류 아이콘 영역과 함께 표시하는 오류 문구입니다.
 
 일반 안내와 오류 문구는 Figma의 `Description Text`와 `Error Text`에 대응합니다.
 두 값을 모두 전달해도 현재 상태에 맞는 하나만 표시합니다.
@@ -107,7 +108,15 @@ TextInput
 - required: `false`
 - description: Figma의 `Text Icon=True`에 대응하는 입력창 오른쪽 장식 아이콘입니다.
 - behavior: 자체 click handler와 tab stop을 갖지 않으며 input의 accessible name에 포함하지 않습니다.
-- constraint: interactive button이 필요하면 `TextInput`이 아니라 목적에 맞는 별도 컴포넌트를 사용합니다.
+- constraint: `trailingAction`과 동시에 사용할 수 없습니다.
+
+### trailingAction
+
+- type: `ReactElement`
+- required: `false`
+- description: 비밀번호 보기처럼 입력창 오른쪽에 배치하는 상호작용 요소입니다.
+- behavior: 호출부가 native `button` 또는 `IconButton`과 accessible name, click behavior를 제공합니다.
+- constraint: `trailingIcon`과 동시에 사용할 수 없습니다.
 
 ### status
 
@@ -120,7 +129,8 @@ TextInput
 - type: text-like `ComponentPropsWithoutRef<'input'>`
 - description: `value`, `defaultValue`, `onChange`, `name`, `placeholder`, `required`, `disabled`, `readOnly`, `autoComplete` 등 native input props를 전달합니다.
 - supported types: `text`, `email`, `password`, `search`, `tel`, `url`
-- `children`과 native numeric `size`는 public API에서 제외합니다.
+- `children`, native numeric `size`, `aria-invalid`는 public API에서 제외합니다.
+- 오류의 시각 상태와 접근성 상태가 어긋나지 않도록 `aria-invalid`는 `status='error'`에서만 컴포넌트가 설정합니다.
 - `className`은 native input에 적용합니다.
 
 ### ref
@@ -136,7 +146,7 @@ TextInput
 - Description: 현재 표시할 `helperText` 또는 `errorMessage` 존재 여부로 결정하며 별도 boolean prop을 두지 않습니다.
 - Description Text: `helperText`로 전달합니다.
 - Error Text: `errorMessage`로 전달합니다.
-- Text Icon: `trailingIcon` 존재 여부로 결정하며 별도 boolean prop을 두지 않습니다.
+- Text Icon: 장식이면 `trailingIcon`, 상호작용 요소이면 `trailingAction`으로 전달하며 별도 boolean prop을 두지 않습니다.
 - Value: `empty`, `typing`, `filled`, `filled typing`을 별도 prop으로 만들지 않고 실제 input 값과 interaction으로 표현합니다.
 - Size: input 높이 48px 한 종류만 지원합니다.
 
@@ -154,26 +164,26 @@ TextInput
 - default: white background와 neutral-20 border를 사용합니다.
 - hover: 활성 input 위에 pointer가 있으면 neutral-80 border를 사용합니다.
 - focus: input이 focus되고 pointer가 input 밖에 있으면 primary-normal border를 사용합니다. Figma에 없는 외부 focus ring이나 box-shadow는 추가하지 않습니다.
-- error: `status='error'`일 때 negative-light border, 16px 오류 아이콘과 negative 오류 문구를 표시하고 `aria-invalid='true'`를 적용합니다.
+- error: `status='error'`일 때 negative-light border, 16px 오류 아이콘 영역과 negative 오류 문구를 표시하고 `aria-invalid='true'`를 적용합니다.
 - success: `status='success'`일 때 neutral-20 background와 border를 사용합니다. Figma에서는 filled 조합만 제공하지만 컴포넌트가 input 값의 유무를 추론하지 않습니다.
-- disabled: native `disabled` semantics와 Figma disabled visual을 적용합니다.
-- readOnly: native `readOnly` semantics와 Figma read-only visual을 적용하며 success와 동일한 상태로 간주하지 않습니다.
+- disabled: native `disabled` semantics를 전달하고 hover를 적용하지 않습니다. 전용 Figma visual이 없어 별도 opacity나 색상을 추가하지 않습니다.
+- readOnly: native `readOnly` semantics를 전달합니다. 전용 Figma visual이 없어 별도 색상을 추가하지 않으며 success와 동일한 상태로 간주하지 않습니다.
 - empty/filled: `value`, `defaultValue`, placeholder의 native 동작으로 표현합니다.
 - loading: 지원하지 않습니다.
 
 ### State Priority
 
 1. native `disabled`
-2. native `readOnly`
-3. `status='error'`
-4. `status='success'`
-5. hover
-6. focus
-7. default
+2. `status='error'`
+3. `status='success'`
+4. hover
+5. focus
+6. default
 
 - focus된 default input 위에 pointer가 있으면 hover border를 표시하고, pointer가 벗어나면 focus border를 표시합니다.
 - error 상태에서 hover 또는 focus가 발생해도 error border와 `aria-invalid`를 유지합니다.
 - success는 readOnly를 자동으로 부여하지 않습니다. 입력 가능 여부는 호출부가 native prop으로 명시합니다.
+- success 상태는 hover/focus에 따라 별도 색으로 변경되지 않으며 호출부가 status를 변경하기 전까지 success visual을 유지합니다.
 
 ## Behavior
 
@@ -181,9 +191,11 @@ TextInput
 2. `hover`, `focus`, `typing`, `filled` 상태를 React state나 public variant prop으로 복제하지 않습니다.
 3. error 상태에서는 `errorMessage`가 `helperText`보다 우선합니다.
 4. error 상태지만 `errorMessage`가 없으면 빈 supporting text를 만들지 않고 `aria-invalid`만 적용합니다.
-5. `trailingIcon`이 있으면 input text와 겹치지 않도록 오른쪽 공간을 확보합니다.
+5. `trailingIcon` 또는 `trailingAction`이 있으면 input text와 겹치지 않도록 오른쪽 공간을 확보합니다.
 6. `trailingIcon`은 pointer event와 tab stop을 만들지 않습니다.
-7. `*` 표시는 native `required`와 동기화하고 스크린 리더에 중복 낭독되지 않게 합니다.
+7. `trailingAction`은 전달받은 interactive element의 pointer와 keyboard interaction을 유지합니다.
+8. `*` 표시는 native `required`와 동기화하고 스크린 리더에 중복 낭독되지 않게 합니다.
+9. `status='success'`는 visual만 표현하며 `value`, `defaultValue`, `readOnly`, `disabled`를 자동으로 설정하지 않습니다.
 
 ## Styling
 
@@ -194,8 +206,8 @@ TextInput
 - label: Body 3 Semibold, 14px/1.4
 - input text/placeholder: Body 2 Medium, 16px/1.4
 - helper/error text: Caption 1 Medium, 12px/1.4
-- trailing icon slot: 24×24px, input 오른쪽 12px, text와 8px 간격
-- error status icon: 16×16px, error text와 약 4px 간격
+- trailing icon/action slot: 24×24px, input 오른쪽 12px, text와 8px 간격
+- error icon slot: 16×16px, error text와 4px 간격. 실제 아이콘 asset이 확정되기 전까지 빈 영역으로 유지합니다.
 - transition: border/background/color 변화에만 짧게 적용하고 layout은 움직이지 않습니다.
 - overflow: 긴 input 값은 native single-line scrolling을 사용합니다. label과 supporting text는 컨테이너 폭 안에서 wrapping 가능해야 합니다.
 - token usage: 기존 `atomic`, `semantic`, `typography` token과 component-local vanilla-extract style을 사용합니다.
@@ -223,7 +235,8 @@ TextInput
 - invalid: error 상태에서 `aria-invalid='true'`를 적용합니다.
 - required: native `required`를 input에 적용하고 시각적 `*`는 중복 낭독을 방지합니다.
 - trailing icon: 장식 요소로 렌더링하고 accessible name과 tab order에 포함하지 않습니다.
-- error icon: 장식 요소로 렌더링하고 오류 의미는 `aria-invalid`와 error message로 전달합니다.
+- trailing action: interactive element의 accessible name과 native keyboard interaction을 유지합니다.
+- error icon slot: 장식 요소로 렌더링하고 오류 의미는 `aria-invalid`와 error message로 전달합니다.
 - error announcement: 입력 중 매 keystroke마다 강제 announcement하지 않습니다. live-region 정책은 실제 form validation 흐름이 필요할 때 호출부가 결정합니다.
 
 ## Storybook
@@ -239,6 +252,7 @@ TextInput
 - [ ] Read only
 - [ ] Required label
 - [ ] Trailing icon
+- [ ] Trailing action
 - [ ] Header + description combinations (104/78/74/48px)
 - [ ] Without visible label using an accessible name
 - [ ] Helper text and error message priority
@@ -263,5 +277,5 @@ TextInput
 
 ## Open Questions
 
-- Figma error status icon에 대응하는 영구 SVG source가 현재 package에 없습니다. Figma 원본을 확인한 뒤 디자인시스템 아이콘 파이프라인에 추가합니다.
-- disabled/readOnly는 전체 variant 목록에 포함되지만 제공된 상세 노드에서 정확한 색상과 interaction 조합을 확인한 뒤 스타일 값을 확정합니다.
+- Figma error status icon에 대응하는 영구 SVG source가 현재 package에 없어 16×16px 빈 slot만 확보합니다. 원본이 확정되면 slot 내부에 generated icon을 렌더링합니다.
+- disabled/readOnly 전용 Figma visual이 제공되면 상태 색상과 interaction 우선순위를 추가합니다. 현재는 native semantics만 지원합니다.
