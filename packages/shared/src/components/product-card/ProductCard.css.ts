@@ -237,7 +237,6 @@ export const toggleButtonClassName = style({
   padding: '0.4rem 0.8rem',
   backgroundColor: 'transparent',
   color: semantic.primary.strong,
-  cursor: 'pointer',
   selectors: {
     '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
