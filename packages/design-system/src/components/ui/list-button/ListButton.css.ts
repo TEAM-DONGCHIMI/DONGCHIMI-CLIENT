@@ -30,6 +30,9 @@ export const listButton = recipe({
         borderRadius: 8,
         pointerEvents: 'none',
       },
+      '&:hover::before': {
+        backgroundColor: atomic.neutral[10],
+      },
       '&:focus-visible': {
         outline: `3px solid ${focusOutlineColor}`,
         outlineOffset: 2,
@@ -66,6 +69,9 @@ export const listButton = recipe({
           '&::before': {
             backgroundColor: atomic.neutral[10],
           },
+          '&:hover::before': {
+            backgroundColor: atomic.neutral[10],
+          },
         },
       },
     },
@@ -79,6 +85,9 @@ export const listButton = recipe({
         color: semantic.primary.strong,
         selectors: {
           '&::before': {
+            backgroundColor: semantic.primary.light,
+          },
+          '&:hover::before': {
             backgroundColor: semantic.primary.light,
           },
         },
