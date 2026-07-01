@@ -22,7 +22,6 @@ export const label = style({
   ...typography['body-3-semibold'],
   minWidth: 0,
   color: atomic.neutral[90],
-  overflowWrap: 'anywhere',
 });
 
 export const requiredMark = style({
@@ -144,7 +143,6 @@ export const messageText = recipe({
   base: {
     ...typography['caption-1-medium'],
     minWidth: 0,
-    overflowWrap: 'anywhere',
   },
   variants: {
     tone: {

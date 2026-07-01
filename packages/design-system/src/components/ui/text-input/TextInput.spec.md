@@ -209,7 +209,6 @@ TextInput
 - trailing icon/action slot: 24×24px, input 오른쪽 12px, text와 8px 간격
 - error icon slot: 16×16px, error text와 4px 간격. 실제 아이콘 asset이 확정되기 전까지 빈 영역으로 유지합니다.
 - transition: border/background/color 변화에만 짧게 적용하고 layout은 움직이지 않습니다.
-- overflow: 긴 input 값은 native single-line scrolling을 사용합니다. label과 supporting text는 컨테이너 폭 안에서 wrapping 가능해야 합니다.
 - token usage: 기존 `atomic`, `semantic`, `typography` token과 component-local vanilla-extract style을 사용합니다.
 
 ### Figma Color Mapping
@@ -241,22 +240,16 @@ TextInput
 
 ## Storybook
 
-- [ ] Default empty
-- [ ] Default filled
-- [ ] Hover empty/filled interaction
-- [ ] Focus empty/filled interaction
-- [ ] Error empty/filled
-- [ ] Error while focused
-- [ ] Success filled
-- [ ] Disabled
-- [ ] Read only
-- [ ] Required label
-- [ ] Trailing icon
-- [ ] Trailing action
-- [ ] Header + description combinations (104/78/74/48px)
-- [ ] Without visible label using an accessible name
-- [ ] Helper text and error message priority
-- [ ] Long label, value, helper/error text, and constrained width
+- [x] Default
+- [x] Hover
+- [x] Focus
+- [x] Error
+- [x] Success
+- [x] TrailingIcon
+- [x] TrailingAction
+- [x] Required
+- [x] AriaLabel
+- [x] VariantMatrix
 
 ## Public API
 
