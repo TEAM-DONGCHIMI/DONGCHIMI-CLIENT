@@ -29,23 +29,6 @@ const contentShow = keyframes({
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
-export const overlayClassName = style({
-  position: 'fixed',
-  inset: 0,
-  zIndex: overlayZIndex,
-  backgroundColor: semantic.overlay.dimmer,
-  animation: `${overlayShow} ${overlayAnimationDurationMs}ms ease-out`,
-});
-
-export const backdropClassName = style({
-  position: 'absolute',
-  inset: 0,
-  width: '100%',
-  padding: 0,
-  border: 0,
-  backgroundColor: 'transparent',
-});
-
 export const contentClassName = style({
   position: 'fixed',
   right: 'auto',
@@ -69,6 +52,11 @@ export const contentClassName = style({
   transform: 'translate3d(-50%, 0, 0)',
   animation: `${contentShow} ${contentAnimationDurationMs}ms ease-out`,
   selectors: {
+    '&::backdrop': {
+      zIndex: overlayZIndex,
+      backgroundColor: semantic.overlay.dimmer,
+      animation: `${overlayShow} ${overlayAnimationDurationMs}ms ease-out`,
+    },
     '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
       outlineOffset: -3,
@@ -131,9 +119,16 @@ export const closeClassName = style({
   color: atomic.neutral[70],
   cursor: 'pointer',
   selectors: {
+    '&:hover:not(:disabled)': {
+      backgroundColor: atomic.neutral[10],
+    },
     '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
       outlineOffset: -3,
+    },
+    '&:disabled': {
+      color: atomic.neutral[30],
+      cursor: 'not-allowed',
     },
   },
 });

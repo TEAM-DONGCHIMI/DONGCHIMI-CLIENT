@@ -59,7 +59,7 @@ BottomSheet.Root
 - `BottomSheet`는 `BottomSheet.Root`와 동일한 root component입니다.
 - `open`과 `onOpenChange`를 사용하면 제어형으로 동작합니다.
 - `defaultOpen`을 사용하면 비제어형으로 동작합니다.
-- `BottomSheet.Content`는 기본 portal과 overlay를 함께 렌더링합니다.
+- `BottomSheet.Content`는 기본 portal과 modal dialog backdrop을 함께 렌더링합니다.
 
 ## Props
 
@@ -97,11 +97,12 @@ BottomSheet.Root
 3. `Escape`, overlay click, `BottomSheet.Close`로 닫을 수 있습니다.
 4. sheet가 닫히면 focus가 trigger로 복귀합니다.
 5. `BottomSheet.Title`과 `BottomSheet.Description`이 렌더링되면 dialog의 accessible name/description과 연결합니다.
-6. 내부 콘텐츠, 공유 액션, API side effect는 호출부가 관리합니다.
+6. native dialog modal lifecycle은 `showModal()` / `close()`로 동기화합니다.
+7. 내부 콘텐츠, 공유 액션, API side effect는 호출부가 관리합니다.
 
 ## Styling
 
-- layout: fixed portal overlay 안에서 content를 viewport 하단에 배치합니다.
+- layout: portal에 렌더링된 modal dialog content를 viewport 하단에 배치합니다.
 - size: mobile bottom sheet 기준으로 `width: 100%`, `max-width: 37.5rem`을 기본값으로 둡니다.
 - spacing: Figma 예시를 기준으로 content padding과 section slot을 제공합니다.
 - responsive: viewport 폭이 좁으면 가로 폭을 채우고, 넓으면 중앙 정렬된 mobile-width sheet로 보입니다.
@@ -131,6 +132,12 @@ BottomSheet.Root
 - [ ] `BottomSheetTriggerProps` type export
 - [ ] `BottomSheetContentProps` type export
 - [ ] `BottomSheetCloseProps` type export
+- [ ] `BottomSheetHandleProps` type export
+- [ ] `BottomSheetHeaderProps` type export
+- [ ] `BottomSheetTitleProps` type export
+- [ ] `BottomSheetDescriptionProps` type export
+- [ ] `BottomSheetBodyProps` type export
+- [ ] `BottomSheetFooterProps` type export
 - [ ] no private helper export
 
 ## Verification

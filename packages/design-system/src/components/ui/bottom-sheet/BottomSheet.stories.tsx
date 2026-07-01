@@ -12,8 +12,23 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  argTypes: {
+    children: {
+      control: false,
+    },
+    defaultOpen: {
+      control: 'boolean',
+    },
+    onOpenChange: {
+      control: false,
+    },
+    open: {
+      control: false,
+    },
+  },
   args: {
     children: null,
+    defaultOpen: false,
   },
 } satisfies Meta<typeof BottomSheet>;
 
@@ -100,6 +115,17 @@ const ShareContent = () => {
   );
 };
 
+const ShareBottomSheetStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) => {
+  return (
+    <BottomSheet defaultOpen={defaultOpen}>
+      <BottomSheet.Trigger style={triggerStyle}>BottomSheet 열기</BottomSheet.Trigger>
+      <BottomSheet.Content>
+        <ShareContent />
+      </BottomSheet.Content>
+    </BottomSheet>
+  );
+};
+
 const ControlledExample = () => {
   const [open, setOpen] = useState(false);
 
@@ -114,15 +140,17 @@ const ControlledExample = () => {
 };
 
 export const Default: StoryTypes = {
-  render: () => {
-    return (
-      <BottomSheet>
-        <BottomSheet.Trigger style={triggerStyle}>BottomSheet 열기</BottomSheet.Trigger>
-        <BottomSheet.Content>
-          <ShareContent />
-        </BottomSheet.Content>
-      </BottomSheet>
-    );
+  render: ({ defaultOpen }) => {
+    return <ShareBottomSheetStory defaultOpen={defaultOpen} />;
+  },
+};
+
+export const OpenByDefault: StoryTypes = {
+  args: {
+    defaultOpen: true,
+  },
+  render: ({ defaultOpen }) => {
+    return <ShareBottomSheetStory defaultOpen={defaultOpen} />;
   },
 };
 
@@ -154,6 +182,36 @@ export const LongContent: StoryTypes = {
                 액션 {index + 1}
               </button>
             ))}
+          </BottomSheet.Body>
+          <BottomSheet.Footer>
+            <BottomSheet.Close>닫기</BottomSheet.Close>
+          </BottomSheet.Footer>
+        </BottomSheet.Content>
+      </BottomSheet>
+    );
+  },
+};
+
+export const WithoutDescription: StoryTypes = {
+  args: {
+    defaultOpen: true,
+  },
+  render: ({ defaultOpen }) => {
+    return (
+      <BottomSheet defaultOpen={defaultOpen}>
+        <BottomSheet.Trigger style={triggerStyle}>설명 없는 BottomSheet 열기</BottomSheet.Trigger>
+        <BottomSheet.Content>
+          <BottomSheet.Handle />
+          <BottomSheet.Header>
+            <BottomSheet.Title>설명 없는 콘텐츠</BottomSheet.Title>
+          </BottomSheet.Header>
+          <BottomSheet.Body>
+            <button style={actionButtonStyle} type='button'>
+              <span aria-hidden='true' style={iconCircleStyle}>
+                ⧉
+              </span>
+              링크 복사
+            </button>
           </BottomSheet.Body>
           <BottomSheet.Footer>
             <BottomSheet.Close>닫기</BottomSheet.Close>

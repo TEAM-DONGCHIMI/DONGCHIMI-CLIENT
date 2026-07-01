@@ -29,6 +29,9 @@ const focusableSelector = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
+let bodyScrollLockCount = 0;
+let originalBodyOverflow = '';
+
 type BottomSheetOpenProps =
   | {
       defaultOpen?: boolean;
@@ -105,6 +108,56 @@ const getFocusableElements = (element: HTMLElement) => {
   );
 };
 
+const lockBodyScroll = () => {
+  if (bodyScrollLockCount === 0) {
+    originalBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+  }
+
+  bodyScrollLockCount += 1;
+
+  return () => {
+    bodyScrollLockCount = Math.max(0, bodyScrollLockCount - 1);
+
+    if (bodyScrollLockCount === 0) {
+      document.body.style.overflow = originalBodyOverflow;
+      originalBodyOverflow = '';
+    }
+  };
+};
+
+const showModalDialog = (dialog: HTMLDialogElement) => {
+  if (dialog.open || !dialog.isConnected) {
+    return;
+  }
+
+  if (typeof dialog.showModal === 'function') {
+    dialog.showModal();
+    return;
+  }
+
+  dialog.setAttribute('open', '');
+};
+
+const closeModalDialog = (dialog: HTMLDialogElement) => {
+  if (!dialog.open) {
+    return;
+  }
+
+  if (typeof dialog.close === 'function') {
+    dialog.close();
+    return;
+  }
+
+  dialog.removeAttribute('open');
+};
+
+const isOutsideDialogRect = (dialog: HTMLDialogElement, clientX: number, clientY: number) => {
+  const { bottom, left, right, top } = dialog.getBoundingClientRect();
+
+  return clientX < left || clientX > right || clientY < top || clientY > bottom;
+};
+
 const keepFocusInside = (event: KeyboardEvent<HTMLDialogElement>) => {
   if (event.key !== 'Tab') {
     return;
@@ -120,8 +173,10 @@ const keepFocusInside = (event: KeyboardEvent<HTMLDialogElement>) => {
 
   const firstElement = focusableElements[0];
   const lastElement = focusableElements[focusableElements.length - 1];
+  const isOnContainerOrFirst =
+    document.activeElement === event.currentTarget || document.activeElement === firstElement;
 
-  if (event.shiftKey && document.activeElement === firstElement) {
+  if (event.shiftKey && isOnContainerOrFirst) {
     event.preventDefault();
     lastElement.focus();
     return;
@@ -135,6 +190,7 @@ const keepFocusInside = (event: KeyboardEvent<HTMLDialogElement>) => {
 
 interface UseBottomSheetDialogEffectsOptions {
   contentRef: RefObject<HTMLDialogElement | null>;
+  onBackdropMouseDown: () => void;
   open: boolean;
   triggerRef: RefObject<HTMLButtonElement | null>;
 }
@@ -154,6 +210,7 @@ const useRegisteredElementId = <ElementTypes extends HTMLElement>() => {
 
 const useBottomSheetDialogEffects = ({
   contentRef,
+  onBackdropMouseDown,
   open,
   triggerRef,
 }: UseBottomSheetDialogEffectsOptions) => {
@@ -162,16 +219,48 @@ const useBottomSheetDialogEffects = ({
       return;
     }
 
+    const dialog = contentRef.current;
+
+    if (dialog == null) {
+      return;
+    }
+
     const previousActiveElement = document.activeElement;
     const triggerElement = triggerRef.current;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const unlockBodyScroll = lockBodyScroll();
+    const handleDialogMouseDown = (event: globalThis.MouseEvent) => {
+      if (isOutsideDialogRect(dialog, event.clientX, event.clientY)) {
+        onBackdropMouseDown();
+      }
+    };
+
+    showModalDialog(dialog);
+    dialog.addEventListener('mousedown', handleDialogMouseDown);
     window.requestAnimationFrame(() => {
-      contentRef.current?.focus();
+      const currentDialog = contentRef.current;
+
+      if (currentDialog == null) {
+        return;
+      }
+
+      const activeElement = document.activeElement;
+
+      if (activeElement instanceof HTMLElement && currentDialog.contains(activeElement)) {
+        return;
+      }
+
+      const [firstFocusableElement] = getFocusableElements(currentDialog);
+      firstFocusableElement?.focus();
+
+      if (firstFocusableElement == null) {
+        currentDialog.focus();
+      }
     });
 
     return () => {
-      document.body.style.overflow = originalOverflow;
+      dialog.removeEventListener('mousedown', handleDialogMouseDown);
+      unlockBodyScroll();
+      closeModalDialog(dialog);
 
       if (previousActiveElement instanceof HTMLElement) {
         previousActiveElement.focus();
@@ -180,7 +269,7 @@ const useBottomSheetDialogEffects = ({
 
       triggerElement?.focus();
     };
-  }, [contentRef, open, triggerRef]);
+  }, [contentRef, onBackdropMouseDown, open, triggerRef]);
 };
 
 const BottomSheetRoot = ({
@@ -197,12 +286,19 @@ const BottomSheetRoot = ({
   const [titleElementId, registerTitleElement] = useRegisteredElementId<HTMLHeadingElement>();
   const isControlled = open != null;
   const currentOpen = open ?? internalOpen;
+  const currentOpenRef = useRef(currentOpen);
+
+  useEffect(() => {
+    currentOpenRef.current = currentOpen;
+  }, [currentOpen]);
 
   const setOpen = useCallback(
     (nextOpen: boolean) => {
-      if (nextOpen === currentOpen) {
+      if (nextOpen === currentOpenRef.current) {
         return;
       }
+
+      currentOpenRef.current = nextOpen;
 
       if (!isControlled) {
         setInternalOpen(nextOpen);
@@ -210,7 +306,7 @@ const BottomSheetRoot = ({
 
       onOpenChange?.(nextOpen);
     },
-    [currentOpen, isControlled, onOpenChange],
+    [isControlled, onOpenChange],
   );
 
   const contextValue = useMemo<BottomSheetContextValues>(
@@ -275,6 +371,8 @@ const BottomSheetContent = ({
   'aria-labelledby': ariaLabelledBy,
   children,
   className,
+  onCancel,
+  onClose,
   onKeyDown,
   ref,
   ...props
@@ -282,8 +380,16 @@ const BottomSheetContent = ({
   const { descriptionElementId, open, setOpen, titleElementId, triggerRef } =
     useBottomSheetContext('BottomSheet.Content');
   const contentRef = useRef<HTMLDialogElement>(null);
+  const handleBackdropMouseDown = useCallback(() => {
+    setOpen(false);
+  }, [setOpen]);
 
-  useBottomSheetDialogEffects({ contentRef, open, triggerRef });
+  useBottomSheetDialogEffects({
+    contentRef,
+    onBackdropMouseDown: handleBackdropMouseDown,
+    open,
+    triggerRef,
+  });
 
   if (!open || typeof document === 'undefined') {
     return null;
@@ -305,29 +411,40 @@ const BottomSheetContent = ({
     keepFocusInside(event);
   };
 
+  const handleCancel: BottomSheetContentProps['onCancel'] = (event) => {
+    onCancel?.(event);
+
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    event.preventDefault();
+    setOpen(false);
+  };
+
+  const handleClose: BottomSheetContentProps['onClose'] = (event) => {
+    onClose?.(event);
+
+    if (!event.defaultPrevented) {
+      setOpen(false);
+    }
+  };
+
   return createPortal(
-    <div className={S.overlayClassName}>
-      <button
-        aria-label='바텀시트 닫기'
-        className={S.backdropClassName}
-        onClick={() => setOpen(false)}
-        tabIndex={-1}
-        type='button'
-      />
-      <dialog
-        {...props}
-        ref={composeRefs(contentRef, ref)}
-        aria-describedby={ariaDescribedBy ?? descriptionElementId}
-        aria-labelledby={ariaLabelledBy ?? titleElementId}
-        aria-modal='true'
-        className={cn(S.contentClassName, className)}
-        onKeyDown={handleKeyDown}
-        open
-        tabIndex={-1}
-      >
-        {children}
-      </dialog>
-    </div>,
+    <dialog
+      {...props}
+      ref={composeRefs(contentRef, ref)}
+      aria-describedby={ariaDescribedBy ?? descriptionElementId}
+      aria-labelledby={ariaLabelledBy ?? titleElementId}
+      aria-modal='true'
+      className={cn(S.contentClassName, className)}
+      onCancel={handleCancel}
+      onClose={handleClose}
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
+    >
+      {children}
+    </dialog>,
     document.body,
   );
 };

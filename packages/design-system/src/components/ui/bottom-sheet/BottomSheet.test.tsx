@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { render, screen, userEvent, waitFor } from '../../../test';
+import { fireEvent, render, screen, userEvent, waitFor } from '../../../test';
 import { BottomSheet } from './BottomSheet';
 
 const renderBottomSheet = (onOpenChange?: (open: boolean) => void) => {
@@ -49,6 +49,42 @@ describe('BottomSheet', () => {
     await user.click(screen.getByRole('button', { name: '닫기' }));
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('closes dialog content when escape key is pressed', async () => {
+    const user = userEvent.setup();
+    renderBottomSheet();
+
+    await user.click(screen.getByRole('button', { name: '공유하기' }));
+    screen.getByRole('dialog').focus();
+    await user.keyboard('{Escape}');
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('closes dialog content when backdrop is pressed', async () => {
+    const user = userEvent.setup();
+    renderBottomSheet();
+
+    await user.click(screen.getByRole('button', { name: '공유하기' }));
+    fireEvent.mouseDown(screen.getByRole('dialog'), { clientX: -1, clientY: -1 });
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('keeps focus inside when shift tab starts from the dialog container', async () => {
+    const user = userEvent.setup();
+    renderBottomSheet();
+
+    await user.click(screen.getByRole('button', { name: '공유하기' }));
+
+    const dialog = screen.getByRole('dialog', { name: '콘텐츠 공유하기' });
+    const closeButton = screen.getByRole('button', { name: '닫기' });
+
+    dialog.focus();
+    fireEvent.keyDown(dialog, { key: 'Tab', shiftKey: true });
+
+    expect(closeButton).toHaveFocus();
   });
 
   it('calls onOpenChange when open state changes', async () => {
