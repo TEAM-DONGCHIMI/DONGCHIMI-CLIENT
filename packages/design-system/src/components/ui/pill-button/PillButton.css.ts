@@ -17,7 +17,7 @@ export const pillButton = recipe({
     whiteSpace: 'nowrap',
     cursor: 'pointer',
     transition:
-      'background-color 160ms ease, border-color 160ms ease, color 160ms ease, opacity 160ms ease, outline-color 160ms ease',
+      'background-color 160ms ease, border-color 160ms ease, color 160ms ease, outline-color 160ms ease',
     selectors: {
       '&:focus-visible': {
         outline: `3px solid ${focusOutlineColor}`,
