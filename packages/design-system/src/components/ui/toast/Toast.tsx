@@ -1,4 +1,4 @@
-import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react';
+import { type ComponentPropsWithRef, type ReactNode } from 'react';
 
 import { cn } from '../../../styles/class-name';
 import {
@@ -10,7 +10,7 @@ import {
 
 type ToastStatusTypes = 'completed' | 'error';
 
-type NativeToastProps = Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'color'>;
+type NativeToastProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'color'>;
 
 export interface ToastProps extends NativeToastProps {
   children: ReactNode;
@@ -26,32 +26,36 @@ const getDefaultAriaLive = (status: ToastStatusTypes) => {
   return status === 'error' ? 'assertive' : 'polite';
 };
 
-export const Toast = forwardRef<HTMLDivElement, ToastProps>(
-  (
-    { 'aria-live': ariaLive, children, className, icon, role, status = 'completed', ...props },
-    ref,
-  ) => {
-    const resolvedRole = role ?? getDefaultRole(status);
-    const resolvedAriaLive = ariaLive ?? (role == null ? getDefaultAriaLive(status) : undefined);
-    const resolvedIcon = icon === undefined ? <span className={toastDefaultIconClassName} /> : icon;
+export const Toast = ({
+  'aria-live': ariaLive,
+  children,
+  className,
+  icon,
+  ref,
+  role,
+  status = 'completed',
+  ...props
+}: ToastProps) => {
+  const resolvedRole = role ?? getDefaultRole(status);
+  const resolvedAriaLive = ariaLive ?? (role == null ? getDefaultAriaLive(status) : undefined);
+  const resolvedIcon = icon === undefined ? <span className={toastDefaultIconClassName} /> : icon;
 
-    return (
-      <div
-        ref={ref}
-        aria-live={resolvedAriaLive}
-        className={cn(toast({ status }), className)}
-        role={resolvedRole}
-        {...props}
-      >
-        {resolvedIcon != null && resolvedIcon !== false && (
-          <span aria-hidden='true' className={toastIconClassName}>
-            {resolvedIcon}
-          </span>
-        )}
-        <span className={toastMessageClassName}>{children}</span>
-      </div>
-    );
-  },
-);
+  return (
+    <div
+      ref={ref}
+      aria-live={resolvedAriaLive}
+      className={cn(toast({ status }), className)}
+      role={resolvedRole}
+      {...props}
+    >
+      {resolvedIcon != null && resolvedIcon !== false && (
+        <span aria-hidden='true' className={toastIconClassName}>
+          {resolvedIcon}
+        </span>
+      )}
+      <span className={toastMessageClassName}>{children}</span>
+    </div>
+  );
+};
 
 Toast.displayName = 'Toast';

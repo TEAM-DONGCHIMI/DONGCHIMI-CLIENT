@@ -1,3 +1,4 @@
+import { createRef } from 'react';
 import { describe, expect, it } from 'vitest';
 
 import { render, screen } from '../../../test';
@@ -43,5 +44,13 @@ describe('Toast', () => {
 
     expect(toast).toHaveAttribute('role', 'presentation');
     expect(toast).toHaveAttribute('aria-live', 'off');
+  });
+
+  it('passes a ref prop to the root element', () => {
+    const ref = createRef<HTMLDivElement>();
+
+    render(<Toast ref={ref}>링크가 복사되었어요</Toast>);
+
+    expect(ref.current).toBe(screen.getByRole('status'));
   });
 });

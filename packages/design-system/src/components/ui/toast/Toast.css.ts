@@ -9,7 +9,7 @@ export const toast = recipe({
     display: 'inline-flex',
     alignItems: 'center',
     boxSizing: 'border-box',
-    width: '17.4rem',
+    width: '18.4rem',
     maxWidth: 'calc(100vw - 3.2rem)',
     minHeight: '4.8rem',
     padding: '1.2rem 1.8rem',

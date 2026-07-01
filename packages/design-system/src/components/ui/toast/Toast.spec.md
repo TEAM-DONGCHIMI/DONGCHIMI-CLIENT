@@ -49,7 +49,7 @@ Toast
   Message
 ```
 
-## Public API
+## Props API
 
 - component: `Toast`
 - exported types: `ToastProps`
@@ -91,7 +91,7 @@ Toast
 ## Styling
 
 - layout: inline-flex, center aligned
-- size: Figma 기준 `17.4rem x 4.8rem`
+- size: Figma 기준 `18.4rem x 4.8rem`
 - spacing: 좌우 `1.8rem`, 상하 `1.2rem`, icon/message 간격 `0.4rem`
 - radius: `0.8rem`
 - responsive: viewport보다 넓어지지 않게 `max-width`를 제한합니다.
@@ -116,7 +116,7 @@ Toast
 - [x] LongMessage
 - [x] StatusMatrix
 
-## Public API
+## Export Checklist
 
 - [x] `Toast` value export
 - [x] `ToastProps` type export
