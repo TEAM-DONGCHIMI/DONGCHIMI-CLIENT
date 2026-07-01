@@ -49,6 +49,26 @@ describe('Tabs', () => {
     expect(screen.getByText('기간 할인 콘텐츠')).toBeInTheDocument();
   });
 
+  it('does not call onValueChange when the selected trigger is selected again', async () => {
+    const handleValueChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <Tabs defaultValue='today' onValueChange={handleValueChange}>
+        <Tabs.List aria-label='할인 유형'>
+          <Tabs.Trigger value='today'>오늘의 특가</Tabs.Trigger>
+          <Tabs.Trigger value='period'>기간 할인</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Panel value='today'>오늘의 특가 콘텐츠</Tabs.Panel>
+        <Tabs.Panel value='period'>기간 할인 콘텐츠</Tabs.Panel>
+      </Tabs>,
+    );
+
+    await user.click(screen.getByRole('tab', { name: '오늘의 특가' }));
+
+    expect(handleValueChange).not.toHaveBeenCalled();
+  });
+
   it('automatically selects a tab while moving focus with arrow keys', async () => {
     const user = userEvent.setup();
 

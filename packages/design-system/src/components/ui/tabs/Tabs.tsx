@@ -134,13 +134,17 @@ const TabsRoot = ({
 
   const setSelectedValue = useCallback(
     (nextValue: string) => {
+      if (nextValue === selectedValue) {
+        return;
+      }
+
       if (value == null) {
         setInternalValue(nextValue);
       }
 
       onValueChange?.(nextValue);
     },
-    [onValueChange, value],
+    [onValueChange, selectedValue, value],
   );
 
   const contextValue = useMemo<TabsContextValues>(
@@ -173,16 +177,23 @@ const TabsList = ({ className, onKeyDown, ref, tabIndex = -1, ...props }: TabsLi
       return;
     }
 
+    const currentTab = event.target as HTMLButtonElement;
     const tabs = findEnabledTabs(event.currentTarget);
-    const currentIndex = tabs.indexOf(event.target as HTMLButtonElement);
+    const currentIndex = tabs.indexOf(currentTab);
+
+    if (currentIndex < 0) {
+      return;
+    }
+
+    if (activationMode === 'manual' && isSelectionKey(event.key)) {
+      event.preventDefault();
+      selectTabValue(currentTab, setSelectedValue);
+      return;
+    }
+
     const targetTab = getTargetTabByKey(event.key, tabs, currentIndex);
 
-    if (currentIndex < 0 || targetTab == null) {
-      if (activationMode === 'manual' && isSelectionKey(event.key)) {
-        event.preventDefault();
-        selectTabValue(event.target as HTMLButtonElement, setSelectedValue);
-      }
-
+    if (targetTab == null) {
       return;
     }
 
