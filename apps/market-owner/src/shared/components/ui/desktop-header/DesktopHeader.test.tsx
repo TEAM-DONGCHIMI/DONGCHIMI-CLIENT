@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent } from '../../../../test';
-import { HeaderDesktop } from './HeaderDesktop';
+import { DesktopHeader } from './DesktopHeader';
 
-describe('HeaderDesktop', () => {
+describe('DesktopHeader', () => {
   it('renders parent and current page labels in default mode', () => {
-    render(<HeaderDesktop currentLabel='상품 수정' parentLabel='상품 관리' />);
+    render(<DesktopHeader currentLabel='상품 수정' parentLabel='상품 관리' />);
 
     expect(screen.getByRole('navigation', { name: '현재 위치' })).toBeInTheDocument();
     expect(screen.getByText('상품 관리')).toBeInTheDocument();
@@ -14,7 +14,7 @@ describe('HeaderDesktop', () => {
   });
 
   it('renders home label in only home mode', () => {
-    render(<HeaderDesktop mode='onlyHome' />);
+    render(<DesktopHeader mode='onlyHome' />);
 
     expect(screen.getByText('동치미 작업 홈')).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: '현재 위치' })).not.toBeInTheDocument();
@@ -25,7 +25,7 @@ describe('HeaderDesktop', () => {
     const user = userEvent.setup();
 
     render(
-      <HeaderDesktop
+      <DesktopHeader
         currentLabel='홈'
         onSearch={handleSearch}
         parentLabel='오늘의 특가 상품 등록'

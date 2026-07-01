@@ -1,11 +1,11 @@
-# Component Spec: `HeaderDesktop`
+# Component Spec: `DesktopHeader`
 
 ## Metadata
 
 - App: `market-owner`
 - Category: `ui`
-- Path: `apps/market-owner/src/shared/components/ui/header-desktop/HeaderDesktop.tsx`
-- Figma: [APPJAM HeaderDesktop node 244:11926](https://www.figma.com/design/xIDbjqPKzG4bQL5Gaoqfvb/APPJAM?node-id=244-11926&m=dev)
+- Path: `apps/market-owner/src/shared/components/ui/desktop-header/DesktopHeader.tsx`
+- Figma: [APPJAM DesktopHeader node 244:11926](https://www.figma.com/design/xIDbjqPKzG4bQL5Gaoqfvb/APPJAM?node-id=244-11926&m=dev)
 - Status: Implemented
 
 ## Purpose
@@ -35,7 +35,7 @@
 - default: 상위 페이지, `/`, 현재 페이지, SearchBar를 표시합니다.
 - onlyHome: `homeLabel`과 SearchBar를 표시합니다.
 - search focus/hover/error/filled: 내부 SearchBar 상태 정책을 따릅니다.
-- disabled/loading/error: HeaderDesktop 자체 상태로는 제공하지 않습니다.
+- disabled/loading/error: DesktopHeader 자체 상태로는 제공하지 않습니다.
 
 ## Accessibility
 
@@ -58,6 +58,6 @@
 - [x] `pnpm format:check`
 - [x] `pnpm --filter market-owner lint`
 - [x] `pnpm --filter market-owner typecheck`
-- [x] `pnpm --filter market-owner test -- HeaderDesktop SearchBar`
+- [x] `pnpm --filter market-owner test -- DesktopUploadHeader DesktopHeader SearchBar`
 - [x] `pnpm --filter market-owner build`
 - [ ] browser visual check

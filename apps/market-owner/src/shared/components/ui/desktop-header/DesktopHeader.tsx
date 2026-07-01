@@ -2,34 +2,34 @@ import { Flex } from '@dongchimi/design-system/components';
 import { cn } from '@dongchimi/design-system/styles';
 
 import { SearchBar, type SearchBarProps } from '../search-bar';
-import * as S from './HeaderDesktop.css';
+import * as S from './DesktopHeader.css';
 
-export type HeaderDesktopModeTypes = 'default' | 'onlyHome';
+export type DesktopHeaderModeTypes = 'default' | 'onlyHome';
 
-interface HeaderDesktopSearchProps {
+interface DesktopHeaderSearchProps {
   defaultSearchValue?: string;
   searchValue?: string;
   onSearch?: SearchBarProps['onSearch'];
   onSearchValueChange?: SearchBarProps['onValueChange'];
 }
 
-interface HeaderDesktopBaseProps extends HeaderDesktopSearchProps {
+interface DesktopHeaderBaseProps extends DesktopHeaderSearchProps {
   className?: string;
 }
 
-interface HeaderDesktopDefaultProps {
+interface DesktopHeaderDefaultProps {
   currentLabel: string;
   mode?: 'default';
   parentLabel: string;
 }
 
-interface HeaderDesktopOnlyHomeProps {
+interface DesktopHeaderOnlyHomeProps {
   homeLabel?: string;
   mode: 'onlyHome';
 }
 
-export type HeaderDesktopProps = HeaderDesktopBaseProps &
-  (HeaderDesktopDefaultProps | HeaderDesktopOnlyHomeProps);
+export type DesktopHeaderProps = DesktopHeaderBaseProps &
+  (DesktopHeaderDefaultProps | DesktopHeaderOnlyHomeProps);
 
 const searchIcon = <span aria-hidden='true' className={S.searchIconClassName} />;
 
@@ -38,7 +38,7 @@ const renderSearchBar = ({
   searchValue,
   onSearch,
   onSearchValueChange,
-}: HeaderDesktopSearchProps) => (
+}: DesktopHeaderSearchProps) => (
   <SearchBar
     defaultValue={defaultSearchValue}
     icon={searchIcon}
@@ -48,7 +48,7 @@ const renderSearchBar = ({
   />
 );
 
-export const HeaderDesktop = (props: HeaderDesktopProps) => {
+export const DesktopHeader = (props: DesktopHeaderProps) => {
   const { className, defaultSearchValue, searchValue, onSearch, onSearchValueChange } = props;
 
   return (
