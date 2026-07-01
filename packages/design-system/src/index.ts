@@ -27,3 +27,5 @@ export { GridItem } from './components/layout/grid-item';
 export type { GridItemProps } from './components/layout/grid-item';
 export { List } from './components/layout/list';
 export type { ListItemProps, ListProps } from './components/layout/list';
+export { Navigation } from './components/ui/navigation';
+export type { NavigationProps } from './components/ui/navigation';
