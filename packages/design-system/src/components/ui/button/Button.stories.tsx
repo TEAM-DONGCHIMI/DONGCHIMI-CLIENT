@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Button';
 import { IcChevronRight } from '../../../icons';
 
-const buttonSizes = ['large', 'medium', 'small'] as const;
+const buttonSizes = ['large', 'medium', 'small', 'mobile'] as const;
 const buttonPresets = [
   { color: 'primary', disabled: false, variant: 'solid' },
   { color: 'assistive', disabled: false, variant: 'outlined' },
@@ -81,7 +81,7 @@ export const SizeMatrix: StoryTypes = {
   parameters: {
     docs: {
       description: {
-        story: 'Desktop에서 사용하는 large, medium, small size를 확인합니다.',
+        story: 'Button size preset을 확인합니다.',
       },
     },
   },
@@ -101,6 +101,8 @@ export const SizeMatrix: StoryTypes = {
 export const Mobile: StoryTypes = {
   args: {
     color: 'primary',
+    leftIcon: <DemoIcon />,
+    rightIcon: <DemoIcon />,
     size: 'mobile',
     variant: 'solid',
   },
@@ -108,7 +110,7 @@ export const Mobile: StoryTypes = {
     docs: {
       description: {
         story:
-          'Mobile 전용 버튼입니다. solid primary 조합만 사용하고 아이콘 슬롯은 렌더링하지 않습니다.',
+          'Mobile preset 버튼입니다. 현재 구현에서는 기존 mobile 높이를 유지하고, 좌우 아이콘 슬롯도 렌더링합니다.',
       },
     },
   },
@@ -118,7 +120,7 @@ export const VariantMatrix: StoryTypes = {
   parameters: {
     docs: {
       description: {
-        story: 'Figma에 정의된 desktop button preset을 size별로 확인합니다.',
+        story: 'Figma에 정의된 button preset을 size별로 확인합니다.',
       },
     },
   },
@@ -134,13 +136,13 @@ export const VariantMatrix: StoryTypes = {
               gap: 16,
             }}
           >
-            {buttonPresets.map(({ color, disabled, variant }) => (
+            {buttonPresets.map((preset) => (
               <Button
-                key={`${size}-${variant}-${color}-${disabled === true ? 'disabled' : 'enabled'}`}
-                color={color}
-                disabled={disabled}
+                key={`${size}-${preset.variant}-${preset.color}-${
+                  preset.disabled === true ? 'disabled' : 'enabled'
+                }`}
+                {...preset}
                 size={size}
-                variant={variant}
               >
                 로그인
               </Button>
@@ -157,7 +159,7 @@ export const VariantICN: StoryTypes = {
     docs: {
       description: {
         story:
-          'Variant-ICN은 별도 variant가 아니라 desktop button preset에 좌우 아이콘 슬롯이 optional로 붙은 상태입니다.',
+          'Variant-ICN은 별도 variant가 아니라 button preset에 좌우 아이콘 슬롯이 optional로 붙은 상태입니다.',
       },
     },
   },
@@ -173,15 +175,15 @@ export const VariantICN: StoryTypes = {
               gap: 16,
             }}
           >
-            {buttonPresets.map(({ color, disabled, variant }) => (
+            {buttonPresets.map((preset) => (
               <Button
-                key={`${size}-${variant}-${color}-${disabled === true ? 'disabled' : 'enabled'}`}
-                color={color}
-                disabled={disabled}
+                key={`${size}-${preset.variant}-${preset.color}-${
+                  preset.disabled === true ? 'disabled' : 'enabled'
+                }`}
+                {...preset}
                 leftIcon={<DemoIcon />}
                 rightIcon={<DemoIcon />}
                 size={size}
-                variant={variant}
               >
                 로그인
               </Button>

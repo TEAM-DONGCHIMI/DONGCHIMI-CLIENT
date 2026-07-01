@@ -72,7 +72,7 @@ Button
 - type: `RecipeVariantProps<typeof button>['size']`
 - default: `small`
 - values: `large`, `medium`, `small`, `mobile`
-- description: `large`, `medium`, `small`은 Figma desktop Button size이고, `mobile`은 Figma node 276:23036의 모바일 전용 Button size입니다.
+- description: `large`, `medium`, `small`은 기본 size preset이고, `mobile`은 기존 모바일 Button preset 호환용 값입니다. 최신 Figma에서는 platform이 별도 축으로 분리되어 있으나 현재 구현은 기존 mobile preset 높이를 유지합니다.
 
 ### native button props
 
@@ -105,16 +105,16 @@ Button
 - `soft / primary`
 - `solid / primary / disabled`
 - `solid / assistive`
-- `solid / primary / mobile`
 
-`mobile` size는 Figma node 276:23036 기준 `solid / primary`에서만 지원하며, 아이콘 슬롯을 사용하지 않습니다.
-`Variant-ICN`은 desktop preset의 별도 색상/variant가 아니라, 각 desktop preset에 `leftIcon`과 `rightIcon` 슬롯이 optional로 붙은 상태입니다.
+`Variant-ICN`은 별도 색상/variant가 아니라, 각 button preset에 `leftIcon`과 `rightIcon` 슬롯이 optional로 붙은 상태입니다.
 `disabled`는 Figma preset으로 표시되지만 public variant 값이 아니라 native 상태입니다.
+public type은 현재 스타일이 정의된 preset 조합만 허용합니다.
+`mobile`은 별도 variant/color preset이 아니라 기존 모바일 확인용 size 값이며, 좌우 아이콘 슬롯도 동일하게 지원합니다.
 
 ## Styling
 
 - layout: `inline-flex`, center alignment, grid parent 안에서도 stretch되지 않는 content-based auto width, max-width 100%
-- spacing: size별 fixed height, min-width, inline padding, desktop icon slot 24px
+- spacing: size별 fixed height, min-width, inline padding, icon slot 24px
 - variants: `outlined`은 흰 배경과 테두리를 사용하고, `soft`는 연한 primary 배경과 primary 테두리를 함께 사용합니다.
 - responsive: 호출부 width 안에서 max-width 100%를 넘지 않습니다.
 - hover/focus/disabled: focus-visible outline 유지, disabled는 background, border, text를 neutral disabled color로 통일
@@ -136,8 +136,8 @@ Button
 - [ ] Loading when supported: 미지원
 - [ ] Invalid/Error when supported: 미지원
 - [x] Size or variant differences when supported
-- [x] Mobile: `solid / primary / mobile` 조합과 아이콘 미렌더링 정책 확인
-- [x] Variant-ICN: desktop preset에서 좌우 아이콘 슬롯 확인
+- [x] Mobile: 기존 mobile preset과 좌우 아이콘 슬롯 확인
+- [x] Variant-ICN: preset별 좌우 아이콘 슬롯 확인
 
 ## Public API
 

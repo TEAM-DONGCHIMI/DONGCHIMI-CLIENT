@@ -1,6 +1,6 @@
 import ky, { type KyInstance, type Options } from 'ky';
 
-import { getClientEnv } from '../config';
+import { getClientEnv } from '@/shared/config';
 import { createApiConfigurationError, normalizeApiError } from './api-error';
 
 type HttpMethodTypes = 'delete' | 'get' | 'patch' | 'post' | 'put';

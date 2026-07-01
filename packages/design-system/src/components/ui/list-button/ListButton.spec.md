@@ -43,7 +43,7 @@ ListButton
 
 - type: `ReactNode`
 - required: `false`
-- description: 라벨 왼쪽에 배치되는 장식용 아이콘 슬롯입니다. Figma checkbox 자리처럼 24px 영역을 유지하고, `selected=true`일 때만 아이콘을 표시합니다.
+- description: 라벨 왼쪽에 배치되는 장식용 아이콘 슬롯입니다. 실제 아이콘 노드가 있으면 Figma checkbox 자리처럼 24px 영역을 유지하고, `selected=true`일 때만 아이콘을 표시합니다. `null`, `undefined`, `false`이면 슬롯을 렌더링하지 않습니다.
 
 ### selected
 
@@ -72,6 +72,7 @@ ListButton
 ## States
 
 - default: 별도 배경 없이 neutral 90 텍스트로 표시합니다.
+- hover: content 영역보다 좌우 12px 확장된 neutral 10 배경을 표시합니다.
 - assistive selected: `selected=true`, `color=assistive`이면 content 영역보다 좌우 12px 확장된 neutral 10 배경과 neutral 90 텍스트로 표시합니다.
 - primary selected: `selected=true`, `color=primary`이면 content 영역보다 좌우 12px 확장된 primary light 배경과 primary strong 텍스트로 표시합니다.
 - icon selected: `leftIcon`이 있으면 selected 배경/텍스트 색상을 적용하지 않고, `selected=true`일 때만 24px 슬롯 안에 아이콘을 표시합니다.
@@ -89,6 +90,7 @@ ListButton
 6. `leftIcon`은 장식용 슬롯이므로 `aria-hidden` 영역에 렌더링합니다.
 7. `leftIcon` 영역은 같은 button 내부에 있으므로 아이콘 영역을 클릭해도 ListButton의 `onClick`이 실행됩니다.
 8. `aria-pressed`는 호출부에서 덮어쓸 수 없고 항상 `selected` 값과 동기화됩니다.
+9. `leftIcon`이 `null`, `undefined`, `false`이면 icon slot을 만들지 않습니다.
 
 ## Styling
 
@@ -97,6 +99,7 @@ ListButton
 - shape: 8px radius
 - responsive: ListButton 자체는 고정 크기이며 부모 layout이 배치를 책임집니다.
 - overflow: 라벨이 고정 폭을 넘으면 ellipsis로 처리합니다.
+- hover: default와 icon 타입에서 neutral 10 배경을 표시하고, selected 색상은 hover에서도 유지합니다.
 - focus: focus-visible outline을 사용합니다.
 - token usage: 색상은 `atomic.neutral`, `semantic.primary`를 사용합니다. typography는 Figma의 15px Regular, 146.7% line-height, 0.96% letter-spacing 값을 component-local 값으로 둡니다.
 

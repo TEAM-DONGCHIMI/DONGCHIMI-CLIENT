@@ -2,7 +2,7 @@
 
 import { type ReactNode } from 'react';
 
-import { QueryProvider } from '../shared/query';
+import { QueryProvider } from '@/shared/query';
 
 type AppProvidersProps = Readonly<{
   children: ReactNode;
