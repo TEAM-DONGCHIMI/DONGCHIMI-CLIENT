@@ -23,6 +23,13 @@ describe('SearchBar', () => {
     expect(screen.getByTestId('search-icon')).toBeInTheDocument();
   });
 
+  it('renders without an icon slot when icon is not provided', () => {
+    render(<SearchBar />);
+
+    expect(screen.getByRole('search', { name: '상품 검색' })).toBeInTheDocument();
+    expect(screen.queryByTestId('search-icon')).not.toBeInTheDocument();
+  });
+
   it('calls onValueChange when the input changes', async () => {
     const handleValueChange = vi.fn();
     const user = userEvent.setup();
@@ -58,16 +65,6 @@ describe('SearchBar', () => {
     await user.keyboard('{Enter}');
 
     expect(handleSearch).toHaveBeenCalledWith('감자', expect.any(Object));
-  });
-
-  it('limits the search keyword to 17 characters', async () => {
-    const user = userEvent.setup();
-
-    render(<ControlledSearchBar />);
-
-    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '123456789012345678');
-
-    expect(screen.getByRole('searchbox', { name: '상품 검색' })).toHaveValue('12345678901234567');
   });
 
   it('supports controlled value changes with the 17 character limit', async () => {

@@ -72,9 +72,11 @@ export const SearchBar = ({
       onSubmit={handleSubmit}
       role='search'
     >
-      <span aria-hidden='true' className={S.iconClassName}>
-        {icon}
-      </span>
+      {icon && (
+        <span aria-hidden='true' className={S.iconClassName}>
+          {icon}
+        </span>
+      )}
       <input
         aria-invalid={isError || undefined}
         aria-label={accessibleName}
