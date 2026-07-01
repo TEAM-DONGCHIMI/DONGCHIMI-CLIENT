@@ -1,6 +1,4 @@
-export { IconButton } from './icon-button';
-export type { IconButtonProps } from './icon-button';
-export { BottomSheet } from './bottom-sheet';
+export { BottomSheet } from './BottomSheet';
 export type {
   BottomSheetBodyProps,
   BottomSheetCloseProps,
@@ -12,4 +10,4 @@ export type {
   BottomSheetProps,
   BottomSheetTitleProps,
   BottomSheetTriggerProps,
-} from './bottom-sheet';
+} from './BottomSheet';

@@ -21,3 +21,16 @@ export { GridItem } from './components/layout/grid-item';
 export type { GridItemProps } from './components/layout/grid-item';
 export { List } from './components/layout/list';
 export type { ListItemProps, ListProps } from './components/layout/list';
+export { BottomSheet } from './components/ui/bottom-sheet';
+export type {
+  BottomSheetBodyProps,
+  BottomSheetCloseProps,
+  BottomSheetContentProps,
+  BottomSheetDescriptionProps,
+  BottomSheetFooterProps,
+  BottomSheetHandleProps,
+  BottomSheetHeaderProps,
+  BottomSheetProps,
+  BottomSheetTitleProps,
+  BottomSheetTriggerProps,
+} from './components/ui/bottom-sheet';
