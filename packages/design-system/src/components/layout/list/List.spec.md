@@ -80,6 +80,8 @@ List
 - [x] Default plain list
 - [x] Ordered list with decimal marker
 - [x] Long content wrapping
+- [x] Marker position inside
+- [x] Large gap
 
 ## Public API
 

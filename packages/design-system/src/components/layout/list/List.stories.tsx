@@ -58,3 +58,34 @@ export const LongContent: StoryTypes = {
     ),
   },
 };
+
+export const MarkerInside: StoryTypes = {
+  args: {
+    'aria-label': 'Inside marker list',
+    className: storyPanelClassName,
+    marker: 'disc',
+    markerPosition: 'inside',
+    children: (
+      <>
+        <List.Item>Inside marker item</List.Item>
+        <List.Item>Second item</List.Item>
+      </>
+    ),
+  },
+};
+
+export const LargeGap: StoryTypes = {
+  args: {
+    'aria-label': 'Large gap list',
+    className: storyPanelClassName,
+    gap: 'lg',
+    marker: 'disc',
+    children: (
+      <>
+        <List.Item>First item</List.Item>
+        <List.Item>Second item</List.Item>
+        <List.Item>Third item</List.Item>
+      </>
+    ),
+  },
+};

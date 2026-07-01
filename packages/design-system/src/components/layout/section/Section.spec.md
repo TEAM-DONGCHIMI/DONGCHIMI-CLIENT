@@ -67,6 +67,7 @@ Section
 
 - [x] Default
 - [x] Compact spacing
+- [x] No spacing
 - [x] `as='article'`
 
 ## Public API

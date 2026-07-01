@@ -37,6 +37,14 @@ export const Compact: StoryTypes = {
   },
 };
 
+export const NoSpacing: StoryTypes = {
+  args: {
+    className: storyPanelClassName,
+    spacing: 'none',
+    children: <span className={storyBlockClassName}>Section without vertical spacing</span>,
+  },
+};
+
 export const AsArticle: StoryTypes = {
   args: {
     as: 'article',

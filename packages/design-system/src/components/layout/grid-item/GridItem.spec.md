@@ -70,6 +70,7 @@ GridItem
 - [x] Column span
 - [x] Full width
 - [x] Column start
+- [x] Row span
 
 ## Public API
 

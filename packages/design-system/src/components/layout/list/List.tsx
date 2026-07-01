@@ -12,18 +12,22 @@ import {
   type ListMarkerTypes,
 } from '../layout.css';
 
-type NativeListProps = Omit<
-  ComponentPropsWithoutRef<'ul'> & ComponentPropsWithoutRef<'ol'>,
-  'className'
->;
-
-export type ListProps = NativeListProps & {
-  as?: 'ul' | 'ol';
+interface ListSharedProps {
   className?: string;
   gap?: LayoutGapTypes;
   marker?: ListMarkerTypes;
   markerPosition?: ListMarkerPositionTypes;
-};
+}
+
+interface UnorderedListProps extends Omit<ComponentPropsWithoutRef<'ul'>, 'className'> {
+  as?: 'ul';
+}
+
+interface OrderedListProps extends Omit<ComponentPropsWithoutRef<'ol'>, 'className'> {
+  as: 'ol';
+}
+
+export type ListProps = ListSharedProps & (UnorderedListProps | OrderedListProps);
 
 export type ListItemProps = ComponentPropsWithoutRef<'li'>;
 

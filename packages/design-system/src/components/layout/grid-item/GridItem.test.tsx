@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import { render, screen } from '../../../test';
+import {
+  gridItemColumnSpanClassNames,
+  gridItemColumnStartClassNames,
+  gridItemRowSpanClassNames,
+} from '../layout.css';
 import { GridItem } from './GridItem';
 
 describe('GridItem', () => {
@@ -22,5 +27,8 @@ describe('GridItem', () => {
 
     expect(item.tagName).toBe('ARTICLE');
     expect(item).toHaveClass('custom-grid-item');
+    expect(item).toHaveClass(gridItemColumnSpanClassNames[2]);
+    expect(item).toHaveClass(gridItemColumnStartClassNames[1]);
+    expect(item).toHaveClass(gridItemRowSpanClassNames[2]);
   });
 });

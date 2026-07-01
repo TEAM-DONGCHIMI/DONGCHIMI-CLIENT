@@ -59,3 +59,18 @@ export const ColumnStart: StoryTypes = {
     </Grid>
   ),
 };
+
+export const RowSpan: StoryTypes = {
+  args: {
+    rowSpan: 2,
+    children: <span className={storyAccentBlockClassName}>Spans 2 rows</span>,
+  },
+  render: (args) => (
+    <Grid className={storyCanvasClassName} columns={2} gap='md'>
+      <GridItem {...args} />
+      <span className={storyBlockClassName}>B</span>
+      <span className={storyBlockClassName}>C</span>
+      <span className={storyBlockClassName}>D</span>
+    </Grid>
+  ),
+};
