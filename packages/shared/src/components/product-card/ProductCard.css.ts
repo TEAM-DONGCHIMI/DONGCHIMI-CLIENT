@@ -1,6 +1,6 @@
 import { style, styleVariants } from '@vanilla-extract/css';
 
-import { atomic, semantic, shadow } from '@dongchimi/design-system/tokens';
+import { atomic, semantic, shadow, typography } from '@dongchimi/design-system/tokens';
 
 import chipPointImageUrl from './assets/img-chip-point.webp';
 
@@ -55,23 +55,17 @@ export const headerClassName = style({
 });
 
 export const titleClassName = style({
+  ...typography['body-1-semibold'],
   minWidth: 0,
   overflow: 'hidden',
-  fontSize: '1.8rem',
-  fontWeight: 600,
-  lineHeight: 1.4,
-  letterSpacing: 0,
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 });
 
 export const countClassName = style({
+  ...typography['body-3-medium'],
   flexShrink: 0,
   color: atomic.neutral[60],
-  fontSize: '1.4rem',
-  fontWeight: 500,
-  lineHeight: 1.4,
-  letterSpacing: 0,
 });
 
 export const listClassName = style({
@@ -114,16 +108,13 @@ export const productContentWithRankClassName = style({
 });
 
 export const rankClassName = style({
+  ...typography['body-2-semibold'],
   display: 'inline-flex',
   minWidth: 0,
   alignItems: 'center',
   justifyContent: 'center',
   paddingRight: '1rem',
   color: atomic.neutral[90],
-  fontSize: '1.6rem',
-  fontWeight: 600,
-  lineHeight: 1.4,
-  letterSpacing: 0,
 });
 
 export const imageFrameClassName = style({
@@ -157,17 +148,13 @@ export const infoClassName = style({
   minWidth: 0,
   flexDirection: 'column',
   alignItems: 'flex-start',
-  lineHeight: 1.4,
 });
 
 export const productNameClassName = style({
+  ...typography['body-3-medium'],
   width: '100%',
   overflow: 'hidden',
   color: atomic.neutral[90],
-  fontSize: '1.4rem',
-  fontWeight: 500,
-  lineHeight: 1.4,
-  letterSpacing: 0,
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 });
@@ -181,29 +168,24 @@ export const priceRowClassName = style({
 });
 
 export const currentPriceClassName = style({
+  ...typography['body-2-semibold'],
   flexShrink: 0,
   color: atomic.neutral[90],
-  fontSize: '1.6rem',
-  fontWeight: 600,
-  lineHeight: 1.4,
-  letterSpacing: 0,
   whiteSpace: 'nowrap',
 });
 
 export const originalPriceClassName = style({
+  ...typography['body-3-medium'],
   minWidth: 0,
   overflow: 'hidden',
   color: atomic.neutral[40],
-  fontSize: '1.4rem',
-  fontWeight: 500,
-  lineHeight: 1.4,
-  letterSpacing: 0,
   textDecoration: 'line-through',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 });
 
 export const badgeClassName = style({
+  ...typography['caption-2-medium'],
   display: 'inline-flex',
   width: PRODUCT_BADGE_SIZE,
   height: PRODUCT_BADGE_SIZE,
@@ -215,10 +197,6 @@ export const badgeClassName = style({
   backgroundRepeat: 'no-repeat',
   backgroundSize: '100% 100%',
   color: atomic.neutral[5],
-  fontSize: '1rem',
-  fontWeight: 500,
-  lineHeight: 1.4,
-  letterSpacing: 0,
   whiteSpace: 'nowrap',
 });
 
@@ -249,6 +227,7 @@ export const footerClassName = style({
 });
 
 export const toggleButtonClassName = style({
+  ...typography['body-3-semibold'],
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -259,10 +238,6 @@ export const toggleButtonClassName = style({
   backgroundColor: 'transparent',
   color: semantic.primary.strong,
   cursor: 'pointer',
-  fontSize: '1.4rem',
-  fontWeight: 600,
-  lineHeight: 1.4,
-  letterSpacing: 0,
   selectors: {
     '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
@@ -285,6 +260,7 @@ export const toggleIconExpandedClassName = style({
 });
 
 export const emptyClassName = style({
+  ...typography['body-3-medium'],
   display: 'flex',
   minHeight: '8rem',
   alignItems: 'center',
@@ -292,9 +268,5 @@ export const emptyClassName = style({
   borderRadius: 12,
   backgroundColor: atomic.neutral[10],
   color: atomic.neutral[60],
-  fontSize: '1.4rem',
-  fontWeight: 500,
-  lineHeight: 1.4,
-  letterSpacing: 0,
   textAlign: 'center',
 });
