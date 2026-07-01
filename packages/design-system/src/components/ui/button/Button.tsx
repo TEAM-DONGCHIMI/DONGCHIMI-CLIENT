@@ -25,13 +25,23 @@ type ButtonPresetProps =
       variant: Extract<ButtonVariantTypes, 'soft'>;
     };
 
-export type ButtonProps = NativeButtonProps &
-  ButtonPresetProps & {
-    size?: ButtonSizeTypes;
-    children: ReactNode;
-    leftIcon?: ReactNode;
-    rightIcon?: ReactNode;
-  };
+type DesktopButtonProps = ButtonPresetProps & {
+  size?: Exclude<ButtonSizeTypes, 'mobile'>;
+};
+
+interface MobileButtonProps {
+  color?: Extract<ButtonColorTypes, 'primary'>;
+  size: Extract<ButtonSizeTypes, 'mobile'>;
+  variant?: Extract<ButtonVariantTypes, 'solid'>;
+}
+
+interface ButtonCommonProps extends NativeButtonProps {
+  children: ReactNode;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
+}
+
+export type ButtonProps = ButtonCommonProps & (DesktopButtonProps | MobileButtonProps);
 
 const hasRenderableIcon = (icon: ReactNode) => {
   return icon != null && icon !== false;

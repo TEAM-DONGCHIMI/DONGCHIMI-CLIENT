@@ -109,7 +109,7 @@ Button
 `Variant-ICN`은 별도 색상/variant가 아니라, 각 button preset에 `leftIcon`과 `rightIcon` 슬롯이 optional로 붙은 상태입니다.
 `disabled`는 Figma preset으로 표시되지만 public variant 값이 아니라 native 상태입니다.
 public type은 현재 스타일이 정의된 preset 조합만 허용합니다.
-`mobile`은 별도 variant/color preset이 아니라 기존 모바일 확인용 size 값이며, 좌우 아이콘 슬롯도 동일하게 지원합니다.
+`mobile`은 기존 모바일 확인용 size 값이며, 현재 정의된 `solid / primary` 조합만 허용합니다. 좌우 아이콘 슬롯은 desktop과 동일하게 지원합니다.
 
 ## Styling
 

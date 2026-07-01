@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Button';
 import { IcChevronRight } from '../../../icons';
 
-const buttonSizes = ['large', 'medium', 'small', 'mobile'] as const;
+const desktopButtonSizes = ['large', 'medium', 'small'] as const;
 const buttonPresets = [
   { color: 'primary', disabled: false, variant: 'solid' },
   { color: 'assistive', disabled: false, variant: 'outlined' },
@@ -88,11 +88,12 @@ export const SizeMatrix: StoryTypes = {
   render: () => {
     return (
       <div style={{ display: 'grid', gap: 18 }}>
-        {buttonSizes.map((size) => (
+        {desktopButtonSizes.map((size) => (
           <Button key={size} size={size}>
             로그인
           </Button>
         ))}
+        <Button size='mobile'>로그인</Button>
       </div>
     );
   },
@@ -127,7 +128,7 @@ export const VariantMatrix: StoryTypes = {
   render: () => {
     return (
       <div style={{ display: 'grid', gap: 18 }}>
-        {buttonSizes.map((size) => (
+        {desktopButtonSizes.map((size) => (
           <div
             key={size}
             style={{
@@ -149,6 +150,7 @@ export const VariantMatrix: StoryTypes = {
             ))}
           </div>
         ))}
+        <Button size='mobile'>로그인</Button>
       </div>
     );
   },
@@ -166,7 +168,7 @@ export const VariantICN: StoryTypes = {
   render: () => {
     return (
       <div style={{ display: 'grid', gap: 18 }}>
-        {buttonSizes.map((size) => (
+        {desktopButtonSizes.map((size) => (
           <div
             key={size}
             style={{
@@ -190,6 +192,9 @@ export const VariantICN: StoryTypes = {
             ))}
           </div>
         ))}
+        <Button leftIcon={<DemoIcon />} rightIcon={<DemoIcon />} size='mobile'>
+          로그인
+        </Button>
       </div>
     );
   },
