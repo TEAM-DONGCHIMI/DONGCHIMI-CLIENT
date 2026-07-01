@@ -21,3 +21,5 @@ export { GridItem } from './layout/grid-item';
 export type { GridItemProps } from './layout/grid-item';
 export { List } from './layout/list';
 export type { ListItemProps, ListProps } from './layout/list';
+export { Sidebar } from './layout/sidebar';
+export type { SidebarItem, SidebarProfile, SidebarProps, SidebarSection } from './layout/sidebar';
