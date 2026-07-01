@@ -66,6 +66,7 @@ NumButton
 4. `selected`가 `true`이면 `aria-pressed=true`를 전달합니다.
 5. hover 상태는 CSS `:hover`로 표현합니다.
 6. `selected` 상태에서는 hover해도 neutral 30 배경을 유지합니다.
+7. `aria-pressed`는 호출부에서 덮어쓸 수 없고 항상 `selected` 값과 동기화됩니다.
 
 ## Styling
 

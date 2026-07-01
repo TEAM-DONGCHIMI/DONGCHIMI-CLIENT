@@ -40,7 +40,7 @@ const meta = {
     },
     variant: {
       control: 'select',
-      options: ['solid', 'outline', 'soft'],
+      options: ['solid', 'outlined', 'soft'],
     },
   },
   args: {

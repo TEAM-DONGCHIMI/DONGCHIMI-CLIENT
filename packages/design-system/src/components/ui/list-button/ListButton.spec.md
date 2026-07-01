@@ -60,6 +60,10 @@ ListButton
 - values: `assistive`, `primary`
 - description: selected 상태의 색상 계열을 정합니다. `leftIcon`이 있거나 `selected=false`이면 시각적으로 default 상태를 유지합니다.
 
+### internal style variants
+
+- description: `hasLeftIcon`은 내부 recipe 분기용 값이며 public prop으로 노출하지 않습니다. 호출부는 `leftIcon` 전달 여부만 제어합니다.
+
 ### native button props
 
 - type: `ComponentPropsWithoutRef<'button'>`
@@ -84,6 +88,7 @@ ListButton
 5. `color`는 `leftIcon`이 없는 selected 상태일 때만 시각적으로 의미가 있습니다.
 6. `leftIcon`은 장식용 슬롯이므로 `aria-hidden` 영역에 렌더링합니다.
 7. `leftIcon` 영역은 같은 button 내부에 있으므로 아이콘 영역을 클릭해도 ListButton의 `onClick`이 실행됩니다.
+8. `aria-pressed`는 호출부에서 덮어쓸 수 없고 항상 `selected` 값과 동기화됩니다.
 
 ## Styling
 
@@ -91,6 +96,7 @@ ListButton
 - spacing: padding 0, centered label. `leftIcon`이 있으면 start alignment, 24px icon slot, 4px gap을 사용합니다. selected 여부와 상관없이 icon slot은 유지합니다.
 - shape: 8px radius
 - responsive: ListButton 자체는 고정 크기이며 부모 layout이 배치를 책임집니다.
+- overflow: 라벨이 고정 폭을 넘으면 ellipsis로 처리합니다.
 - focus: focus-visible outline을 사용합니다.
 - token usage: 색상은 `atomic.neutral`, `semantic.primary`를 사용합니다. typography는 Figma의 15px Regular, 146.7% line-height, 0.96% letter-spacing 값을 component-local 값으로 둡니다.
 

@@ -3,7 +3,10 @@ import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react
 import { cn } from '../../../styles/class-name';
 import { numButton } from './NumButton.css';
 
-type NativeButtonProps = Omit<ComponentPropsWithoutRef<'button'>, 'children' | 'color'>;
+type NativeButtonProps = Omit<
+  ComponentPropsWithoutRef<'button'>,
+  'aria-pressed' | 'children' | 'color'
+>;
 
 export interface NumButtonProps extends NativeButtonProps {
   children: ReactNode;
@@ -15,10 +18,10 @@ export const NumButton = forwardRef<HTMLButtonElement, NumButtonProps>(
     return (
       <button
         ref={ref}
-        aria-pressed={selected}
         className={cn(numButton({ selected }), className)}
-        type={type}
         {...props}
+        aria-pressed={selected}
+        type={type}
       >
         {children}
       </button>

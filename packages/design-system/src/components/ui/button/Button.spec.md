@@ -57,8 +57,8 @@ Button
 
 - type: `RecipeVariantProps<typeof button>['variant']`
 - default: `solid`
-- values: `solid`, `outline`, `soft`
-- description: Button의 시각적 강조 방식을 정합니다. `solid`는 채움형, `outline`은 흰 배경 테두리형, `soft`는 연한 배경과 테두리를 함께 쓰는 primary 강조형입니다.
+- values: `solid`, `outlined`, `soft`
+- description: Button의 시각적 강조 방식을 정합니다. `solid`는 채움형, `outlined`은 흰 배경 테두리형, `soft`는 연한 배경과 테두리를 함께 쓰는 primary 강조형입니다.
 
 ### color
 
@@ -99,9 +99,9 @@ Button
 ## Figma Presets
 
 - `solid / primary`
-- `outline / assistive`
-- `outline / assistiveLight`
-- `outline / negative`
+- `outlined / assistive`
+- `outlined / assistiveLight`
+- `outlined / negative`
 - `soft / primary`
 - `solid / primary / disabled`
 - `solid / assistive`
@@ -115,7 +115,7 @@ Button
 
 - layout: `inline-flex`, center alignment, grid parent 안에서도 stretch되지 않는 content-based auto width, max-width 100%
 - spacing: size별 fixed height, min-width, inline padding, desktop icon slot 24px
-- variants: `outline`은 흰 배경과 테두리를 사용하고, `soft`는 연한 primary 배경과 primary 테두리를 함께 사용합니다.
+- variants: `outlined`은 흰 배경과 테두리를 사용하고, `soft`는 연한 primary 배경과 primary 테두리를 함께 사용합니다.
 - responsive: 호출부 width 안에서 max-width 100%를 넘지 않습니다.
 - hover/focus/disabled: focus-visible outline 유지, disabled는 background, border, text를 neutral disabled color로 통일
 - token usage: color는 `semantic.primary`, `semantic.status`, `atomic.neutral`, `atomic.common`을 사용합니다. typography는 `typography` token을 사용합니다.

@@ -105,5 +105,9 @@ export const listButtonIcon = style({
 });
 
 export const listButtonLabel = style({
+  minWidth: 0,
+  maxWidth: '100%',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
   zIndex: 1,
 });

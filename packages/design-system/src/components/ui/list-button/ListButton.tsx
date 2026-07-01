@@ -4,11 +4,15 @@ import { cn } from '../../../styles/class-name';
 import type { RecipeVariantProps } from '../../../styles/recipe';
 import { listButton, listButtonIcon, listButtonLabel } from './ListButton.css';
 
-type NativeButtonProps = Omit<ComponentPropsWithoutRef<'button'>, 'children' | 'color'>;
+type NativeButtonProps = Omit<
+  ComponentPropsWithoutRef<'button'>,
+  'aria-pressed' | 'children' | 'color'
+>;
 
 type ListButtonVariantProps = RecipeVariantProps<typeof listButton>;
+type ListButtonPublicVariantProps = Omit<ListButtonVariantProps, 'hasLeftIcon'>;
 
-export interface ListButtonProps extends NativeButtonProps, ListButtonVariantProps {
+export interface ListButtonProps extends NativeButtonProps, ListButtonPublicVariantProps {
   children: ReactNode;
   leftIcon?: ReactNode;
 }
@@ -29,13 +33,13 @@ export const ListButton = forwardRef<HTMLButtonElement, ListButtonProps>(
     return (
       <button
         ref={ref}
-        aria-pressed={selected}
         className={cn(
           listButton({ color, hasLeftIcon: leftIcon !== undefined, selected }),
           className,
         )}
-        type={type}
         {...props}
+        aria-pressed={selected}
+        type={type}
       >
         {leftIcon !== undefined ? (
           <span aria-hidden='true' className={listButtonIcon}>
