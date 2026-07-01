@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { atomic } from '../../../tokens';
+import { Button } from '../../ui/button';
 import { Sidebar, type SidebarItem } from './Sidebar';
 
 const meta = {
@@ -105,21 +106,14 @@ export const Default: StoryTypes = {
         <span style={{ color: atomic.neutral[70], fontSize: 13, fontWeight: 700 }}>
           도움이 필요하신가요?
         </span>
-        <button
-          style={{
-            minHeight: 44,
-            border: `1px solid ${atomic.neutral[20]}`,
-            borderRadius: 6,
-            background: atomic.common[0],
-            color: atomic.neutral[70],
-            font: 'inherit',
-            fontSize: 14,
-            fontWeight: 700,
-          }}
-          type='button'
+        <Button
+          color='assistiveLight'
+          size='small'
+          style={{ color: atomic.neutral[70] }}
+          variant='outlined'
         >
           서비스 추가 이용하기
-        </button>
+        </Button>
       </>
     ),
   },
