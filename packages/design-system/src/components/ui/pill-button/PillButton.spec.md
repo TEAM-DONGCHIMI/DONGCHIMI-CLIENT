@@ -49,7 +49,7 @@ PillButton
 
 - type: `RecipeVariantProps<typeof pillButton>['variant']` (`'outlined-light' | 'outlined' | 'filled'`)
 - default: `'outlined-light'`
-- description: Figma에서 확인된 스타일 변형입니다. `outlined-light`는 옅은 테두리, `outlined`는 진한 테두리, `filled`는 채움 표현입니다. mobile은 `outlined-light`, `filled`만 사용합니다(`outlined` 미사용).
+- description: Figma에서 확인된 스타일 변형입니다. `outlined-light`는 옅은 테두리, `outlined`는 진한 테두리, `filled`는 채움 표현입니다. `platform='mobile'`에는 Figma에 `outlined` 조합이 없어, prop 타입(discriminated union)에서 mobile은 `outlined-light`/`filled`만 허용해 잘못된 조합을 컴파일 단계에서 막습니다.
 
 ### icon
 

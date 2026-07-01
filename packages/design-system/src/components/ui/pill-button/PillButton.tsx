@@ -7,13 +7,18 @@ import { pillButton, pillButtonIcon } from './PillButton.css';
 type NativeButtonProps = Omit<ComponentPropsWithoutRef<'button'>, 'children' | 'color'>;
 
 type PillButtonVariantProps = RecipeVariantProps<typeof pillButton>;
+type PillButtonVariantTypes = NonNullable<PillButtonVariantProps['variant']>;
 
-export interface PillButtonOwnProps extends PillButtonVariantProps {
-  children: ReactNode;
-  icon?: ReactNode;
-}
+// mobile은 Figma에 outlined 조합이 없어 outlined-light / filled만 허용합니다.
+type PillButtonPlatformVariantProps =
+  | { platform?: 'desktop'; variant?: PillButtonVariantTypes }
+  | { platform: 'mobile'; variant?: Exclude<PillButtonVariantTypes, 'outlined'> };
 
-export type PillButtonProps = NativeButtonProps & PillButtonOwnProps;
+export type PillButtonProps = NativeButtonProps &
+  PillButtonPlatformVariantProps & {
+    children: ReactNode;
+    icon?: ReactNode;
+  };
 
 export const PillButton = forwardRef<HTMLButtonElement, PillButtonProps>(
   (
