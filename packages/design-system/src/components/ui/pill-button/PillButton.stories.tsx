@@ -84,6 +84,14 @@ export const WithIcon: StoryTypes = {
   },
 };
 
+export const Disabled: StoryTypes = {
+  args: {
+    disabled: true,
+    platform: 'desktop',
+    variant: 'outlined-light',
+  },
+};
+
 export const VariantMatrix: StoryTypes = {
   render: () => {
     return (

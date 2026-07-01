@@ -70,7 +70,7 @@ PillButton
 
 ## States
 
-- disabled: native `disabled`를 그대로 전달해 pointer/keyboard interaction을 막습니다. Figma에 전용 시각 정의가 없어 별도 시각 처리(opacity, cursor 등)는 하지 않습니다.
+- disabled: native `disabled`로 pointer/keyboard interaction을 막고, 디자인시스템 공통 disabled 표현(opacity 0.45, `cursor: not-allowed`)을 적용합니다.
 - loading: 지원하지 않습니다.
 - invalid/error: 지원하지 않습니다.
 - selected/active: 별도 상태 prop은 없습니다. 선택 표현이 필요하면 호출부가 `variant`(예: `filled`)로 제어합니다.
@@ -90,7 +90,7 @@ PillButton
 - typography: desktop `body-3-semibold`, mobile `caption-1-medium`입니다.
 - colors: `Variants` 항목의 variant × platform 매핑을 따릅니다.
 - icon: desktop 16px, mobile 12px 슬롯, `currentColor`.
-- focus: `focus-visible` outline을 제공합니다. disabled는 네이티브 동작만 사용하고 별도 시각 처리는 없습니다.
+- focus/disabled: `focus-visible` outline을 제공하고, disabled는 opacity 0.45와 `cursor: not-allowed`로 표현합니다.
 - token usage: `atomic`, `semantic`, `typography` token을 사용합니다. focus ring은 `semantic.primary.normal` 기반 `color-mix`입니다.
 
 ## Accessibility
@@ -109,6 +109,7 @@ PillButton
 - [ ] Mobile outlined-light
 - [ ] Mobile filled
 - [ ] With trailing icon
+- [ ] Disabled
 - [ ] platform × variant matrix
 
 ## Public API
