@@ -34,7 +34,7 @@ export type ButtonProps = NativeButtonProps &
   };
 
 const hasRenderableIcon = (icon: ReactNode) => {
-  return icon !== null && icon !== undefined && icon !== false;
+  return icon != null && icon !== false;
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
