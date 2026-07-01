@@ -27,10 +27,12 @@ pnpm install --frozen-lockfile
 
 로컬 앱 포트는 모노레포 안에서 고정합니다. 공유 URL, callback URL, CORS, QA 문서가 흔들리지 않도록 자동 port fallback은 사용하지 않습니다.
 
-| Workspace           | Port   | Command                 | Notes                                   |
-| ------------------- | ------ | ----------------------- | --------------------------------------- |
-| `apps/client`       | `3000` | `pnpm dev:web`          | Next dev script에서 `--port 3000` 명시  |
-| `apps/market-owner` | `5173` | `pnpm dev:market-owner` | Vite `strictPort: true`로 fallback 차단 |
+| Workspace               | Port   | Command                        | Notes                                   |
+| ----------------------- | ------ | ------------------------------ | --------------------------------------- |
+| `apps/client`           | `3000` | `pnpm dev:web`                 | Next dev script에서 `--port 3000` 명시  |
+| `apps/market-owner`     | `5173` | `pnpm dev:market-owner`        | Vite `strictPort: true`로 fallback 차단 |
+| Design System Storybook | `6006` | `pnpm storybook:design-system` | `packages/design-system` 컴포넌트 확인  |
+| Shared Storybook        | `6007` | `pnpm storybook:shared`        | `packages/shared` 컴포넌트 확인         |
 
 E2E도 같은 포트를 사용합니다. 자세한 기준은 [E2E Testing](./e2e-testing.md)을 따릅니다.
 
@@ -88,17 +90,18 @@ apps/design-system-web/** -> design-system web lint/typecheck/build
 apps/admin/** -> admin lint/typecheck/build, 앱이 생성된 뒤 적용
 apps/mobile/** -> web check와 별도 mobile command
 packages/design-system/** -> design-system lint/typecheck/test/build/storybook
-packages/shared/** -> 소비 app build 필요 여부 확인
+packages/shared/** -> shared lint/typecheck/test/build/storybook + 소비 app build 필요 여부 확인
 docs/**, recipes/**, templates/** -> git diff --check + format check
 turbo/generators/** -> pnpm check:generators + sample generation
 ```
 
 ## App Scripts
 
-| Workspace           | Dev                     | Targeted verification                                                                                                                            |
-| ------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `apps/client`       | `pnpm dev:web`          | `pnpm --filter client lint`, `pnpm --filter client typecheck`, `pnpm --filter client test`, `pnpm --filter client build`                         |
-| `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner test`, `pnpm --filter market-owner build` |
+| Workspace           | Dev                     | Targeted verification                                                                                                                                                                                                   |
+| ------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/client`       | `pnpm dev:web`          | `pnpm --filter client lint`, `pnpm --filter client typecheck`, `pnpm --filter client test`, `pnpm --filter client build`                                                                                                |
+| `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner test`, `pnpm --filter market-owner build`                                                                        |
+| `packages/shared`   | `pnpm storybook:shared` | `pnpm --filter @dongchimi/shared lint`, `pnpm --filter @dongchimi/shared typecheck`, `pnpm --filter @dongchimi/shared test`, `pnpm --filter @dongchimi/shared build`, `pnpm --filter @dongchimi/shared build-storybook` |
 
 테스트 종류별 명령과 작성 기준은 [Testing](./testing.md)을 따릅니다.
 

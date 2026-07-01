@@ -1,0 +1,57 @@
+{
+  "name": "@dongchimi/shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css.ts"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./components": "./src/components/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "storybook": "storybook dev -p 6007",
+    "build-storybook": "storybook build",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
+    "test:integration": "vitest run --project integration --passWithNoTests",
+    "test:unit": "vitest run --project unit --passWithNoTests",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@dongchimi/design-system": "workspace:*",
+    "@vanilla-extract/css": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@dongchimi/eslint-config": "workspace:*",
+    "@dongchimi/typescript-config": "workspace:*",
+    "@storybook/addon-a11y": "^10.4.6",
+    "@storybook/addon-docs": "^10.4.6",
+    "@storybook/react-vite": "^10.4.6",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vanilla-extract/vite-plugin": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-storybook": "^10.4.6",
+    "jsdom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "storybook": "^10.4.6",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
