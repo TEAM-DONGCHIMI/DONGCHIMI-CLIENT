@@ -30,7 +30,7 @@
 
 - `completed`, `error` 상태를 지원합니다.
 - message 영역은 한 줄 말줄임으로 처리합니다.
-- leading icon은 slot으로 받습니다.
+- leading icon은 기본 dashed icon을 렌더링하고, slot으로 교체할 수 있습니다.
 - 상태별 기본 `role`과 `aria-live`를 제공합니다.
 - Storybook에서 기본 상태, 에러 상태, 긴 문구, icon 없는 케이스를 확인합니다.
 
@@ -60,7 +60,8 @@ Toast
   - native `div` props except `children` and `color`
 - caller responsibility:
   - 앱 런타임에서 언제 Toast를 띄우고 제거할지 결정합니다.
-  - 정확한 아이콘이 필요한 경우 `icon` slot에 전달합니다.
+  - 기본 dashed icon이 아닌 실제 아이콘이 필요한 경우 `icon` slot에 전달합니다.
+  - icon 없이 렌더링해야 하는 경우 `icon={null}`을 전달합니다.
 - non-owned behavior:
   - queue, provider, hook, animation, timeout, portal은 담당하지 않습니다.
 
@@ -80,19 +81,24 @@ Toast
 ## Behavior
 
 1. `children`을 message 영역에 렌더링합니다.
-2. `icon`이 있으면 장식용 slot으로 렌더링합니다.
-3. `status`가 `completed`면 기본 `role='status'`, `aria-live='polite'`를 사용합니다.
-4. `status`가 `error`면 기본 `role='alert'`, `aria-live='assertive'`를 사용합니다.
-5. 호출부가 `role` 또는 `aria-live`를 명시하면 해당 값을 우선합니다.
+2. `icon`이 `undefined`면 Figma 기준 dashed icon을 장식용 slot으로 렌더링합니다.
+3. `icon`에 ReactNode가 전달되면 해당 icon을 장식용 slot으로 렌더링합니다.
+4. `icon={null}`이면 icon slot을 렌더링하지 않습니다.
+5. `status`가 `completed`면 기본 `role='status'`, `aria-live='polite'`를 사용합니다.
+6. `status`가 `error`면 기본 `role='alert'`, `aria-live='assertive'`를 사용합니다.
+7. 호출부가 `role` 또는 `aria-live`를 명시하면 해당 값을 우선합니다.
 
 ## Styling
 
 - layout: inline-flex, center aligned
-- size: Figma 기준 최소 `17.4rem x 4.8rem`
-- spacing: 좌우 `1.6rem`, icon/message 간격 `0.8rem`
+- size: Figma 기준 `17.4rem x 4.8rem`
+- spacing: 좌우 `1.8rem`, 상하 `1.2rem`, icon/message 간격 `0.4rem`
+- radius: `0.8rem`
 - responsive: viewport보다 넓어지지 않게 `max-width`를 제한합니다.
 - overflow: message는 한 줄 말줄임 처리합니다.
-- token usage: neutral, status, typography token을 우선 사용합니다.
+- color: completed `#191F28`, error `#FF6362`, text `#FFFFFF`, dashed icon `#171719`
+- icon: `2.4rem` slot 안에 `1.93rem x 1.93rem` dashed icon을 렌더링합니다.
+- typography: Pretendard Regular `1.4rem`, line-height `140%`, letter-spacing `-2%`
 
 ## Accessibility
 

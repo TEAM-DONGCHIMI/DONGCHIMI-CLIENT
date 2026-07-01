@@ -1,7 +1,12 @@
 import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import { cn } from '../../../styles/class-name';
-import { toast, toastIconClassName, toastMessageClassName } from './Toast.css';
+import {
+  toast,
+  toastDefaultIconClassName,
+  toastIconClassName,
+  toastMessageClassName,
+} from './Toast.css';
 
 type ToastStatusTypes = 'completed' | 'error';
 
@@ -28,6 +33,7 @@ export const Toast = forwardRef<HTMLDivElement, ToastProps>(
   ) => {
     const resolvedRole = role ?? getDefaultRole(status);
     const resolvedAriaLive = ariaLive ?? (role == null ? getDefaultAriaLive(status) : undefined);
+    const resolvedIcon = icon === undefined ? <span className={toastDefaultIconClassName} /> : icon;
 
     return (
       <div
@@ -37,9 +43,9 @@ export const Toast = forwardRef<HTMLDivElement, ToastProps>(
         role={resolvedRole}
         {...props}
       >
-        {icon != null && (
+        {resolvedIcon != null && resolvedIcon !== false && (
           <span aria-hidden='true' className={toastIconClassName}>
-            {icon}
+            {resolvedIcon}
           </span>
         )}
         <span className={toastMessageClassName}>{children}</span>

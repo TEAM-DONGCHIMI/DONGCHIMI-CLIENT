@@ -1,22 +1,26 @@
 import { style } from '@vanilla-extract/css';
 
 import { recipe } from '../../../styles/recipe';
-import { atomic, semantic, typography } from '../../../tokens';
+import { atomic, semantic } from '../../../tokens';
 
 export const toast = recipe({
   base: {
-    ...typography['body-3-medium'],
+    fontFamily: '"Pretendard", sans-serif',
+    fontSize: '1.4rem',
+    fontStyle: 'normal',
+    fontWeight: 400,
+    lineHeight: 1.4,
+    letterSpacing: '-0.028rem',
     display: 'inline-flex',
     alignItems: 'center',
     boxSizing: 'border-box',
-    minWidth: '17.4rem',
-    maxWidth: 'min(calc(100vw - 3.2rem), 36rem)',
+    width: '17.4rem',
+    maxWidth: 'calc(100vw - 3.2rem)',
     minHeight: '4.8rem',
-    padding: '0 1.6rem',
-    gap: '0.8rem',
-    borderRadius: '999rem',
+    padding: '1.2rem 1.8rem',
+    gap: '0.4rem',
+    borderRadius: '0.8rem',
     color: atomic.common[0],
-    boxShadow: '0 0.4rem 1.2rem rgba(25, 31, 40, 0.12)',
   },
   variants: {
     status: {
@@ -24,7 +28,7 @@ export const toast = recipe({
         backgroundColor: atomic.neutral[90],
       },
       error: {
-        backgroundColor: semantic.status.negative,
+        backgroundColor: semantic.status.negativeLight,
       },
     },
   },
@@ -38,10 +42,19 @@ export const toastIconClassName = style({
   flexShrink: 0,
   alignItems: 'center',
   justifyContent: 'center',
-  width: '2rem',
-  height: '2rem',
+  width: '2.4rem',
+  height: '2.4rem',
   lineHeight: 0,
-  color: 'currentColor',
+  color: '#171719',
+});
+
+export const toastDefaultIconClassName = style({
+  display: 'block',
+  boxSizing: 'border-box',
+  width: '1.93rem',
+  height: '1.93rem',
+  border: '0.2rem dashed #171719',
+  borderRadius: '0.6rem',
 });
 
 export const toastMessageClassName = style({
