@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent } from '../../../../test';
@@ -42,6 +44,22 @@ describe('SearchBar', () => {
     const user = userEvent.setup();
 
     render(<SearchBar />);
+
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '123456789012345678');
+
+    expect(screen.getByRole('searchbox', { name: '상품 검색' })).toHaveValue('12345678901234567');
+  });
+
+  it('supports controlled value changes with the 17 character limit', async () => {
+    const user = userEvent.setup();
+
+    const ControlledSearchBar = () => {
+      const [value, setValue] = useState('');
+
+      return <SearchBar value={value} onValueChange={setValue} />;
+    };
+
+    render(<ControlledSearchBar />);
 
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '123456789012345678');
 

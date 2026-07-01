@@ -27,7 +27,7 @@
 - `parentLabel`: `default` 모드에서 상위 페이지 이름을 표시합니다. `default` 모드에서는 필수입니다.
 - `currentLabel`: `default` 모드에서 현재 페이지 이름을 표시합니다. `default` 모드에서는 필수입니다.
 - `homeLabel`: `onlyHome` 모드에서 표시할 홈 label입니다. 기본값은 `동치미 작업 홈`입니다.
-- `searchValue`, `defaultSearchValue`, `onSearchValueChange`, `onSearch`: 내부 SearchBar로 전달하는 검색 관련 props입니다.
+- `searchValue`, `onSearchValueChange`, `onSearch`: 내부 SearchBar로 전달하는 검색 관련 props입니다. Header에서는 페이지 검색 상태와 맞추기 위해 controlled 검색값만 전달합니다.
 - `className`: 호출부에서 header wrapper className을 추가로 전달할 때 사용합니다.
 
 ## States

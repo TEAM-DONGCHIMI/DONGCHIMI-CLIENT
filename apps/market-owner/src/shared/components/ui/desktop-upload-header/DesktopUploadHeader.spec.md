@@ -31,7 +31,7 @@
 - `completedCount`: `등록 완료` 옆에 표시할 숫자입니다.
 - `needsEditCount`: `수정 필요` 옆에 표시할 숫자입니다.
 - `selectedCount`: 선택된 상품 개수입니다. 기본값은 `0`입니다.
-- `searchValue`, `defaultSearchValue`, `onSearchValueChange`, `onSearch`: 내부 SearchBar로 전달하는 검색 관련 props입니다.
+- `searchValue`, `onSearchValueChange`, `onSearch`: 내부 SearchBar로 전달하는 검색 관련 props입니다. Header에서는 페이지 검색 상태와 맞추기 위해 controlled 검색값만 전달합니다.
 - `onSegmentChange`: segment 버튼 클릭 시 선택한 segment 값을 호출부에 전달합니다. 호출부는 이 값으로 `selectedSegment`를 갱신하고, 필요하면 아래 상품 목록/결과 영역도 함께 변경합니다.
 - `onDeleteSelected`: `selectedCount > 0`일 때 선택삭제 버튼 클릭 시 호출합니다.
 - `onSortClick`: 정렬 버튼 클릭 시 호출합니다.
