@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css';
+import { recipe } from '@vanilla-extract/recipes';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
@@ -15,45 +16,64 @@ export const segmentNavigationClassName = style({
   borderTopRightRadius: '1.2rem',
 });
 
-export const segmentItemClassName = style({
-  display: 'inline-flex',
-  width: '15rem',
-  alignItems: 'flex-start',
-  gap: '0.4rem',
-  border: 0,
-  borderTop: `1px solid ${atomic.neutral[30]}`,
-  borderRight: `1px solid ${atomic.neutral[30]}`,
-  padding: '1.6rem 3.2rem',
-  backgroundColor: atomic.neutral[20],
-  color: atomic.neutral[60],
-  selectors: {
-    '&:first-child': {
-      borderLeft: `1px solid ${atomic.neutral[30]}`,
-      borderTopLeftRadius: '1.2rem',
+export const segmentItemRecipe = recipe({
+  base: {
+    display: 'inline-flex',
+    width: '15rem',
+    alignItems: 'flex-start',
+    gap: '0.4rem',
+    border: 0,
+    borderTop: `1px solid ${atomic.neutral[30]}`,
+    borderRight: `1px solid ${atomic.neutral[30]}`,
+    padding: '1.6rem 3.2rem',
+    backgroundColor: atomic.neutral[20],
+    color: atomic.neutral[60],
+    selectors: {
+      '&:first-child': {
+        borderLeft: `1px solid ${atomic.neutral[30]}`,
+        borderTopLeftRadius: '1.2rem',
+      },
+      '&:last-child': {
+        borderTopRightRadius: '1.2rem',
+      },
     },
-    '&:last-child': {
-      borderTopRightRadius: '1.2rem',
+  },
+  variants: {
+    active: {
+      true: {
+        backgroundColor: atomic.neutral[60],
+        color: atomic.common[0],
+      },
     },
   },
 });
 
-export const segmentItemActiveClassName = style({
-  backgroundColor: atomic.neutral[60],
-  color: atomic.common[0],
+export const segmentLabelRecipe = recipe({
+  base: {
+    ...typography['body-2-regular'],
+    whiteSpace: 'nowrap',
+  },
+  variants: {
+    active: {
+      true: {
+        color: atomic.common[0],
+      },
+    },
+  },
 });
 
-export const segmentLabelClassName = style({
-  ...typography['body-2-regular'],
-  whiteSpace: 'nowrap',
-});
-
-export const segmentCountClassName = style({
-  ...typography['body-2-semibold'],
-  whiteSpace: 'nowrap',
-});
-
-export const segmentTextActiveClassName = style({
-  color: atomic.common[0],
+export const segmentCountRecipe = recipe({
+  base: {
+    ...typography['body-2-semibold'],
+    whiteSpace: 'nowrap',
+  },
+  variants: {
+    active: {
+      true: {
+        color: atomic.common[0],
+      },
+    },
+  },
 });
 
 export const actionsClassName = style({
@@ -75,22 +95,27 @@ export const selectedCountClassName = style({
   whiteSpace: 'nowrap',
 });
 
-export const deleteButtonClassName = style({
-  ...typography['body-2-semibold'],
-  border: 0,
-  padding: '0.4rem 1rem',
-  color: atomic.neutral[30],
-  cursor: 'default',
-  whiteSpace: 'nowrap',
-  selectors: {
-    '&:disabled': {
-      cursor: 'default',
+export const deleteButtonRecipe = recipe({
+  base: {
+    ...typography['body-2-semibold'],
+    border: 0,
+    padding: '0.4rem 1rem',
+    color: atomic.neutral[30],
+    cursor: 'default',
+    whiteSpace: 'nowrap',
+    selectors: {
+      '&:disabled': {
+        cursor: 'default',
+      },
     },
   },
-});
-
-export const deleteButtonActiveClassName = style({
-  color: semantic.status.negative,
+  variants: {
+    active: {
+      true: {
+        color: semantic.status.negative,
+      },
+    },
+  },
 });
 
 export const sortButtonClassName = style({
