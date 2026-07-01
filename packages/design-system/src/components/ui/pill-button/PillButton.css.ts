@@ -75,6 +75,11 @@ export const pillButton = recipe({
       variants: { platform: 'mobile', variant: 'outlined-light' },
       style: { color: atomic.neutral[80] },
     },
+    // mobile + outlined는 타입에서 막지만, 런타임 우회 시 텍스트색이 비지 않도록 fallback을 둡니다.
+    {
+      variants: { platform: 'mobile', variant: 'outlined' },
+      style: { color: atomic.neutral[80] },
+    },
     {
       variants: { platform: 'mobile', variant: 'filled' },
       style: { backgroundColor: semantic.primary.normal, color: atomic.common[0] },
