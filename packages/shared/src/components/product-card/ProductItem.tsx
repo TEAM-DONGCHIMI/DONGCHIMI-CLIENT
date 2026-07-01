@@ -16,7 +16,11 @@ export const ProductItem = ({ item, itemVariant, onProductClick, position }: Pro
   const isPeriodItem = itemVariant === 'period';
   const badgeLabel = getProductCardBadgeLabel(item);
   const rank = item.rank ?? position + 1;
+  const rankLabel = typeof rank === 'number' ? `${rank}위` : rank;
   const imageAlt = item.imageAlt ?? `${item.name} 상품 이미지`;
+  const productButtonLabel = isPeriodItem
+    ? `${rankLabel} 상품 보기: ${item.name}`
+    : `상품 보기: ${item.name}`;
 
   const productMedia = (
     <span className={S.imageFrameClassName}>
@@ -40,11 +44,29 @@ export const ProductItem = ({ item, itemVariant, onProductClick, position }: Pro
     </span>
   );
 
+  const productMainContent = isPeriodItem ? (
+    <>
+      {/* 기간 할인 상품은 순위를 함께 노출합니다. */}
+      <span aria-hidden='true' className={S.rankClassName}>
+        {rank}
+      </span>
+      <span className={S.productContentWithRankClassName}>
+        {productMedia}
+        {productInfo}
+      </span>
+    </>
+  ) : (
+    <>
+      {productMedia}
+      {productInfo}
+    </>
+  );
+
   return (
     <List.Item className={S.productItemClassName}>
       {/* 상품 상세 진입을 위한 클릭 영역 */}
       <button
-        aria-label={`상품 보기: ${item.name}`}
+        aria-label={productButtonLabel}
         className={S.itemButtonClassName}
         onClick={() => onProductClick(item, position)}
         type='button'
@@ -54,23 +76,7 @@ export const ProductItem = ({ item, itemVariant, onProductClick, position }: Pro
           <span
             className={cn(S.productMainClassName, isPeriodItem && S.productMainWithRankClassName)}
           >
-            {isPeriodItem ? (
-              <>
-                {/* 기간 할인 상품은 순위를 함께 노출합니다. */}
-                <span aria-hidden='true' className={S.rankClassName}>
-                  {rank}
-                </span>
-                <span className={S.productContentWithRankClassName}>
-                  {productMedia}
-                  {productInfo}
-                </span>
-              </>
-            ) : (
-              <>
-                {productMedia}
-                {productInfo}
-              </>
-            )}
+            {productMainContent}
           </span>
           {/* 오늘의 특가 상품에만 할인 칩을 노출합니다. */}
           {badgeLabel && !isPeriodItem ? (

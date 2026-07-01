@@ -5,6 +5,10 @@ import { atomic, semantic, shadow } from '@dongchimi/design-system/tokens';
 import chipPointImageUrl from './assets/img-chip-point.webp';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
+const PRODUCT_IMAGE_SIZE = '5.6rem';
+const PRODUCT_CONTENT_GAP = '1.7rem';
+const PRODUCT_BADGE_SIZE = '4.5rem';
+const PRODUCT_MEDIA_COLUMNS = `${PRODUCT_IMAGE_SIZE} minmax(0, 1fr)`;
 
 export const cardClassName = style({
   boxSizing: 'border-box',
@@ -91,9 +95,9 @@ export const productItemLayoutClassName = style({
 export const productMainClassName = style({
   display: 'grid',
   minWidth: 0,
-  gridTemplateColumns: '5.6rem minmax(0, 1fr)',
+  gridTemplateColumns: PRODUCT_MEDIA_COLUMNS,
   alignItems: 'center',
-  gap: '1.7rem',
+  gap: PRODUCT_CONTENT_GAP,
 });
 
 export const productMainWithRankClassName = style({
@@ -104,9 +108,9 @@ export const productMainWithRankClassName = style({
 export const productContentWithRankClassName = style({
   display: 'grid',
   minWidth: 0,
-  gridTemplateColumns: '5.6rem minmax(0, 1fr)',
+  gridTemplateColumns: PRODUCT_MEDIA_COLUMNS,
   alignItems: 'center',
-  gap: '1.7rem',
+  gap: PRODUCT_CONTENT_GAP,
 });
 
 export const rankClassName = style({
@@ -124,8 +128,8 @@ export const rankClassName = style({
 
 export const imageFrameClassName = style({
   position: 'relative',
-  width: '5.6rem',
-  height: '5.6rem',
+  width: PRODUCT_IMAGE_SIZE,
+  height: PRODUCT_IMAGE_SIZE,
   flexShrink: 0,
   overflow: 'hidden',
   borderRadius: 8,
@@ -201,8 +205,8 @@ export const originalPriceClassName = style({
 
 export const badgeClassName = style({
   display: 'inline-flex',
-  width: '4.5rem',
-  height: '4.5rem',
+  width: PRODUCT_BADGE_SIZE,
+  height: PRODUCT_BADGE_SIZE,
   flexShrink: 0,
   alignItems: 'center',
   justifyContent: 'center',

@@ -34,10 +34,15 @@ export const ProductCard = ({
 
   // 초기 노출 개수와 펼침 상태를 기준으로 실제 렌더링할 상품을 계산합니다.
   const visibleCount = Math.max(0, initialVisibleCount);
+  const hasItems = items.length > 0;
   const hasHiddenItems = items.length > visibleCount;
   const visibleItems = isExpanded ? items : items.slice(0, visibleCount);
-  const shouldShowFooter = Boolean(actionSlot) || hasHiddenItems;
+  const hasActionSlot = Boolean(actionSlot);
+  const shouldShowDefaultToggle = !hasActionSlot && hasHiddenItems;
+  const shouldShowFooter = hasActionSlot || shouldShowDefaultToggle;
   const count = totalCount ?? items.length;
+  const formattedCount = formatProductCardCount(count);
+  const toggleLabel = isExpanded ? collapseLabel : showMoreLabel;
   const ariaLabelledBy = ariaLabelledByProp ?? (ariaLabel ? undefined : headingId);
 
   return (
@@ -55,13 +60,13 @@ export const ProductCard = ({
             <h2 className={S.titleClassName} id={headingId}>
               {title}
             </h2>
-            <span aria-label={`총 ${formatProductCardCount(count)}건`} className={S.countClassName}>
-              {formatProductCardCount(count)}건
+            <span aria-label={`총 ${formattedCount}건`} className={S.countClassName}>
+              {formattedCount}건
             </span>
           </header>
 
           {/* 상품이 있으면 목록을, 없으면 empty 상태를 노출합니다. */}
-          {items.length > 0 ? (
+          {hasItems ? (
             <List aria-labelledby={headingId} className={S.listClassName} gap='md' id={listId}>
               {visibleItems.map((item, index) => (
                 <ProductItem
@@ -81,7 +86,8 @@ export const ProductCard = ({
         {/* 외부 actionSlot이 있으면 우선 사용하고, 없으면 내부 더보기/접기를 사용합니다. */}
         {shouldShowFooter && (
           <div className={S.footerClassName}>
-            {actionSlot ?? (
+            {hasActionSlot ? actionSlot : null}
+            {shouldShowDefaultToggle && (
               <button
                 aria-controls={listId}
                 aria-expanded={isExpanded}
@@ -89,8 +95,7 @@ export const ProductCard = ({
                 onClick={() => setIsExpanded((current) => !current)}
                 type='button'
               >
-                {isExpanded ? collapseLabel : showMoreLabel}
-                {/* TODO: 추후 아이콘 교체 필요 */}
+                {toggleLabel}
                 <span
                   aria-hidden='true'
                   className={cn(S.toggleIconClassName, isExpanded && S.toggleIconExpandedClassName)}
