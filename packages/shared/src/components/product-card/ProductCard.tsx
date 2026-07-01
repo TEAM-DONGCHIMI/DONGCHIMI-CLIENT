@@ -86,7 +86,7 @@ export const ProductCard = ({
         {/* 외부 actionSlot이 있으면 우선 사용하고, 없으면 내부 더보기/접기를 사용합니다. */}
         {shouldShowFooter && (
           <div className={S.footerClassName}>
-            {hasActionSlot ? actionSlot : null}
+            {hasActionSlot && actionSlot}
             {shouldShowDefaultToggle && (
               <button
                 aria-controls={listId}

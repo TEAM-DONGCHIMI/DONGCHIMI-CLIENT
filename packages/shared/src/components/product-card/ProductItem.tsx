@@ -37,9 +37,9 @@ export const ProductItem = ({ item, itemVariant, onProductClick, position }: Pro
       <span className={S.productNameClassName}>{item.name}</span>
       <span className={S.priceRowClassName}>
         <span className={S.currentPriceClassName}>{item.priceText}</span>
-        {item.originalPriceText ? (
+        {item.originalPriceText && (
           <span className={S.originalPriceClassName}>{item.originalPriceText}</span>
-        ) : null}
+        )}
       </span>
     </span>
   );
@@ -79,11 +79,11 @@ export const ProductItem = ({ item, itemVariant, onProductClick, position }: Pro
             {productMainContent}
           </span>
           {/* 오늘의 특가 상품에만 할인 칩을 노출합니다. */}
-          {badgeLabel && !isPeriodItem ? (
+          {badgeLabel && !isPeriodItem && (
             <span aria-label={`${badgeLabel} 할인`} className={S.badgeClassName}>
               {badgeLabel}
             </span>
-          ) : null}
+          )}
         </span>
       </button>
     </List.Item>
