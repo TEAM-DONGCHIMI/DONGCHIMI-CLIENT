@@ -15,7 +15,6 @@ export const pillButton = recipe({
     borderStyle: 'solid',
     borderWidth: 0,
     whiteSpace: 'nowrap',
-    cursor: 'pointer',
     transition:
       'background-color 160ms ease, border-color 160ms ease, color 160ms ease, opacity 160ms ease, outline-color 160ms ease',
     selectors: {
