@@ -71,7 +71,7 @@ export type TextInputProps = NativeInputProps &
   TextInputTrailingElementProps;
 
 const hasContent = (content: ReactNode) => {
-  return content !== undefined && content !== null && content !== false;
+  return content !== undefined && content !== null && content !== false && content !== '';
 };
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
