@@ -55,9 +55,14 @@
 - 문구 입력 및 글자 수 제한 검증은 이 컴포넌트가 담당하지 않습니다. (상품 등록 폼 책임)
 - TBD: 상품 등록 시 문구 글자 수 제한 값은 제품 정책 미확정 (Jira DCMCL-4).
 
+## Testing
+
+- 유닛 테스트 미대상: interaction·state가 없는 표시용 컴포넌트(copy + 단순 style)라 `docs/workflows/testing.md`의 "When To Add Tests" 기준상 테스트를 강제하지 않습니다.
+- 렌더/스타일은 로컬 프리뷰 라우트와 컴파일된 CSS(토큰 값)로 시각 검증했습니다.
+- 향후 client 컴포넌트 유닛 테스트가 필요해지면 vitest에 vanilla-extract 플러그인 설정이 선행되어야 하며, 이는 별도 tooling 작업으로 다룹니다.
+
 ## Verification
 
-- [ ] `git diff --check`
-- [ ] `pnpm format:check`
-- [ ] `pnpm lint`
-- [ ] `pnpm typecheck`
+- [x] `pnpm format:check`
+- [x] `pnpm lint`
+- [x] `pnpm typecheck`
