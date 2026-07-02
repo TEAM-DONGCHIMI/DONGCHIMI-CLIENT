@@ -251,7 +251,7 @@ TextInput
 - [x] AriaLabel
 - [x] VariantMatrix
 
-## Public API
+## Public API Checklist
 
 - [x] `TextInput` value export
 - [x] `TextInputProps` type export
