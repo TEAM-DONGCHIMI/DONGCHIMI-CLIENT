@@ -6,3 +6,5 @@ export { NumButton } from './num-button';
 export type { NumButtonProps } from './num-button';
 export { ListButton } from './list-button';
 export type { ListButtonProps } from './list-button';
+export { Chip } from './chip';
+export type { ChipProps } from './chip';
