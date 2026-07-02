@@ -71,7 +71,7 @@ export const input = recipe({
           '&:not(:disabled):hover': {
             borderColor: atomic.neutral[80],
           },
-          '&:focus': {
+          '&:focus:not(:hover)': {
             borderColor: semantic.primary.normal,
           },
         },
