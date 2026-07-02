@@ -91,6 +91,11 @@ export const input = recipe({
       success: {
         borderColor: atomic.neutral[20],
         backgroundColor: atomic.neutral[20],
+        selectors: {
+          '&:focus-visible': {
+            borderColor: atomic.neutral[80],
+          },
+        },
       },
     },
   },
