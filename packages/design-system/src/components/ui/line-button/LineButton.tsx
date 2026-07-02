@@ -1,7 +1,18 @@
-import { type ComponentPropsWithoutRef } from 'react';
+import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 
-export type LineButtonProps = ComponentPropsWithoutRef<'div'>;
+import { cn } from '../../../styles/class-name';
+import { lineButton } from './LineButton.css';
 
-export const LineButton = ({ children, ...props }: LineButtonProps) => {
-  return <div {...props}>{children}</div>;
-};
+export type LineButtonProps = ComponentPropsWithoutRef<'button'>;
+
+export const LineButton = forwardRef<HTMLButtonElement, LineButtonProps>(
+  ({ children, className, type = 'button', ...props }, ref) => {
+    return (
+      <button ref={ref} className={cn(lineButton, className)} type={type} {...props}>
+        {children}
+      </button>
+    );
+  },
+);
+
+LineButton.displayName = 'LineButton';
