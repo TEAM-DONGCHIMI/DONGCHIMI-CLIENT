@@ -1,9 +1,4 @@
-import {
-  type ComponentPropsWithRef,
-  type ElementType,
-  type MouseEvent,
-  type ReactNode,
-} from 'react';
+import { type ComponentPropsWithRef, type ElementType, type ReactNode } from 'react';
 
 import { cn } from '../../../styles';
 import * as S from './Tabs.css';
@@ -51,25 +46,22 @@ const TabNavItemRoot = <TElement extends ElementType = 'a'>(
     ...props
   } = itemProps as TabNavItemProps<ElementType>;
   const Component = as ?? 'a';
+  const navigationProps = { ...props } as typeof props & { href?: unknown };
+  const clickProps = !disabled && onClick != null ? { onClick } : {};
 
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
-    if (disabled) {
-      event.preventDefault();
-      return;
-    }
-
-    onClick?.(event);
-  };
+  if (disabled) {
+    delete navigationProps.href;
+  }
 
   return (
     <Component
-      {...props}
+      {...navigationProps}
+      {...clickProps}
       ref={ref}
       aria-current={selected ? current : undefined}
       aria-disabled={disabled || undefined}
       className={cn(S.tabItemClassName, className)}
       data-selected={selected || undefined}
-      onClick={handleClick}
       tabIndex={disabled ? -1 : tabIndex}
     >
       {children}

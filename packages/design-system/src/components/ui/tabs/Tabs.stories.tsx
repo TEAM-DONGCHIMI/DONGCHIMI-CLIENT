@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { fn } from 'storybook/test';
 
-import { Tabs } from './Tabs';
+import { Tabs, type TabsProps } from './Tabs';
 
 const meta = {
   title: 'Design System/UI/Tabs',
@@ -23,8 +23,10 @@ const panels = {
   today: '오늘의 특가 상품을 관리합니다.',
 };
 
-const ControlledExample = () => {
-  const [value, setValue] = useState('today');
+const handleManualValueChange = fn();
+
+const ControlledExample = ({ value: initialValue = 'today' }: Pick<TabsProps, 'value'>) => {
+  const [value, setValue] = useState(initialValue);
 
   return (
     <Tabs value={value} onValueChange={setValue}>
@@ -38,15 +40,13 @@ const ControlledExample = () => {
   );
 };
 
-const metaArgs = {
-  defaultValue: 'today',
-} as const;
-
 export const Default: StoryTypes = {
-  args: metaArgs,
-  render: () => {
+  args: {
+    defaultValue: 'today',
+  },
+  render: (args) => {
     return (
-      <Tabs defaultValue='today'>
+      <Tabs {...args}>
         <Tabs.List aria-label='할인 유형'>
           <Tabs.Trigger value='today'>오늘의 특가</Tabs.Trigger>
           <Tabs.Trigger value='period'>기간 할인</Tabs.Trigger>
@@ -59,10 +59,12 @@ export const Default: StoryTypes = {
 };
 
 export const ActiveRight: StoryTypes = {
-  args: metaArgs,
-  render: () => {
+  args: {
+    defaultValue: 'period',
+  },
+  render: (args) => {
     return (
-      <Tabs defaultValue='period'>
+      <Tabs {...args}>
         <Tabs.List aria-label='할인 유형'>
           <Tabs.Trigger value='today'>오늘의 특가</Tabs.Trigger>
           <Tabs.Trigger value='period'>기간 할인</Tabs.Trigger>
@@ -75,19 +77,21 @@ export const ActiveRight: StoryTypes = {
 };
 
 export const Controlled: StoryTypes = {
-  render: () => {
-    return <ControlledExample />;
-  },
   args: {
     value: 'today',
   },
+  render: (args) => <ControlledExample value={args.value} />,
 };
 
 export const ManualActivation: StoryTypes = {
-  args: metaArgs,
-  render: () => {
+  args: {
+    activationMode: 'manual',
+    defaultValue: 'today',
+    onValueChange: handleManualValueChange,
+  },
+  render: (args) => {
     return (
-      <Tabs activationMode='manual' defaultValue='today' onValueChange={fn()}>
+      <Tabs {...args}>
         <Tabs.List aria-label='수동 활성화 할인 유형'>
           <Tabs.Trigger value='today'>오늘의 특가</Tabs.Trigger>
           <Tabs.Trigger value='period'>기간 할인</Tabs.Trigger>
@@ -100,10 +104,12 @@ export const ManualActivation: StoryTypes = {
 };
 
 export const DisabledTrigger: StoryTypes = {
-  args: metaArgs,
-  render: () => {
+  args: {
+    defaultValue: 'today',
+  },
+  render: (args) => {
     return (
-      <Tabs defaultValue='today'>
+      <Tabs {...args}>
         <Tabs.List aria-label='비활성 탭 포함 할인 유형'>
           <Tabs.Trigger value='today'>오늘의 특가</Tabs.Trigger>
           <Tabs.Trigger disabled value='period'>

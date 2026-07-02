@@ -138,4 +138,23 @@ describe('TabNav', () => {
     expect(selectedLink).toHaveAttribute('aria-current', 'page');
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
   });
+
+  it('renders disabled items without link navigation', () => {
+    render(
+      <TabNav aria-label='할인 유형 링크'>
+        <TabNav.List>
+          <TabNav.Item disabled href='?discountType=period'>
+            기간 할인
+          </TabNav.Item>
+        </TabNav.List>
+      </TabNav>,
+    );
+
+    const disabledItem = screen.getByText('기간 할인');
+
+    expect(disabledItem).toHaveAttribute('aria-disabled', 'true');
+    expect(disabledItem).toHaveAttribute('tabIndex', '-1');
+    expect(disabledItem).not.toHaveAttribute('href');
+    expect(screen.queryByRole('link', { name: '기간 할인' })).not.toBeInTheDocument();
+  });
 });
