@@ -86,6 +86,7 @@ const MobileHeaderLogo = ({ children, className, ...props }: MobileHeaderLogoPro
 MobileHeaderRoot.displayName = 'MobileHeader';
 MobileHeaderBackButton.displayName = 'MobileHeader.BackButton';
 MobileHeaderLogo.displayName = 'MobileHeader.Logo';
+MobileHeaderTitle.displayName = 'MobileHeader.Title';
 
 export const MobileHeader = Object.assign(MobileHeaderRoot, {
   BackButton: MobileHeaderBackButton,
