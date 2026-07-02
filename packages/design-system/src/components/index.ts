@@ -29,3 +29,5 @@ export { List } from './layout/list';
 export type { ListItemProps, ListProps } from './layout/list';
 export { Chip } from './ui/chip';
 export type { ChipProps } from './ui/chip';
+export { Toast } from './ui/toast';
+export type { ToastProps } from './ui/toast';
