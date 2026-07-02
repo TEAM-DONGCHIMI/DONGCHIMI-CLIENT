@@ -32,6 +32,7 @@ export const titleClassName = style({
 
 export const logoClassName = style({
   gridColumn: '1 / -1',
+  justifySelf: 'start',
   display: 'inline-flex',
   alignItems: 'center',
   flexShrink: 0,
