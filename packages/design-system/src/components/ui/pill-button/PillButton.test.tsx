@@ -45,6 +45,14 @@ describe('PillButton', () => {
     expect(screen.getByTestId('icon').closest('[aria-hidden="true"]')).toBeInTheDocument();
   });
 
+  it('does not render an icon slot for a falsy icon (e.g. icon={condition && <Icon />})', () => {
+    render(<PillButton icon={false}>상품 등록 순</PillButton>);
+
+    expect(
+      screen.getByRole('button', { name: '상품 등록 순' }).querySelector('[aria-hidden="true"]'),
+    ).toBeNull();
+  });
+
   it('uses native disabled behavior', async () => {
     const handleClick = vi.fn();
     const user = userEvent.setup();

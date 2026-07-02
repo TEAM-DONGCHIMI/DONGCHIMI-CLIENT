@@ -33,6 +33,8 @@ export const PillButton = forwardRef<HTMLButtonElement, PillButtonProps>(
     },
     ref,
   ) => {
+    const hasRenderableIcon = icon != null && icon !== false && icon !== '';
+
     return (
       <button
         ref={ref}
@@ -41,7 +43,7 @@ export const PillButton = forwardRef<HTMLButtonElement, PillButtonProps>(
         {...props}
       >
         {children}
-        {icon != null && (
+        {hasRenderableIcon && (
           <span aria-hidden='true' className={pillButtonIcon({ platform })}>
             {icon}
           </span>
