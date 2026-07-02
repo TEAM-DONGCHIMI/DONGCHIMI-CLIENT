@@ -1,7 +1,20 @@
-import { type ComponentPropsWithoutRef } from 'react';
+import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
-export type DropdownProps = ComponentPropsWithoutRef<'div'>;
+import { cn } from '../../../styles/class-name';
+import { dropdown } from './Dropdown.css';
 
-export const Dropdown = ({ children, ...props }: DropdownProps) => {
-  return <div {...props}>{children}</div>;
-};
+export interface DropdownProps extends ComponentPropsWithoutRef<'div'> {
+  children: ReactNode;
+}
+
+export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
+  ({ children, className, ...props }, ref) => {
+    return (
+      <div ref={ref} className={cn(dropdown, className)} {...props}>
+        {children}
+      </div>
+    );
+  },
+);
+
+Dropdown.displayName = 'Dropdown';
