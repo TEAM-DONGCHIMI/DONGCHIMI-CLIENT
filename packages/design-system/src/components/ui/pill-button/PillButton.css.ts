@@ -32,12 +32,14 @@ export const pillButton = recipe({
     platform: {
       desktop: {
         height: 40,
+        paddingBlock: 10,
         paddingInline: 20,
         gap: 4,
         ...typography['body-3-semibold'],
       },
       mobile: {
         height: 30,
+        paddingBlock: 10,
         paddingInline: 14,
         gap: 2,
         ...typography['caption-1-medium'],
