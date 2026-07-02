@@ -6,7 +6,7 @@ import { cardText, cardTextLabel, cardTextMessage } from './CardText.css';
 
 const DEFAULT_LABEL = '점장 한마디';
 
-export interface CardTextOwnProps {
+interface CardTextOwnProps {
   text: string;
   label?: string;
 }
