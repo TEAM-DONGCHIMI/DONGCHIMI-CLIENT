@@ -9,7 +9,7 @@ export const atomic = createGlobalTheme(':root', {
     5: '#F9FAFB',
     10: '#F2F4F6',
     20: '#E5E8EB',
-    30: '#8A8A8A',
+    30: '#D1D6DB',
     40: '#B0B8C1',
     50: '#8B95A1',
     60: '#6B7684',

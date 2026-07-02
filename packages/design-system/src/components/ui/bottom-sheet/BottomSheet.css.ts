@@ -45,7 +45,7 @@ export const contentClassName = style({
   overflow: 'hidden',
   padding: 0,
   border: 0,
-  borderRadius: '2.4rem 2.4rem 0 0',
+  borderRadius: '2.7rem 2.7rem 0 0',
   backgroundColor: atomic.common[0],
   boxShadow: shadow.normal.medium,
   color: atomic.neutral[90],
@@ -67,36 +67,37 @@ export const contentClassName = style({
 export const handleClassName = style({
   flexShrink: 0,
   alignSelf: 'center',
-  width: '6.8rem',
-  height: '0.6rem',
-  marginTop: '2.4rem',
+  width: '4rem',
+  height: '0.4rem',
+  marginTop: '1.2rem',
+  marginBottom: '0.4rem',
   borderRadius: '999rem',
-  backgroundColor: atomic.neutral[20],
+  backgroundColor: atomic.neutral[30],
 });
 
 export const headerClassName = style({
   display: 'grid',
-  gap: '0.8rem',
-  padding: '3.6rem 2.4rem 0',
+  gap: '0.4rem',
+  padding: '1.8rem',
 });
 
 export const titleClassName = style({
-  ...typography['title-2-bold'],
+  ...typography['heading-3-semibold'],
   margin: 0,
   color: atomic.neutral[90],
 });
 
 export const descriptionClassName = style({
-  ...typography['body-2-medium'],
+  ...typography['body-3-medium'],
   margin: 0,
   color: atomic.neutral[50],
 });
 
 export const bodyClassName = style({
   display: 'grid',
-  gap: '1.6rem',
+  gap: '1.2rem',
   overflowY: 'auto',
-  padding: '3.2rem 2.4rem',
+  padding: '0 1.8rem 1.2rem',
 });
 
 export const footerClassName = style({
@@ -105,15 +106,15 @@ export const footerClassName = style({
 });
 
 export const closeClassName = style({
-  ...typography['body-1-semibold'],
+  ...typography['body-2-semibold'],
   appearance: 'none',
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
   boxSizing: 'border-box',
   width: '100%',
-  minHeight: '6.4rem',
-  padding: '1.6rem 2.4rem',
+  minHeight: '7.4rem',
+  padding: '1.6rem 2rem 3.6rem',
   border: 0,
   backgroundColor: atomic.common[0],
   color: atomic.neutral[70],
