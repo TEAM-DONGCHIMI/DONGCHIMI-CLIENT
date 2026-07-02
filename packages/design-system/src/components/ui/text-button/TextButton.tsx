@@ -1,7 +1,22 @@
-import { type ComponentPropsWithoutRef } from 'react';
+import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 
-export type TextButtonProps = ComponentPropsWithoutRef<'div'>;
+import { cn } from '../../../styles/class-name';
+import type { RecipeVariantProps } from '../../../styles/recipe';
+import { textButton } from './TextButton.css';
 
-export const TextButton = ({ children, ...props }: TextButtonProps) => {
-  return <div {...props}>{children}</div>;
-};
+type NativeButtonProps = ComponentPropsWithoutRef<'button'>;
+type TextButtonVariantProps = RecipeVariantProps<typeof textButton>;
+
+export type TextButtonProps = NativeButtonProps & TextButtonVariantProps;
+
+export const TextButton = forwardRef<HTMLButtonElement, TextButtonProps>(
+  ({ children, className, tone = 'default', type = 'button', ...props }, ref) => {
+    return (
+      <button ref={ref} className={cn(textButton({ tone }), className)} type={type} {...props}>
+        {children}
+      </button>
+    );
+  },
+);
+
+TextButton.displayName = 'TextButton';
