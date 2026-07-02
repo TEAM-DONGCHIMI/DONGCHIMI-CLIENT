@@ -21,3 +21,5 @@ export { ListButton } from './list-button';
 export type { ListButtonProps } from './list-button';
 export { TextButton } from './text-button';
 export type { TextButtonProps } from './text-button';
+export { LineButton } from './line-button';
+export type { LineButtonProps } from './line-button';

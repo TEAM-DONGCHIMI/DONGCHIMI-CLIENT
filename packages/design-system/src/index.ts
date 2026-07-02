@@ -42,3 +42,5 @@ export { Toast } from './components/ui/toast';
 export type { ToastProps } from './components/ui/toast';
 export { TextButton } from './components/ui/text-button';
 export type { TextButtonProps } from './components/ui/text-button';
+export { LineButton } from './components/ui/line-button';
+export type { LineButtonProps } from './components/ui/line-button';
