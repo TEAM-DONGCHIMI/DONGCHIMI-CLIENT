@@ -40,3 +40,5 @@ export type {
 } from './ui/tabs';
 export { Toast } from './ui/toast';
 export type { ToastProps } from './ui/toast';
+export { TextButton } from './ui/text-button';
+export type { TextButtonProps } from './ui/text-button';
