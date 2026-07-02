@@ -27,5 +27,16 @@ export { GridItem } from './components/layout/grid-item';
 export type { GridItemProps } from './components/layout/grid-item';
 export { List } from './components/layout/list';
 export type { ListItemProps, ListProps } from './components/layout/list';
+export { TabNav, Tabs } from './components/ui/tabs';
+export type {
+  TabNavItemProps,
+  TabNavListProps,
+  TabNavProps,
+  TabsActivationModeTypes,
+  TabsListProps,
+  TabsPanelProps,
+  TabsProps,
+  TabsTriggerProps,
+} from './components/ui/tabs';
 export { Toast } from './components/ui/toast';
 export type { ToastProps } from './components/ui/toast';
