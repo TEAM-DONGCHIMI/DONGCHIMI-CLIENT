@@ -135,9 +135,11 @@ export const DesktopUploadHeader = ({
         <SelectedProductAction selectedCount={selectedCount} onDeleteSelected={onDeleteSelected} />
         <SortButton onSortClick={onSortClick} />
         <SearchBar
+          aria-label='상품 검색'
           icon={searchIcon}
           onSearch={onSearch}
           onValueChange={onSearchValueChange}
+          placeholder='상품 검색...'
           value={searchValue}
         />
       </Flex>

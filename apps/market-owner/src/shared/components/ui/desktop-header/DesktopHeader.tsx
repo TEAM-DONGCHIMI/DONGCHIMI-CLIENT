@@ -38,9 +38,11 @@ const renderSearchBar = ({
   onSearchValueChange,
 }: DesktopHeaderSearchProps) => (
   <SearchBar
+    aria-label='상품 검색'
     icon={searchIcon}
     onSearch={onSearch}
     onValueChange={onSearchValueChange}
+    placeholder='상품 검색...'
     value={searchValue}
   />
 );

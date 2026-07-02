@@ -5,15 +5,22 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen, userEvent } from '../../../../test';
 import { SearchBar, type SearchBarProps } from './SearchBar';
 
-const ControlledSearchBar = (props: Omit<SearchBarProps, 'onValueChange' | 'value'>) => {
+const defaultSearchBarProps = {
+  'aria-label': '상품 검색',
+  placeholder: '상품 검색...',
+} satisfies Pick<SearchBarProps, 'aria-label' | 'placeholder'>;
+
+const ControlledSearchBar = (
+  props: Omit<SearchBarProps, 'aria-label' | 'onValueChange' | 'placeholder' | 'value'>,
+) => {
   const [value, setValue] = useState('');
 
-  return <SearchBar {...props} value={value} onValueChange={setValue} />;
+  return <SearchBar {...defaultSearchBarProps} {...props} value={value} onValueChange={setValue} />;
 };
 
 describe('SearchBar', () => {
-  it('renders accessible search input with the default placeholder', () => {
-    render(<SearchBar icon={<span data-testid='search-icon' />} />);
+  it('renders accessible search input with the provided placeholder', () => {
+    render(<SearchBar {...defaultSearchBarProps} icon={<span data-testid='search-icon' />} />);
 
     expect(screen.getByRole('search', { name: '상품 검색' })).toBeInTheDocument();
     expect(screen.getByRole('searchbox', { name: '상품 검색' })).toHaveAttribute(
@@ -24,7 +31,7 @@ describe('SearchBar', () => {
   });
 
   it('renders without an icon slot when icon is not provided', () => {
-    render(<SearchBar />);
+    render(<SearchBar {...defaultSearchBarProps} />);
 
     expect(screen.getByRole('search', { name: '상품 검색' })).toBeInTheDocument();
     expect(screen.queryByTestId('search-icon')).not.toBeInTheDocument();
@@ -39,6 +46,7 @@ describe('SearchBar', () => {
 
       return (
         <SearchBar
+          {...defaultSearchBarProps}
           value={value}
           onValueChange={(nextValue, event) => {
             setValue(nextValue);
@@ -78,7 +86,7 @@ describe('SearchBar', () => {
   });
 
   it('marks the input invalid when error state is enabled', () => {
-    render(<SearchBar isError />);
+    render(<SearchBar {...defaultSearchBarProps} isError />);
 
     expect(screen.getByRole('searchbox', { name: '상품 검색' })).toHaveAttribute(
       'aria-invalid',
@@ -87,7 +95,7 @@ describe('SearchBar', () => {
   });
 
   it('uses a custom accessible name when aria-label is provided', () => {
-    render(<SearchBar aria-label='상품명 검색' />);
+    render(<SearchBar aria-label='상품명 검색' placeholder='상품명으로 검색하세요' />);
 
     expect(screen.getByRole('search', { name: '상품명 검색' })).toBeInTheDocument();
     expect(screen.getByRole('searchbox', { name: '상품명 검색' })).toBeInTheDocument();

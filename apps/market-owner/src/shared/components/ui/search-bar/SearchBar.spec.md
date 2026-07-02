@@ -11,7 +11,7 @@
 
 ## Purpose
 
-- 사장님 사이트의 desktop header 영역에서 상품 검색 입력 UI를 재사용할 수 있게 제공합니다.
+- 사장님 사이트의 desktop header 영역에서 검색 입력 UI를 재사용할 수 있게 제공합니다.
 - 검색어 입력, Enter submit, hover/focus/filled/error 시각 상태만 담당합니다.
 - 실제 검색 실행 방식, 검색 결과 렌더링, URL query sync, API 호출은 사용하는 화면에서 처리합니다.
 
@@ -26,7 +26,7 @@
 - `default`, `hover`, `focus`, `filled`, `error` 상태를 표현합니다.
 - 검색어는 사용자가 입력할 때 최대 17자까지만 입력할 수 있습니다.
 - 아이콘은 컴포넌트가 고정하지 않고 `icon` slot으로 주입받습니다.
-- 접근성 이름은 기본 `상품 검색`을 사용하고, 필요하면 `aria-label`로 바꿀 수 있습니다.
+- 접근성 이름과 placeholder copy는 사용하는 header 또는 화면이 명시적으로 주입합니다.
 
 ## Out Of Scope
 
@@ -50,7 +50,8 @@ SearchBar
 - exported types: `SearchBarProps`, `SearchBarSizeTypes`
 - props:
   - `icon`: 검색 아이콘 영역에 렌더링할 ReactNode입니다.
-  - `placeholder`: input placeholder입니다. 기본값은 `상품 검색...`입니다.
+  - `aria-label`: form과 input에 적용할 접근성 이름입니다.
+  - `placeholder`: input placeholder입니다.
   - `size`: `small` 또는 `medium`입니다. 기본값은 `small`입니다.
   - `value`: controlled input 값입니다.
   - `isError`: error border와 `aria-invalid`를 적용합니다.
@@ -62,6 +63,7 @@ SearchBar
   - 초기 검색어가 필요하면 호출부 state의 초기값으로 설정합니다.
   - `onSearch`에서 실제 검색 동작을 처리합니다.
   - 화면 맥락에 맞는 icon을 전달합니다.
+  - 화면 맥락에 맞는 `aria-label`과 `placeholder`를 전달합니다.
 - non-owned behavior:
   - 검색 결과, API, routing, analytics는 SearchBar가 소유하지 않습니다.
 

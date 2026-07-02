@@ -11,7 +11,7 @@ import * as S from './SearchBar.css';
 
 type NativeSearchFormProps = Omit<
   ComponentPropsWithoutRef<'form'>,
-  'children' | 'onSubmit' | 'role'
+  'aria-label' | 'children' | 'onSubmit' | 'role'
 >;
 
 const SEARCH_MAX_LENGTH = 17;
@@ -27,8 +27,9 @@ type SearchBarValueChangeHandlerTypes = (
 type SearchBarSubmitHandlerTypes = (value: string, event: FormEvent<HTMLFormElement>) => void;
 
 export interface SearchBarProps extends NativeSearchFormProps {
+  'aria-label': string;
   icon?: ReactNode;
-  placeholder?: string;
+  placeholder: string;
   size?: SearchBarSizeTypes;
   value?: string;
   isError?: boolean;
@@ -40,7 +41,7 @@ export const SearchBar = ({
   'aria-label': ariaLabel,
   className,
   icon,
-  placeholder = '상품 검색...',
+  placeholder,
   size = 'small',
   value,
   isError = false,
@@ -48,8 +49,6 @@ export const SearchBar = ({
   onSearch,
   ...formProps
 }: SearchBarProps) => {
-  const accessibleName = ariaLabel ?? '상품 검색';
-
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     onValueChange?.(event.currentTarget.value, event);
   };
@@ -66,7 +65,7 @@ export const SearchBar = ({
   return (
     <form
       {...formProps}
-      aria-label={accessibleName}
+      aria-label={ariaLabel}
       className={cn(S.searchBarClassName, S.searchBarSizeClassNames[size], className)}
       data-error={isError || undefined}
       onSubmit={handleSubmit}
@@ -79,7 +78,7 @@ export const SearchBar = ({
       )}
       <input
         aria-invalid={isError || undefined}
-        aria-label={accessibleName}
+        aria-label={ariaLabel}
         className={S.inputClassName}
         maxLength={SEARCH_MAX_LENGTH}
         name={SEARCH_INPUT_NAME}
