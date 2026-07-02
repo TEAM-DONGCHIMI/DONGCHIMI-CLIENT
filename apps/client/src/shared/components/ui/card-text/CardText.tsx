@@ -17,7 +17,7 @@ export const CardText = forwardRef<HTMLDivElement, CardTextProps>(
   ({ text, label = DEFAULT_LABEL, className, ...props }, ref) => {
     return (
       <div ref={ref} className={cn(cardText(), className)} {...props}>
-        <p className={cardTextLabel()}>{label}</p>
+        {label ? <p className={cardTextLabel()}>{label}</p> : null}
         <p className={cardTextMessage()}>{text}</p>
       </div>
     );
