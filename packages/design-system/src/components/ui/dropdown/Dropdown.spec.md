@@ -64,6 +64,7 @@ Dropdown
 - spacing: padding `0.8rem 2rem`(8px 20px).
 - surface: 배경 `atomic.common[0]`, `1px` `atomic.neutral[10]` 테두리, `12px` radius.
 - shadow: `shadow.normal.small` token을 사용합니다. (Figma의 다층 그림자 대신 token 우선)
+- clip: 패널은 `overflow: clip`으로 자식이 둥근 모서리(radius 12) 밖으로 나가지 않게 잘라냅니다.
 - width: 하드코딩하지 않습니다. 폭은 고정 폭 `ListButton`(166px)과 좌우 padding으로 결정되며,
   필요 시 호출부가 `className`으로 오버라이드합니다. Figma 206px는 stories 기본 예시로만 사용합니다.
 - overflow: 항목 overflow는 `ListButton`이 ellipsis로 처리합니다.
