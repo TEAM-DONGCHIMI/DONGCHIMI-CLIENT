@@ -107,18 +107,18 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 
     return (
       <div className={root}>
-        {hasContent(visibleLabel) ? (
+        {hasContent(visibleLabel) && (
           <div className={labelRow}>
             <label className={label} htmlFor={inputId}>
               {visibleLabel}
             </label>
-            {required ? (
+            {required && (
               <span aria-hidden='true' className={requiredMark}>
                 *
               </span>
-            ) : null}
+            )}
           </div>
-        ) : null}
+        )}
 
         <div className={inputContainer}>
           <input
@@ -138,25 +138,23 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             type={type}
           />
 
-          {hasTrailingIcon ? (
+          {hasTrailingIcon && (
             <span aria-hidden='true' className={trailingIcon}>
               {trailingIconElement}
             </span>
-          ) : null}
+          )}
 
-          {hasTrailingAction ? (
-            <span className={trailingAction}>{trailingActionElement}</span>
-          ) : null}
+          {hasTrailingAction && <span className={trailingAction}>{trailingActionElement}</span>}
         </div>
 
-        {hasMessage ? (
+        {hasMessage && (
           <div className={messageRow} id={messageId}>
-            {isError ? <span aria-hidden='true' className={errorIconSlot} /> : null}
+            {isError && <span aria-hidden='true' className={errorIconSlot} />}
             <span className={messageText({ tone: isError ? 'error' : 'helper' })}>
               {displayedMessage}
             </span>
           </div>
-        ) : null}
+        )}
       </div>
     );
   },
