@@ -1,5 +1,6 @@
 export { IconButton } from './icon-button';
 export type { IconButtonProps } from './icon-button';
+export * from './bottom-sheet';
 export { TabNav, Tabs } from './tabs';
 export type {
   TabNavItemProps,

@@ -27,6 +27,7 @@ export { GridItem } from './components/layout/grid-item';
 export type { GridItemProps } from './components/layout/grid-item';
 export { List } from './components/layout/list';
 export type { ListItemProps, ListProps } from './components/layout/list';
+export * from './components/ui/bottom-sheet';
 export { TabNav, Tabs } from './components/ui/tabs';
 export type {
   TabNavItemProps,

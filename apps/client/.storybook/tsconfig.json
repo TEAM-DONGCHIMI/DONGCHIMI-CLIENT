@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "include": [
+    "../next-env.d.ts",
+    "./**/*.ts",
+    "./**/*.tsx",
+    "../src/**/*.stories.ts",
+    "../src/**/*.stories.tsx"
+  ],
+  "exclude": ["../node_modules", "../storybook-static"]
+}
