@@ -152,6 +152,8 @@ TextInput
 
 ## Layout Combinations
 
+아래 높이는 label과 supporting text가 각각 한 줄인 기본 조합을 기준으로 합니다. 긴 label과 supporting text는 말줄임표로 숨기지 않고 줄바꿈하며, 전체 높이는 렌더링된 콘텐츠에 따라 늘어납니다.
+
 - Header + Input + SupportingText: 104px (`22 + 8 + 48 + 8 + 18`)
 - Header + Input: 78px (`22 + 8 + 48`)
 - Input + SupportingText: 74px (`48 + 8 + 18`)
@@ -206,6 +208,7 @@ TextInput
 - label: Body 3 Semibold, 14px/1.4
 - input text/placeholder: Body 2 Medium, 16px/1.4
 - helper/error text: Caption 1 Medium, 12px/1.4
+- label/helper/error text: 긴 문구와 공백 없는 문자열을 줄바꿈해 전체 내용을 표시합니다.
 - trailing icon/action slot: 24×24px, input 오른쪽 12px, text와 8px 간격
 - error icon slot: 16×16px, error text와 4px 간격. 실제 아이콘 asset이 확정되기 전까지 빈 영역으로 유지합니다.
 - transition: border/background/color 변화에만 짧게 적용하고 layout은 움직이지 않습니다.

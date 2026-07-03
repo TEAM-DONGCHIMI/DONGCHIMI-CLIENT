@@ -21,6 +21,7 @@ export const labelRow = style({
 export const label = style({
   ...typography['body-3-semibold'],
   minWidth: 0,
+  overflowWrap: 'anywhere',
   color: atomic.neutral[90],
 });
 
@@ -148,6 +149,7 @@ export const messageText = recipe({
   base: {
     ...typography['caption-1-medium'],
     minWidth: 0,
+    overflowWrap: 'anywhere',
   },
   variants: {
     tone: {
