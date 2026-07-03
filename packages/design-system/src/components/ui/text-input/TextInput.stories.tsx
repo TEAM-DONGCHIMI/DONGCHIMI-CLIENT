@@ -191,6 +191,20 @@ export const AriaLabel: StoryTypes = {
   ),
 };
 
+export const AriaLabelledBy: StoryTypes = {
+  render: () => (
+    <div>
+      <span id='text-input-external-label'>외부 제목</span>
+      <TextInput aria-labelledby='text-input-external-label' placeholder='텍스트를 입력하세요' />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole('textbox', { name: '외부 제목' }),
+    ).toBeInTheDocument();
+  },
+};
+
 export const VariantMatrix: StoryTypes = {
   render: () => (
     <div style={{ display: 'grid', gap: 32 }}>

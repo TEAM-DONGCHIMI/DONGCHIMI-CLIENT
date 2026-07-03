@@ -254,6 +254,7 @@ TextInput
 - [x] TrailingAction
 - [x] Required
 - [x] AriaLabel
+- [x] AriaLabelledBy
 - [x] VariantMatrix
 
 ## Public API Checklist
