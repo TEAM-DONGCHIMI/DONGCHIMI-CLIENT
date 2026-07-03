@@ -70,7 +70,7 @@ TextInput
   placeholder='텍스트를 입력하세요'
   helperText='입력할 내용을 안내합니다'
   errorMessage='입력값을 확인해주세요'
-  trailingAction={<IconButton aria-label='비밀번호 보기' />}
+  trailingAction={({ disabled }) => <IconButton aria-label='비밀번호 보기' disabled={disabled} />}
   required
 />
 ```
@@ -112,10 +112,10 @@ TextInput
 
 ### trailingAction
 
-- type: `ReactElement`
+- type: `(state: { disabled: boolean }) => ReactElement`
 - required: `false`
 - description: 비밀번호 보기처럼 입력창 오른쪽에 배치하는 상호작용 요소입니다.
-- behavior: 호출부가 native `button` 또는 `IconButton`과 accessible name, click behavior를 제공합니다.
+- behavior: 호출부가 native `button` 또는 `IconButton`과 accessible name, click behavior를 제공하고 render prop으로 전달받은 `disabled`를 interactive element에 적용합니다.
 - constraint: `trailingIcon`과 동시에 사용할 수 없습니다.
 
 ### status
@@ -166,7 +166,7 @@ TextInput
 - focus: input이 focus되고 pointer가 input 밖에 있으면 primary-normal border를 사용합니다. Figma에 없는 외부 focus ring이나 box-shadow는 추가하지 않습니다.
 - error: `status='error'`일 때 negative-light border, 16px 오류 아이콘 영역과 negative 오류 문구를 표시하고 `aria-invalid='true'`를 적용합니다.
 - success: `status='success'`일 때 neutral-20 background와 border를 사용합니다. Figma에서는 filled 조합만 제공하지만 컴포넌트가 input 값의 유무를 추론하지 않습니다.
-- disabled: native `disabled` semantics를 전달하고 hover를 적용하지 않습니다. 전용 Figma visual이 없어 별도 opacity나 색상을 추가하지 않습니다.
+- disabled: native `disabled` semantics를 input에 전달하고 hover를 적용하지 않습니다. `trailingAction`에도 `disabled` 상태를 전달해 호출부가 부가 액션을 함께 비활성화하도록 합니다. 전용 Figma visual이 없어 별도 opacity나 색상을 추가하지 않습니다.
 - readOnly: native `readOnly` semantics를 전달합니다. 전용 Figma visual이 없어 별도 색상을 추가하지 않으며 success와 동일한 상태로 간주하지 않습니다.
 - empty/filled: `value`, `defaultValue`, placeholder의 native 동작으로 표현합니다.
 - loading: 지원하지 않습니다.
@@ -193,7 +193,7 @@ TextInput
 4. error 상태지만 `errorMessage`가 없으면 빈 supporting text를 만들지 않고 `aria-invalid`만 적용합니다.
 5. `trailingIcon` 또는 `trailingAction`이 있으면 input text와 겹치지 않도록 오른쪽 공간을 확보합니다.
 6. `trailingIcon`은 pointer event와 tab stop을 만들지 않습니다.
-7. `trailingAction`은 전달받은 interactive element의 pointer와 keyboard interaction을 유지합니다.
+7. `trailingAction`은 render prop으로 `disabled`를 전달받아 interactive element의 pointer와 keyboard interaction 상태를 input과 동기화합니다.
 8. `*` 표시는 native `required`와 동기화하고 스크린 리더에 중복 낭독되지 않게 합니다.
 9. `status='success'`는 visual만 표현하며 `value`, `defaultValue`, `readOnly`, `disabled`를 자동으로 설정하지 않습니다.
 
@@ -245,6 +245,8 @@ TextInput
 - [x] Focus
 - [x] Error
 - [x] Success
+- [x] Disabled
+- [x] ReadOnly
 - [x] TrailingIcon
 - [x] TrailingAction
 - [x] Required

@@ -1,12 +1,34 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ReactNode } from 'react';
 
-import { fn, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 
 import { IcChevronRight } from '../../../icons';
 import { TextInput, type TextInputProps } from './TextInput';
 
 const handleTrailingAction = fn();
+
+const renderPasswordVisibilityAction = ({ disabled }: { disabled: boolean }) => (
+  <button
+    aria-label='비밀번호 보기'
+    disabled={disabled}
+    style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 24,
+      height: 24,
+      padding: 0,
+      border: 0,
+      background: 'transparent',
+      cursor: 'pointer',
+    }}
+    onClick={handleTrailingAction}
+    type='button'
+  >
+    <IcChevronRight />
+  </button>
+);
 
 type TextInputStoryProps = Omit<TextInputProps, 'aria-label' | 'aria-labelledby' | 'label'> & {
   'aria-label'?: string;
@@ -112,6 +134,32 @@ export const Success: StoryTypes = {
   },
 };
 
+export const Disabled: StoryTypes = {
+  args: {
+    defaultValue: '값',
+    disabled: true,
+    trailingAction: renderPasswordVisibilityAction,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByRole('textbox', { name: '주제' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: '비밀번호 보기' })).toBeDisabled();
+  },
+};
+
+export const ReadOnly: StoryTypes = {
+  args: {
+    defaultValue: '값',
+    readOnly: true,
+  },
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('textbox', { name: '주제' })).toHaveAttribute(
+      'readonly',
+    );
+  },
+};
+
 export const TrailingIcon: StoryTypes = {
   args: {
     defaultValue: '값',
@@ -122,26 +170,7 @@ export const TrailingIcon: StoryTypes = {
 export const TrailingAction: StoryTypes = {
   args: {
     defaultValue: '비밀번호',
-    trailingAction: (
-      <button
-        aria-label='비밀번호 보기'
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 24,
-          height: 24,
-          padding: 0,
-          border: 0,
-          background: 'transparent',
-          cursor: 'pointer',
-        }}
-        onClick={handleTrailingAction}
-        type='button'
-      >
-        <IcChevronRight />
-      </button>
-    ),
+    trailingAction: renderPasswordVisibilityAction,
     type: 'password',
   },
 };

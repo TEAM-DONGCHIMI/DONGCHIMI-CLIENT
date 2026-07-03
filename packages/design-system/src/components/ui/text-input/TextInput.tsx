@@ -61,7 +61,7 @@ type TextInputTrailingElementProps =
       trailingIcon?: ReactNode;
     }
   | {
-      trailingAction: ReactElement;
+      trailingAction: (state: { disabled: boolean }) => ReactElement;
       trailingIcon?: never;
     };
 
@@ -81,13 +81,14 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       className,
+      disabled,
       errorMessage,
       helperText,
       id,
       label: visibleLabel,
       required,
       status = 'default',
-      trailingAction: trailingActionElement,
+      trailingAction: renderTrailingAction,
       trailingIcon: trailingIconElement,
       type = 'text',
       ...props
@@ -98,6 +99,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     const inputId = id ?? `text-input-${generatedId}`;
     const isError = status === 'error';
     const displayedMessage = isError ? errorMessage : helperText;
+    const trailingActionElement = renderTrailingAction?.({ disabled: Boolean(disabled) });
     const hasMessage = hasContent(displayedMessage);
     const hasTrailingIcon = hasContent(trailingIconElement);
     const hasTrailingAction = hasContent(trailingActionElement);
@@ -133,6 +135,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               hasTrailingElement && inputWithTrailingElement,
               className,
             )}
+            disabled={disabled}
             id={inputId}
             required={required}
             type={type}
