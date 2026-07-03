@@ -49,11 +49,21 @@ type TextInputAccessibleNameProps =
       'aria-labelledby': string;
     };
 
-interface TextInputBaseOwnProps extends TextInputVariantProps {
-  errorMessage?: ReactNode;
-  helperText?: ReactNode;
-  type?: TextInputTypes;
-}
+type TextInputStatusProps =
+  | {
+      status?: 'default' | 'success';
+      errorMessage?: never;
+    }
+  | {
+      status: 'error';
+      errorMessage?: ReactNode;
+    };
+
+type TextInputBaseOwnProps = Omit<TextInputVariantProps, 'status'> &
+  TextInputStatusProps & {
+    helperText?: ReactNode;
+    type?: TextInputTypes;
+  };
 
 type TextInputTrailingElementProps =
   | {

@@ -98,6 +98,7 @@ TextInput
 - type: `ReactNode`
 - required: `false`
 - description: `status='error'`일 때 helper text 대신 예약된 오류 아이콘 영역과 함께 표시하는 오류 문구입니다.
+- constraint: `errorMessage`를 전달하려면 `status='error'`를 함께 명시해야 하며, 잘못된 prop 조합은 타입으로 제한합니다.
 
 일반 안내와 오류 문구는 Figma의 `Description Text`와 `Error Text`에 대응합니다.
 두 값을 모두 전달해도 현재 상태에 맞는 하나만 표시합니다.
