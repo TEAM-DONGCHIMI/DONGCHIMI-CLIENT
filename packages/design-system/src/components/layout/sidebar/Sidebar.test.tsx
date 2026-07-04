@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { render, screen, userEvent } from '../../../test';
+import { fireEvent, render, screen, userEvent } from '../../../test';
 import { Sidebar } from './Sidebar';
 import type { SidebarItem } from './Sidebar.types';
 
@@ -76,6 +76,22 @@ describe('Sidebar', () => {
     await user.click(disabledItem);
 
     expect(disabledItem).toBeDisabled();
+    expect(handleItemSelect).not.toHaveBeenCalled();
+  });
+
+  it('does not call onItemSelect for a modified click (e.g. opening in a new tab)', () => {
+    const handleItemSelect = vi.fn();
+
+    render(
+      <Sidebar
+        aria-label='주 메뉴'
+        onItemSelect={handleItemSelect}
+        sections={[{ items: primaryItems }]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: '홈' }), { ctrlKey: true });
+
     expect(handleItemSelect).not.toHaveBeenCalled();
   });
 
