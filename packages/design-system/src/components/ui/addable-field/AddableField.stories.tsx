@@ -143,6 +143,22 @@ export const NarrowWidth: StoryTypes = {
   ],
 };
 
+export const LongContent: StoryTypes = {
+  args: {
+    errorIcon: <DemoIcon />,
+    errorMessage: '입력한 내용을 다시 확인한 뒤 올바른 값을 입력해주세요',
+    label: '추가하려는 항목의 자세한 내용을 입력해주세요',
+    status: 'error',
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: 220 }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+
 export const VariantMatrix: StoryTypes = {
   render: (args) => (
     <div style={{ display: 'grid', gap: 32, width: 322 }}>
