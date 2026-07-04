@@ -18,9 +18,11 @@ const meta = {
 export default meta;
 type StoryTypes = StoryObj<typeof meta>;
 
+export const Default: StoryTypes = {};
+
 export const Page: StoryTypes = {
   render: () => (
-    <Dropdown>
+    <Dropdown role='group' aria-label='정렬 기준'>
       <ListButton selected>최신순</ListButton>
       <ListButton>인기순</ListButton>
       <ListButton>가격 낮은순</ListButton>
@@ -31,7 +33,7 @@ export const Page: StoryTypes = {
 
 export const Category: StoryTypes = {
   render: () => (
-    <Dropdown>
+    <Dropdown role='group' aria-label='카테고리'>
       <ListButton color='primary' selected>
         전체
       </ListButton>
