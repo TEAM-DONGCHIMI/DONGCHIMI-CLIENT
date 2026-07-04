@@ -1,7 +1,7 @@
 import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import { IcChevronRight } from '../../../icons';
-import { cn } from '../../../styles/class-name';
+import { cn } from '../../../styles';
 import { NumButton } from '../num-button';
 import * as S from './Navigation.css';
 

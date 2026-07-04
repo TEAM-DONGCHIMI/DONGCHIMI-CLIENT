@@ -47,7 +47,6 @@ export const iconButtonClassName = style({
   padding: 0,
   backgroundColor: 'transparent',
   color: atomic.neutral[50],
-  cursor: 'pointer',
   transition: 'color 160ms ease, opacity 160ms ease, outline-color 160ms ease',
   selectors: {
     '&:hover': {
