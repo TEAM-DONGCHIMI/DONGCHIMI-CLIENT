@@ -23,7 +23,6 @@
 
 ```text
 Chip
-  Icon(optional)
   Text
 ```
 
@@ -41,13 +40,13 @@ type ChipVariantProps =
 type ChipProps = ComponentPropsWithoutRef<'span'> &
   ChipVariantProps & {
     children: ReactNode;
-    leftIcon?: ReactNode;
     rounded?: boolean;
     size?: ChipSizeTypes;
   };
 ```
 
 - `color`가 하나의 `variant`만 지원하는 경우(`neutral`→`subtle`, `negative`/`dark`→`solid`)는 `variant`를 생략할 수 있고 자동으로 채워집니다. `primary`는 `soft`/`solid` 두 조합 다 유효해서 `variant`를 반드시 명시해야 합니다.
+- `leftIcon` 슬롯은 노출하지 않습니다. 아이콘 슬롯은 [`StatusChip`](./StatusChip.spec.md)에서만 지원합니다.
 - `Chip` value export와 `ChipProps` type export만 public으로 노출합니다.
 - 내부 공유 렌더링은 `ChipBase`(비공개)가 담당하며 export하지 않습니다.
 
@@ -73,8 +72,7 @@ type ChipProps = ComponentPropsWithoutRef<'span'> &
 ## Behavior
 
 1. `Chip`은 자체 클릭 동작을 갖지 않습니다.
-2. `leftIcon`은 장식 요소로 렌더링되며 `aria-hidden` 처리합니다.
-3. 소비자가 상태 전달 문구를 넣는 경우 `children`이 accessible text가 됩니다.
+2. 소비자가 넣는 `children`이 accessible text가 됩니다.
 
 ## Styling
 
@@ -88,7 +86,6 @@ type ChipProps = ComponentPropsWithoutRef<'span'> &
 - accessible name: 텍스트 children
 - keyboard interaction: 없음
 - focus-visible: 없음
-- ARIA: 장식 icon은 `aria-hidden`
 
 ## Storybook
 

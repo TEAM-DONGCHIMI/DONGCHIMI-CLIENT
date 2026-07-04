@@ -13,23 +13,13 @@ type ChipVariantProps =
 export type ChipProps = NativeSpanProps &
   ChipVariantProps & {
     children: ReactNode;
-    leftIcon?: ReactNode;
     rounded?: boolean;
     size?: ChipSizeTypes;
   };
 
 export const Chip = forwardRef<HTMLSpanElement, ChipProps>(
   (
-    {
-      children,
-      className,
-      color,
-      leftIcon,
-      rounded = true,
-      size = 'desktop',
-      variant,
-      ...nativeProps
-    },
+    { children, className, color, rounded = true, size = 'desktop', variant, ...nativeProps },
     ref,
   ) => {
     const resolvedColor = color ?? 'neutral';
@@ -40,7 +30,6 @@ export const Chip = forwardRef<HTMLSpanElement, ChipProps>(
         ref={ref}
         className={className}
         color={resolvedColor}
-        leftIcon={leftIcon}
         rounded={rounded}
         size={size}
         variant={resolvedVariant}
