@@ -1,4 +1,4 @@
-import { forwardRef, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import {
   SidebarBrand,
@@ -30,38 +30,43 @@ export interface SidebarProps extends SidebarNativeAsideProps {
   onItemSelect?: (item: SidebarItemData) => void;
 }
 
-const SidebarBase = forwardRef<HTMLElement, SidebarProps>(
-  (
-    { activeItemId, brand, footerItems, helpCard, onItemSelect, profile, sections, ...props },
-    ref,
-  ) => (
-    <SidebarRoot ref={ref} activeItemId={activeItemId} onItemSelect={onItemSelect} {...props}>
-      {brand && <SidebarBrand>{brand}</SidebarBrand>}
-      {profile && (
-        <>
-          <SidebarDivider />
-          <SidebarProfileSlot profile={profile} />
-        </>
-      )}
-      <SidebarNav aria-label={props['aria-label']}>
-        {sections.map((section, sectionIndex) => (
-          <SidebarSectionSlot
-            key={section.id ?? sectionIndex}
-            items={section.items}
-            title={section.title}
-          />
+const SidebarBase = ({
+  activeItemId,
+  brand,
+  footerItems,
+  helpCard,
+  onItemSelect,
+  profile,
+  ref,
+  sections,
+  ...props
+}: SidebarProps) => (
+  <SidebarRoot ref={ref} activeItemId={activeItemId} onItemSelect={onItemSelect} {...props}>
+    {brand && <SidebarBrand>{brand}</SidebarBrand>}
+    {profile && (
+      <>
+        <SidebarDivider />
+        <SidebarProfileSlot profile={profile} />
+      </>
+    )}
+    <SidebarNav aria-label={props['aria-label']}>
+      {sections.map((section, sectionIndex) => (
+        <SidebarSectionSlot
+          key={section.id ?? sectionIndex}
+          items={section.items}
+          title={section.title}
+        />
+      ))}
+    </SidebarNav>
+    {(footerItems?.length || helpCard) && (
+      <SidebarFooter>
+        {footerItems?.map((item) => (
+          <SidebarItemSlot key={item.id} item={item} />
         ))}
-      </SidebarNav>
-      {(footerItems?.length || helpCard) && (
-        <SidebarFooter>
-          {footerItems?.map((item) => (
-            <SidebarItemSlot key={item.id} item={item} />
-          ))}
-          {helpCard && <SidebarHelpCard>{helpCard}</SidebarHelpCard>}
-        </SidebarFooter>
-      )}
-    </SidebarRoot>
-  ),
+        {helpCard && <SidebarHelpCard>{helpCard}</SidebarHelpCard>}
+      </SidebarFooter>
+    )}
+  </SidebarRoot>
 );
 
 SidebarBase.displayName = 'Sidebar';

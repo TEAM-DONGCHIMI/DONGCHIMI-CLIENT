@@ -1,6 +1,6 @@
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { ComponentPropsWithRef, ReactNode } from 'react';
 
-export type SidebarNativeAsideProps = Omit<ComponentPropsWithoutRef<'aside'>, 'children'>;
+export type SidebarNativeAsideProps = Omit<ComponentPropsWithRef<'aside'>, 'children'>;
 
 export interface SidebarItem {
   id: string;

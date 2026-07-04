@@ -44,16 +44,16 @@ Sidebar
 
 ## Props
 
-| prop               | type                                | required | description                         |
-| ------------------ | ----------------------------------- | -------- | ----------------------------------- |
-| `sections`         | `SidebarSection[]`                  | true     | 주요 내비게이션 section 목록입니다. |
-| `activeItemId`     | `string`                            | false    | active 상태로 표시할 item id입니다. |
-| `brand`            | `ReactNode`                         | false    | 브랜드 영역 slot입니다.             |
-| `profile`          | `SidebarProfile`                    | false    | 사용자 프로필 영역 데이터입니다.    |
-| `footerItems`      | `SidebarItem[]`                     | false    | footer item 목록입니다.             |
-| `helpCard`         | `ReactNode`                         | false    | 하단 도움말 CTA slot입니다.         |
-| `onItemSelect`     | `(item: SidebarItem) => void`       | false    | enabled item 선택 callback입니다.   |
-| native aside props | `ComponentPropsWithoutRef<'aside'>` | false    | native aside props를 전달합니다.    |
+| prop               | type                             | required | description                            |
+| ------------------ | -------------------------------- | -------- | -------------------------------------- |
+| `sections`         | `SidebarSection[]`               | true     | 주요 내비게이션 section 목록입니다.    |
+| `activeItemId`     | `string`                         | false    | active 상태로 표시할 item id입니다.    |
+| `brand`            | `ReactNode`                      | false    | 브랜드 영역 slot입니다.                |
+| `profile`          | `SidebarProfile`                 | false    | 사용자 프로필 영역 데이터입니다.       |
+| `footerItems`      | `SidebarItem[]`                  | false    | footer item 목록입니다.                |
+| `helpCard`         | `ReactNode`                      | false    | 하단 도움말 CTA slot입니다.            |
+| `onItemSelect`     | `(item: SidebarItem) => void`    | false    | enabled item 선택 callback입니다.      |
+| native aside props | `ComponentPropsWithRef<'aside'>` | false    | native aside props와 ref를 전달합니다. |
 
 ## States
 

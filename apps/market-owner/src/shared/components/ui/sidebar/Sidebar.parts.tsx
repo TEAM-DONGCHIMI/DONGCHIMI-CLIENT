@@ -1,4 +1,4 @@
-import { forwardRef, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import { cn } from '@dongchimi/design-system/styles';
 import * as S from './Sidebar.css';
@@ -12,14 +12,19 @@ export interface SidebarRootProps extends SidebarNativeAsideProps {
   children: ReactNode;
 }
 
-export const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
-  ({ activeItemId, children, className, onItemSelect, ...props }, ref) => (
-    <SidebarContext.Provider value={{ activeItemId, onItemSelect }}>
-      <aside ref={ref} className={cn(S.sidebar, className)} {...props}>
-        {children}
-      </aside>
-    </SidebarContext.Provider>
-  ),
+export const SidebarRoot = ({
+  activeItemId,
+  children,
+  className,
+  onItemSelect,
+  ref,
+  ...props
+}: SidebarRootProps) => (
+  <SidebarContext.Provider value={{ activeItemId, onItemSelect }}>
+    <aside ref={ref} className={cn(S.sidebar, className)} {...props}>
+      {children}
+    </aside>
+  </SidebarContext.Provider>
 );
 
 SidebarRoot.displayName = 'Sidebar.Root';

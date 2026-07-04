@@ -1,3 +1,4 @@
+import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { fireEvent, render, screen, userEvent } from '../../../../test';
@@ -99,5 +100,13 @@ describe('Sidebar', () => {
     render(<Sidebar aria-label='주 메뉴' sections={[{ items: primaryItems }]} />);
 
     expect(screen.getByTestId('home-icon').closest('[aria-hidden="true"]')).toBeInTheDocument();
+  });
+
+  it('passes a ref prop to the root aside element', () => {
+    const ref = createRef<HTMLElement>();
+
+    render(<Sidebar ref={ref} aria-label='주 메뉴' sections={[{ items: primaryItems }]} />);
+
+    expect(ref.current).toBe(screen.getByRole('complementary'));
   });
 });
