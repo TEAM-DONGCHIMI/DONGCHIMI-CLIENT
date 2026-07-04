@@ -56,6 +56,9 @@ export const Variants: StoryTypes = {
       <TextButton>Button</TextButton>
       <TextButton tone='negative'>Button</TextButton>
       <TextButton disabled>Button</TextButton>
+      <TextButton tone='negative' disabled>
+        Button
+      </TextButton>
     </div>
   ),
 };
