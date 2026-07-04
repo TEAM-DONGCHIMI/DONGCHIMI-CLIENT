@@ -20,8 +20,6 @@ import type {
 
 export type { SidebarItem, SidebarProfile, SidebarSection } from './Sidebar.types';
 
-// Config-driven entry point: composes the primitives above from plain data,
-// so most consumers never need to touch Sidebar.Root/Item directly.
 export interface SidebarProps extends SidebarNativeAsideProps {
   brand?: ReactNode;
   profile?: SidebarProfileData;
