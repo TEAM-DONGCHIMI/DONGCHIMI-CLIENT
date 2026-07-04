@@ -121,6 +121,7 @@ pnpm gen:app-component --args market-owner <ComponentName> <ui|layout> <componen
 
 ```bash
 pnpm dev:market-owner
+pnpm storybook:market-owner
 pnpm --filter market-owner lint
 pnpm --filter market-owner typecheck
 pnpm --filter market-owner build
