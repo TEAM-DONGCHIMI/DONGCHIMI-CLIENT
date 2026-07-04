@@ -33,6 +33,7 @@ pnpm install --frozen-lockfile
 | `apps/market-owner`     | `5173` | `pnpm dev:market-owner`        | Vite `strictPort: true`로 fallback 차단 |
 | Design System Storybook | `6006` | `pnpm storybook:design-system` | `packages/design-system` 컴포넌트 확인  |
 | Shared Storybook        | `6007` | `pnpm storybook:shared`        | `packages/shared` 컴포넌트 확인         |
+| Market Owner Storybook  | `6008` | `pnpm storybook:market-owner`  | `apps/market-owner` 앱 전용 UI 확인     |
 
 E2E도 같은 포트를 사용합니다. 자세한 기준은 [E2E Testing](./e2e-testing.md)을 따릅니다.
 
@@ -85,7 +86,7 @@ workspace별 변경은 위치 기준으로 targeted 검증을 우선합니다.
 
 ```text
 apps/client/** -> client lint/typecheck/test/build
-apps/market-owner/** -> market-owner lint/typecheck/test/build
+apps/market-owner/** -> market-owner lint/typecheck/test/build/storybook
 apps/design-system-web/** -> design-system web lint/typecheck/build
 apps/admin/** -> admin lint/typecheck/build, 앱이 생성된 뒤 적용
 apps/mobile/** -> web check와 별도 mobile command
@@ -100,7 +101,7 @@ turbo/generators/** -> pnpm check:generators + sample generation
 | Workspace           | Dev                     | Targeted verification                                                                                                                                                                                                   |
 | ------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `apps/client`       | `pnpm dev:web`          | `pnpm --filter client lint`, `pnpm --filter client typecheck`, `pnpm --filter client test`, `pnpm --filter client build`                                                                                                |
-| `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner test`, `pnpm --filter market-owner build`                                                                        |
+| `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner test`, `pnpm --filter market-owner build`, `pnpm --filter market-owner build-storybook`                          |
 | `packages/shared`   | `pnpm storybook:shared` | `pnpm --filter @dongchimi/shared lint`, `pnpm --filter @dongchimi/shared typecheck`, `pnpm --filter @dongchimi/shared test`, `pnpm --filter @dongchimi/shared build`, `pnpm --filter @dongchimi/shared build-storybook` |
 
 테스트 종류별 명령과 작성 기준은 [Testing](./testing.md)을 따릅니다.
