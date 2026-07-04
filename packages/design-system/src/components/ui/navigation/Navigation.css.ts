@@ -11,7 +11,7 @@ export const navigationClassName = style({
 
 export const containerClassName = style({
   display: 'inline-flex',
-  minHeight: 32,
+  minHeight: '3.2rem',
   minWidth: 0,
   alignItems: 'center',
   justifyContent: 'center',
@@ -37,13 +37,13 @@ export const pageListClassName = style({
 export const iconButtonClassName = style({
   appearance: 'none',
   display: 'inline-flex',
-  width: 16,
-  height: 16,
+  width: '1.6rem',
+  height: '1.6rem',
   flexShrink: 0,
   alignItems: 'center',
   justifyContent: 'center',
   border: 0,
-  borderRadius: 4,
+  borderRadius: '0.4rem',
   padding: 0,
   backgroundColor: 'transparent',
   color: atomic.neutral[50],
@@ -68,15 +68,15 @@ export const iconButtonClassName = style({
 
 export const iconClassName = style({
   display: 'inline-flex',
-  width: 16,
-  height: 16,
+  width: '1.6rem',
+  height: '1.6rem',
   alignItems: 'center',
   justifyContent: 'center',
 });
 
 globalStyle(`${iconClassName} > svg`, {
-  width: 16,
-  height: 16,
+  width: '1.6rem',
+  height: '1.6rem',
 });
 
 export const previousIconClassName = style({
