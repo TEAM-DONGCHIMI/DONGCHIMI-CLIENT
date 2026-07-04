@@ -128,7 +128,6 @@ export const actionButton = style({
   outline: 0,
   backgroundColor: 'transparent',
   color: 'inherit',
-  cursor: 'pointer',
   selectors: {
     '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
