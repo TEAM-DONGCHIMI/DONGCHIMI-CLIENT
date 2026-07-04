@@ -15,6 +15,26 @@ describe('Dropdown', () => {
     expect(screen.getByRole('button', { name: '항목' })).toBeInTheDocument();
   });
 
+  it('renders Dropdown.Item as a button with its label', () => {
+    render(
+      <Dropdown>
+        <Dropdown.Item>항목</Dropdown.Item>
+      </Dropdown>,
+    );
+
+    expect(screen.getByRole('button', { name: '항목' })).toBeInTheDocument();
+  });
+
+  it('reflects Dropdown.Item selected state via aria-pressed', () => {
+    render(
+      <Dropdown>
+        <Dropdown.Item selected>선택됨</Dropdown.Item>
+      </Dropdown>,
+    );
+
+    expect(screen.getByRole('button', { name: '선택됨' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
   it('does not force a role on the panel', () => {
     const { container } = render(<Dropdown>내용</Dropdown>);
 

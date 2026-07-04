@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { ListButton } from '../list-button';
 import { Dropdown } from './Dropdown';
 
 const meta = {
@@ -11,7 +10,7 @@ const meta = {
   },
   tags: ['autodocs'],
   args: {
-    children: <ListButton>항목</ListButton>,
+    children: <Dropdown.Item>항목</Dropdown.Item>,
   },
 } satisfies Meta<typeof Dropdown>;
 
@@ -23,10 +22,10 @@ export const Default: StoryTypes = {};
 export const Page: StoryTypes = {
   render: () => (
     <Dropdown role='group' aria-label='정렬 기준'>
-      <ListButton selected>최신순</ListButton>
-      <ListButton>인기순</ListButton>
-      <ListButton>가격 낮은순</ListButton>
-      <ListButton>가격 높은순</ListButton>
+      <Dropdown.Item selected>최신순</Dropdown.Item>
+      <Dropdown.Item>인기순</Dropdown.Item>
+      <Dropdown.Item>가격 낮은순</Dropdown.Item>
+      <Dropdown.Item>가격 높은순</Dropdown.Item>
     </Dropdown>
   ),
 };
@@ -34,12 +33,12 @@ export const Page: StoryTypes = {
 export const Category: StoryTypes = {
   render: () => (
     <Dropdown role='group' aria-label='카테고리'>
-      <ListButton color='primary' selected>
+      <Dropdown.Item color='primary' selected>
         전체
-      </ListButton>
-      <ListButton color='primary'>카테고리 1</ListButton>
-      <ListButton color='primary'>카테고리 2</ListButton>
-      <ListButton color='primary'>카테고리 3</ListButton>
+      </Dropdown.Item>
+      <Dropdown.Item color='primary'>카테고리 1</Dropdown.Item>
+      <Dropdown.Item color='primary'>카테고리 2</Dropdown.Item>
+      <Dropdown.Item color='primary'>카테고리 3</Dropdown.Item>
     </Dropdown>
   ),
 };
@@ -47,8 +46,8 @@ export const Category: StoryTypes = {
 export const LongText: StoryTypes = {
   render: () => (
     <Dropdown>
-      <ListButton selected>아주 긴 텍스트가 들어가면 말줄임표로 처리됩니다</ListButton>
-      <ListButton>짧은 항목</ListButton>
+      <Dropdown.Item selected>아주 긴 텍스트가 들어가면 말줄임표로 처리됩니다</Dropdown.Item>
+      <Dropdown.Item>짧은 항목</Dropdown.Item>
     </Dropdown>
   ),
 };
