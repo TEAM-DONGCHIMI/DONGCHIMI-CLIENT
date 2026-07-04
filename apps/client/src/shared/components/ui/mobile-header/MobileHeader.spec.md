@@ -24,7 +24,7 @@
 ## Props
 
 - `MobileHeader`: native `header` props, `children`, `className`
-- `MobileHeader.BackButton`: design-system `IconButton` 기반, `icon`과 화면 맥락별 `aria-label`은 호출부에서 필수로 주입합니다.
+- `MobileHeader.BackButton`: design-system `IconButton` 기반, `icon`과 화면 맥락별 `aria-label`은 호출부에서 필수로 주입합니다. 헤더 전용 뒤로가기 형태를 유지하기 위해 `color`, `variant`, `size`, `rounded`는 호출부에 열지 않습니다.
 - `MobileHeader.Title`: native heading props, `children`, `as` optional (`h1` default)
 - `MobileHeader.Logo`: native `div` props, `children`, `className`
 
