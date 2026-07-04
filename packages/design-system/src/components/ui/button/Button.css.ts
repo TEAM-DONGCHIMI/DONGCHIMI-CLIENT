@@ -19,6 +19,7 @@ export const button = recipe({
     backgroundColor: 'transparent',
     whiteSpace: 'nowrap',
     borderRadius: 8,
+    gap: '0.4rem',
     transition:
       'background-color 160ms ease, border-color 160ms ease, color 160ms ease, outline-color 160ms ease',
     selectors: {
@@ -53,6 +54,12 @@ export const button = recipe({
         minWidth: '19.2rem',
         height: '4.4rem',
         padding: '1.2rem 7.8rem',
+      },
+      xsmall: {
+        ...typography['caption-1-medium'],
+        minWidth: '15.1rem',
+        height: '3.7rem',
+        padding: '1rem 6rem',
       },
       mobile: {
         ...typography['caption-1-medium'],
@@ -155,8 +162,8 @@ export const buttonIcon = style({
   flexShrink: 0,
   alignItems: 'center',
   justifyContent: 'center',
-  padding: 2,
+  padding: '0.13rem',
   pointerEvents: 'none',
-  width: 24,
-  height: 24,
+  width: 16,
+  height: 16,
 });
