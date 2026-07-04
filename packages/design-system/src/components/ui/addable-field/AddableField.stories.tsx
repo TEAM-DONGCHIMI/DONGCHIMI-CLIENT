@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { ReactNode } from 'react';
+import type { ReactElement } from 'react';
 
 import { fn, userEvent, within } from 'storybook/test';
 
@@ -16,7 +16,7 @@ type AddableFieldStoryProps = Omit<
 > & {
   'aria-label'?: string;
   'aria-labelledby'?: string;
-  label?: ReactNode;
+  label?: string | ReactElement;
 };
 
 const StoryAddableField = ({

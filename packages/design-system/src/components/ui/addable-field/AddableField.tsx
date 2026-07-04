@@ -3,6 +3,7 @@ import {
   useId,
   type ComponentPropsWithoutRef,
   type MouseEventHandler,
+  type ReactElement,
   type ReactNode,
 } from 'react';
 
@@ -29,9 +30,11 @@ type NativeInputProps = Omit<
   'aria-invalid' | 'aria-label' | 'aria-labelledby' | 'children' | 'size' | 'type'
 >;
 
+type VisibleLabelTypes = string | ReactElement;
+
 type AddableFieldAccessibleNameProps =
   | {
-      label: ReactNode;
+      label: VisibleLabelTypes;
       'aria-label'?: never;
       'aria-labelledby'?: never;
     }
