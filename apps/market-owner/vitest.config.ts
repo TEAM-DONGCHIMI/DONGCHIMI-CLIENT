@@ -1,4 +1,9 @@
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import { defineConfig } from 'vitest/config';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const commonTestConfig = {
   environment: 'jsdom',
@@ -6,10 +11,18 @@ const commonTestConfig = {
   setupFiles: ['./src/test/setup.ts'],
 };
 
+const appResolveConfig = {
+  alias: {
+    '@': path.resolve(dirname, './src'),
+  },
+};
+
 export default defineConfig({
   test: {
     projects: [
       {
+        plugins: [vanillaExtractPlugin()],
+        resolve: appResolveConfig,
         test: {
           ...commonTestConfig,
           exclude: ['src/**/*.integration.test.{ts,tsx}'],
@@ -18,6 +31,8 @@ export default defineConfig({
         },
       },
       {
+        plugins: [vanillaExtractPlugin()],
+        resolve: appResolveConfig,
         test: {
           ...commonTestConfig,
           include: ['src/**/*.integration.test.{ts,tsx}'],
