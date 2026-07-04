@@ -39,7 +39,7 @@ const SidebarBase = forwardRef<HTMLElement, SidebarProps>(
       {brand && <SidebarBrand>{brand}</SidebarBrand>}
       {profile && (
         <>
-          {brand && <SidebarDivider />}
+          <SidebarDivider />
           <SidebarProfileSlot profile={profile} />
         </>
       )}
