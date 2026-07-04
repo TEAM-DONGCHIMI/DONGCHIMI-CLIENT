@@ -73,7 +73,6 @@ export const chip = recipe({
     color: {
       neutral: {},
       primary: {},
-      positive: {},
       negative: {},
       dark: {},
     },
@@ -119,43 +118,12 @@ export const chip = recipe({
     },
     {
       variants: {
-        color: 'positive',
-        variant: 'soft',
-      },
-      style: {
-        backgroundColor: '#EAF4FF',
-        color: semantic.status.positive,
-      },
-    },
-    {
-      variants: {
-        color: 'positive',
-        variant: 'outlined',
-      },
-      style: {
-        borderColor: semantic.status.positiveLight,
-        backgroundColor: atomic.common[0],
-        color: semantic.status.positive,
-      },
-    },
-    {
-      variants: {
         color: 'negative',
         variant: 'solid',
       },
       style: {
         backgroundColor: semantic.status.negative,
         color: atomic.common[0],
-      },
-    },
-    {
-      variants: {
-        color: 'negative',
-        variant: 'soft',
-      },
-      style: {
-        backgroundColor: '#FFF1F1',
-        color: semantic.status.negative,
       },
     },
     {

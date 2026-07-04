@@ -21,7 +21,7 @@ const meta = {
   argTypes: {
     color: {
       control: 'select',
-      options: ['neutral', 'primary', 'positive', 'negative', 'dark'],
+      options: ['neutral', 'primary', 'negative', 'dark'],
     },
     rounded: {
       control: 'boolean',

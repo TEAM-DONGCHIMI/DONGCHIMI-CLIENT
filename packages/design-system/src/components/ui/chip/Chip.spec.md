@@ -61,7 +61,7 @@ interface ChipProps extends ComponentPropsWithoutRef<'span'> {
   leftIcon?: ReactNode;
   size?: 'desktop' | 'mobile' | 'mobileLarge' | 'status' | 'pointDesktop' | 'pointMobile';
   variant?: 'solid' | 'soft' | 'subtle' | 'outlined' | 'point';
-  color?: 'neutral' | 'primary' | 'positive' | 'negative' | 'dark';
+  color?: 'neutral' | 'primary' | 'negative' | 'dark';
   rounded?: boolean;
 }
 ```
@@ -75,7 +75,7 @@ interface ChipProps extends ComponentPropsWithoutRef<'span'> {
 - `soft primary`: 카테고리, 완료 정보처럼 긍정 또는 브랜드 색의 낮은 강조 정보입니다.
 - `solid primary | negative`: 완료, 마감, 수정 필요, 할인율처럼 강한 강조 정보입니다.
 - `solid dark`: 짧은 마감/상태 정보를 어두운 배경으로 표시합니다.
-- `outlined negative | positive`: 확인 필요/완료 같은 status chip의 외곽선 표현입니다.
+- `outlined negative`: 확인 필요 같은 status chip의 외곽선 표현입니다.
 - `point`: `assets/img-chips-point.png` 배경 이미지 위에 할인율을 표시합니다.
 - `desktop`, `mobile`, `mobileLarge`, `status`, `pointDesktop`, `pointMobile` 크기를 지원합니다.
 
