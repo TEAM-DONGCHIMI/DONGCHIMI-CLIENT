@@ -20,6 +20,7 @@
     "@dongchimi/design-system": "workspace:*",
     "@sentry/react": "catalog:",
     "@tanstack/react-query": "catalog:",
+    "@vanilla-extract/css": "catalog:",
     "@vanilla-extract/recipes": "catalog:",
     "ky": "catalog:",
     "react": "catalog:",
@@ -29,6 +30,9 @@
   "devDependencies": {
     "@dongchimi/eslint-config": "workspace:*",
     "@dongchimi/typescript-config": "workspace:*",
+    "@storybook/addon-a11y": "^10.4.6",
+    "@storybook/addon-docs": "^10.4.6",
+    "@storybook/react-vite": "^10.4.6",
     "@testing-library/dom": "catalog:",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",
@@ -41,6 +45,7 @@
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
     "jsdom": "catalog:",
+    "storybook": "^10.4.6",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
