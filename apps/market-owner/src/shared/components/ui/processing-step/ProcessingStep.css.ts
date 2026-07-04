@@ -94,7 +94,6 @@ export const statusClassName = style({
   ...typography['caption-1-regular'],
   minWidth: 0,
   justifySelf: 'end',
-  paddingRight: '0.2rem',
   whiteSpace: 'nowrap',
 });
 
