@@ -3,7 +3,7 @@
 ## Purpose
 
 `Dropdown`은 목록이나 페이지에서 탐색 조건을 선택할 때 사용하는 메뉴 패널 컨테이너입니다.
-`ListButton` 항목들을 담는 표현용 surface이며, 디자인시스템 안에서는 패널 외형(카드, 그림자,
+`Dropdown.Item` 항목들을 담는 표현용 surface이며, 디자인시스템 안에서는 패널 외형(카드, 그림자,
 padding, 항목 간격)과 slot 구조만 책임집니다.
 열림/닫힘, 트리거, 선택 상태 관리, 키보드 로빙 네비게이션은 호출부가 담당합니다.
 
@@ -22,14 +22,15 @@ padding, 항목 간격)과 slot 구조만 책임집니다.
 - [x] 필요한 접근성 동작을 보장합니다.
 - [x] token 또는 CSS variable을 우선 사용합니다.
 - [x] Figma APPJAM node 462:5192 `Dropdown`의 Page/category use를 기준으로 합니다.
-- [x] 항목은 새 컴포넌트를 만들지 않고 기존 `ListButton`을 조합합니다.
+- [x] 항목은 `Dropdown.Item`이 기존 `ListButton`을 얇게 래핑해 재사용합니다 (로직 중복 없음).
+- [x] React 19 방식으로 `ref`를 prop으로 받습니다 (`forwardRef` 미사용).
 
 ## UI Structure
 
 ```text
 Dropdown
   div (panel)
-    children (ListButton 항목들)
+    children (Dropdown.Item 항목들 — ListButton 래퍼)
 ```
 
 ## Props
@@ -38,12 +39,12 @@ Dropdown
 
 - type: `ReactNode`
 - required: `true`
-- description: 패널 안에 렌더링되는 항목들입니다. 일반적으로 `ListButton`을 나열합니다.
+- description: 패널 안에 렌더링되는 항목들입니다. 일반적으로 `Dropdown.Item`(= `ListButton` 래퍼)을 나열합니다.
 
 ### native div props
 
-- type: `ComponentPropsWithoutRef<'div'>`
-- description: `className`을 포함한 native div props를 전달합니다. 선택 맥락에 맞는
+- type: `ComponentPropsWithRef<'div'>`
+- description: `className`·`ref`를 포함한 native div props를 전달합니다. 선택 맥락에 맞는
   `role`(예: `menu`, `listbox`, `group`)과 `aria-label`은 호출부가 주입합니다.
 
 ## States
@@ -56,7 +57,7 @@ Dropdown
 
 1. 패널 외형만 렌더링하고 children을 세로로 배치합니다.
 2. 열림/닫힘, 트리거 연결, 선택 상태, 키보드 네비게이션은 호출부 책임입니다.
-3. 항목의 선택 표현(`aria-pressed`)과 상호작용은 `ListButton`이 담당합니다.
+3. 항목의 선택 표현(`aria-pressed`)과 상호작용은 `Dropdown.Item`이 래핑한 `ListButton`이 담당합니다.
 
 ## Styling
 
@@ -74,7 +75,7 @@ Dropdown
 
 - semantic element: `div` 컨테이너.
 - role: 강제하지 않습니다. 선택 맥락에 맞는 role과 accessible name은 호출부가 주입합니다.
-  항목이 `aria-pressed` 토글 버튼이므로 `role="group"` + `aria-label` 조합이 유효하며,
+  항목(`Dropdown.Item`)이 `aria-pressed` 토글 버튼이므로 `role="group"` + `aria-label` 조합이 유효하며,
   `Page`/`Category` 스토리에서 이 주입 패턴을 시연합니다. 완전한 menu/listbox 키보드 패턴이
   필요하면 후속 이슈에서 다룹니다.
 - keyboard interaction: 항목(`ListButton`)의 native button interaction을 사용합니다.
@@ -83,25 +84,26 @@ Dropdown
 
 ## Public API
 
-- [x] `Dropdown` value export
+- [x] `Dropdown` value export (compound: `Dropdown.Item`)
 - [x] `DropdownProps` type export
+- [x] `DropdownItemProps` type export
 - [x] no private helper export
-- [x] 항목용 별도 컴포넌트(`DropdownItem`)를 만들지 않고 `ListButton`을 재사용
+- [x] `Dropdown.Item`은 `ListButton`을 얇게 래핑해 재사용하며 별도 로직을 두지 않음
 
 ### Usage
 
 ```tsx
 // Page use — assistive 단일 선택
-<Dropdown>
-  <ListButton selected>최신순</ListButton>
-  <ListButton>인기순</ListButton>
-  <ListButton>가격순</ListButton>
+<Dropdown role="group" aria-label="정렬 기준">
+  <Dropdown.Item selected>최신순</Dropdown.Item>
+  <Dropdown.Item>인기순</Dropdown.Item>
+  <Dropdown.Item>가격순</Dropdown.Item>
 </Dropdown>
 
 // category use — primary 단일 선택
-<Dropdown>
-  <ListButton color="primary" selected>전체</ListButton>
-  <ListButton color="primary">카테고리 1</ListButton>
+<Dropdown role="group" aria-label="카테고리">
+  <Dropdown.Item color="primary" selected>전체</Dropdown.Item>
+  <Dropdown.Item color="primary">카테고리 1</Dropdown.Item>
 </Dropdown>
 ```
 
