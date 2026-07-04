@@ -21,6 +21,7 @@
 - [x] 필요한 접근성 동작을 보장합니다.
 - [x] 사용 가능한 token 또는 CSS variable을 우선 사용합니다.
 - [x] Figma APPJAM node 212:805, 262:7669, 177:6021의 일반 Button과 Variant-ICN 사례, node 276:23036의 mobile Button을 기준으로 합니다.
+- [x] xsmall은 APPJAM node 969:23005 주변의 추가 Button instance를 기준으로 합니다.
 - [x] Figma에 정의된 버튼 조합에 좌우 아이콘만 optional로 붙는 구조를 사용합니다.
 
 ## UI Structure
@@ -45,13 +46,13 @@ Button
 
 - type: `ReactNode`
 - required: `false`
-- description: 라벨 왼쪽에 배치되는 장식용 아이콘 슬롯입니다. `large`, `medium`, `small`에서만 렌더링합니다.
+- description: 라벨 왼쪽에 배치되는 장식용 아이콘 슬롯입니다. `large`, `medium`, `small`, `xsmall`, `mobile`에서 렌더링합니다.
 
 ### rightIcon
 
 - type: `ReactNode`
 - required: `false`
-- description: 라벨 오른쪽에 배치되는 장식용 아이콘 슬롯입니다. `large`, `medium`, `small`에서만 렌더링합니다.
+- description: 라벨 오른쪽에 배치되는 장식용 아이콘 슬롯입니다. `large`, `medium`, `small`, `xsmall`, `mobile`에서 렌더링합니다.
 
 ### variant
 
@@ -71,8 +72,8 @@ Button
 
 - type: `RecipeVariantProps<typeof button>['size']`
 - default: `small`
-- values: `large`, `medium`, `small`, `mobile`
-- description: `large`, `medium`, `small`은 기본 size preset이고, `mobile`은 기존 모바일 Button preset 호환용 값입니다. 최신 Figma에서는 platform이 별도 축으로 분리되어 있으나 현재 구현은 기존 mobile preset 높이를 유지합니다.
+- values: `large`, `medium`, `small`, `xsmall`, `mobile`
+- description: `large`, `medium`, `small`, `xsmall`은 기본 size preset이고, `mobile`은 기존 모바일 Button preset 호환용 값입니다. 최신 Figma에서는 platform이 별도 축으로 분리되어 있으나 현재 구현은 기존 mobile preset 높이를 유지합니다.
 
 ### native button props
 
@@ -90,11 +91,10 @@ Button
 
 1. 기본 `type`은 `button`입니다.
 2. 호출부가 전달한 `onClick`, `onFocus`, `disabled`, `form` 등 native button 동작을 그대로 사용합니다.
-3. `leftIcon`과 `rightIcon`은 desktop size(`large`, `medium`, `small`)에서만 사용할 수 있습니다.
+3. `leftIcon`과 `rightIcon`은 모든 size에서 사용할 수 있습니다.
 4. `leftIcon`과 `rightIcon`은 장식용 슬롯이므로 `aria-hidden` 영역에 렌더링합니다.
-5. `mobile` size에서는 icon prop이 전달돼도 렌더링하지 않습니다.
-6. 아이콘만 있는 버튼은 이 컴포넌트로 만들지 않고 `IconButton`을 사용합니다.
-7. `disabled`는 color/variant 조합과 별개로 최종 상태 스타일을 덮어씁니다.
+5. 아이콘만 있는 버튼은 이 컴포넌트로 만들지 않고 `IconButton`을 사용합니다.
+6. `disabled`는 color/variant 조합과 별개로 최종 상태 스타일을 덮어씁니다.
 
 ## Figma Presets
 
@@ -110,11 +110,21 @@ Button
 `disabled`는 Figma preset으로 표시되지만 public variant 값이 아니라 native 상태입니다.
 public type은 현재 스타일이 정의된 preset 조합만 허용합니다.
 `mobile`은 기존 모바일 확인용 size 값이며, 현재 정의된 `solid / primary` 조합만 허용합니다. 좌우 아이콘 슬롯은 desktop과 동일하게 지원합니다.
+`xsmall` 추가분은 현재 Figma와 HomePage 확인 표면에서 `solid / primary`, `outlined / negative`, `soft / primary` 조합을 우선 확인합니다.
+
+### xsmall Preset
+
+- Button instance: `150px x 36px`
+- label: Pretendard Medium 12px, line-height 140%, letter-spacing -2%
+- icon slot: `16px x 16px`
+- content gap: `4px`
+- radius: `8px`
+- supported icon composition: default, left icon, right icon, both icon
 
 ## Styling
 
 - layout: `inline-flex`, center alignment, grid parent 안에서도 stretch되지 않는 content-based auto width, max-width 100%
-- spacing: size별 fixed height, min-width, inline padding, icon slot 24px
+- spacing: size별 fixed height, min-width, inline padding, icon slot 16px
 - variants: `outlined`은 흰 배경과 테두리를 사용하고, `soft`는 연한 primary 배경과 primary 테두리를 함께 사용합니다.
 - responsive: 호출부 width 안에서 max-width 100%를 넘지 않습니다.
 - hover/focus/disabled: focus-visible outline 유지, disabled는 background, border, text를 neutral disabled color로 통일
