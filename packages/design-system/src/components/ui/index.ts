@@ -22,3 +22,5 @@ export { ListButton } from './list-button';
 export type { ListButtonProps } from './list-button';
 export { AddableField } from './addable-field';
 export type { AddableFieldProps } from './addable-field';
+export { Tooltip } from './tooltip';
+export type { TooltipProps } from './tooltip';
