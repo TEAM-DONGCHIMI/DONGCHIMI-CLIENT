@@ -83,7 +83,7 @@ Sidebar
 ## Accessibility
 
 - semantic element: `aside` 안에 `nav`를 중첩합니다.
-- accessible name: nav에 전달된 `aria-label`을 사용하고 없으면 `Sidebar`를 fallback으로 사용합니다.
+- accessible name: nav에 전달된 `aria-label`을 사용하고 없으면 `사이드바`를 fallback으로 사용합니다.
 - keyboard interaction: native anchor/button keyboard behavior를 사용합니다.
 - focus-visible: primary token 기반 visible outline을 유지합니다.
 - ARIA: active item은 `aria-current="page"`를 사용하고, 장식 icon slot은 `aria-hidden` 처리합니다.

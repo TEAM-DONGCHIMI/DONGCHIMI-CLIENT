@@ -74,7 +74,7 @@ export interface SidebarNavProps {
 }
 
 export const SidebarNav = ({ 'aria-label': ariaLabel, children }: SidebarNavProps) => (
-  <nav aria-label={ariaLabel ?? 'Sidebar'} className={sidebarNav}>
+  <nav aria-label={ariaLabel ?? '사이드바'} className={sidebarNav}>
     {children}
   </nav>
 );
