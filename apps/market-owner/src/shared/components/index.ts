@@ -6,3 +6,8 @@ export { DesktopHeader } from './ui/desktop-header';
 export type { DesktopHeaderProps } from './ui/desktop-header';
 export { DesktopUploadHeader } from './ui/desktop-upload-header';
 export type { DesktopUploadHeaderProps, UploadSegmentTypes } from './ui/desktop-upload-header';
+export { ProductEditCardDesktop } from './ui/product-edit-card-desktop';
+export type {
+  ProductEditCardDesktopProps,
+  ProductEditCardDesktopSelectionStateTypes,
+} from './ui/product-edit-card-desktop';
