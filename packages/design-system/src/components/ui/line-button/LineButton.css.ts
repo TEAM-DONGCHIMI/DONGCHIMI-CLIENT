@@ -18,7 +18,7 @@ export const lineButton = style({
   whiteSpace: 'nowrap',
   transition: 'color 160ms ease, outline-color 160ms ease',
   selectors: {
-    '&:hover': {
+    '&:not(:disabled):hover': {
       textDecorationLine: 'underline',
     },
     '&:focus-visible': {
