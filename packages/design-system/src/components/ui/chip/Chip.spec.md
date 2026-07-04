@@ -84,7 +84,7 @@ type ChipProps = ComponentPropsWithoutRef<'span'> &
   - `color="primary"`: 완료 상태의 낮은 강조 표현(내부적으로 `soft`)입니다.
   - `size`는 항상 `"status"`이고, `leftIcon`과 함께 사용합니다.
 - `kind="sale"`
-  - 배경 이미지(`assets/img-chips-point.png`) 위에 할인율을 표시합니다. `color`/`variant`를 받지 않습니다.
+  - 배경 이미지(`assets/img-chips-point.svg`) 위에 할인율을 표시합니다. `color`/`variant`를 받지 않습니다.
   - `size`는 `pointDesktop`/`pointMobile`만 허용합니다.
 
 ## Usage Examples
