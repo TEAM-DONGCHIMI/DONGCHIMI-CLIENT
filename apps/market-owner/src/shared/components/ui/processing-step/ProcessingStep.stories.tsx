@@ -74,6 +74,7 @@ const meta = {
 
 export default meta;
 type StoryTypes = StoryObj<typeof meta>;
+type ProcessingStepIconSlotStepTypes = Parameters<NonNullable<ProcessingStepProps['iconSlot']>>[0];
 
 export const Default: StoryTypes = {
   render: renderWithWidth,
@@ -88,7 +89,7 @@ export const PendingFirst: StoryTypes = {
 
 export const CustomIconSlot: StoryTypes = {
   args: {
-    iconSlot: (step) => (
+    iconSlot: (step: ProcessingStepIconSlotStepTypes) => (
       <span
         aria-hidden='true'
         style={{
