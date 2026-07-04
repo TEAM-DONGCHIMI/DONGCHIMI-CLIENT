@@ -6,7 +6,6 @@ import { atomic, semantic, typography } from '../../../tokens';
 export const root = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: 8,
   width: '100%',
   minWidth: 0,
 });
@@ -16,6 +15,7 @@ export const labelRow = style({
   alignItems: 'center',
   gap: 4,
   minWidth: 0,
+  marginBottom: 8,
 });
 
 export const label = style({
@@ -137,6 +137,7 @@ export const messageRow = style({
   gap: 4,
   minWidth: 0,
   minHeight: 18,
+  marginTop: 4,
 });
 
 export const errorIconSlot = style({

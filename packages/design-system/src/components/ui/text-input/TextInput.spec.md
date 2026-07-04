@@ -155,9 +155,9 @@ TextInput
 
 아래 높이는 label과 supporting text가 각각 한 줄인 기본 조합을 기준으로 합니다. 긴 label과 supporting text는 말줄임표로 숨기지 않고 줄바꿈하며, 전체 높이는 렌더링된 콘텐츠에 따라 늘어납니다.
 
-- Header + Input + SupportingText: 104px (`22 + 8 + 48 + 8 + 18`)
+- Header + Input + SupportingText: 100px (`22 + 8 + 48 + 4 + 18`)
 - Header + Input: 78px (`22 + 8 + 48`)
-- Input + SupportingText: 74px (`48 + 8 + 18`)
+- Input + SupportingText: 70px (`48 + 4 + 18`)
 - Input only: 48px
 
 전체 높이는 렌더링되는 콘텐츠로 자연스럽게 결정하며 별도 layout variant prop을 두지 않습니다.
@@ -203,7 +203,7 @@ TextInput
 ## Styling
 
 - root: caller width를 따르며 기본적으로 사용 가능한 inline width를 채웁니다. Figma의 660px은 예시 canvas 폭이며 고정 public width로 사용하지 않습니다.
-- vertical gap: label, input, supporting text 사이 8px
+- vertical gap: label과 input 사이 8px, input과 supporting text 사이 4px
 - label row: height 22px, label과 required indicator 사이 4px
 - input: width 100%, height 48px, horizontal/vertical padding 12px, border 1px, radius 6px
 - label: Body 3 Semibold, 14px/1.4
