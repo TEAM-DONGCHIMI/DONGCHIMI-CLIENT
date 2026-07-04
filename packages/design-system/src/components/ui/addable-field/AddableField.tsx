@@ -103,11 +103,11 @@ export const AddableField = forwardRef<HTMLInputElement, AddableFieldProps>(
             <label className={label} htmlFor={inputId}>
               {visibleLabel}
             </label>
-            {required ? (
+            {required && (
               <span aria-hidden='true' className={requiredMark}>
                 *
               </span>
-            ) : null}
+            )}
           </div>
         ) : null}
 
@@ -145,11 +145,11 @@ export const AddableField = forwardRef<HTMLInputElement, AddableFieldProps>(
 
         {hasErrorMessage ? (
           <div className={messageRow} id={messageId}>
-            {hasContent(errorIconElement) ? (
+            {hasContent(errorIconElement) && (
               <span aria-hidden='true' className={errorIcon}>
                 {errorIconElement}
               </span>
-            ) : null}
+            )}
             <span className={messageText}>{errorMessage}</span>
           </div>
         ) : null}
