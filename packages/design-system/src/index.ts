@@ -15,6 +15,8 @@ export { Center } from './components/layout/center';
 export type { CenterProps } from './components/layout/center';
 export { Container } from './components/layout/container';
 export type { ContainerProps } from './components/layout/container';
+export { TextInput } from './components/ui/text-input';
+export type { TextInputProps } from './components/ui/text-input';
 export { Button } from './components/ui/button';
 export type { ButtonProps } from './components/ui/button';
 export { NumButton } from './components/ui/num-button';
@@ -29,3 +31,19 @@ export { GridItem } from './components/layout/grid-item';
 export type { GridItemProps } from './components/layout/grid-item';
 export { List } from './components/layout/list';
 export type { ListItemProps, ListProps } from './components/layout/list';
+export { AddableField } from './components/ui/addable-field';
+export type { AddableFieldProps } from './components/ui/addable-field';
+export * from './components/ui/bottom-sheet';
+export { TabNav, Tabs } from './components/ui/tabs';
+export type {
+  TabNavItemProps,
+  TabNavListProps,
+  TabNavProps,
+  TabsActivationModeTypes,
+  TabsListProps,
+  TabsPanelProps,
+  TabsProps,
+  TabsTriggerProps,
+} from './components/ui/tabs';
+export { Toast } from './components/ui/toast';
+export type { ToastProps } from './components/ui/toast';

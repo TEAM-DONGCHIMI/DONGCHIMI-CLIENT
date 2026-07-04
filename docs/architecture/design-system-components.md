@@ -76,6 +76,7 @@ Examples:
 - public component와 public prop type만 export합니다.
 - public component의 `ComponentNameProps`는 기본적으로 export합니다.
 - internal helper, style helper, private constant는 export하지 않습니다.
+- React 19 기준 새 컴포넌트는 `forwardRef`로 감싸지 않고, 필요한 경우 `ComponentPropsWithRef` 기반 `ref` prop을 직접 열어둡니다.
 
 Preferred:
 
@@ -107,6 +108,25 @@ export type { ButtonProps } from './button';
 
 - 사용 가능한 token이나 CSS variable이 있으면 hard-coded value보다 우선합니다.
 - Tailwind 또는 styling system은 실제 package가 정해진 뒤 이 문서를 갱신합니다.
+- component-local `*.css.ts` style은 구현 파일에서 `import * as S from './ComponentName.css'` 형태로 가져옵니다.
+- JSX에서는 `S.rootClassName`, `S.triggerClassName`처럼 style namespace를 통해 참조합니다.
+- 새 컴포넌트와 수정 중인 컴포넌트는 named style import를 추가하지 않고 `S` namespace 방식으로 정리합니다.
+
+Preferred:
+
+```tsx
+import * as S from './Button.css';
+
+<button className={cn(S.buttonClassName, className)} />;
+```
+
+Avoid:
+
+```tsx
+import { buttonClassName } from './Button.css';
+
+<button className={cn(buttonClassName, className)} />;
+```
 
 ## Accessibility
 
