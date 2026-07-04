@@ -13,11 +13,9 @@ export const textButton = recipe({
     height: '3rem',
     padding: '0.4rem 1rem',
     borderWidth: 0,
-    borderRadius: 8,
     backgroundColor: 'transparent',
     color: atomic.neutral[90],
     whiteSpace: 'nowrap',
-    cursor: 'pointer',
     transition: 'color 160ms ease, outline-color 160ms ease',
     selectors: {
       '&:focus-visible': {

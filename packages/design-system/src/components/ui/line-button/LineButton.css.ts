@@ -16,7 +16,6 @@ export const lineButton = style({
   color: atomic.neutral[40],
   textDecorationLine: 'none',
   whiteSpace: 'nowrap',
-  cursor: 'pointer',
   transition: 'color 160ms ease, outline-color 160ms ease',
   selectors: {
     '&:hover': {
