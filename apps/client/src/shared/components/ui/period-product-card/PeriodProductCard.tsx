@@ -1,7 +1,79 @@
-import { type ComponentPropsWithoutRef } from 'react';
+import { type AriaAttributes, type MouseEventHandler } from 'react';
 
-export type PeriodProductCardProps = ComponentPropsWithoutRef<'div'>;
+import { cn } from '@dongchimi/design-system/styles';
 
-export const PeriodProductCard = ({ children, ...props }: PeriodProductCardProps) => {
-  return <div {...props}>{children}</div>;
+import * as S from './PeriodProductCard.css';
+
+export interface PeriodProductCardProps extends AriaAttributes {
+  className?: string;
+  id?: string;
+  imageAlt?: string;
+  imageSrc?: string;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  priceText: string;
+  productName: string;
+}
+
+const PRODUCT_LINK_SUFFIX = '\uC0C1\uD488 \uBCF4\uAE30';
+const PRODUCT_IMAGE_SUFFIX = '\uC0C1\uD488 \uC774\uBBF8\uC9C0';
+const PRODUCT_PRICE_UNIT = '\uC6D0';
+
+const getProductCardLabel = (productName: string) => `${productName} ${PRODUCT_LINK_SUFFIX}`;
+
+export const PeriodProductCard = ({
+  'aria-label': ariaLabel,
+  className,
+  imageAlt,
+  imageSrc,
+  onClick,
+  priceText,
+  productName,
+  ...props
+}: PeriodProductCardProps) => {
+  const hasImage = imageSrc != null && imageSrc.length > 0;
+  const accessibleName = ariaLabel ?? getProductCardLabel(productName);
+
+  const content = (
+    <>
+      <span className={S.imageFrameClassName}>
+        {hasImage ? (
+          // eslint-disable-next-line @next/next/no-img-element -- Product image hosts are API-provided and not tied to Next image config.
+          <img
+            alt={imageAlt ?? `${productName} ${PRODUCT_IMAGE_SUFFIX}`}
+            className={S.imageClassName}
+            src={imageSrc}
+          />
+        ) : (
+          <span aria-hidden='true' className={S.imageFallbackClassName} />
+        )}
+      </span>
+      <span className={S.contentClassName}>
+        <span className={S.productNameClassName}>{productName}</span>
+        <span className={S.priceRowClassName}>
+          <span className={S.priceTextClassName}>{priceText}</span>
+          <span className={S.priceUnitClassName}>{PRODUCT_PRICE_UNIT}</span>
+        </span>
+      </span>
+    </>
+  );
+
+  if (onClick != null) {
+    return (
+      <button
+        aria-label={accessibleName}
+        className={cn(S.rootClassName, S.interactiveRootClassName, className)}
+        onClick={onClick}
+        type='button'
+        {...props}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div aria-label={ariaLabel} className={cn(S.rootClassName, className)} {...props}>
+      {content}
+    </div>
+  );
 };
