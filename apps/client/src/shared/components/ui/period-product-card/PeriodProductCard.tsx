@@ -14,9 +14,9 @@ export interface PeriodProductCardProps extends AriaAttributes {
   productName: string;
 }
 
-const PRODUCT_LINK_SUFFIX = '\uC0C1\uD488 \uBCF4\uAE30';
-const PRODUCT_IMAGE_SUFFIX = '\uC0C1\uD488 \uC774\uBBF8\uC9C0';
-const PRODUCT_PRICE_UNIT = '\uC6D0';
+const PRODUCT_LINK_SUFFIX = '상품 보기';
+const PRODUCT_IMAGE_SUFFIX = '상품 이미지';
+const PRODUCT_PRICE_UNIT = '원';
 
 const getProductCardLabel = (productName: string) => `${productName} ${PRODUCT_LINK_SUFFIX}`;
 

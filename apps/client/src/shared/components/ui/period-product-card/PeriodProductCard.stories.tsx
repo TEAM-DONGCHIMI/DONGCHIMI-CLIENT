@@ -8,10 +8,9 @@ const squareProductImage =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='188' height='188' viewBox='0 0 188 188'%3E%3Crect width='188' height='188' fill='%23f2f4f6'/%3E%3Ccircle cx='94' cy='76' r='44' fill='%23ffb84d'/%3E%3Crect x='42' y='102' width='104' height='42' rx='20' fill='%2315c47e'/%3E%3C/svg%3E";
 const longProductImage =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='240' viewBox='0 0 120 240'%3E%3Crect width='120' height='240' fill='%23f9fafb'/%3E%3Crect x='26' y='30' width='68' height='180' rx='34' fill='%230066ff'/%3E%3Ccircle cx='60' cy='72' r='24' fill='%23ffffff'/%3E%3C/svg%3E";
-const defaultProductName = '\uC0BC\uACB9\uC0B4 500G';
-const defaultProductImageAlt = `${defaultProductName} \uC0C1\uD488 \uC774\uBBF8\uC9C0`;
-const twoLineProductName =
-  '\uAD6D\uB0B4\uC0B0 \uBB34\uD56D\uC0DD\uC81C \uB0C9\uC7A5 \uC0BC\uACB9\uC0B4 \uAD6C\uC774\uC6A9';
+const defaultProductName = '삼겹살 500G';
+const defaultProductImageAlt = `${defaultProductName} 상품 이미지`;
+const twoLineProductName = '국내산 무항생제 냉장 삼겹살 구이용';
 
 const meta = {
   title: 'Client/Shared/UI/PeriodProductCard',
