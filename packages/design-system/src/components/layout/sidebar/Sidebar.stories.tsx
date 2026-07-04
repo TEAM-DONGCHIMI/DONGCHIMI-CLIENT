@@ -33,6 +33,20 @@ const PlaceholderIcon = () => (
   />
 );
 
+const Logo = () => (
+  <span
+    aria-hidden='true'
+    style={{
+      display: 'inline-block',
+      flexShrink: 0,
+      width: 32,
+      height: 32,
+      borderRadius: 4,
+      background: 'linear-gradient(135deg, rgba(21, 196, 126, 0.35), rgba(25, 31, 40, 0.1))',
+    }}
+  />
+);
+
 const Avatar = () => (
   <span
     aria-hidden='true'
@@ -84,7 +98,12 @@ const offerItems: SidebarItem[] = [
 
 export const Default: StoryTypes = {
   args: {
-    brand: '동치미',
+    brand: (
+      <>
+        <Logo />
+        동치미
+      </>
+    ),
     footerItems: [
       {
         id: 'settings',
@@ -127,7 +146,12 @@ export const Default: StoryTypes = {
 export const LinkItems: StoryTypes = {
   args: {
     activeItemId: 'period-create',
-    brand: '동치미',
+    brand: (
+      <>
+        <Logo />
+        동치미
+      </>
+    ),
     sections: [
       {
         items: [
@@ -153,7 +177,12 @@ export const LinkItems: StoryTypes = {
 export const DisabledItem: StoryTypes = {
   args: {
     activeItemId: 'home',
-    brand: '동치미',
+    brand: (
+      <>
+        <Logo />
+        동치미
+      </>
+    ),
     sections: [
       {
         items: [
@@ -176,7 +205,10 @@ export const Composed: StoryTypes = {
   },
   render: () => (
     <Sidebar.Root activeItemId='home' aria-label='주 메뉴'>
-      <Sidebar.Brand>동치미</Sidebar.Brand>
+      <Sidebar.Brand>
+        <Logo />
+        동치미
+      </Sidebar.Brand>
       <Sidebar.Nav aria-label='주 메뉴'>
         <Sidebar.Section items={primaryItems} />
         <Sidebar.Section items={offerItems} title='오늘의 전단을 만들어봐요' />

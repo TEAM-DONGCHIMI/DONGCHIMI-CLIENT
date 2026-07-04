@@ -20,6 +20,7 @@ export const sidebar = style({
 export const sidebarBrand = style({
   display: 'flex',
   alignItems: 'center',
+  gap: 8,
   minHeight: 32,
   padding: '0 16px',
   ...typography['heading-3-semibold'],
