@@ -14,7 +14,7 @@ export type MobileHeaderProps = ComponentPropsWithoutRef<'header'>;
 
 type MobileHeaderBackButtonProps = Omit<
   IconButtonProps,
-  'aria-label' | 'aria-labelledby' | 'children' | 'color'
+  'aria-label' | 'aria-labelledby' | 'children' | 'color' | 'variant' | 'size' | 'rounded'
 > & {
   'aria-label': string;
 };
