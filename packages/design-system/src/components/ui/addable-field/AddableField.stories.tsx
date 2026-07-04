@@ -25,7 +25,10 @@ const StoryAddableField = ({
   label,
   ...props
 }: AddableFieldStoryProps) => {
-  if (label !== undefined) {
+  const hasVisibleLabel =
+    label !== undefined && (typeof label !== 'string' || label.trim().length > 0);
+
+  if (hasVisibleLabel) {
     return <AddableField {...props} label={label} />;
   }
 
