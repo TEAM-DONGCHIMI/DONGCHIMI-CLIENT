@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { fireEvent, render, screen, userEvent } from '../../../test';
+import { fireEvent, render, screen, userEvent } from '../../../../test';
 import { Sidebar } from './Sidebar';
 import type { SidebarItem } from './Sidebar.types';
 

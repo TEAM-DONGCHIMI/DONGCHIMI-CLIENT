@@ -1,6 +1,6 @@
 import { forwardRef, type ReactNode } from 'react';
 
-import { cn } from '../../../styles';
+import { cn } from '@dongchimi/design-system/styles';
 import * as S from './Sidebar.css';
 import { SidebarLink } from './SidebarLink';
 import type { SidebarItem, SidebarNativeAsideProps, SidebarProfile } from './Sidebar.types';

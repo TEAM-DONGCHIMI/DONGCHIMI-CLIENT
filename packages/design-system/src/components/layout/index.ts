@@ -18,5 +18,3 @@ export { GridItem } from './grid-item';
 export type { GridItemProps } from './grid-item';
 export { List } from './list';
 export type { ListItemProps, ListProps } from './list';
-export { Sidebar } from './sidebar';
-export type { SidebarItem, SidebarProfile, SidebarProps, SidebarSection } from './sidebar';

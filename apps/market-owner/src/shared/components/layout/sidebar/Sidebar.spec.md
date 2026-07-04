@@ -2,19 +2,19 @@
 
 ## Purpose
 
-`Sidebar`는 사장님 사이트에서 주요 메뉴, 사용자 프로필, 메뉴 섹션, 하단 도움말 CTA를 한 패널 안에 배치하는 사이드 내비게이션 컴포넌트입니다.
-디자인시스템에서는 패널 구조, item 상태, native link/button 동작, 접근성 계약만 책임집니다.
-제품별 copy, route, API 데이터, analytics, business action은 호출부가 주입합니다.
+`Sidebar`는 사장님 사이트(`market-owner`)에서 주요 메뉴, 사용자 프로필, 메뉴 섹션, 하단 도움말 CTA를 한 패널 안에 배치하는 사이드 내비게이션 컴포넌트입니다.
+디자인시스템의 `Box`/`Flex` 등 layout primitive와 달리 activeItemId, onItemSelect, href 유무에 따른 link/button 렌더링, aria-current, disabled item 처리 등 navigation 도메인 책임을 가지므로 `market-owner` 앱의 shared component로 소유합니다.
+디자인시스템에서는 `Button`, `atomic`/`semantic`/`typography` 토큰, `cn`, `recipe` 등 범용 primitive만 가져와 사용하고, 제품별 copy, route, API 데이터, analytics, business action은 호출부가 주입합니다.
 
 ## Usage Location
 
-- `packages/design-system/src/components/layout/sidebar/Sidebar.tsx`
-- `packages/design-system/src/components/layout/sidebar/Sidebar.parts.tsx`
-- `packages/design-system/src/components/layout/sidebar/SidebarLink.tsx`
+- `apps/market-owner/src/shared/components/layout/sidebar/Sidebar.tsx`
+- `apps/market-owner/src/shared/components/layout/sidebar/Sidebar.parts.tsx`
+- `apps/market-owner/src/shared/components/layout/sidebar/SidebarLink.tsx`
 
 ## Category
 
-- `layout`
+- `market-owner shared/layout`
 
 ## Requirements
 
@@ -108,9 +108,9 @@ Sidebar
 
 - [x] `git -c safe.directory=C:/DONGCHIMI-CLIENT diff --check`
 - [x] `pnpm exec prettier --check <changed Sidebar/export files>`
-- [x] `pnpm --filter @dongchimi/design-system exec vitest run src/components/layout/sidebar/Sidebar.test.tsx --project unit`
+- [x] `pnpm --filter market-owner exec vitest run src/shared/components/layout/sidebar/Sidebar.test.tsx --project unit`
 - [x] `pnpm exec tsc --noEmit --jsx react-jsx --module ESNext --moduleResolution Bundler --target ES2022 --strict --skipLibCheck <Sidebar files>`
-- [x] `pnpm --filter @dongchimi/design-system lint`
-- [ ] `pnpm --filter @dongchimi/design-system typecheck` - `node_modules/.tmp/tsconfig.tsbuildinfo` EPERM 제약으로 전체 package typecheck 실행이 제한됩니다.
-- [ ] `pnpm --filter @dongchimi/design-system build` - 동일한 tsbuildinfo EPERM 제약으로 전체 package build 실행이 제한됩니다.
-- [ ] `pnpm --filter @dongchimi/design-system build-storybook`
+- [x] `pnpm --filter market-owner lint`
+- [ ] `pnpm --filter market-owner typecheck` - `node_modules/.tmp/tsconfig.tsbuildinfo` EPERM 제약으로 전체 package typecheck 실행이 제한됩니다.
+- [ ] `pnpm --filter market-owner build` - 동일한 tsbuildinfo EPERM 제약으로 전체 package build 실행이 제한됩니다.
+- [ ] `pnpm --filter market-owner build-storybook`

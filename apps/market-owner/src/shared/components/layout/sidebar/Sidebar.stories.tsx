@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { atomic, typography } from '../../../tokens';
-import { Button } from '../../ui/button';
+import { Button } from '@dongchimi/design-system/components';
+import { atomic, typography } from '@dongchimi/design-system/tokens';
+
 import { Sidebar, type SidebarItem } from './Sidebar';
 
 const meta = {
-  title: 'Design System/Layout/Sidebar',
+  title: 'Market Owner/Shared/Layout/Sidebar',
   component: Sidebar,
   parameters: {
     layout: 'centered',

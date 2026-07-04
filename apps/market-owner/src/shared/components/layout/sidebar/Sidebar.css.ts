@@ -1,7 +1,7 @@
 import { style } from '@vanilla-extract/css';
 
-import { recipe } from '../../../styles';
-import { atomic, semantic, typography } from '../../../tokens';
+import { recipe } from '@dongchimi/design-system/styles';
+import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
