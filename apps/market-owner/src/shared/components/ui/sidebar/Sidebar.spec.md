@@ -8,13 +8,13 @@
 
 ## Usage Location
 
-- `apps/market-owner/src/shared/components/layout/sidebar/Sidebar.tsx`
-- `apps/market-owner/src/shared/components/layout/sidebar/Sidebar.parts.tsx`
-- `apps/market-owner/src/shared/components/layout/sidebar/SidebarLink.tsx`
+- `apps/market-owner/src/shared/components/ui/sidebar/Sidebar.tsx`
+- `apps/market-owner/src/shared/components/ui/sidebar/Sidebar.parts.tsx`
+- `apps/market-owner/src/shared/components/ui/sidebar/SidebarLink.tsx`
 
 ## Category
 
-- `market-owner shared/layout`
+- `market-owner shared/ui`
 
 ## Requirements
 
@@ -107,10 +107,9 @@ Sidebar
 ## Verification
 
 - [x] `git -c safe.directory=C:/DONGCHIMI-CLIENT diff --check`
-- [x] `pnpm exec prettier --check <changed Sidebar/export files>`
-- [x] `pnpm --filter market-owner exec vitest run src/shared/components/layout/sidebar/Sidebar.test.tsx --project unit`
-- [x] `pnpm exec tsc --noEmit --jsx react-jsx --module ESNext --moduleResolution Bundler --target ES2022 --strict --skipLibCheck <Sidebar files>`
+- [x] `pnpm exec prettier --check apps/market-owner/src/shared/components/index.ts apps/market-owner/src/shared/components/ui/sidebar`
+- [x] `pnpm --filter market-owner exec vitest run src/shared/components/ui/sidebar/Sidebar.test.tsx --project unit`
 - [x] `pnpm --filter market-owner lint`
-- [ ] `pnpm --filter market-owner typecheck` - `node_modules/.tmp/tsconfig.tsbuildinfo` EPERM 제약으로 전체 package typecheck 실행이 제한됩니다.
-- [ ] `pnpm --filter market-owner build` - 동일한 tsbuildinfo EPERM 제약으로 전체 package build 실행이 제한됩니다.
+- [x] `pnpm --filter market-owner typecheck`
+- [ ] `pnpm --filter market-owner build` - `apps/market-owner/dist` 쓰기 권한 EPERM으로 Vite public asset copy 단계가 제한됩니다.
 - [ ] `pnpm --filter market-owner build-storybook`

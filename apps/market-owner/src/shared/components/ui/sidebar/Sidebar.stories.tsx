@@ -6,7 +6,7 @@ import { atomic, typography } from '@dongchimi/design-system/tokens';
 import { Sidebar, type SidebarItem } from './Sidebar';
 
 const meta = {
-  title: 'Market Owner/Shared/Layout/Sidebar',
+  title: 'Market Owner/Shared/UI/Sidebar',
   component: Sidebar,
   parameters: {
     layout: 'centered',
