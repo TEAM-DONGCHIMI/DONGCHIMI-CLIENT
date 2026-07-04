@@ -6,3 +6,5 @@ export { DesktopHeader } from './desktop-header';
 export type { DesktopHeaderProps } from './desktop-header';
 export { DesktopUploadHeader } from './desktop-upload-header';
 export type { DesktopUploadHeaderProps, UploadSegmentTypes } from './desktop-upload-header';
+export { PaginationFooter } from './pagination-footer';
+export type { PaginationFooterProps } from './pagination-footer';

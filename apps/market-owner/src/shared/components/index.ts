@@ -8,3 +8,5 @@ export { DesktopUploadHeader } from './ui/desktop-upload-header';
 export type { DesktopUploadHeaderProps, UploadSegmentTypes } from './ui/desktop-upload-header';
 export { Sidebar } from './layout/sidebar';
 export type { SidebarItem, SidebarProfile, SidebarProps, SidebarSection } from './layout/sidebar';
+export { PaginationFooter } from './ui/pagination-footer';
+export type { PaginationFooterProps } from './ui/pagination-footer';

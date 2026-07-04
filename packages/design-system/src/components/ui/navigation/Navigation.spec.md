@@ -103,8 +103,8 @@ Navigation
 
 ## Styling
 
-- layout: inline-flex nav, 내부 container min-height 32px
-- spacing: Figma 기준 wrapper gap 4px, 페이지 목록 gap 16px, 좌우 padding 16px
+- layout: inline-flex nav, 내부 container min-height 3.2rem
+- spacing: Figma 기준 wrapper gap 0.4rem, 페이지 목록 gap 1.6rem, 좌우 padding 1.6rem
 - responsive: 페이지 목록은 부모 폭이 좁으면 가로 overflow를 허용합니다.
 - hover/focus/disabled: 이전/다음 버튼은 focus-visible outline과 disabled opacity를 사용합니다. 페이지 버튼 focus/hover는 `NumButton`이 담당합니다.
 - token usage: icon color와 focus outline은 `atomic`, `semantic` token을 사용합니다.
