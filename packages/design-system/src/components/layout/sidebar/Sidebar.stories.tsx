@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { atomic } from '../../../tokens';
+import { atomic, typography } from '../../../tokens';
 import { Button } from '../../ui/button';
 import { Sidebar, type SidebarItem } from './Sidebar';
 
@@ -108,7 +108,7 @@ export const Default: StoryTypes = {
     ],
     helpCard: (
       <>
-        <span style={{ color: atomic.neutral[70], fontSize: 13, fontWeight: 700 }}>
+        <span style={{ color: atomic.neutral[70], ...typography['caption-1-medium'] }}>
           도움이 필요하신가요?
         </span>
         <Button

@@ -1,7 +1,7 @@
 import { style } from '@vanilla-extract/css';
 
 import { recipe } from '../../../styles';
-import { atomic, semantic } from '../../../tokens';
+import { atomic, semantic, typography } from '../../../tokens';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
@@ -22,9 +22,7 @@ export const sidebarBrand = style({
   alignItems: 'center',
   minHeight: 32,
   padding: '0 16px',
-  fontSize: 20,
-  fontWeight: 800,
-  lineHeight: '28px',
+  ...typography['heading-3-semibold'],
 });
 
 export const sidebarDivider = style({
@@ -62,9 +60,7 @@ export const sidebarProfileText = style({
 export const sidebarProfileTitle = style({
   overflow: 'hidden',
   color: atomic.neutral[90],
-  fontSize: 16,
-  fontWeight: 700,
-  lineHeight: '24px',
+  ...typography['body-2-semibold'],
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 });
@@ -72,9 +68,7 @@ export const sidebarProfileTitle = style({
 export const sidebarProfileEmail = style({
   overflow: 'hidden',
   color: atomic.neutral[40],
-  fontSize: 13,
-  fontWeight: 500,
-  lineHeight: '18px',
+  ...typography['caption-1-medium'],
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 });
@@ -93,9 +87,7 @@ export const sidebarSectionTitle = style({
   margin: 0,
   padding: '0 16px 4px',
   color: atomic.neutral[80],
-  fontSize: 14,
-  fontWeight: 700,
-  lineHeight: '22px',
+  ...typography['body-3-semibold'],
 });
 
 export const sidebarItem = recipe({
@@ -113,10 +105,7 @@ export const sidebarItem = recipe({
     backgroundColor: 'transparent',
     color: atomic.neutral[60],
     cursor: 'pointer',
-    font: 'inherit',
-    fontSize: 16,
-    fontWeight: 600,
-    lineHeight: '24px',
+    ...typography['body-2-medium'],
     textAlign: 'left',
     textDecoration: 'none',
     transition:
