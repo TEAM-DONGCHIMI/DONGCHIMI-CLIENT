@@ -49,7 +49,7 @@ const meta = {
 } satisfies Meta<typeof InlineField>;
 
 export default meta;
-type StoryTypes = StoryObj<InlineFieldStoryProps>;
+type StoryTypes = StoryObj<typeof meta>;
 
 export const Default: StoryTypes = {};
 
