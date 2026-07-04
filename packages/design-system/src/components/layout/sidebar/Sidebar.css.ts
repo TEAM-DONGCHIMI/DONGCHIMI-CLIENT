@@ -15,7 +15,6 @@ export const sidebar = style({
   backgroundColor: atomic.common[0],
   boxShadow: '0 20px 64px rgba(25, 31, 40, 0.08)',
   color: atomic.neutral[90],
-  fontFamily: 'Pretendard, system-ui, sans-serif',
 });
 
 export const sidebarBrand = style({
