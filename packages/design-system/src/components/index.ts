@@ -28,4 +28,4 @@ export type { GridItemProps } from './layout/grid-item';
 export { List } from './layout/list';
 export type { ListItemProps, ListProps } from './layout/list';
 export { Dropdown } from './ui/dropdown';
-export type { DropdownProps } from './ui/dropdown';
+export type { DropdownItemProps, DropdownProps } from './ui/dropdown';
