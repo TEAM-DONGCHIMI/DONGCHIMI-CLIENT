@@ -27,7 +27,7 @@
 ## Props
 
 - `text: string` (필수) — 노출할 문구. 1줄 노출을 기준으로 하며, 초과 시 말줄임(ellipsis) 처리됩니다.
-- `label?: string` — 상단 라벨. 기본값 `"점장 한마디"`.
+- `label: string` (필수) — 상단 라벨. 범용 컴포넌트이므로 기본 copy 없이 호출부에서 명시합니다.
 - 그 외 `div`의 네이티브 props(`className` 포함)를 전달할 수 있습니다. `children`은 받지 않습니다.
 - `ref`는 루트 `div`로 forward됩니다.
 
