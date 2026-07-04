@@ -20,6 +20,8 @@ export { NumButton } from './num-button';
 export type { NumButtonProps } from './num-button';
 export { ListButton } from './list-button';
 export type { ListButtonProps } from './list-button';
+export { Navigation } from './navigation';
+export type { NavigationProps } from './navigation';
 export { PillButton } from './pill-button';
 export type { PillButtonProps } from './pill-button';
 export { AddableField } from './addable-field';
