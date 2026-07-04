@@ -27,12 +27,6 @@ const meta = {
     onPageChange: {
       action: 'page changed',
     },
-    onPageSizeClick: {
-      action: 'page size clicked',
-    },
-    pageSizeSuffix: {
-      control: false,
-    },
     pages: {
       control: false,
     },
@@ -40,9 +34,7 @@ const meta = {
   args: {
     currentPage: 1,
     onPageChange: noop,
-    onPageSizeClick: noop,
-    pageSize: 10,
-    pages: [1, 2, 3],
+    pages: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     rangeEnd: 10,
     rangeStart: 1,
     totalCount: 128,
@@ -58,16 +50,9 @@ export const Default: StoryTypes = {
 
 export const MiddlePage: StoryTypes = {
   args: {
-    currentPage: 2,
-    rangeEnd: 20,
-    rangeStart: 11,
-  },
-  render: renderWithWidth,
-};
-
-export const StaticPageSize: StoryTypes = {
-  args: {
-    onPageSizeClick: undefined,
+    currentPage: 5,
+    rangeEnd: 50,
+    rangeStart: 41,
   },
   render: renderWithWidth,
 };

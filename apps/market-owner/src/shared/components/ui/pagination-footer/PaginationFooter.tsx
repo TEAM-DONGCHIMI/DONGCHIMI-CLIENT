@@ -1,7 +1,6 @@
-import { type ComponentPropsWithoutRef, type MouseEventHandler, type ReactNode } from 'react';
+import { type ComponentPropsWithoutRef } from 'react';
 
 import { Navigation } from '@dongchimi/design-system';
-import { IcChevronRight } from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
 import * as S from './PaginationFooter.css';
@@ -14,10 +13,6 @@ export interface PaginationFooterProps extends NativeFooterProps {
   nextDisabled?: boolean;
   nextLabel?: string;
   onPageChange?: (page: number) => void;
-  onPageSizeClick?: MouseEventHandler<HTMLButtonElement>;
-  pageSize: number | string;
-  pageSizeControlLabel?: string;
-  pageSizeSuffix?: ReactNode;
   pages: readonly number[];
   previousDisabled?: boolean;
   previousLabel?: string;
@@ -28,8 +23,6 @@ export interface PaginationFooterProps extends NativeFooterProps {
 
 const DEFAULT_PREVIOUS_LABEL = '이전 페이지';
 const DEFAULT_NEXT_LABEL = '다음 페이지';
-const DEFAULT_PAGE_SIZE_SUFFIX = '씩 보기';
-const DEFAULT_PAGE_SIZE_CONTROL_LABEL = '페이지당 표시 개수 선택';
 
 const getDefaultPageAriaLabel = (page: number, selected: boolean) => {
   return selected ? `${page} 페이지, 현재 페이지` : `${page} 페이지`;
@@ -43,10 +36,6 @@ export const PaginationFooter = ({
   nextDisabled,
   nextLabel = DEFAULT_NEXT_LABEL,
   onPageChange,
-  onPageSizeClick,
-  pageSize,
-  pageSizeControlLabel = DEFAULT_PAGE_SIZE_CONTROL_LABEL,
-  pageSizeSuffix = DEFAULT_PAGE_SIZE_SUFFIX,
   pages,
   previousDisabled,
   previousLabel = DEFAULT_PREVIOUS_LABEL,
@@ -66,30 +55,6 @@ export const PaginationFooter = ({
           <span>개 중</span>
           <strong className={S.summaryValueClassName}>{currentRange}</strong>
           <span>표시 중</span>
-        </div>
-
-        <div className={S.pageSizeClassName}>
-          {onPageSizeClick != null ? (
-            <button
-              aria-label={`${pageSizeControlLabel}: ${pageSize}`}
-              className={S.pageSizeControlClassName}
-              onClick={onPageSizeClick}
-              type='button'
-            >
-              <span className={S.pageSizeValueClassName}>{pageSize}</span>
-              <span aria-hidden='true' className={S.chevronDownClassName}>
-                <IcChevronRight />
-              </span>
-            </button>
-          ) : (
-            <span className={S.pageSizeControlClassName}>
-              <span className={S.pageSizeValueClassName}>{pageSize}</span>
-              <span aria-hidden='true' className={S.chevronDownClassName}>
-                <IcChevronRight />
-              </span>
-            </span>
-          )}
-          <span className={S.pageSizeSuffixClassName}>{pageSizeSuffix}</span>
         </div>
       </div>
 

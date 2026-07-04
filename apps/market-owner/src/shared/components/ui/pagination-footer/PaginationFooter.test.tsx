@@ -9,7 +9,6 @@ const renderFooter = (props: Partial<ComponentProps<typeof PaginationFooter>> = 
   return render(
     <PaginationFooter
       currentPage={2}
-      pageSize={10}
       pages={[1, 2, 3]}
       rangeEnd={10}
       rangeStart={1}
@@ -20,13 +19,12 @@ const renderFooter = (props: Partial<ComponentProps<typeof PaginationFooter>> = 
 };
 
 describe('PaginationFooter', () => {
-  it('renders total count, visible range, page size, and current page state', () => {
+  it('renders total count, visible range, and current page state', () => {
     renderFooter();
 
     expect(screen.getByText('전체')).toBeInTheDocument();
     expect(screen.getByText('128')).toBeInTheDocument();
     expect(screen.getByText('1-10')).toBeInTheDocument();
-    expect(screen.getByText('10')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '2 페이지, 현재 페이지' })).toHaveAttribute(
       'aria-current',
       'page',
@@ -55,30 +53,12 @@ describe('PaginationFooter', () => {
     expect(screen.getByRole('button', { name: '다음 페이지' })).toBeEnabled();
   });
 
-  it('renders page size as a button only when callback is provided', async () => {
-    const handlePageSizeClick = vi.fn();
-    const user = userEvent.setup();
-
-    const { rerender } = renderFooter();
+  it('does not render the removed page size dropdown control', () => {
+    renderFooter();
 
     expect(
-      screen.queryByRole('button', { name: '페이지당 표시 개수 선택: 10' }),
+      screen.queryByRole('button', { name: /페이지당 표시 개수 선택/ }),
     ).not.toBeInTheDocument();
-
-    rerender(
-      <PaginationFooter
-        currentPage={2}
-        onPageSizeClick={handlePageSizeClick}
-        pageSize={10}
-        pages={[1, 2, 3]}
-        rangeEnd={10}
-        rangeStart={1}
-        totalCount={128}
-      />,
-    );
-
-    await user.click(screen.getByRole('button', { name: '페이지당 표시 개수 선택: 10' }));
-
-    expect(handlePageSizeClick).toHaveBeenCalledOnce();
+    expect(screen.queryByText('씩 보기')).not.toBeInTheDocument();
   });
 });
