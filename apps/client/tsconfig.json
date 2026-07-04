@@ -1,7 +1,6 @@
 {
   "extends": "@dongchimi/typescript-config/nextjs",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
