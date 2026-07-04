@@ -15,6 +15,8 @@ export { Center } from './layout/center';
 export type { CenterProps } from './layout/center';
 export { Container } from './layout/container';
 export type { ContainerProps } from './layout/container';
+export { TextInput } from './ui/text-input';
+export type { TextInputProps } from './ui/text-input';
 export { Button } from './ui/button';
 export type { ButtonProps } from './ui/button';
 export { NumButton } from './ui/num-button';
