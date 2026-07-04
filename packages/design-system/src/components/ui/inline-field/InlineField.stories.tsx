@@ -53,6 +53,21 @@ type StoryTypes = StoryObj<typeof meta>;
 
 export const Default: StoryTypes = {};
 
+export const AriaLabelledBy: StoryTypes = {
+  render: (args) => (
+    <div style={{ width: INLINE_FIELD_STORY_WIDTH }}>
+      <span id='inline-field-labelledby-story' style={{ display: 'block', marginBottom: 8 }}>
+        Inline value
+      </span>
+      <StoryInlineField
+        {...args}
+        aria-label={undefined}
+        aria-labelledby='inline-field-labelledby-story'
+      />
+    </div>
+  ),
+};
+
 export const Small: StoryTypes = {
   args: {
     size: 'small',
