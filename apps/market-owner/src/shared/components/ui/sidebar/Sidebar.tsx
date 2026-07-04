@@ -66,14 +66,4 @@ const SidebarBase = forwardRef<HTMLElement, SidebarProps>(
 
 SidebarBase.displayName = 'Sidebar';
 
-export const Sidebar = Object.assign(SidebarBase, {
-  Root: SidebarRoot,
-  Brand: SidebarBrand,
-  Divider: SidebarDivider,
-  Profile: SidebarProfileSlot,
-  Nav: SidebarNav,
-  Section: SidebarSectionSlot,
-  Item: SidebarItemSlot,
-  Footer: SidebarFooter,
-  HelpCard: SidebarHelpCard,
-});
+export const Sidebar = SidebarBase;

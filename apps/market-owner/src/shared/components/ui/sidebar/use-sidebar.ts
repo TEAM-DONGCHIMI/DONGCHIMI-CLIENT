@@ -13,7 +13,7 @@ export const useSidebarContext = () => {
   const context = useContext(SidebarContext);
 
   if (!context) {
-    throw new Error('Sidebar.* 컴포넌트는 Sidebar.Root 내부에서만 사용할 수 있습니다.');
+    throw new Error('Sidebar 내부 컴포넌트는 Sidebar 컨텍스트 안에서만 사용할 수 있습니다.');
   }
 
   return context;

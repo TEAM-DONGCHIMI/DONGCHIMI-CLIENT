@@ -21,7 +21,7 @@
 - [x] 제품 도메인 데이터, route, API, logging, analytics에 의존하지 않습니다.
 - [x] brand, profile, section, footer item, help card 영역을 조합할 수 있습니다.
 - [x] `sections`, `footerItems` 기반 config API로 메뉴 데이터를 주입합니다.
-- [x] `Sidebar.Root`/`Section`/`Item` 등 compound API를 제공합니다.
+- [x] `Sidebar.Root`/`Section`/`Item` 등 내부 parts는 public API로 노출하지 않습니다.
 - [x] active/click 로직은 내부 hook으로 분리하고, link/button markup은 내부 `SidebarLink`를 재사용합니다.
 - [x] native anchor/button keyboard behavior와 focus-visible 스타일을 보존합니다.
 - [x] private helper와 내부 component는 public export하지 않습니다.
@@ -30,17 +30,16 @@
 
 ```text
 Sidebar
-  Sidebar.Root
-    Sidebar.Brand?
-    Sidebar.Divider?
-    Sidebar.Profile?
-    Sidebar.Nav
-      Sidebar.Section[]
-        SectionTitle?
-        Sidebar.Item[]
-    Sidebar.Footer?
-      Sidebar.Item[]
-      Sidebar.HelpCard?
+  Brand?
+  Divider?
+  Profile?
+  Nav
+    Section[]
+      SectionTitle?
+      Item[]
+  Footer?
+    Item[]
+    HelpCard?
 ```
 
 ## Props
@@ -93,7 +92,6 @@ Sidebar
 - [x] 기본 composition
 - [x] link item composition
 - [x] disabled item
-- [x] 수동 compound composition
 
 ## Public API
 
@@ -102,6 +100,7 @@ Sidebar
 - [x] `SidebarItem` type export
 - [x] `SidebarSection` type export
 - [x] `SidebarProfile` type export
+- [x] `Sidebar.Root`, `Sidebar.Section`, `Sidebar.Item` 등 내부 parts는 public export하지 않습니다.
 - [x] `SidebarLink`, `useSidebarItem`, `useSidebarContext`, `SidebarContext`는 public export하지 않습니다.
 
 ## Verification

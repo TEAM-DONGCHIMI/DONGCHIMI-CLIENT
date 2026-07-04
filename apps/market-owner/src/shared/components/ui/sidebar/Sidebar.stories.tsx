@@ -199,21 +199,3 @@ export const DisabledItem: StoryTypes = {
     ],
   },
 };
-
-export const Composed: StoryTypes = {
-  args: {
-    sections: [],
-  },
-  render: () => (
-    <Sidebar.Root activeItemId='home' aria-label='주 메뉴'>
-      <Sidebar.Brand>
-        <Logo />
-        동치미
-      </Sidebar.Brand>
-      <Sidebar.Nav aria-label='주 메뉴'>
-        <Sidebar.Section items={primaryItems} />
-        <Sidebar.Section items={offerItems} title='오늘의 전단을 만들어봐요' />
-      </Sidebar.Nav>
-    </Sidebar.Root>
-  ),
-};
