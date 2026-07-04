@@ -23,6 +23,8 @@ export { NumButton } from './components/ui/num-button';
 export type { NumButtonProps } from './components/ui/num-button';
 export { ListButton } from './components/ui/list-button';
 export type { ListButtonProps } from './components/ui/list-button';
+export { PillButton } from './components/ui/pill-button';
+export type { PillButtonProps } from './components/ui/pill-button';
 export { Section } from './components/layout/section';
 export type { SectionProps } from './components/layout/section';
 export { GridItem } from './components/layout/grid-item';
