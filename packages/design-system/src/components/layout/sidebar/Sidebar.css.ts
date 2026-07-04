@@ -10,7 +10,7 @@ export const sidebar = style({
   flexDirection: 'column',
   boxSizing: 'border-box',
   width: 290,
-  minHeight: 900,
+  height: '100%',
   padding: '32px 16px 16px',
   backgroundColor: atomic.common[0],
   boxShadow: '0 20px 64px rgba(25, 31, 40, 0.08)',
