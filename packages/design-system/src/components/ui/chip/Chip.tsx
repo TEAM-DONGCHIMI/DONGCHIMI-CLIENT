@@ -5,15 +5,20 @@ import { chip, chipIcon, chipText } from './Chip.css';
 
 type NativeSpanProps = Omit<ComponentPropsWithoutRef<'span'>, 'children' | 'color'>;
 
-type ChipSizeTypes = 'desktop' | 'mobile' | 'mobileLarge' | 'status';
-type PointChipSizeTypes = 'pointDesktop' | 'pointMobile';
+type DefaultChipSizeTypes = 'desktop' | 'mobile' | 'mobileLarge';
+type SaleChipSizeTypes = 'pointDesktop' | 'pointMobile';
 
 type ChipVariantProps =
-  | { variant?: 'subtle'; color?: 'neutral'; size?: ChipSizeTypes }
-  | { variant: 'soft'; color?: 'primary'; size?: ChipSizeTypes }
-  | { variant: 'solid'; color: 'primary' | 'negative' | 'dark'; size?: ChipSizeTypes }
-  | { variant: 'outlined'; color?: 'negative'; size?: ChipSizeTypes }
-  | { variant: 'point'; color?: never; size: PointChipSizeTypes };
+  | { kind?: 'default'; variant?: 'subtle'; color?: 'neutral'; size?: DefaultChipSizeTypes }
+  | { kind?: 'default'; variant: 'soft'; color?: 'primary'; size?: DefaultChipSizeTypes }
+  | {
+      kind?: 'default';
+      variant: 'solid';
+      color: 'primary' | 'negative' | 'dark';
+      size?: DefaultChipSizeTypes;
+    }
+  | { kind: 'status'; variant?: never; color: 'negative' | 'primary'; size?: 'status' }
+  | { kind: 'sale'; variant?: never; color?: never; size: SaleChipSizeTypes };
 
 export type ChipProps = NativeSpanProps &
   ChipVariantProps & {
@@ -29,29 +34,57 @@ const hasRenderableIcon = (icon: ReactNode) => {
 const defaultColorByVariant = {
   subtle: 'neutral',
   soft: 'primary',
-  outlined: 'negative',
 } as const;
+
+const statusVariantByColor = {
+  negative: 'outlined',
+  primary: 'soft',
+} as const;
+
+interface ChipVisualProps {
+  variant: 'solid' | 'soft' | 'subtle' | 'outlined' | 'point';
+  color?: 'neutral' | 'primary' | 'negative' | 'dark';
+  size: DefaultChipSizeTypes | 'status' | SaleChipSizeTypes;
+}
+
+const resolveChipVisualProps = (props: ChipVariantProps): ChipVisualProps => {
+  if (props.kind === 'sale') {
+    return { variant: 'point', size: props.size };
+  }
+
+  if (props.kind === 'status') {
+    return {
+      variant: statusVariantByColor[props.color],
+      color: props.color,
+      size: props.size ?? 'status',
+    };
+  }
+
+  const variant = props.variant ?? 'subtle';
+
+  return {
+    variant,
+    color: props.color ?? defaultColorByVariant[variant as keyof typeof defaultColorByVariant],
+    size: props.size ?? 'desktop',
+  };
+};
 
 export const Chip = forwardRef<HTMLSpanElement, ChipProps>(
   (
-    { children, className, color, leftIcon, rounded = true, size, variant = 'subtle', ...props },
+    { children, className, color, kind, leftIcon, rounded = true, size, variant, ...nativeProps },
     ref,
   ) => {
     const hasLeftIcon = hasRenderableIcon(leftIcon);
-    const resolvedColor =
-      variant === 'point'
-        ? undefined
-        : (color ?? defaultColorByVariant[variant as keyof typeof defaultColorByVariant]);
-    const resolvedSize = size ?? (variant === 'point' ? 'pointDesktop' : 'desktop');
+    const visual = resolveChipVisualProps({ color, kind, size, variant } as ChipVariantProps);
 
     return (
       <span
         ref={ref}
         className={cn(
-          chip({ color: resolvedColor, rounded, size: resolvedSize, variant }),
+          chip({ color: visual.color, rounded, size: visual.size, variant: visual.variant }),
           className,
         )}
-        {...props}
+        {...nativeProps}
       >
         {hasLeftIcon ? (
           <span aria-hidden='true' className={chipIcon}>

@@ -23,6 +23,10 @@ const meta = {
       control: 'select',
       options: ['neutral', 'primary', 'negative', 'dark'],
     },
+    kind: {
+      control: 'select',
+      options: ['default', 'status', 'sale'],
+    },
     rounded: {
       control: 'boolean',
     },
@@ -32,7 +36,7 @@ const meta = {
     },
     variant: {
       control: 'select',
-      options: ['solid', 'soft', 'subtle', 'outlined', 'point'],
+      options: ['solid', 'soft', 'subtle'],
     },
   },
 };
@@ -109,10 +113,10 @@ export const DefaultChips = {
 export const StatusChips = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: 338 }}>
-      <Chip color='negative' leftIcon={statusIcon} size='status' variant='outlined'>
+      <Chip color='negative' kind='status' leftIcon={statusIcon}>
         확인이 필요한 상품이 있어요 (12)
       </Chip>
-      <Chip color='primary' leftIcon={statusIcon} size='status' variant='soft'>
+      <Chip color='primary' kind='status' leftIcon={statusIcon}>
         모든 상품의 확인이 완료되었어요
       </Chip>
     </div>
@@ -122,10 +126,10 @@ export const StatusChips = {
 export const PointChips = {
   render: () => (
     <div style={{ display: 'flex', gap: 16 }}>
-      <Chip size='pointDesktop' variant='point'>
+      <Chip kind='sale' size='pointDesktop'>
         10%
       </Chip>
-      <Chip size='pointMobile' variant='point'>
+      <Chip kind='sale' size='pointMobile'>
         10%
       </Chip>
     </div>
