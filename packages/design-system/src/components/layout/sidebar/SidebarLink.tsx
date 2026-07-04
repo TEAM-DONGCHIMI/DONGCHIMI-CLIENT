@@ -1,6 +1,6 @@
 import { type MouseEvent, type ReactNode } from 'react';
 
-import { sidebarItem, sidebarItemIcon, sidebarItemLabel } from './Sidebar.css';
+import * as S from './Sidebar.css';
 import type { SidebarItem } from './Sidebar.types';
 
 export interface SidebarLinkProps {
@@ -12,16 +12,16 @@ export interface SidebarLinkProps {
 const SidebarLinkContent = ({ icon, label }: Pick<SidebarItem, 'icon' | 'label'>) => (
   <>
     {icon && (
-      <span aria-hidden='true' className={sidebarItemIcon}>
+      <span aria-hidden='true' className={S.sidebarItemIcon}>
         {icon}
       </span>
     )}
-    <span className={sidebarItemLabel}>{label}</span>
+    <span className={S.sidebarItemLabel}>{label}</span>
   </>
 );
 
 export const SidebarLink = ({ active = false, item, onClick }: SidebarLinkProps) => {
-  const className = sidebarItem({ active, disabled: item.disabled ?? false });
+  const className = S.sidebarItem({ active, disabled: item.disabled ?? false });
   const content: ReactNode = <SidebarLinkContent icon={item.icon} label={item.label} />;
 
   if (item.href && !item.disabled) {

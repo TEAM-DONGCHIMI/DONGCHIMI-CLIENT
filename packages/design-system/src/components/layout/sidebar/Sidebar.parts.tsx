@@ -1,21 +1,7 @@
 import { forwardRef, type ReactNode } from 'react';
 
 import { cn } from '../../../styles';
-import {
-  sidebar,
-  sidebarBrand,
-  sidebarDivider,
-  sidebarFooter,
-  sidebarHelpCard,
-  sidebarNav,
-  sidebarProfile,
-  sidebarProfileAvatar,
-  sidebarProfileEmail,
-  sidebarProfileText,
-  sidebarProfileTitle,
-  sidebarSection,
-  sidebarSectionTitle,
-} from './Sidebar.css';
+import * as S from './Sidebar.css';
 import { SidebarLink } from './SidebarLink';
 import type { SidebarItem, SidebarNativeAsideProps, SidebarProfile } from './Sidebar.types';
 import { SidebarContext, useSidebarItem } from './use-sidebar';
@@ -29,7 +15,7 @@ export interface SidebarRootProps extends SidebarNativeAsideProps {
 export const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
   ({ activeItemId, children, className, onItemSelect, ...props }, ref) => (
     <SidebarContext.Provider value={{ activeItemId, onItemSelect }}>
-      <aside ref={ref} className={cn(sidebar, className)} {...props}>
+      <aside ref={ref} className={cn(S.sidebar, className)} {...props}>
         {children}
       </aside>
     </SidebarContext.Provider>
@@ -43,12 +29,12 @@ export interface SidebarBrandProps {
 }
 
 export const SidebarBrand = ({ children }: SidebarBrandProps) => (
-  <div className={sidebarBrand}>{children}</div>
+  <div className={S.sidebarBrand}>{children}</div>
 );
 
 SidebarBrand.displayName = 'Sidebar.Brand';
 
-export const SidebarDivider = () => <div className={sidebarDivider} />;
+export const SidebarDivider = () => <div className={S.sidebarDivider} />;
 
 SidebarDivider.displayName = 'Sidebar.Divider';
 
@@ -57,11 +43,11 @@ export interface SidebarProfileSlotProps {
 }
 
 export const SidebarProfileSlot = ({ profile }: SidebarProfileSlotProps) => (
-  <div className={sidebarProfile}>
-    {profile.avatar && <div className={sidebarProfileAvatar}>{profile.avatar}</div>}
-    <div className={sidebarProfileText}>
-      <strong className={sidebarProfileTitle}>{profile.name}</strong>
-      {profile.description && <span className={sidebarProfileEmail}>{profile.description}</span>}
+  <div className={S.sidebarProfile}>
+    {profile.avatar && <div className={S.sidebarProfileAvatar}>{profile.avatar}</div>}
+    <div className={S.sidebarProfileText}>
+      <strong className={S.sidebarProfileTitle}>{profile.name}</strong>
+      {profile.description && <span className={S.sidebarProfileEmail}>{profile.description}</span>}
     </div>
   </div>
 );
@@ -74,7 +60,7 @@ export interface SidebarNavProps {
 }
 
 export const SidebarNav = ({ 'aria-label': ariaLabel, children }: SidebarNavProps) => (
-  <nav aria-label={ariaLabel ?? '사이드바'} className={sidebarNav}>
+  <nav aria-label={ariaLabel ?? '사이드바'} className={S.sidebarNav}>
     {children}
   </nav>
 );
@@ -87,8 +73,8 @@ export interface SidebarSectionSlotProps {
 }
 
 export const SidebarSectionSlot = ({ items, title }: SidebarSectionSlotProps) => (
-  <div className={sidebarSection}>
-    {title && <p className={sidebarSectionTitle}>{title}</p>}
+  <div className={S.sidebarSection}>
+    {title && <p className={S.sidebarSectionTitle}>{title}</p>}
     {items.map((item) => (
       <SidebarItemSlot key={item.id} item={item} />
     ))}
@@ -113,7 +99,7 @@ export interface SidebarFooterProps {
 }
 
 export const SidebarFooter = ({ children }: SidebarFooterProps) => (
-  <div className={sidebarFooter}>{children}</div>
+  <div className={S.sidebarFooter}>{children}</div>
 );
 
 SidebarFooter.displayName = 'Sidebar.Footer';
@@ -123,7 +109,7 @@ export interface SidebarHelpCardProps {
 }
 
 export const SidebarHelpCard = ({ children }: SidebarHelpCardProps) => (
-  <div className={sidebarHelpCard}>{children}</div>
+  <div className={S.sidebarHelpCard}>{children}</div>
 );
 
 SidebarHelpCard.displayName = 'Sidebar.HelpCard';
