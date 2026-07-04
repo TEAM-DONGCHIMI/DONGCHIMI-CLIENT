@@ -49,3 +49,12 @@ export type {
 } from './components/ui/tabs';
 export { Toast } from './components/ui/toast';
 export type { ToastProps } from './components/ui/toast';
+export { Dialog } from './components/ui/dialog';
+export type {
+  DialogCloseProps,
+  DialogContentProps,
+  DialogDescriptionProps,
+  DialogProps,
+  DialogTitleProps,
+  DialogTriggerProps,
+} from './components/ui/dialog';
