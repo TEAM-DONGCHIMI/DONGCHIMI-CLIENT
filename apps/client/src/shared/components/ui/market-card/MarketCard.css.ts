@@ -14,7 +14,7 @@ export const marketCard = recipe({
     borderRadius: 12,
     backgroundColor: atomic.neutral[20],
     color: atomic.common[0],
-    padding: '0.4rem',
+
     selectors: {
       '&:focus-visible': {
         outline: `3px solid ${focusOutlineColor}`,

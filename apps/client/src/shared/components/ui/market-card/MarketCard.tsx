@@ -35,7 +35,13 @@ export const MarketCard = forwardRef<HTMLElement, MarketCardProps>(
   ) => {
     return (
       <article ref={ref} className={cn(S.marketCard({ size }), className)} {...props}>
-        <Image alt={imageAlt} className={S.imageClassName} fill src={imageSrc} />
+        <Image
+          alt={imageAlt}
+          className={S.imageClassName}
+          width={120}
+          height={120}
+          src={imageSrc}
+        />
         <div aria-hidden='true' className={S.scrimClassName} />
         <div className={S.contentClassName({ size })}>
           <span className={S.productNameClassName}>{productName}</span>
