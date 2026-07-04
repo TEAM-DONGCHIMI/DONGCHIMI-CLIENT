@@ -73,18 +73,20 @@ Dropdown
 ## Accessibility
 
 - semantic element: `div` 컨테이너.
-- role: 강제하지 않습니다. 선택 맥락에 맞는 role(`menu`/`listbox`/`group`)과 accessible name은
-  호출부가 주입합니다. 완전한 menu/listbox 키보드 패턴이 필요하면 후속 이슈에서 다룹니다.
+- role: 강제하지 않습니다. 선택 맥락에 맞는 role과 accessible name은 호출부가 주입합니다.
+  항목이 `aria-pressed` 토글 버튼이므로 `role="group"` + `aria-label` 조합이 유효하며,
+  `Page`/`Category` 스토리에서 이 주입 패턴을 시연합니다. 완전한 menu/listbox 키보드 패턴이
+  필요하면 후속 이슈에서 다룹니다.
 - keyboard interaction: 항목(`ListButton`)의 native button interaction을 사용합니다.
 - focus-visible: 각 `ListButton`이 focus-visible outline을 제공합니다.
 - ARIA: 선택 상태는 항목의 `aria-pressed`로 노출합니다.
 
 ## Public API
 
-- [ ] `Dropdown` value export
-- [ ] `DropdownProps` type export
-- [ ] no private helper export
-- [ ] 항목용 별도 컴포넌트(`DropdownItem`)를 만들지 않고 `ListButton`을 재사용
+- [x] `Dropdown` value export
+- [x] `DropdownProps` type export
+- [x] no private helper export
+- [x] 항목용 별도 컴포넌트(`DropdownItem`)를 만들지 않고 `ListButton`을 재사용
 
 ### Usage
 
@@ -105,18 +107,20 @@ Dropdown
 
 ## Storybook
 
-- [ ] Page (assistive 단일 선택)
-- [ ] Category (primary 단일 선택)
-- [ ] Long text overflow
+- [x] Default
+- [x] Page (assistive 단일 선택)
+- [x] Category (primary 단일 선택)
+- [x] Long text overflow
+- [x] role/aria-label 주입 예시 (Page/Category 스토리)
 - [ ] Checkbox multi-select: 범위 외 (ListButton `checkbox` variant 보완 후 별도 이슈에서 지원)
 - [ ] Disabled / Loading / Invalid: 미지원
 
 ## Verification
 
-- [ ] `git diff --check`
-- [ ] `pnpm format:check`
-- [ ] `pnpm --filter @dongchimi/design-system lint`
-- [ ] `pnpm --filter @dongchimi/design-system typecheck`
-- [ ] `pnpm --filter @dongchimi/design-system test`
-- [ ] `pnpm --filter @dongchimi/design-system build`
-- [ ] `pnpm --filter @dongchimi/design-system build-storybook`
+- [x] `git diff --check`
+- [x] `pnpm format:check`
+- [x] `pnpm --filter @dongchimi/design-system lint`
+- [x] `pnpm --filter @dongchimi/design-system typecheck`
+- [x] `pnpm --filter @dongchimi/design-system test`
+- [x] `pnpm --filter @dongchimi/design-system build`
+- [x] `pnpm --filter @dongchimi/design-system build-storybook`
