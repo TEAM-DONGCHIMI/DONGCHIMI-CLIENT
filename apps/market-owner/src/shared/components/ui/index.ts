@@ -1,3 +1,5 @@
+export { ProcessingStep } from './processing-step';
+export type { ProcessingStepProps } from './processing-step';
 export { SearchBar } from './search-bar';
 export type { SearchBarProps } from './search-bar';
 export { DesktopHeader } from './desktop-header';
