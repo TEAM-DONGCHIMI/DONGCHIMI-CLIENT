@@ -58,7 +58,7 @@ export const button = recipe({
       xsmall: {
         ...typography['caption-1-medium'],
         minWidth: '15.1rem',
-        height: '3.7rem',
+        height: '3.3rem',
         padding: '1rem 6rem',
       },
       mobile: {
@@ -102,6 +102,17 @@ export const button = recipe({
       },
       style: {
         backgroundColor: atomic.neutral[80],
+        color: atomic.common[0],
+      },
+    },
+    {
+      variants: {
+        color: 'negative',
+        variant: 'solid',
+      },
+      style: {
+        borderColor: semantic.status.negativeLight,
+        backgroundColor: semantic.status.negativeLight,
         color: atomic.common[0],
       },
     },

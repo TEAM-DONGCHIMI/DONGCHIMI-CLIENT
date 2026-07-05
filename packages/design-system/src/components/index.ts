@@ -65,6 +65,8 @@ export type {
   ListCellProps,
   ListCellStatusToneTypes,
 } from './ui/list-cell';
+export { Tooltip } from './ui/tooltip';
+export type { TooltipProps } from './ui/tooltip';
 export { Dialog } from './ui/dialog';
 export type {
   DialogCloseProps,

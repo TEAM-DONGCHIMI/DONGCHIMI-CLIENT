@@ -46,6 +46,8 @@ export type {
   ListCellProps,
   ListCellStatusToneTypes,
 } from './list-cell';
+export { Tooltip } from './tooltip';
+export type { TooltipProps } from './tooltip';
 export { Dialog } from './dialog';
 export type {
   DialogCloseProps,
