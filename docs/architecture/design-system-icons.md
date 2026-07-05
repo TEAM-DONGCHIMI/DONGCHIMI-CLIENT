@@ -80,7 +80,7 @@ pnpm --filter @dongchimi/design-system icons:import ./tmp/icons \
 
 SVG fingerprint와 shape signature는 SVGO 정규화를 거친 입력을 기준으로 계산합니다. 이 정규화는 Figma export의 wrapper, attribute order, path data 표현, black/currentColor 차이로 인한 false negative를 줄이기 위한 import 전 단계입니다.
 
-`check:icons`는 SVG 입력 정책뿐 아니라 source SVG 목록과 `generated/`, `index.ts` 동기 상태도 확인합니다.
+`check:icons`는 SVG 입력 정책뿐 아니라 source SVG 목록과 `generated/`, `index.ts` 동기 상태도 확인합니다. `icons:generate`는 생성 시점 source SVG의 fingerprint를 `generated/icons.manifest.json`에 기록하고, `check:icons`는 현재 SVG fingerprint를 manifest와 대조해 **SVG 내용이 바뀌었는데 재생성하지 않은 경우**(파일명만으로는 못 잡는 drift)까지 감지합니다.
 
 ## Review Checklist
 

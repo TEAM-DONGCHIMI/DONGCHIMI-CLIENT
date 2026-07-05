@@ -3,7 +3,8 @@
 import { spawn } from 'node:child_process';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { createIconIndexSource } from './icon-utils.mjs';
+import { createIconIndexSource, createSvgFingerprint } from './icon-utils.mjs';
+import { buildIconManifest, iconManifestFileName, serializeIconManifest } from './icon-sync.mjs';
 import { validateIconSvgs } from './validate-icons.mjs';
 
 const packageRoot = process.cwd();
@@ -11,6 +12,7 @@ const iconsRoot = path.join(packageRoot, 'src', 'icons');
 const svgRoot = path.join(iconsRoot, 'svg');
 const generatedRoot = path.join(iconsRoot, 'generated');
 const indexPath = path.join(iconsRoot, 'index.ts');
+const manifestPath = path.join(generatedRoot, iconManifestFileName);
 
 const cleanGeneratedFiles = async () => {
   await mkdir(generatedRoot, { recursive: true });
@@ -112,6 +114,17 @@ const writeIconIndex = async (svgFiles) => {
   await writeFile(indexPath, createIconIndexSource(svgFiles), 'utf8');
 };
 
+const writeIconManifest = async (svgFiles) => {
+  const svgEntries = await Promise.all(
+    svgFiles.map(async (svgFile) => ({
+      fileName: path.basename(svgFile),
+      fingerprint: createSvgFingerprint(await readFile(svgFile, 'utf8')),
+    })),
+  );
+
+  await writeFile(manifestPath, serializeIconManifest(buildIconManifest(svgEntries)), 'utf8');
+};
+
 const { svgFiles, validationErrors } = await validateIconSvgs({ packageRoot, svgRoot });
 
 if (validationErrors.length > 0) {
@@ -128,6 +141,7 @@ if (svgFiles.length > 0) {
 }
 
 await writeIconIndex(svgFiles);
+await writeIconManifest(svgFiles);
 await runPrettier();
 
 console.log(`Generated ${svgFiles.length} icon${svgFiles.length === 1 ? '' : 's'}.`);

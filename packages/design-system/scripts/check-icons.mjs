@@ -2,14 +2,28 @@
 
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
-import { createIconIndexSource, toIconComponentName } from './icon-utils.mjs';
-import { validateIconSvgs } from './validate-icons.mjs';
+import { createSvgFingerprint } from './icon-utils.mjs';
+import { diffIconSync, iconManifestFileName } from './icon-sync.mjs';
+import { collectSvgFiles, validateIconSvgs } from './validate-icons.mjs';
 
 const packageRoot = process.cwd();
 const iconsRoot = path.join(packageRoot, 'src', 'icons');
 const svgRoot = path.join(iconsRoot, 'svg');
 const generatedRoot = path.join(iconsRoot, 'generated');
 const indexPath = path.join(iconsRoot, 'index.ts');
+const manifestPath = path.join(generatedRoot, iconManifestFileName);
+
+const readFileOrNull = async (filePath) => {
+  try {
+    return await readFile(filePath, 'utf8');
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return null;
+    }
+
+    throw error;
+  }
+};
 
 const collectGeneratedIconFiles = async () => {
   let entries = [];
@@ -26,55 +40,29 @@ const collectGeneratedIconFiles = async () => {
 
   return entries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.tsx'))
-    .map((entry) => entry.name)
-    .sort();
+    .map((entry) => entry.name);
 };
 
-const checkGeneratedIconSync = async (svgFiles) => {
-  const errors = [];
-  const expectedGeneratedFiles = svgFiles
-    .map((svgFile) => `${toIconComponentName(svgFile)}.tsx`)
-    .sort();
-  const actualGeneratedFiles = await collectGeneratedIconFiles();
-  const expectedGeneratedFileSet = new Set(expectedGeneratedFiles);
-  const actualGeneratedFileSet = new Set(actualGeneratedFiles);
+const collectSvgEntries = async () => {
+  const svgFiles = await collectSvgFiles(svgRoot);
 
-  for (const expectedFile of expectedGeneratedFiles) {
-    if (!actualGeneratedFileSet.has(expectedFile)) {
-      errors.push(
-        `missing generated icon component: ${path.join('src/icons/generated', expectedFile)}`,
-      );
-    }
-  }
-
-  for (const actualFile of actualGeneratedFiles) {
-    if (!expectedGeneratedFileSet.has(actualFile)) {
-      errors.push(
-        `stale generated icon component: ${path.join('src/icons/generated', actualFile)}`,
-      );
-    }
-  }
-
-  let actualIndexSource = null;
-  try {
-    actualIndexSource = await readFile(indexPath, 'utf8');
-  } catch (error) {
-    if (error.code !== 'ENOENT') {
-      throw error;
-    }
-
-    errors.push('missing icon index: src/icons/index.ts');
-  }
-
-  if (actualIndexSource != null && actualIndexSource !== createIconIndexSource(svgFiles)) {
-    errors.push('stale icon index: run `pnpm --filter @dongchimi/design-system icons:generate`');
-  }
-
-  return errors;
+  return Promise.all(
+    svgFiles.map(async (svgFile) => ({
+      fileName: path.basename(svgFile),
+      fingerprint: createSvgFingerprint(await readFile(svgFile, 'utf8')),
+    })),
+  );
 };
 
 const { svgFiles, validationErrors } = await validateIconSvgs({ packageRoot, svgRoot });
-const syncErrors = await checkGeneratedIconSync(svgFiles);
+const [svgEntries, generatedFiles, indexSource, manifestSource] = await Promise.all([
+  collectSvgEntries(),
+  collectGeneratedIconFiles(),
+  readFileOrNull(indexPath),
+  readFileOrNull(manifestPath),
+]);
+
+const syncErrors = diffIconSync({ svgEntries, generatedFiles, indexSource, manifestSource });
 const errors = [...validationErrors, ...syncErrors];
 
 if (errors.length > 0) {
