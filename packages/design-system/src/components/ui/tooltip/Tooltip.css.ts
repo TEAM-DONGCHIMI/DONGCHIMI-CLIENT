@@ -22,7 +22,7 @@ export const tooltipBubble = style({
 });
 
 export const tooltipLabel = style({
-  ...typography['body-3-medium'],
+  ...typography['caption-1-medium'],
   minWidth: 0,
   maxWidth: 256,
   color: atomic.common[0],

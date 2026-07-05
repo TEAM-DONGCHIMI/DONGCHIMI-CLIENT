@@ -71,7 +71,7 @@ Tooltip (div, role="tooltip")
 - layout: `flex` column, `align-items: stretch`, 화살표는 가로 중앙 정렬.
 - surface: 배경 `atomic.neutral[70]`, radius `8px`, `overflow: clip`, `backdrop-filter: blur(32px)`.
 - spacing: 버블 padding `0.8rem 1.2rem`(8px 12px), `min-width 164px`.
-- text: `typography['body-3-medium']`, 색상 `atomic.common[0]`(white), `word-break: break-word`, `max-width 256px`.
+- text: `typography['caption-1-medium']`, 색상 `atomic.common[0]`(white), `word-break: break-word`, `max-width 256px`.
 - arrow: `20×8`, 버블과 동일 색(`atomic.neutral[70]`), `space=bottom`은 `rotate(180deg)`.
 - token usage: 색상은 `atomic`, 텍스트는 `typography` token을 사용합니다. (신규 token 추가 없음)
 
