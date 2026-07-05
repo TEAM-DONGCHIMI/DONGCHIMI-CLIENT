@@ -57,6 +57,8 @@ export type {
 } from './components/ui/tabs';
 export { Toast } from './components/ui/toast';
 export type { ToastProps } from './components/ui/toast';
+export { InlineField } from './components/ui/inline-field';
+export type { InlineFieldProps } from './components/ui/inline-field';
 export { TextButton } from './components/ui/text-button';
 export type { TextButtonProps } from './components/ui/text-button';
 export { LineButton } from './components/ui/line-button';
