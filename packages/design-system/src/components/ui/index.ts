@@ -20,6 +20,18 @@ export { NumButton } from './num-button';
 export type { NumButtonProps } from './num-button';
 export { ListButton } from './list-button';
 export type { ListButtonProps } from './list-button';
+export { Dropdown } from './dropdown';
+export type { DropdownItemProps, DropdownProps } from './dropdown';
+export { TextButton } from './text-button';
+export type { TextButtonProps } from './text-button';
+export { LineButton } from './line-button';
+export type { LineButtonProps } from './line-button';
+export { Chip } from './chip';
+export type { ChipProps } from './chip';
+export { StatusChip } from './chip';
+export type { StatusChipProps } from './chip';
+export { PointChip } from './chip';
+export type { PointChipProps } from './chip';
 export { Navigation } from './navigation';
 export type { NavigationProps } from './navigation';
 export { PillButton } from './pill-button';
@@ -33,3 +45,5 @@ export type {
   ListCellProps,
   ListCellStatusToneTypes,
 } from './list-cell';
+export { InlineField } from './inline-field';
+export type { InlineFieldProps } from './inline-field';
