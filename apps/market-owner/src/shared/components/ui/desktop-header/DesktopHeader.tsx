@@ -49,8 +49,14 @@ const renderSearchBar = ({
   />
 );
 
-export const DesktopHeader = (props: DesktopHeaderProps) => {
-  const { className, searchValue, showSearchBar = true, onSearch, onSearchValueChange } = props;
+export const DesktopHeader = ({
+  className,
+  searchValue,
+  showSearchBar = true,
+  onSearch,
+  onSearchValueChange,
+  ...props
+}: DesktopHeaderProps) => {
   const hasLogo = props.variant !== 'onlyHome' && props.logo != null;
 
   if (hasLogo) {
@@ -68,11 +74,11 @@ export const DesktopHeader = (props: DesktopHeaderProps) => {
           </span>
         </Flex>
 
-        {showSearchBar ? (
+        {showSearchBar && (
           <span className={S.logoSearchSlotClassName}>
             {renderSearchBar({ searchValue, onSearch, onSearchValueChange })}
           </span>
-        ) : null}
+        )}
       </Flex>
     );
   }
@@ -93,7 +99,7 @@ export const DesktopHeader = (props: DesktopHeaderProps) => {
         </Flex>
       )}
 
-      {showSearchBar ? renderSearchBar({ searchValue, onSearch, onSearchValueChange }) : null}
+      {showSearchBar && renderSearchBar({ searchValue, onSearch, onSearchValueChange })}
     </Flex>
   );
 };
