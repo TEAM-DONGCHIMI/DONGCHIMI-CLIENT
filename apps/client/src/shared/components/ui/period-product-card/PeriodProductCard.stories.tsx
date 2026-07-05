@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { fn } from 'storybook/test';
-
 import { PeriodProductCard } from './PeriodProductCard';
 
 const defaultProductImage =
@@ -24,6 +22,9 @@ const meta = {
   argTypes: {
     className: {
       control: false,
+    },
+    href: {
+      control: 'text',
     },
     imageAlt: {
       control: 'text',
@@ -72,9 +73,8 @@ export const SquareImage: StoryTypes = {
   },
 };
 
-export const Selectable: StoryTypes = {
+export const ProductLink: StoryTypes = {
   args: {
-    'aria-label': `${defaultProductName} 상품 선택`,
-    onClick: fn(),
+    href: '/markets/sample-market/products/samgyeopsal-500g',
   },
 };

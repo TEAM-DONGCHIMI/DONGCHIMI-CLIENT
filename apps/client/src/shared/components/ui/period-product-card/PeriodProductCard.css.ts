@@ -21,6 +21,7 @@ export const interactiveRootClassName = style({
   backgroundColor: 'transparent',
   cursor: 'pointer',
   textAlign: 'left',
+  textDecoration: 'none',
   selectors: {
     '&:focus-visible': {
       borderRadius: 12,
