@@ -9,7 +9,7 @@ export const martSummaryCardClassName = style({
   flexDirection: 'column',
   gap: '1.2rem',
   overflow: 'hidden',
-  paddingLeft: '2rem',
+  paddingInline: '2rem',
 });
 
 export const headerClassName = style({
@@ -87,6 +87,7 @@ export const actionButtonClassName = style({
 });
 
 export const productScrollerClassName = style({
+  marginRight: '-2rem',
   display: 'flex',
   gap: '0.6rem',
   overflowX: 'auto',

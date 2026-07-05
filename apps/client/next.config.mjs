@@ -22,6 +22,11 @@ const nextConfig = {
           }
         : undefined,
     });
+    config.module.rules.push({
+      test: /\.svg$/i,
+      type: 'asset/resource',
+      issuer: /\.css\.ts$/,
+    });
 
     return config;
   },
