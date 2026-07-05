@@ -106,6 +106,28 @@ const getFieldAriaLabel = ({
   return ariaLabel ?? String(getFieldText({ defaultValue, placeholder, value }) ?? id);
 };
 
+const getMediaFrameStatus = (
+  hasMedia: boolean,
+  mediaStatus: ListCellMediaStatusTypes,
+): ListCellMediaStatusTypes => {
+  if (hasMedia) {
+    return 'default';
+  }
+
+  return mediaStatus;
+};
+
+const getInlineFieldStateProps = (
+  isReadOnly: boolean,
+  status: NonNullable<ListCellFieldProps['status']>,
+) => {
+  if (isReadOnly) {
+    return { readOnly: true as const };
+  }
+
+  return { readOnly: false as const, status };
+};
+
 export const ListCell = forwardRef<HTMLDivElement, ListCellProps>(
   (
     {
@@ -132,6 +154,7 @@ export const ListCell = forwardRef<HTMLDivElement, ListCellProps>(
   ) => {
     const hasMedia = hasContent(media);
     const hasMediaAction = hasContent(mediaActionLabel) || hasContent(mediaActionIcon);
+    const mediaFrameStatus = getMediaFrameStatus(hasMedia, mediaStatus);
     const mediaActionContent = (
       <>
         {hasContent(mediaActionIcon) && (
@@ -144,6 +167,32 @@ export const ListCell = forwardRef<HTMLDivElement, ListCellProps>(
         )}
       </>
     );
+
+    const renderMediaSlot = () => {
+      // Preview가 우선이고, preview가 없을 때만 업로드 action 또는 passive placeholder를 선택한다.
+      if (hasMedia) {
+        return <div className={S.mediaContentClassName}>{media}</div>;
+      }
+
+      if (onMediaAction != null) {
+        return (
+          <button
+            aria-label={mediaActionAriaLabel}
+            className={cn(S.mediaActionClassName, S.mediaActionButtonClassName)}
+            onClick={onMediaAction}
+            type='button'
+          >
+            {mediaActionContent}
+          </button>
+        );
+      }
+
+      return (
+        <div className={S.mediaActionClassName} role={hasMediaAction ? undefined : 'presentation'}>
+          {mediaActionContent}
+        </div>
+      );
+    };
 
     return (
       <div ref={ref} className={cn(S.rootClassName, className)} {...props}>
@@ -159,26 +208,8 @@ export const ListCell = forwardRef<HTMLDivElement, ListCellProps>(
               type='checkbox'
             />
 
-            <div className={S.mediaFrameClassName({ status: hasMedia ? 'default' : mediaStatus })}>
-              {hasMedia ? (
-                <div className={S.mediaContentClassName}>{media}</div>
-              ) : onMediaAction != null ? (
-                <button
-                  aria-label={mediaActionAriaLabel}
-                  className={cn(S.mediaActionClassName, S.mediaActionButtonClassName)}
-                  onClick={onMediaAction}
-                  type='button'
-                >
-                  {mediaActionContent}
-                </button>
-              ) : (
-                <div
-                  className={S.mediaActionClassName}
-                  role={hasMediaAction ? undefined : 'presentation'}
-                >
-                  {mediaActionContent}
-                </div>
-              )}
+            <div className={S.mediaFrameClassName({ status: mediaFrameStatus })}>
+              {renderMediaSlot()}
             </div>
           </div>
 
@@ -212,6 +243,7 @@ export const ListCell = forwardRef<HTMLDivElement, ListCellProps>(
                 const fieldText = getFieldText({ defaultValue, placeholder, value });
                 const hasValue = hasContent(value) || hasContent(defaultValue);
 
+                // onClick field는 category trigger처럼 input이 아닌 action semantics가 필요한 경우다.
                 if (onClick != null) {
                   return (
                     <button
@@ -239,10 +271,9 @@ export const ListCell = forwardRef<HTMLDivElement, ListCellProps>(
                   );
                 }
 
+                // value만 있는 field는 display row로 쓰이므로 noop onChange 없이 readOnly로 고정한다.
                 const isReadOnly = readOnly ?? (value !== undefined && onChange == null);
-                const inlineFieldStateProps = isReadOnly
-                  ? { readOnly: true as const }
-                  : { readOnly: false as const, status };
+                const inlineFieldStateProps = getInlineFieldStateProps(isReadOnly, status);
 
                 return (
                   <div className={S.inlineFieldWrapperClassName} key={id} style={fieldStyle}>
