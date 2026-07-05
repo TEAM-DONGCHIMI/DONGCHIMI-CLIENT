@@ -6,5 +6,10 @@ export { DesktopHeader } from './desktop-header';
 export type { DesktopHeaderProps } from './desktop-header';
 export { DesktopUploadHeader } from './desktop-upload-header';
 export type { DesktopUploadHeaderProps, UploadSegmentTypes } from './desktop-upload-header';
+export { ProductEditCardDesktop } from './product-edit-card-desktop';
+export type {
+  ProductEditCardDesktopProps,
+  ProductEditCardDesktopSelectionStateTypes,
+} from './product-edit-card-desktop';
 export { PaginationFooter } from './pagination-footer';
 export type { PaginationFooterProps } from './pagination-footer';

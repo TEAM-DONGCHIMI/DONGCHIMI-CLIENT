@@ -31,6 +31,8 @@ export { GridItem } from './layout/grid-item';
 export type { GridItemProps } from './layout/grid-item';
 export { List } from './layout/list';
 export type { ListItemProps, ListProps } from './layout/list';
+export { Dropdown } from './ui/dropdown';
+export type { DropdownItemProps, DropdownProps } from './ui/dropdown';
 export { Chip } from './ui/chip';
 export type { ChipProps } from './ui/chip';
 export { StatusChip } from './ui/chip';
@@ -64,6 +66,8 @@ export type {
   DialogTitleProps,
   DialogTriggerProps,
 } from './ui/dialog';
+export { InlineField } from './ui/inline-field';
+export type { InlineFieldProps } from './ui/inline-field';
 export { TextButton } from './ui/text-button';
 export type { TextButtonProps } from './ui/text-button';
 export { LineButton } from './ui/line-button';
