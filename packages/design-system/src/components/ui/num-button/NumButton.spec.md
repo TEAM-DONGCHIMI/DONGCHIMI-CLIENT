@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`NumButton`은 숫자 값을 선택하거나 이동할 때 사용하는 30px 정사각형 버튼 primitive입니다.
+`NumButton`은 숫자 값을 선택하거나 이동할 때 사용하는 3rem 정사각형 버튼 primitive입니다.
 디자인시스템 안에서는 native button 동작, default/hover/selected 상태, focus-visible 상태, 접근 가능한 선택 상태 표현만 책임집니다.
 
 ## Usage Location
@@ -70,9 +70,9 @@ NumButton
 
 ## Styling
 
-- layout: `inline-flex`, center alignment, fixed 30px width/height
-- spacing: vertical 4px, horizontal 10px padding
-- shape: 6px radius
+- layout: `inline-flex`, center alignment, fixed 3rem width/height
+- spacing: vertical 0.4rem, horizontal 1rem padding
+- shape: 0.6rem radius
 - responsive: 숫자 버튼 자체는 고정 크기이며 부모 layout이 배치를 책임집니다.
 - hover/focus: hover는 neutral 20, selected는 neutral 30, focus-visible outline을 사용합니다.
 - token usage: 색상은 `atomic.neutral`, focus outline은 `semantic.primary`를 사용합니다. typography는 `body-2-regular` token을 사용합니다.

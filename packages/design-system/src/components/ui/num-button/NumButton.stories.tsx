@@ -4,7 +4,7 @@ import { NumButton } from './NumButton';
 
 const stateMatrixStyle = {
   display: 'flex',
-  gap: 12,
+  gap: '1.2rem',
 } as const;
 
 const meta = {
