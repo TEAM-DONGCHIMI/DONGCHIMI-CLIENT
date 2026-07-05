@@ -21,13 +21,12 @@
 - [x] 진단보기 액션은 디자인시스템 `Button`을 사용합니다.
 - [x] 할인 개수 chip은 디자인시스템 `Chip`을 사용합니다.
 - [x] 상품은 `MarketCard`를 조합하며 사용부가 넘긴 목록을 가로 스크롤로 노출합니다.
-- [x] `timeText`, 구분점, `areaName` 사이 간격은 `0.2rem`, 위치 정보 그룹과 할인 chip 사이는 `0.6rem`으로 분리합니다.
+- [x] 지역명과 할인 chip 사이는 `0.6rem`으로 분리합니다.
 - [x] 디자인시스템 `Button`의 mobile size를 사용하되 카드 안에서는 `7.1rem x 3.8rem`으로 오버라이드합니다.
 
 ## Props
 
 - `martName: string`: 마트 이름입니다.
-- `timeText: string`: 소요 시간 텍스트입니다.
 - `areaName: string`: 지역명입니다.
 - `discountCount: number`: 할인 chip에 표시할 할인 개수입니다.
 - `profileImageSrc: string`: 마트 프로필 이미지 경로입니다.
@@ -39,7 +38,7 @@
 
 ## States
 
-- default: 마트 프로필, 마트명, 시간/지역, `Chip`으로 만든 할인 개수 chip, 액션 버튼, 상품 목록을 표시합니다.
+- default: 마트 프로필, 마트명, 지역명, `Chip`으로 만든 할인 개수 chip, 액션 버튼, 상품 목록을 표시합니다.
 - empty products: 상품 목록이 비어 있으면 상품 영역이 비어 보입니다. empty 안내는 상위 영역에서 결정합니다.
 - disabled: 액션 버튼 비활성 상태는 필요해지면 상위에서 button contract 확장 후 처리합니다.
 - loading: 상위 카드 또는 화면에서 skeleton으로 처리합니다.
@@ -53,7 +52,7 @@
 - `NoProducts`: 상품 목록이 비어 있을 때 컴포넌트가 별도 empty copy를 만들지 않는다는 점을 확인합니다.
 - `CustomActionLabel`: 액션 버튼 문구와 클릭 핸들러가 props로 주입되는 상태를 확인합니다.
 
-Storybook의 상품 mock과 페이지 preview용 mock은 컴포넌트 검증 목적으로만 사용하며, 실제 서비스 데이터나 GitHub 반영 범위로 보지 않습니다.
+Storybook의 상품 mock은 컴포넌트 검증 목적으로만 사용하며, 실제 서비스 데이터나 GitHub 반영 범위로 보지 않습니다.
 
 ## Accessibility
 
@@ -67,4 +66,4 @@ Storybook의 상품 mock과 페이지 preview용 mock은 컴포넌트 검증 목
 - [x] `pnpm format:check -- apps/client/src/shared/components/ui/mart-summary-card`
 - [x] `pnpm --filter client lint`
 - [x] `pnpm --filter client typecheck`
-- [x] Storybook mock과 페이지 preview mock으로 `MartSummaryCard`의 기본/긴 텍스트/빈 상품 상태를 확인했습니다. page/fixture 변경은 검증용이며 GitHub 반영 범위에서 제외합니다.
+- [x] Storybook mock으로 `MartSummaryCard`의 기본/긴 텍스트/빈 상품 상태를 확인했습니다.

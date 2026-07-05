@@ -52,9 +52,6 @@ const meta = {
     profileImageSrc: {
       control: 'text',
     },
-    timeText: {
-      control: 'text',
-    },
   },
   args: {
     areaName: '망원동',
@@ -64,7 +61,6 @@ const meta = {
     products: sampleProducts,
     profileImageAlt: '망원 신선마트',
     profileImageSrc: '/exampleImg.png',
-    timeText: '도보 5분',
   },
 } satisfies Meta<typeof MartSummaryCard>;
 
@@ -86,12 +82,6 @@ export const LongText: StoryTypes = {
           }
         : product,
     ),
-  },
-};
-
-export const NoProducts: StoryTypes = {
-  args: {
-    products: [],
   },
 };
 

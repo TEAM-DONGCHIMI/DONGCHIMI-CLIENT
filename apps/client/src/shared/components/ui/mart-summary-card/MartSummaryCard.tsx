@@ -23,7 +23,6 @@ export interface MartSummaryCardProps extends NativeMartSummaryCardProps {
   profileImageAlt: string;
   profileImageSrc: string;
   products: MartSummaryProductTypes[];
-  timeText: string;
 }
 
 export const MartSummaryCard = forwardRef<HTMLElement, MartSummaryCardProps>(
@@ -38,7 +37,6 @@ export const MartSummaryCard = forwardRef<HTMLElement, MartSummaryCardProps>(
       products,
       profileImageAlt,
       profileImageSrc,
-      timeText,
       ...props
     },
     ref,
@@ -59,11 +57,7 @@ export const MartSummaryCard = forwardRef<HTMLElement, MartSummaryCardProps>(
             <div className={S.titleGroupClassName}>
               <h2 className={S.martNameClassName}>{martName}</h2>
               <div className={S.metaRowClassName}>
-                <span className={S.locationMetaClassName}>
-                  <span>{timeText}</span>
-                  <span aria-hidden='true'>·</span>
-                  <span>{areaName}</span>
-                </span>
+                <span className={S.locationMetaClassName}>{areaName}</span>
                 <Chip color='primary' variant='soft' size='mobile'>
                   할인 {discountCount}개
                 </Chip>
