@@ -38,6 +38,8 @@ export { PillButton } from './pill-button';
 export type { PillButtonProps } from './pill-button';
 export { AddableField } from './addable-field';
 export type { AddableFieldProps } from './addable-field';
+export { Tooltip } from './tooltip';
+export type { TooltipProps } from './tooltip';
 export { Dialog } from './dialog';
 export type {
   DialogCloseProps,

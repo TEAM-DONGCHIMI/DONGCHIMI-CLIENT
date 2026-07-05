@@ -57,6 +57,8 @@ export type {
 } from './ui/tabs';
 export { Toast } from './ui/toast';
 export type { ToastProps } from './ui/toast';
+export { Tooltip } from './ui/tooltip';
+export type { TooltipProps } from './ui/tooltip';
 export { Dialog } from './ui/dialog';
 export type {
   DialogCloseProps,
