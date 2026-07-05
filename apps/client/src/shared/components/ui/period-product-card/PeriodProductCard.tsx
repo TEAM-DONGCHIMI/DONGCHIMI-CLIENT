@@ -14,11 +14,11 @@ export interface PeriodProductCardProps extends AriaAttributes {
   productName: string;
 }
 
-const PRODUCT_LINK_SUFFIX = '상품 보기';
+const PRODUCT_SELECT_SUFFIX = '상품 선택';
 const PRODUCT_IMAGE_SUFFIX = '상품 이미지';
 const PRODUCT_PRICE_UNIT = '원';
 
-const getProductCardLabel = (productName: string) => `${productName} ${PRODUCT_LINK_SUFFIX}`;
+const getProductCardLabel = (productName: string) => `${productName} ${PRODUCT_SELECT_SUFFIX}`;
 
 export const PeriodProductCard = ({
   'aria-label': ariaLabel,

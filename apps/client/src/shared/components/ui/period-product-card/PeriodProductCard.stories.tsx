@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
+import { fn } from 'storybook/test';
+
 import { PeriodProductCard } from './PeriodProductCard';
 
 const defaultProductImage =
@@ -67,5 +69,12 @@ export const LongImage: StoryTypes = {
 export const SquareImage: StoryTypes = {
   args: {
     imageSrc: squareProductImage,
+  },
+};
+
+export const Selectable: StoryTypes = {
+  args: {
+    'aria-label': `${defaultProductName} 상품 선택`,
+    onClick: fn(),
   },
 };

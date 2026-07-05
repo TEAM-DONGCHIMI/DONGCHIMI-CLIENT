@@ -56,7 +56,7 @@
 ## Accessibility
 
 - 클릭 가능 상태는 native `button`으로 렌더링합니다.
-- `aria-label`이 없으면 `${productName} 상품 보기`를 버튼의 accessible name으로 사용합니다.
+- `aria-label`이 없으면 `${productName} 상품 선택`을 버튼의 accessible name으로 사용합니다.
 - 이미지 alt가 없으면 `${productName} 상품 이미지`를 사용합니다.
 - 클릭 불가 상태는 정적 `div`로 렌더링하며 keyboard/focus 동작을 제공하지 않습니다.
 
