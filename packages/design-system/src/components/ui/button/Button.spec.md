@@ -21,7 +21,7 @@
 - [x] 필요한 접근성 동작을 보장합니다.
 - [x] 사용 가능한 token 또는 CSS variable을 우선 사용합니다.
 - [x] Figma APPJAM node 212:805, 262:7669, 177:6021의 일반 Button과 Variant-ICN 사례, node 276:23036의 mobile Button을 기준으로 합니다.
-- [x] xsmall은 APPJAM node 969:23005 주변의 추가 Button instance를 기준으로 합니다.
+- [x] xsmall은 APPJAM node 969:23005 주변의 추가 Button instance와 node 1258:15240의 negative strong Button instance를 기준으로 합니다.
 - [x] Figma에 정의된 버튼 조합에 좌우 아이콘만 optional로 붙는 구조를 사용합니다.
 
 ## UI Structure
@@ -105,12 +105,13 @@ Button
 - `soft / primary`
 - `solid / primary / disabled`
 - `solid / assistive`
+- `solid / negative`
 
 `Variant-ICN`은 별도 색상/variant가 아니라, 각 button preset에 `leftIcon`과 `rightIcon` 슬롯이 optional로 붙은 상태입니다.
 `disabled`는 Figma preset으로 표시되지만 public variant 값이 아니라 native 상태입니다.
 public type은 현재 스타일이 정의된 preset 조합만 허용합니다.
 `mobile`은 기존 모바일 확인용 size 값이며, 현재 정의된 `solid / primary` 조합만 허용합니다. 좌우 아이콘 슬롯은 desktop과 동일하게 지원합니다.
-`xsmall` 추가분은 현재 Figma와 HomePage 확인 표면에서 `solid / primary`, `outlined / negative`, `soft / primary` 조합을 우선 확인합니다.
+`xsmall` 추가분은 현재 Figma와 HomePage 확인 표면에서 `solid / primary`, `solid / negative`, `outlined / negative`, `soft / primary` 조합을 우선 확인합니다.
 
 ### xsmall Preset
 
@@ -120,6 +121,13 @@ public type은 현재 스타일이 정의된 preset 조합만 허용합니다.
 - content gap: `4px`
 - radius: `8px`
 - supported icon composition: default, left icon, right icon, both icon
+
+### Negative Strong Preset
+
+- Figma APPJAM node: `1258:15240`
+- public API: `color="negative"`, `variant="solid"`
+- background / border: `semantic.status.negativeLight` (`#FF6362`)
+- text: `atomic.common[0]` (`#FFFFFF`)
 
 ## Styling
 
