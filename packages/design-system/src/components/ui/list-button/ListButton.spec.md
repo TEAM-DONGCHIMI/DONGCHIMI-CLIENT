@@ -63,7 +63,7 @@ ListButton
 ```ts
 type ListButtonLeadingProps =
   | { checkbox?: false; leftIcon?: ReactNode }
-  | { checkbox: true; leftIcon?: never };
+  | { checkbox: boolean; leftIcon?: never };
 ```
 
 ### selected
