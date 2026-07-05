@@ -1,4 +1,4 @@
-import { forwardRef, type ComponentPropsWithoutRef } from 'react';
+import { forwardRef, useId, type ComponentPropsWithoutRef } from 'react';
 
 import { cn } from '../../../styles/class-name';
 import * as S from './InlineField.css';
@@ -53,6 +53,7 @@ export const InlineField = forwardRef<HTMLInputElement, InlineFieldProps>(
     {
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
+      'aria-describedby': ariaDescribedBy,
       className,
       readOnly = false,
       size = 'medium',
@@ -64,6 +65,9 @@ export const InlineField = forwardRef<HTMLInputElement, InlineFieldProps>(
     ref,
   ) => {
     const visualState = readOnly ? 'readOnly' : status;
+    const unitId = useId();
+    const inputDescribedBy =
+      [ariaDescribedBy, unit ? unitId : undefined].filter(Boolean).join(' ') || undefined;
 
     return (
       <div className={cn(S.root({ size, status: visualState }), className)}>
@@ -73,11 +77,16 @@ export const InlineField = forwardRef<HTMLInputElement, InlineFieldProps>(
           aria-invalid={visualState === 'error' ? true : undefined}
           aria-label={ariaLabel}
           aria-labelledby={ariaLabelledBy}
+          aria-describedby={inputDescribedBy}
           className={S.input({ readOnly, size })}
           readOnly={readOnly}
           type={type}
         />
-        {unit && <span className={S.unit({ readOnly, size })}>{unit}</span>}
+        {unit && (
+          <span id={unitId} className={S.unit({ readOnly, size })}>
+            {unit}
+          </span>
+        )}
       </div>
     );
   },
