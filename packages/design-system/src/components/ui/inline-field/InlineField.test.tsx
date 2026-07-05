@@ -8,8 +8,24 @@ describe('InlineField', () => {
   it('renders a native input with an accessible name and unit', () => {
     render(<InlineField aria-label='Price' defaultValue='10000' unit='KRW' />);
 
-    expect(screen.getByRole('textbox', { name: 'Price' })).toHaveValue('10000');
+    const input = screen.getByRole('textbox', { name: 'Price' });
+
+    expect(input).toHaveValue('10000');
+    expect(input).toHaveAccessibleDescription('KRW');
     expect(screen.getByText('KRW')).toBeInTheDocument();
+  });
+
+  it('preserves existing aria-describedby when connecting the unit text', () => {
+    render(
+      <>
+        <span id='price-helper'>Enter the sale price</span>
+        <InlineField aria-describedby='price-helper' aria-label='Price' unit='KRW' />
+      </>,
+    );
+
+    expect(screen.getByRole('textbox', { name: 'Price' })).toHaveAccessibleDescription(
+      'Enter the sale price KRW',
+    );
   });
 
   it('marks only the error state as invalid', () => {
