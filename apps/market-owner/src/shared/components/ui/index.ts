@@ -11,3 +11,5 @@ export type {
   ProductEditCardDesktopProps,
   ProductEditCardDesktopSelectionStateTypes,
 } from './product-edit-card-desktop';
+export { PaginationFooter } from './pagination-footer';
+export type { PaginationFooterProps } from './pagination-footer';
