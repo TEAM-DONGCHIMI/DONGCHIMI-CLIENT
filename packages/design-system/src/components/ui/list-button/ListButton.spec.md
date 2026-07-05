@@ -148,10 +148,10 @@ type ListButtonLeadingProps =
 - [x] Left icon
 - [x] Left icon hidden when not selected
 - [x] Left icon controlled toggle example
-- [ ] Checkbox unchecked
-- [ ] Checkbox checked
-- [ ] Checkbox multi-select 예시
-- [ ] Dropdown checkbox multi-select story 추가
+- [x] Checkbox unchecked
+- [x] Checkbox checked
+- [x] Checkbox multi-select 예시
+- [x] Dropdown checkbox multi-select story 추가
 - [ ] Disabled when supported: 별도 시각 상태 미지원
 - [ ] Loading when supported
 - [ ] Invalid/Error when supported
