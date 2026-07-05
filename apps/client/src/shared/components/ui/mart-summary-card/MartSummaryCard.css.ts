@@ -94,6 +94,7 @@ export const productScrollerClassName = style({
   overflowY: 'hidden',
   scrollSnapType: 'x proximity',
   scrollbarWidth: 'none',
+  cursor: 'pointer',
   selectors: {
     '&::-webkit-scrollbar': {
       display: 'none',
