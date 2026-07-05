@@ -83,6 +83,43 @@ export const ToggleWithLeftIcon: StoryTypes = {
   },
 };
 
+export const CheckboxUnchecked: StoryTypes = {
+  render: () => <ListButton checkbox>카테고리 1</ListButton>,
+};
+
+export const CheckboxChecked: StoryTypes = {
+  render: () => (
+    <ListButton checkbox selected>
+      전체
+    </ListButton>
+  ),
+};
+
+export const CheckboxMultiSelect: StoryTypes = {
+  render: () => {
+    const [checked, setChecked] = useState<string[]>(['전체']);
+    const toggle = (item: string) =>
+      setChecked((prev) =>
+        prev.includes(item) ? prev.filter((value) => value !== item) : [...prev, item],
+      );
+
+    return (
+      <div style={stateMatrixStyle}>
+        {['전체', '카테고리 1', '카테고리 2', '카테고리 3'].map((item) => (
+          <ListButton
+            key={item}
+            checkbox
+            selected={checked.includes(item)}
+            onClick={() => toggle(item)}
+          >
+            {item}
+          </ListButton>
+        ))}
+      </div>
+    );
+  },
+};
+
 export const StateMatrix: StoryTypes = {
   render: () => {
     const [selectedCategory, setSelectedCategory] = useState('전체');

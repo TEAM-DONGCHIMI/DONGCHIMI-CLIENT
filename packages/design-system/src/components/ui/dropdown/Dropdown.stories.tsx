@@ -43,6 +43,19 @@ export const Category: StoryTypes = {
   ),
 };
 
+export const Checkbox: StoryTypes = {
+  render: () => (
+    <Dropdown role='group' aria-label='카테고리 필터'>
+      <Dropdown.Item checkbox selected>
+        전체
+      </Dropdown.Item>
+      <Dropdown.Item checkbox>카테고리 1</Dropdown.Item>
+      <Dropdown.Item checkbox>카테고리 2</Dropdown.Item>
+      <Dropdown.Item checkbox>카테고리 3</Dropdown.Item>
+    </Dropdown>
+  ),
+};
+
 export const LongText: StoryTypes = {
   render: () => (
     <Dropdown>
