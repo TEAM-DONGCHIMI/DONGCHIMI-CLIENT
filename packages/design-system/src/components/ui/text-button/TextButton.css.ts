@@ -3,44 +3,40 @@ import { atomic, semantic, typography } from '../../../tokens';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
-export const numButton = recipe({
+export const textButton = recipe({
   base: {
     ...typography['body-2-regular'],
     appearance: 'none',
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '3rem',
     height: '3rem',
     padding: '0.4rem 1rem',
-    borderRadius: '0.6rem',
+    borderWidth: 0,
+    backgroundColor: 'transparent',
     color: atomic.neutral[90],
     whiteSpace: 'nowrap',
-    transition: 'background-color 160ms ease, color 160ms ease, outline-color 160ms ease',
+    transition: 'color 160ms ease, outline-color 160ms ease',
     selectors: {
-      '&:hover': {
-        backgroundColor: atomic.neutral[20],
-      },
       '&:focus-visible': {
         outline: `3px solid ${focusOutlineColor}`,
         outlineOffset: 2,
       },
+      '&:disabled': {
+        color: atomic.neutral[30],
+        cursor: 'not-allowed',
+      },
     },
   },
   variants: {
-    selected: {
-      false: {},
-      true: {
-        backgroundColor: atomic.neutral[30],
-        selectors: {
-          '&:hover': {
-            backgroundColor: atomic.neutral[30],
-          },
-        },
+    tone: {
+      default: {},
+      negative: {
+        color: semantic.status.negative,
       },
     },
   },
   defaultVariants: {
-    selected: false,
+    tone: 'default',
   },
 });
