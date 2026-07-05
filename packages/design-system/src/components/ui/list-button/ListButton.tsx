@@ -47,10 +47,10 @@ const CheckboxCheckIcon = () => (
   </svg>
 );
 
-const ListButtonCheckbox = ({ checked }: { checked: boolean }) => {
+const ListButtonCheckbox = ({ checked, disabled }: { checked: boolean; disabled: boolean }) => {
   return (
     <span aria-hidden='true' className={listButtonIcon}>
-      <span className={listButtonCheckbox({ checked })}>
+      <span className={listButtonCheckbox({ checked, disabled })}>
         {checked ? <CheckboxCheckIcon /> : null}
       </span>
     </span>
@@ -64,6 +64,7 @@ export const ListButton = forwardRef<HTMLButtonElement, ListButtonProps>(
       children,
       className,
       color = 'assistive',
+      disabled = false,
       leftIcon,
       selected = false,
       type = 'button',
@@ -81,12 +82,13 @@ export const ListButton = forwardRef<HTMLButtonElement, ListButtonProps>(
       <button
         ref={ref}
         className={cn(listButton({ color, hasLeadingVisual, selected }), className)}
+        disabled={disabled}
         {...props}
         {...ariaProps}
         type={type}
       >
         {checkbox ? (
-          <ListButtonCheckbox checked={selected} />
+          <ListButtonCheckbox checked={selected} disabled={disabled} />
         ) : hasLeftIcon ? (
           <span aria-hidden='true' className={listButtonIcon}>
             {selected ? leftIcon : null}

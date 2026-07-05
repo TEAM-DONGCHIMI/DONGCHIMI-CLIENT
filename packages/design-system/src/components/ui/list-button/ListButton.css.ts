@@ -30,8 +30,11 @@ export const listButton = recipe({
         borderRadius: 8,
         pointerEvents: 'none',
       },
-      '&:hover::before': {
+      '&:not(:disabled):hover::before': {
         backgroundColor: atomic.neutral[10],
+      },
+      '&:disabled': {
+        cursor: 'not-allowed',
       },
       '&:focus-visible': {
         outline: `3px solid ${focusOutlineColor}`,
@@ -139,9 +142,29 @@ export const listButtonCheckbox = recipe({
         color: atomic.common[0],
       },
     },
+    disabled: {
+      false: {},
+      true: {},
+    },
   },
+  compoundVariants: [
+    {
+      variants: { checked: false, disabled: true },
+      style: {
+        borderColor: atomic.neutral[40],
+      },
+    },
+    {
+      variants: { checked: true, disabled: true },
+      style: {
+        backgroundColor: atomic.neutral[40],
+        borderColor: atomic.neutral[40],
+      },
+    },
+  ],
   defaultVariants: {
     checked: false,
+    disabled: false,
   },
 });
 
