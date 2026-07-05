@@ -20,7 +20,7 @@ type ListButtonPublicVariantProps = Omit<ListButtonVariantProps, 'hasLeadingVisu
 
 type ListButtonLeadingProps =
   | { checkbox?: false; leftIcon?: ReactNode }
-  | { checkbox: true; leftIcon?: never };
+  | { checkbox: boolean; leftIcon?: never };
 
 export type ListButtonProps = NativeButtonProps &
   ListButtonPublicVariantProps &
