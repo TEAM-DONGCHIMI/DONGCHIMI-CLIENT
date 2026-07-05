@@ -27,7 +27,7 @@
     "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
     "test:integration": "vitest run --project integration --passWithNoTests",
-    "test:unit": "vitest run --project unit --passWithNoTests",
+    "test:unit": "vitest run --project unit --project scripts --passWithNoTests",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
@@ -63,6 +63,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "storybook": "^10.4.6",
+    "svgo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

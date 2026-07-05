@@ -3,6 +3,7 @@
 import { spawn } from 'node:child_process';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { createIconIndexSource } from './icon-utils.mjs';
 import { validateIconSvgs } from './validate-icons.mjs';
 
 const packageRoot = process.cwd();
@@ -10,14 +11,6 @@ const iconsRoot = path.join(packageRoot, 'src', 'icons');
 const svgRoot = path.join(iconsRoot, 'svg');
 const generatedRoot = path.join(iconsRoot, 'generated');
 const indexPath = path.join(iconsRoot, 'index.ts');
-
-const toComponentName = (svgFile) => {
-  return path
-    .basename(svgFile, '.svg')
-    .split('-')
-    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
-    .join('');
-};
 
 const cleanGeneratedFiles = async () => {
   await mkdir(generatedRoot, { recursive: true });
@@ -116,19 +109,7 @@ const normalizeGeneratedIconImports = async () => {
 };
 
 const writeIconIndex = async (svgFiles) => {
-  const exports = svgFiles.map((svgFile) => {
-    const componentName = toComponentName(svgFile);
-    return `export { default as ${componentName} } from './generated/${componentName}';`;
-  });
-  const header = [
-    '// This barrel file is auto-generated. Do not edit it manually.',
-    '// Run `pnpm icons:generate` to rebuild icon exports.',
-  ].join('\n');
-
-  const source =
-    exports.length > 0 ? `${header}\n${exports.join('\n')}\n` : `${header}\nexport {};\n`;
-
-  await writeFile(indexPath, source, 'utf8');
+  await writeFile(indexPath, createIconIndexSource(svgFiles), 'utf8');
 };
 
 const { svgFiles, validationErrors } = await validateIconSvgs({ packageRoot, svgRoot });
