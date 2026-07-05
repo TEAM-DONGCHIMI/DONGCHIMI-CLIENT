@@ -100,7 +100,7 @@ type ListButtonLeadingProps =
 - checkbox unchecked: `checkbox=true`, `selected=false`이면 24px 슬롯 안 18px 박스(radius 4)에 1.5px neutral 70 테두리·투명 배경을 표시합니다.
 - checkbox checked: `checkbox=true`, `selected=true`이면 박스를 primary normal 채움+테두리로 표시하고 안에 흰색 체크를 렌더링합니다.
 - checkbox row: `checkbox=true`이면 `selected`여도 row action-box 배경(assistive/primary)을 적용하지 않고 checkbox box만 selected를 표현합니다. hover row 배경(neutral 10)은 유지합니다.
-- disabled: native disabled prop 전달은 가능하지만, 현재 Figma 범위의 시각 상태로는 지원하지 않습니다.
+- disabled: `disabled` 전달 시 hover 배경을 표시하지 않고 `cursor: not-allowed`를 적용합니다. checkbox variant는 박스를 `neutral/40`(미체크 테두리 / 체크 채움)으로 muted 처리해 활성 checkbox와 구분합니다. checkbox 외 variant는 Figma 범위상 native disabled 외 별도 색 상태를 정의하지 않습니다.
 - loading: 지원하지 않습니다.
 - invalid/error: 지원하지 않습니다.
 
@@ -126,6 +126,7 @@ type ListButtonLeadingProps =
 - spacing: padding 0, centered label. leading visual(leftIcon/checkbox)이 있으면 start alignment, 24px slot, 4px gap을 사용하고 slot은 selected 여부와 상관없이 유지합니다.
 - shape: 8px radius
 - checkbox: 24px 슬롯 안 18px box(4px radius). unchecked는 1.5px neutral 70 테두리·투명, checked는 primary normal 채움+테두리·흰 체크. box는 항상 표시하며, `checkbox=true`이면 selected여도 row action-box 배경을 넣지 않고 hover row 배경(neutral 10)은 유지합니다.
+- disabled: hover 배경을 표시하지 않고 `cursor: not-allowed`를 적용합니다. checkbox box는 disabled 시 `neutral/40`으로 muted 처리해 활성 checkbox와 구분합니다.
 - responsive: ListButton 자체는 고정 크기이며 부모 layout이 배치를 책임집니다.
 - overflow: 라벨이 고정 폭을 넘으면 ellipsis로 처리합니다.
 - hover: default/icon/checkbox 타입에서 neutral 10 배경을 표시하고, selected 색상은 hover에서도 유지합니다.
@@ -152,7 +153,7 @@ type ListButtonLeadingProps =
 - [x] Checkbox checked
 - [x] Checkbox multi-select 예시
 - [x] Dropdown checkbox multi-select story 추가
-- [ ] Disabled when supported: 별도 시각 상태 미지원
+- [x] Checkbox disabled (box muted + `cursor: not-allowed`·hover 미표시)
 - [ ] Loading when supported
 - [ ] Invalid/Error when supported
 - [x] State differences when supported
