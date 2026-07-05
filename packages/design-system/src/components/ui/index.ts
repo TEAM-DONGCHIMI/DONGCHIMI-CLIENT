@@ -46,5 +46,14 @@ export type {
   ListCellProps,
   ListCellStatusToneTypes,
 } from './list-cell';
+export { Dialog } from './dialog';
+export type {
+  DialogCloseProps,
+  DialogContentProps,
+  DialogDescriptionProps,
+  DialogProps,
+  DialogTitleProps,
+  DialogTriggerProps,
+} from './dialog';
 export { InlineField } from './inline-field';
 export type { InlineFieldProps } from './inline-field';

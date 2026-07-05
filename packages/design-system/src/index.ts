@@ -65,6 +65,15 @@ export type {
   ListCellProps,
   ListCellStatusToneTypes,
 } from './components/ui/list-cell';
+export { Dialog } from './components/ui/dialog';
+export type {
+  DialogCloseProps,
+  DialogContentProps,
+  DialogDescriptionProps,
+  DialogProps,
+  DialogTitleProps,
+  DialogTriggerProps,
+} from './components/ui/dialog';
 export { InlineField } from './components/ui/inline-field';
 export type { InlineFieldProps } from './components/ui/inline-field';
 export { TextButton } from './components/ui/text-button';

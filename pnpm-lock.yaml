@@ -182,6 +182,9 @@ importers:
       next:
         specifier: 'catalog:'
         version: 16.2.9(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@playwright/test@1.61.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      overlay-kit:
+        specifier: 1.9.0
+        version: 1.9.0(react@19.2.7)
       react:
         specifier: 'catalog:'
         version: 19.2.7
@@ -276,6 +279,9 @@ importers:
       ky:
         specifier: 'catalog:'
         version: 2.0.2
+      overlay-kit:
+        specifier: 1.9.0
+        version: 1.9.0(react@19.2.7)
       react:
         specifier: 'catalog:'
         version: 19.2.7
@@ -361,6 +367,9 @@ importers:
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
+      overlay-kit:
+        specifier: 1.9.0
+        version: 1.9.0(react@19.2.7)
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.2.1
@@ -4981,6 +4990,11 @@ packages:
 
   outvariant@1.4.3:
     resolution: {integrity: sha512-+Sl2UErvtsoajRDKCE5/dBz4DIvHXQQnAxtQTF04OJxY0+DyZXSo5P5Bb7XYWOh81syohlYL24hbDwxedPUJCA==}
+
+  overlay-kit@1.9.0:
+    resolution: {integrity: sha512-kwzAOhWEDsrmgJzQKuI0v3xCwyWTSaNe3qI0t+7OTTj05ciRpg3j+NWz8FRPVt7rHBFL/jAjKyQf4xGOHcRXfg==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19
 
   own-keys@1.0.1:
     resolution: {integrity: sha512-qFOyK5PjiWZd+QQIh+1jhdb9LpxTF0qs7Pm8o5QHYZ0M3vKqSqzsZaEB6oWlxZ+q2sJBMI/Ktgd2N5ZwQoRHfg==}
@@ -10767,6 +10781,10 @@ snapshots:
   os-tmpdir@1.0.2: {}
 
   outvariant@1.4.3: {}
+
+  overlay-kit@1.9.0(react@19.2.7):
+    dependencies:
+      react: 19.2.7
 
   own-keys@1.0.1:
     dependencies:
