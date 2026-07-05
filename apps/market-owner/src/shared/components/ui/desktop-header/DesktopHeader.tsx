@@ -6,8 +6,6 @@ import { cn } from '@dongchimi/design-system/styles';
 import { SearchBar, type SearchBarProps } from '../search-bar';
 import * as S from './DesktopHeader.css';
 
-export type DesktopHeaderVariantTypes = 'default' | 'onlyHome';
-
 interface DesktopHeaderSearchProps {
   searchValue?: string;
   onSearch?: SearchBarProps['onSearch'];
