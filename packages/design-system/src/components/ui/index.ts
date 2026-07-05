@@ -20,6 +20,8 @@ export { NumButton } from './num-button';
 export type { NumButtonProps } from './num-button';
 export { ListButton } from './list-button';
 export type { ListButtonProps } from './list-button';
+export { Dropdown } from './dropdown';
+export type { DropdownItemProps, DropdownProps } from './dropdown';
 export { TextButton } from './text-button';
 export type { TextButtonProps } from './text-button';
 export { LineButton } from './line-button';
