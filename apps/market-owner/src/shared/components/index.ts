@@ -11,5 +11,7 @@ export type {
   ProductEditCardDesktopProps,
   ProductEditCardDesktopSelectionStateTypes,
 } from './ui/product-edit-card-desktop';
+export { Sidebar } from './ui/sidebar';
+export type { SidebarItem, SidebarProfile, SidebarProps, SidebarSection } from './ui/sidebar';
 export { PaginationFooter } from './ui/pagination-footer';
 export type { PaginationFooterProps } from './ui/pagination-footer';
