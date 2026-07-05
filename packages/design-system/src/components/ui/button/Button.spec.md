@@ -115,7 +115,7 @@ public type은 현재 스타일이 정의된 preset 조합만 허용합니다.
 
 ### xsmall Preset
 
-- Button instance: `150px x 36px`
+- Button instance: `150px x 33px`
 - label: Pretendard Medium 12px, line-height 140%, letter-spacing -2%
 - icon slot: `16px x 16px`
 - content gap: `4px`
