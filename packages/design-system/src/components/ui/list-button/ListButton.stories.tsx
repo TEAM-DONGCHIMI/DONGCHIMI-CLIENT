@@ -123,6 +123,19 @@ export const CheckboxMultiSelect: StoryTypes = {
   },
 };
 
+export const CheckboxDisabled: StoryTypes = {
+  render: () => (
+    <div style={stateMatrixStyle}>
+      <ListButton checkbox disabled>
+        미체크 비활성
+      </ListButton>
+      <ListButton checkbox selected disabled>
+        체크 비활성
+      </ListButton>
+    </div>
+  ),
+};
+
 export const StateMatrix: StoryTypes = {
   render: () => {
     const [selectedCategory, setSelectedCategory] = useState('전체');

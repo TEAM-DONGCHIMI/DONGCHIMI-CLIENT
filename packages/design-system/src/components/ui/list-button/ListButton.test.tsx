@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { render, screen } from '../../../test';
+import { fireEvent, render, screen, userEvent } from '../../../test';
 import { ListButton } from './ListButton';
 
 describe('ListButton', () => {
@@ -29,5 +29,39 @@ describe('ListButton', () => {
     render(<ListButton checkbox>카테고리 1</ListButton>);
 
     expect(screen.getByRole('checkbox', { name: '카테고리 1' })).not.toBeChecked();
+  });
+
+  it('fires onClick when the checkbox visual (leading slot) is clicked', () => {
+    const handleClick = vi.fn();
+
+    render(
+      <ListButton checkbox selected onClick={handleClick}>
+        전체
+      </ListButton>,
+    );
+
+    const leadingVisual = screen
+      .getByRole('checkbox', { name: '전체' })
+      .querySelector('[aria-hidden="true"]');
+
+    expect(leadingVisual).not.toBeNull();
+    fireEvent.click(leadingVisual as Element);
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not fire onClick when the checkbox is disabled', async () => {
+    const handleClick = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <ListButton checkbox disabled onClick={handleClick}>
+        전체
+      </ListButton>,
+    );
+
+    await user.click(screen.getByRole('checkbox', { name: '전체' }));
+
+    expect(handleClick).not.toHaveBeenCalled();
   });
 });
