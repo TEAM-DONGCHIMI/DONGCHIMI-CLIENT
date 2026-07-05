@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode } from 'react';
+import { OverlayProvider } from 'overlay-kit';
 
 import { QueryProvider } from '@/shared/query';
 
@@ -9,5 +10,9 @@ type AppProvidersProps = Readonly<{
 }>;
 
 export const AppProviders = ({ children }: AppProvidersProps) => {
-  return <QueryProvider>{children}</QueryProvider>;
+  return (
+    <OverlayProvider>
+      <QueryProvider>{children}</QueryProvider>
+    </OverlayProvider>
+  );
 };

@@ -57,6 +57,15 @@ export type {
 } from './ui/tabs';
 export { Toast } from './ui/toast';
 export type { ToastProps } from './ui/toast';
+export { Dialog } from './ui/dialog';
+export type {
+  DialogCloseProps,
+  DialogContentProps,
+  DialogDescriptionProps,
+  DialogProps,
+  DialogTitleProps,
+  DialogTriggerProps,
+} from './ui/dialog';
 export { InlineField } from './ui/inline-field';
 export type { InlineFieldProps } from './ui/inline-field';
 export { TextButton } from './ui/text-button';

@@ -38,5 +38,14 @@ export { PillButton } from './pill-button';
 export type { PillButtonProps } from './pill-button';
 export { AddableField } from './addable-field';
 export type { AddableFieldProps } from './addable-field';
+export { Dialog } from './dialog';
+export type {
+  DialogCloseProps,
+  DialogContentProps,
+  DialogDescriptionProps,
+  DialogProps,
+  DialogTitleProps,
+  DialogTriggerProps,
+} from './dialog';
 export { InlineField } from './inline-field';
 export type { InlineFieldProps } from './inline-field';
