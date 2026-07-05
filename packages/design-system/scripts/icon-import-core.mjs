@@ -164,9 +164,12 @@ const resolveTargetFileName = ({ filePath, nameMap, stagingRoot }) => {
   return nameMap[relativePath] ?? nameMap[originalFileName] ?? originalFileName;
 };
 
-const createRecordBase = ({ componentName, filePath, targetFileName }) => ({
+// Report the source as a staging-relative path so shared reports never leak the
+// user's absolute filesystem paths (e.g. home directory) when the staging
+// directory lives outside the workspace.
+const createRecordBase = ({ componentName, filePath, stagingRoot, targetFileName }) => ({
   componentName,
-  source: toReportPath(filePath),
+  source: toPosixPath(path.relative(stagingRoot, filePath)),
   target: toPosixPath(path.join('packages/design-system/src/icons/svg', targetFileName)),
   targetFileName,
 });
@@ -198,6 +201,7 @@ export const createCandidates = async ({ nameMap, stagingRoot }) => {
       ...createRecordBase({
         componentName: toIconComponentName(targetFileName),
         filePath,
+        stagingRoot,
         targetFileName,
       }),
       errors,

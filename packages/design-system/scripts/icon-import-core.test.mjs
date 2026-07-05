@@ -139,4 +139,17 @@ describe('icon import classification', () => {
     expect(result.imported).toHaveLength(0);
     expect(result.skipped).toMatchObject([{ reason: 'duplicate file name' }]);
   });
+
+  it('reports source as a staging-relative path without leaking absolute paths', async () => {
+    const stagingDir = await createTempStagingDir();
+    await writeFile(path.join(stagingDir, 'ic-close.svg'), createSvg(), 'utf8');
+
+    const candidates = await createCandidates({ nameMap: {}, stagingRoot: stagingDir });
+
+    // stagingDir is an OS temp dir outside the workspace; the report source must
+    // stay relative to the staging root instead of exposing the absolute path.
+    expect(candidates[0].source).toBe('ic-close.svg');
+    expect(path.isAbsolute(candidates[0].source)).toBe(false);
+    expect(candidates[0].source).not.toContain(stagingDir);
+  });
 });
