@@ -242,7 +242,7 @@ const describeDuplicate = (record) => {
   return toReportPath(record.path);
 };
 
-export const classifyCandidates = ({ candidates, sourceIndex }) => {
+export const classifyCandidates = ({ candidates, preserveVariants = false, sourceIndex }) => {
   const result = {
     imported: [],
     invalid: [],
@@ -289,50 +289,52 @@ export const classifyCandidates = ({ candidates, sourceIndex }) => {
       continue;
     }
 
-    const duplicateFingerprint = firstMapValue(sourceIndex.fingerprints, candidate.fingerprint);
-    if (duplicateFingerprint != null) {
-      result.skipped.push({
-        ...baseRecord,
-        duplicateOf: describeDuplicate(duplicateFingerprint),
-        reason: 'duplicate SVG fingerprint',
-      });
-      continue;
-    }
+    if (!preserveVariants) {
+      const duplicateFingerprint = firstMapValue(sourceIndex.fingerprints, candidate.fingerprint);
+      if (duplicateFingerprint != null) {
+        result.skipped.push({
+          ...baseRecord,
+          duplicateOf: describeDuplicate(duplicateFingerprint),
+          reason: 'duplicate SVG fingerprint',
+        });
+        continue;
+      }
 
-    const duplicateShapeSignature = firstMapValue(
-      sourceIndex.shapeSignatures,
-      candidate.shapeSignature,
-    );
-    if (duplicateShapeSignature != null) {
-      result.skipped.push({
-        ...baseRecord,
-        duplicateOf: describeDuplicate(duplicateShapeSignature),
-        reason: 'duplicate SVG shape',
-      });
-      continue;
-    }
+      const duplicateShapeSignature = firstMapValue(
+        sourceIndex.shapeSignatures,
+        candidate.shapeSignature,
+      );
+      if (duplicateShapeSignature != null) {
+        result.skipped.push({
+          ...baseRecord,
+          duplicateOf: describeDuplicate(duplicateShapeSignature),
+          reason: 'duplicate SVG shape',
+        });
+        continue;
+      }
 
-    const duplicateInputFingerprint = importedFingerprints.get(candidate.fingerprint);
-    if (duplicateInputFingerprint != null) {
-      result.skipped.push({
-        ...baseRecord,
-        duplicateOf: duplicateInputFingerprint.target,
-        reason: 'duplicate SVG fingerprint in import input',
-      });
-      continue;
-    }
+      const duplicateInputFingerprint = importedFingerprints.get(candidate.fingerprint);
+      if (duplicateInputFingerprint != null) {
+        result.skipped.push({
+          ...baseRecord,
+          duplicateOf: duplicateInputFingerprint.target,
+          reason: 'duplicate SVG fingerprint in import input',
+        });
+        continue;
+      }
 
-    const duplicateInputShape =
-      candidate.shapeSignature == null
-        ? null
-        : importedShapeSignatures.get(candidate.shapeSignature);
-    if (duplicateInputShape != null) {
-      result.skipped.push({
-        ...baseRecord,
-        duplicateOf: duplicateInputShape.target,
-        reason: 'duplicate SVG shape in import input',
-      });
-      continue;
+      const duplicateInputShape =
+        candidate.shapeSignature == null
+          ? null
+          : importedShapeSignatures.get(candidate.shapeSignature);
+      if (duplicateInputShape != null) {
+        result.skipped.push({
+          ...baseRecord,
+          duplicateOf: duplicateInputShape.target,
+          reason: 'duplicate SVG shape in import input',
+        });
+        continue;
+      }
     }
 
     result.imported.push({
@@ -348,12 +350,12 @@ export const classifyCandidates = ({ candidates, sourceIndex }) => {
   return result;
 };
 
-export const prepareIconImport = async ({ nameMapPath, stagingDir }) => {
+export const prepareIconImport = async ({ nameMapPath, preserveVariants = false, stagingDir }) => {
   const stagingRoot = await resolveReadablePath(stagingDir);
   const nameMap = await readNameMap(nameMapPath);
   const sourceIndex = await buildSourceIndex();
   const candidates = await createCandidates({ nameMap, stagingRoot });
-  const result = classifyCandidates({ candidates, sourceIndex });
+  const result = classifyCandidates({ candidates, preserveVariants, sourceIndex });
 
   return {
     result,

@@ -14,6 +14,7 @@ const usage = [
   'Options:',
   '  --dry-run             Print the import result without copying files.',
   '  --generate            Run icons:generate after copying imported SVG files.',
+  '  --preserve-variants   Import same-shape SVG variants when file names are unique.',
   '  --report <path>       Write the import result as JSON.',
   '  --name-map <path>     Map exported file names to ic-name.svg file names.',
   '  --help                Show this help message.',
@@ -24,6 +25,7 @@ const parseArgs = (args) => {
     dryRun: false,
     generate: false,
     nameMapPath: null,
+    preserveVariants: false,
     reportPath: null,
     showHelp: false,
     stagingDir: null,
@@ -40,6 +42,11 @@ const parseArgs = (args) => {
 
     if (arg === '--generate') {
       options.generate = true;
+      continue;
+    }
+
+    if (arg === '--preserve-variants') {
+      options.preserveVariants = true;
       continue;
     }
 
@@ -154,6 +161,7 @@ const main = async () => {
 
   const { result, stagingRoot } = await prepareIconImport({
     nameMapPath: options.nameMapPath,
+    preserveVariants: options.preserveVariants,
     stagingDir: options.stagingDir,
   });
 

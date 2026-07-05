@@ -45,8 +45,8 @@ const createExistingRecord = (fileName) => {
   };
 };
 
-const classify = ({ candidates, sourceIndex = createEmptyIndex() }) => {
-  return classifyCandidates({ candidates, sourceIndex });
+const classify = ({ candidates, preserveVariants = false, sourceIndex = createEmptyIndex() }) => {
+  return classifyCandidates({ candidates, preserveVariants, sourceIndex });
 };
 
 const createTempStagingDir = async () => {
@@ -103,6 +103,21 @@ describe('icon import classification', () => {
     expect(result.imported).toHaveLength(1);
     expect(result.imported[0].targetFileName).toBe('ic-square.svg');
     expect(result.skipped).toMatchObject([{ reason: 'duplicate SVG fingerprint in import input' }]);
+  });
+
+  it('can preserve same-shape variants when target names are unique', () => {
+    const source = createSvg('<path d="M4 4h16v16H4z" fill="#000"/>');
+
+    const result = classify({
+      candidates: [
+        createCandidate({ source, targetFileName: 'ic-square.svg' }),
+        createCandidate({ source, targetFileName: 'ic-square-color-50.svg' }),
+      ],
+      preserveVariants: true,
+    });
+
+    expect(result.imported).toHaveLength(2);
+    expect(result.skipped).toHaveLength(0);
   });
 
   it('keeps invalid candidates out of the imported and skipped results', () => {
