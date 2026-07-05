@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css';
 
-import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
+import { atomic, typography } from '@dongchimi/design-system/tokens';
 
 export const martSummaryCardClassName = style({
   display: 'flex',
@@ -75,19 +75,6 @@ export const locationMetaClassName = style({
   alignItems: 'center',
   gap: '0.2rem',
   overflow: 'hidden',
-});
-
-// TODO: chip 컴포넌트 교체
-export const discountChipClassName = style({
-  ...typography['caption-2-medium'],
-  display: 'inline-flex',
-  flexShrink: 0,
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '999rem',
-  padding: '0.2rem 0.6rem',
-  backgroundColor: semantic.primary.light,
-  color: semantic.primary.strong,
 });
 
 export const actionButtonClassName = style({

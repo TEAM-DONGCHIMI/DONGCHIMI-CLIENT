@@ -93,20 +93,8 @@ export const priceClassName = style({
   whiteSpace: 'nowrap',
 });
 
-// TODO: chip 컴포넌트 교체
 export const saleChipClassName = style({
-  ...typography['caption-2-medium'],
   position: 'absolute',
-  top: '0.6rem',
-  right: '0.6rem',
-  display: 'inline-flex',
-  width: '2.8rem',
-  height: '2.8rem',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: semantic.status.negative,
-  clipPath:
-    'polygon(50% 0%, 61% 22%, 85% 15%, 78% 39%, 100% 50%, 78% 61%, 85% 85%, 61% 78%, 50% 100%, 39% 78%, 15% 85%, 22% 61%, 0% 50%, 22% 39%, 15% 15%, 39% 22%)',
-  color: atomic.common[0],
-  lineHeight: 1,
+  top: '0.4rem',
+  right: '0.4rem',
 });

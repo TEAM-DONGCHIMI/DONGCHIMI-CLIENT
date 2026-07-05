@@ -1,6 +1,6 @@
 import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 
-import { Button } from '@dongchimi/design-system';
+import { Button, Chip } from '@dongchimi/design-system';
 import { cn } from '@dongchimi/design-system/styles';
 import Image from 'next/image';
 
@@ -64,8 +64,9 @@ export const MartSummaryCard = forwardRef<HTMLElement, MartSummaryCardProps>(
                   <span aria-hidden='true'>·</span>
                   <span>{areaName}</span>
                 </span>
-                {/* TODO: chip 컴포넌트 교체 */}
-                <span className={S.discountChipClassName}>할인 {discountCount}개</span>
+                <Chip color='primary' variant='soft' size='mobile'>
+                  할인 {discountCount}개
+                </Chip>
               </div>
             </div>
           </div>

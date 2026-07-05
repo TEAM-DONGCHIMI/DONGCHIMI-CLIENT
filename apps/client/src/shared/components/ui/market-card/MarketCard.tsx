@@ -1,5 +1,6 @@
 import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 
+import { PointChip } from '@dongchimi/design-system';
 import { cn } from '@dongchimi/design-system/styles';
 import type { RecipeVariantProps } from '@dongchimi/design-system/styles';
 import Image from 'next/image';
@@ -47,9 +48,10 @@ export const MarketCard = forwardRef<HTMLElement, MarketCardProps>(
           <span className={S.productNameClassName}>{productName}</span>
           <strong className={S.priceClassName}>{price}</strong>
         </div>
-        {hasSaleChip ? (
-          // TODO: chip 컴포넌트 교체
-          <span className={S.saleChipClassName}>{saleChipLabel}</span>
+        {hasSaleChip && saleChipLabel ? (
+          <PointChip className={S.saleChipClassName} size='mobile'>
+            {saleChipLabel}
+          </PointChip>
         ) : null}
       </article>
     );
