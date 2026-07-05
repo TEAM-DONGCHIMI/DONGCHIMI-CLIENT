@@ -27,7 +27,9 @@ const successFields: ListCellFieldProps[] = [
   { id: 'name', value: '삼겹살 500G', width: 160 },
   { id: 'price', value: '19,500', width: 112 },
   {
+    'aria-label': '카테고리 선택',
     id: 'category',
+    onClick: fn(),
     trailingIcon: <ChevronDownIcon />,
     value: '김치/반찬',
     width: 128,
@@ -40,7 +42,9 @@ const errorFields: ListCellFieldProps[] = [
   { id: 'name', placeholder: '제품명을 입력하세요', width: 160 },
   { id: 'price', placeholder: '가격을 입력하세요', width: 112 },
   {
+    'aria-label': '카테고리 선택',
     id: 'category',
+    onClick: fn(),
     trailingIcon: <ChevronDownIcon />,
     value: '김치/반찬',
     width: 128,
@@ -128,7 +132,9 @@ export const LongText: StoryTypes = {
       { id: 'name', value: '매우 긴 제품명과 용량 정보가 들어간 상품명 텍스트', width: 160 },
       { id: 'price', value: '19,500', width: 112 },
       {
+        'aria-label': '카테고리 선택',
         id: 'category',
+        onClick: fn(),
         trailingIcon: <ChevronDownIcon />,
         value: '김치/반찬',
         width: 128,

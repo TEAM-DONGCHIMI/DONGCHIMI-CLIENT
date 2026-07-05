@@ -40,6 +40,7 @@ export { AddableField } from './addable-field';
 export type { AddableFieldProps } from './addable-field';
 export { ListCell } from './list-cell';
 export type {
+  ListCellFieldInputTypes,
   ListCellFieldProps,
   ListCellMediaStatusTypes,
   ListCellProps,

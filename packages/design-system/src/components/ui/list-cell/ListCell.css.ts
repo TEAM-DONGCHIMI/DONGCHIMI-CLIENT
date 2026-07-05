@@ -156,7 +156,17 @@ export const fieldsClassName = style({
   gap: '3rem',
 });
 
-export const fieldClassName = style({
+export const inlineFieldWrapperClassName = style({
+  flexShrink: 0,
+  width: 'var(--list-cell-field-width, 16rem)',
+  minWidth: 0,
+});
+
+export const inlineFieldClassName = style({
+  width: '100%',
+});
+
+export const fieldButtonClassName = style({
   ...typography['caption-1-medium'],
   appearance: 'none',
   display: 'inline-flex',
@@ -173,16 +183,14 @@ export const fieldClassName = style({
   overflow: 'hidden',
   backgroundColor: atomic.common[0],
   color: atomic.neutral[90],
+  cursor: 'pointer',
   textAlign: 'left',
   transition: 'border-color 160ms ease, outline-color 160ms ease',
   selectors: {
-    '&:is(button)': {
-      cursor: 'pointer',
-    },
-    '&:is(button):hover': {
+    '&:hover': {
       borderColor: atomic.neutral[40],
     },
-    '&:is(button):focus-visible': {
+    '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
       outlineOffset: 2,
     },
@@ -193,7 +201,7 @@ export const fieldClassName = style({
   },
 });
 
-export const fieldTextClassName = recipe({
+export const fieldButtonTextClassName = recipe({
   base: {
     minWidth: 0,
     overflow: 'hidden',
@@ -237,34 +245,6 @@ export const statusColumnClassName = style({
   flexDirection: 'column',
   alignItems: 'flex-start',
   minWidth: 0,
-});
-
-export const statusBadgeClassName = recipe({
-  base: {
-    ...typography['caption-1-medium'],
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 21,
-    borderRadius: 4,
-    padding: '0.2rem 0.8rem',
-    whiteSpace: 'nowrap',
-  },
-  variants: {
-    tone: {
-      neutral: {
-        backgroundColor: atomic.neutral[10],
-        color: atomic.neutral[70],
-      },
-      negative: {
-        backgroundColor: semantic.status.negative,
-        color: atomic.common[0],
-      },
-    },
-  },
-  defaultVariants: {
-    tone: 'neutral',
-  },
 });
 
 export const helperClassName = style({

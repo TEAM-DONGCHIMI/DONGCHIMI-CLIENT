@@ -9,6 +9,7 @@ const fields: ListCellFieldProps[] = [
   {
     'aria-label': '카테고리 선택',
     id: 'category',
+    onClick: () => undefined,
     value: '식품',
     width: 128,
   },
@@ -30,8 +31,8 @@ describe('ListCell', () => {
     await user.click(screen.getByRole('checkbox', { name: '상품 행 선택' }));
 
     expect(handleCheckedChange).toHaveBeenCalledWith(true);
-    expect(screen.getByText('상품명')).toBeInTheDocument();
-    expect(screen.getByText('가격을 입력하세요')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('상품명')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('가격을 입력하세요')).toBeInTheDocument();
   });
 
   it('renders media action as a non-submit button', async () => {

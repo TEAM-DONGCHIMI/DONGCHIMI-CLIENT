@@ -20,8 +20,10 @@
 - [x] public props와 상태를 명확히 정의합니다.
 - [x] 필요한 접근성 동작을 보장합니다.
 - [x] token 또는 CSS variable을 우선 사용합니다.
-- [x] Figma APPJAM node `398:6171`의 `Product Upload List Cell` error/succes 상태를 기준으로 합니다.
-- [x] `TextInput`, `AddableField`, `Chip` 같은 더 작은 primitive가 완전히 대체할 수 없는 row composition만 담당합니다.
+- [x] Figma APPJAM node `398:6171`의 `Product Upload List Cell` error/success 상태를 기준으로 합니다.
+- [x] `InlineField`, `Chip`, `Dropdown` 같은 더 작은 primitive가 완전히 대체할 수 없는 row composition만 담당합니다.
+- [x] 일반 field와 상태 badge는 이미 구현된 공통 컴포넌트(`InlineField`, `Chip`)를 조합합니다.
+- [x] `Dropdown`은 열린 메뉴 컨테이너 public API만 제공하므로 ListCell 내부의 닫힌 trigger는 action field로만 제공합니다.
 
 ## UI Structure
 
@@ -32,11 +34,10 @@ ListCell
     media frame
       media content | media action
     fields
-      field[]
-        value | placeholder
-        trailingIcon?
+      InlineField[]
+      action field button?
     status column?
-      status badge?
+      Chip?
       helper message?
 ```
 
@@ -46,7 +47,8 @@ ListCell
 
 - type: `readonly ListCellFieldProps[]`
 - required: `true`
-- description: row에 표시할 inline field 목록입니다. 각 field는 `id`, `value`, `placeholder`, `width`, `trailingIcon`, `onClick`, `disabled`, `aria-label`을 받을 수 있습니다.
+- description: row에 표시할 field 목록입니다. 각 field는 `id`, `value`, `defaultValue`, `placeholder`, `width`, `unit`, `type`, `inputMode`, `onChange`, `readOnly`, `status`, `trailingIcon`, `onClick`, `disabled`, `aria-label`을 받을 수 있습니다.
+- note: `onClick`이 없으면 `InlineField size="small"`을 렌더링합니다. `onClick`이 있으면 category/dropdown trigger처럼 native button field를 렌더링하며, 이 경우 `disabled`를 함께 사용할 수 있습니다.
 
 ### checkboxLabel
 
@@ -121,10 +123,11 @@ ListCell
 - default: media preview, value fields, neutral status badge를 표시합니다.
 - error: `mediaStatus=error`, `statusTone=negative`, `helperText` 조합으로 수정 필요 상태를 표현합니다.
 - selected: checkbox checked 상태를 표현하고 `onCheckedChange`를 호출합니다.
-- field placeholder: `value`가 없으면 placeholder tone으로 표시합니다.
-- field action: field에 `onClick`이 있으면 native button으로 렌더링합니다.
+- field placeholder: `value`/`defaultValue`가 없으면 `InlineField` placeholder를 표시합니다.
+- field value: `value`와 `onChange`가 함께 있으면 controlled `InlineField`로 렌더링하고, `value`만 있으면 read-only `InlineField`로 렌더링합니다.
+- field action: field에 `onClick`이 있으면 native button으로 렌더링합니다. 이 경로는 닫힌 dropdown trigger처럼 `InlineField` input semantics가 맞지 않는 경우에 사용합니다.
 - media action: `onMediaAction`이 있으면 native button으로 렌더링합니다.
-- disabled: `checkboxDisabled`와 field `disabled`를 각각 지원합니다.
+- disabled: `checkboxDisabled`와 action field `disabled`를 각각 지원합니다. 일반 `InlineField`는 현재 공통 컴포넌트 API에 맞춰 `readOnly` 상태를 사용합니다.
 - loading: 지원하지 않습니다. 호출부가 skeleton 또는 노출 여부를 결정합니다.
 
 ## Behavior
@@ -132,15 +135,17 @@ ListCell
 1. checkbox를 선택하면 native checkbox 동작 후 `onCheckedChange(nextChecked)`를 호출합니다.
 2. media action button을 선택하면 `onMediaAction`을 호출합니다.
 3. field에 `onClick`이 있으면 해당 field를 button으로 렌더링하고 클릭 시 호출부 handler를 실행합니다.
-4. field에 `onClick`이 없으면 display-only div로 렌더링합니다.
-5. 실제 form value 변경, select popup, image upload, route 이동, API 요청은 실행하지 않습니다.
+4. field에 `onClick`이 없으면 `InlineField`로 렌더링하고, 입력 변경은 field `onChange`로 호출부에 위임합니다.
+5. 실제 select popup, image upload, route 이동, API 요청은 실행하지 않습니다.
 
 ## Styling
 
 - layout: root는 width 100%, min-height 98px, left/right/bottom border를 갖고 row는 horizontal composition입니다.
 - spacing: Figma 기준 root horizontal padding 20px, media leading gap 21px, main columns gap 42px, fields gap 30px를 사용합니다.
 - media: 64px square, 8px radius. error placeholder는 negative light dashed border를 사용합니다.
-- field: 32px height, 4px radius, 12px horizontal padding, per-field width는 `width` prop으로 제어합니다.
+- field: 일반 field는 `InlineField size="small"`을 사용하고, per-field width는 `width` prop으로 제어합니다.
+- action field: 닫힌 dropdown trigger처럼 native button이 필요한 경우에만 ListCell 내부 버튼 스타일을 사용합니다.
+- status: 상태 badge는 `Chip`을 사용합니다. `statusTone=negative`이면 negative solid, 그 외에는 neutral subtle입니다.
 - responsive: 좁은 부모에서는 root가 horizontal overflow를 허용하고 row 내부 고정 폭을 유지합니다.
 - overflow: field text와 helper text는 ellipsis 처리합니다.
 - hover/focus/disabled: interactive field, media action, checkbox는 focus-visible outline을 유지합니다.
@@ -149,7 +154,7 @@ ListCell
 ## Accessibility
 
 - semantic element: root는 `div`, selection은 native `input type="checkbox"`, action field와 media action은 native `button`입니다.
-- accessible name: checkbox는 `checkboxLabel`, media action은 visible label 또는 `mediaActionAriaLabel`, action field는 visible value/placeholder 또는 `aria-label`을 사용합니다.
+- accessible name: checkbox는 `checkboxLabel`, media action은 visible label 또는 `mediaActionAriaLabel`, inline field와 action field는 `aria-label` 또는 visible value/placeholder fallback을 사용합니다.
 - keyboard interaction: checkbox와 button은 native keyboard interaction을 사용합니다.
 - focus-visible: checkbox, media action, action field에 outline을 표시합니다.
 - ARIA: helper icon과 trailing icon은 장식용 `aria-hidden` 영역에 렌더링합니다.

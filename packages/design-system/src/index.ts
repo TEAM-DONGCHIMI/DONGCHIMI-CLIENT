@@ -59,6 +59,7 @@ export { Toast } from './components/ui/toast';
 export type { ToastProps } from './components/ui/toast';
 export { ListCell } from './components/ui/list-cell';
 export type {
+  ListCellFieldInputTypes,
   ListCellFieldProps,
   ListCellMediaStatusTypes,
   ListCellProps,
