@@ -1,10 +1,12 @@
+import { type ReactNode } from 'react';
+
 import { Flex } from '@dongchimi/design-system/components';
 import { cn } from '@dongchimi/design-system/styles';
 
 import { SearchBar, type SearchBarProps } from '../search-bar';
 import * as S from './DesktopHeader.css';
 
-export type DesktopHeaderModeTypes = 'default' | 'onlyHome';
+export type DesktopHeaderVariantTypes = 'default' | 'onlyHome';
 
 interface DesktopHeaderSearchProps {
   searchValue?: string;
@@ -14,17 +16,19 @@ interface DesktopHeaderSearchProps {
 
 interface DesktopHeaderBaseProps extends DesktopHeaderSearchProps {
   className?: string;
+  showSearchBar?: boolean;
 }
 
 interface DesktopHeaderDefaultProps {
   currentLabel: string;
-  mode?: 'default';
+  logo?: ReactNode;
   parentLabel: string;
+  variant?: 'default';
 }
 
 interface DesktopHeaderOnlyHomeProps {
   homeLabel?: string;
-  mode: 'onlyHome';
+  variant: 'onlyHome';
 }
 
 export type DesktopHeaderProps = DesktopHeaderBaseProps &
@@ -48,11 +52,36 @@ const renderSearchBar = ({
 );
 
 export const DesktopHeader = (props: DesktopHeaderProps) => {
-  const { className, searchValue, onSearch, onSearchValueChange } = props;
+  const { className, searchValue, showSearchBar = true, onSearch, onSearchValueChange } = props;
+  const hasLogo = props.variant !== 'onlyHome' && props.logo != null;
+
+  if (hasLogo) {
+    return (
+      <Flex align='center' as='header' className={cn(S.logoHeaderClassName, className)}>
+        <span className={S.logoSlotClassName}>{props.logo}</span>
+
+        <Flex align='center' as='nav' aria-label='현재 위치' className={S.logoBreadcrumbClassName}>
+          <span className={S.parentLabelClassName}>{props.parentLabel}</span>
+          <span aria-hidden='true' className={S.separatorClassName}>
+            /
+          </span>
+          <span aria-current='page' className={S.currentLabelClassName}>
+            {props.currentLabel}
+          </span>
+        </Flex>
+
+        {showSearchBar ? (
+          <span className={S.logoSearchSlotClassName}>
+            {renderSearchBar({ searchValue, onSearch, onSearchValueChange })}
+          </span>
+        ) : null}
+      </Flex>
+    );
+  }
 
   return (
     <Flex align='center' as='header' className={cn(S.headerClassName, className)} justify='between'>
-      {props.mode === 'onlyHome' ? (
+      {props.variant === 'onlyHome' ? (
         <span className={S.homeLabelClassName}>{props.homeLabel ?? '동치미 작업 홈'}</span>
       ) : (
         <Flex align='center' as='nav' className={S.breadcrumbClassName} aria-label='현재 위치'>
@@ -66,7 +95,7 @@ export const DesktopHeader = (props: DesktopHeaderProps) => {
         </Flex>
       )}
 
-      {renderSearchBar({ searchValue, onSearch, onSearchValueChange })}
+      {showSearchBar ? renderSearchBar({ searchValue, onSearch, onSearchValueChange }) : null}
     </Flex>
   );
 };
