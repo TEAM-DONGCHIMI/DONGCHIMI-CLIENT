@@ -6,5 +6,7 @@ export { DesktopHeader } from './ui/desktop-header';
 export type { DesktopHeaderProps } from './ui/desktop-header';
 export { DesktopUploadHeader } from './ui/desktop-upload-header';
 export type { DesktopUploadHeaderProps, UploadSegmentTypes } from './ui/desktop-upload-header';
+export { Sidebar } from './ui/sidebar';
+export type { SidebarItem, SidebarProfile, SidebarProps, SidebarSection } from './ui/sidebar';
 export { PaginationFooter } from './ui/pagination-footer';
 export type { PaginationFooterProps } from './ui/pagination-footer';
