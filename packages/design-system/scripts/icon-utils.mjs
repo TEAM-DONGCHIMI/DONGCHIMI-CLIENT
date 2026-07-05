@@ -120,7 +120,7 @@ export const createIconIndexSource = (svgFiles) => {
   });
   const header = [
     '// This barrel file is auto-generated. Do not edit it manually.',
-    '// Run `pnpm icons:generate` to rebuild icon exports.',
+    '// Run `pnpm --filter @dongchimi/design-system icons:generate` to rebuild icon exports.',
   ].join('\n');
 
   return exports.length > 0 ? `${header}\n${exports.join('\n')}\n` : `${header}\nexport {};\n`;
