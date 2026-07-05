@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  useState,
   type CSSProperties,
   type ChangeEventHandler,
   type ComponentPropsWithoutRef,
@@ -9,6 +10,7 @@ import {
 
 import { cn } from '../../../styles/class-name';
 import { Chip } from '../chip';
+import { IconButton } from '../icon-button';
 import { InlineField } from '../inline-field';
 import * as S from './ListCell.css';
 
@@ -152,8 +154,10 @@ export const ListCell = forwardRef<HTMLDivElement, ListCellProps>(
     },
     ref,
   ) => {
+    const [uncontrolledChecked, setUncontrolledChecked] = useState(defaultChecked ?? false);
     const hasMedia = hasContent(media);
     const hasMediaAction = hasContent(mediaActionLabel) || hasContent(mediaActionIcon);
+    const isChecked = checked ?? uncontrolledChecked;
     const mediaFrameStatus = getMediaFrameStatus(hasMedia, mediaStatus);
     const mediaActionContent = (
       <>
@@ -194,18 +198,30 @@ export const ListCell = forwardRef<HTMLDivElement, ListCellProps>(
       );
     };
 
+    const handleSelectionClick = () => {
+      const nextChecked = !isChecked;
+
+      if (checked === undefined) {
+        setUncontrolledChecked(nextChecked);
+      }
+
+      onCheckedChange?.(nextChecked);
+    };
+
     return (
       <div ref={ref} className={cn(S.rootClassName, className)} {...props}>
         <div className={S.rowClassName}>
           <div className={S.leadingClassName}>
-            <input
+            <IconButton
               aria-label={checkboxLabel}
-              checked={checked}
-              className={S.checkboxClassName}
-              defaultChecked={defaultChecked}
+              aria-checked={isChecked}
+              className={S.selectionButtonClassName}
+              color='assistive'
               disabled={checkboxDisabled}
-              onChange={(event) => onCheckedChange?.(event.currentTarget.checked)}
-              type='checkbox'
+              icon={<span className={S.selectionIconClassName({ checked: isChecked })} />}
+              onClick={handleSelectionClick}
+              role='checkbox'
+              variant='ghost'
             />
 
             <div className={S.mediaFrameClassName({ status: mediaFrameStatus })}>

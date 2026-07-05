@@ -24,8 +24,8 @@ const WarningIcon = () => (
 );
 
 const successFields: ListCellFieldProps[] = [
-  { id: 'name', value: '삼겹살 500G', width: 160 },
-  { id: 'price', value: '19,500', width: 112 },
+  { defaultValue: '삼겹살 500G', id: 'name', width: 160 },
+  { defaultValue: '19,500', id: 'price', width: 112 },
   {
     'aria-label': '카테고리 선택',
     id: 'category',
@@ -34,8 +34,8 @@ const successFields: ListCellFieldProps[] = [
     value: '김치/반찬',
     width: 128,
   },
-  { id: 'description', value: '오늘 입고된 신선한 삼겹살', width: 319 },
-  { id: 'period', value: '2026-06-30 ~ 2026-07-02', width: 198 },
+  { defaultValue: '오늘 입고된 신선한 삼겹살', id: 'description', width: 319 },
+  { defaultValue: '2026-06-30 ~ 2026-07-02', id: 'period', width: 198 },
 ];
 
 const errorFields: ListCellFieldProps[] = [
@@ -129,8 +129,8 @@ export const FieldAction: StoryTypes = {
 export const LongText: StoryTypes = {
   args: {
     fields: [
-      { id: 'name', value: '매우 긴 제품명과 용량 정보가 들어간 상품명 텍스트', width: 160 },
-      { id: 'price', value: '19,500', width: 112 },
+      { defaultValue: '매우 긴 제품명과 용량 정보가 들어간 상품명 텍스트', id: 'name', width: 160 },
+      { defaultValue: '19,500', id: 'price', width: 112 },
       {
         'aria-label': '카테고리 선택',
         id: 'category',
@@ -141,10 +141,10 @@ export const LongText: StoryTypes = {
       },
       {
         id: 'description',
-        value: '한 줄 안에 들어가기 어려운 홍보 문구가 들어와도 셀 높이가 변하지 않습니다',
+        defaultValue: '한 줄 안에 들어가기 어려운 홍보 문구가 들어와도 셀 높이가 변하지 않습니다',
         width: 319,
       },
-      { id: 'period', value: '2026-06-30 ~ 2026-07-02', width: 198 },
+      { defaultValue: '2026-06-30 ~ 2026-07-02', id: 'period', width: 198 },
     ],
     helperIcon: <WarningIcon />,
     helperText: '긴 helper message가 들어와도 말줄임으로 처리합니다',

@@ -28,9 +28,15 @@ describe('ListCell', () => {
       />,
     );
 
-    await user.click(screen.getByRole('checkbox', { name: '상품 행 선택' }));
+    const selection = screen.getByRole('checkbox', { name: '상품 행 선택' });
+
+    expect(selection).toHaveAttribute('type', 'button');
+    expect(selection).toHaveAttribute('aria-checked', 'false');
+
+    await user.click(selection);
 
     expect(handleCheckedChange).toHaveBeenCalledWith(true);
+    expect(selection).toHaveAttribute('aria-checked', 'true');
     expect(screen.getByDisplayValue('상품명')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('가격을 입력하세요')).toBeInTheDocument();
   });

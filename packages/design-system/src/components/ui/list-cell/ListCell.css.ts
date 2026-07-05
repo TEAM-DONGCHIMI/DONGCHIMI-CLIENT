@@ -35,33 +35,50 @@ export const leadingClassName = style({
   gap: '2.1rem',
 });
 
-export const checkboxClassName = style({
-  appearance: 'none',
-  display: 'inline-flex',
-  flexShrink: 0,
-  boxSizing: 'border-box',
-  width: 18,
-  height: 18,
-  margin: 3,
-  border: `1.5px dashed ${atomic.neutral[5]}`,
+export const selectionButtonClassName = style({
+  width: '2.4rem',
+  height: '2.4rem',
+  padding: 0,
   borderRadius: 4,
-  backgroundColor: atomic.common[0],
-  cursor: 'pointer',
-  transition: 'background-color 160ms ease, border-color 160ms ease, outline-color 160ms ease',
-  selectors: {
-    '&:checked': {
-      borderColor: semantic.primary.normal,
-      backgroundColor: semantic.primary.normal,
-      boxShadow: `inset 0 0 0 4px ${atomic.common[0]}`,
+  color: atomic.neutral[70],
+});
+
+export const selectionIconClassName = recipe({
+  base: {
+    position: 'relative',
+    display: 'inline-flex',
+    boxSizing: 'border-box',
+    width: '1.8rem',
+    height: '1.8rem',
+    border: `1.5px solid ${atomic.neutral[70]}`,
+    borderRadius: 4,
+    backgroundColor: atomic.common[0],
+    transition: 'background-color 160ms ease, border-color 160ms ease',
+  },
+  variants: {
+    checked: {
+      false: {},
+      true: {
+        borderColor: semantic.primary.normal,
+        backgroundColor: semantic.primary.normal,
+        selectors: {
+          '&::after': {
+            content: "''",
+            position: 'absolute',
+            left: '0.5rem',
+            top: '0.2rem',
+            width: '0.5rem',
+            height: '0.9rem',
+            borderRight: `2px solid ${atomic.common[0]}`,
+            borderBottom: `2px solid ${atomic.common[0]}`,
+            transform: 'rotate(45deg)',
+          },
+        },
+      },
     },
-    '&:focus-visible': {
-      outline: `3px solid ${focusOutlineColor}`,
-      outlineOffset: 2,
-    },
-    '&:disabled': {
-      cursor: 'not-allowed',
-      opacity: 0.45,
-    },
+  },
+  defaultVariants: {
+    checked: false,
   },
 });
 
@@ -167,19 +184,19 @@ export const inlineFieldClassName = style({
 });
 
 export const fieldButtonClassName = style({
-  ...typography['caption-1-medium'],
+  ...typography['body-3-regular'],
   appearance: 'none',
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   boxSizing: 'border-box',
   width: 'var(--list-cell-field-width, 16rem)',
-  height: 32,
+  height: '3.2rem',
   minWidth: 0,
-  gap: 8,
-  border: `1px solid ${atomic.neutral[20]}`,
+  gap: '0.8rem',
+  border: `1px solid ${atomic.neutral[10]}`,
   borderRadius: 4,
-  padding: '0.6rem 1.2rem',
+  padding: '0.6rem 0.8rem',
   overflow: 'hidden',
   backgroundColor: atomic.common[0],
   color: atomic.neutral[90],
