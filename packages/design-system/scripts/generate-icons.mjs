@@ -3,9 +3,15 @@
 import { spawn } from 'node:child_process';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { createIconIndexSource, createSvgFingerprint } from './icon-utils.mjs';
-import { buildIconManifest, iconManifestFileName, serializeIconManifest } from './icon-sync.mjs';
-import { validateIconSvgs } from './validate-icons.mjs';
+import { createIconIndexSource } from './icon-utils.mjs';
+import {
+  buildIconManifest,
+  collectGeneratedIconEntries,
+  collectIconSvgEntries,
+  iconManifestFileName,
+  serializeIconManifest,
+} from './icon-sync.mjs';
+import { validateSvgContent } from './validate-icons.mjs';
 
 const packageRoot = process.cwd();
 const iconsRoot = path.join(packageRoot, 'src', 'icons');
@@ -114,18 +120,21 @@ const writeIconIndex = async (svgFiles) => {
   await writeFile(indexPath, createIconIndexSource(svgFiles), 'utf8');
 };
 
-const writeIconManifest = async (svgFiles) => {
-  const svgEntries = await Promise.all(
-    svgFiles.map(async (svgFile) => ({
-      fileName: path.basename(svgFile),
-      fingerprint: createSvgFingerprint(await readFile(svgFile, 'utf8')),
-    })),
-  );
+const writeIconManifest = async (svgEntries) => {
+  const generatedEntries = await collectGeneratedIconEntries(generatedRoot);
 
-  await writeFile(manifestPath, serializeIconManifest(buildIconManifest(svgEntries)), 'utf8');
+  await writeFile(
+    manifestPath,
+    serializeIconManifest(buildIconManifest({ generatedEntries, svgEntries })),
+    'utf8',
+  );
 };
 
-const { svgFiles, validationErrors } = await validateIconSvgs({ packageRoot, svgRoot });
+const svgEntries = await collectIconSvgEntries(svgRoot);
+const svgFiles = svgEntries.map((entry) => entry.filePath);
+const validationErrors = svgEntries.flatMap((entry) =>
+  validateSvgContent(entry.filePath, entry.source, packageRoot),
+);
 
 if (validationErrors.length > 0) {
   console.error('Icon SVG validation failed:');
@@ -141,7 +150,7 @@ if (svgFiles.length > 0) {
 }
 
 await writeIconIndex(svgFiles);
-await writeIconManifest(svgFiles);
 await runPrettier();
+await writeIconManifest(svgEntries);
 
 console.log(`Generated ${svgFiles.length} icon${svgFiles.length === 1 ? '' : 's'}.`);
