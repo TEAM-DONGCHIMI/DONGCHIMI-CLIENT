@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Dropdown } from './Dropdown';
@@ -44,16 +45,29 @@ export const Category: StoryTypes = {
 };
 
 export const Checkbox: StoryTypes = {
-  render: () => (
-    <Dropdown role='group' aria-label='카테고리 필터'>
-      <Dropdown.Item checkbox selected>
-        전체
-      </Dropdown.Item>
-      <Dropdown.Item checkbox>카테고리 1</Dropdown.Item>
-      <Dropdown.Item checkbox>카테고리 2</Dropdown.Item>
-      <Dropdown.Item checkbox>카테고리 3</Dropdown.Item>
-    </Dropdown>
-  ),
+  render: () => {
+    const categories = ['전체', '카테고리 1', '카테고리 2', '카테고리 3'];
+    const [checked, setChecked] = useState<string[]>(['전체']);
+    const toggle = (item: string) =>
+      setChecked((prev) =>
+        prev.includes(item) ? prev.filter((value) => value !== item) : [...prev, item],
+      );
+
+    return (
+      <Dropdown role='group' aria-label='카테고리 필터'>
+        {categories.map((item) => (
+          <Dropdown.Item
+            key={item}
+            checkbox
+            selected={checked.includes(item)}
+            onClick={() => toggle(item)}
+          >
+            {item}
+          </Dropdown.Item>
+        ))}
+      </Dropdown>
+    );
+  },
 };
 
 export const LongText: StoryTypes = {

@@ -20,6 +20,9 @@ const meta = {
   },
   tags: ['autodocs'],
   argTypes: {
+    checkbox: {
+      control: 'boolean',
+    },
     color: {
       control: 'select',
       options: ['assistive', 'primary'],
