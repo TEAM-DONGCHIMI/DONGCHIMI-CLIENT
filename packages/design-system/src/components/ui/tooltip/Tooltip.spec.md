@@ -51,9 +51,9 @@ Tooltip (div, role="tooltip")
 
 ### native div props
 
-- type: `ComponentPropsWithoutRef<'div'>`
-- description: `className`을 포함한 native div props를 전달합니다. 기본 `role="tooltip"`은
-  `{...props}`로 오버라이드할 수 있습니다.
+- type: `ComponentPropsWithRef<'div'>`
+- description: `className`, `ref`를 포함한 native div props를 전달합니다. `ref`는 루트 `div`로
+  전달되며, 기본 `role="tooltip"`은 native props로 오버라이드할 수 있습니다.
 
 ## States
 
@@ -114,3 +114,4 @@ Tooltip (div, role="tooltip")
 - [x] `pnpm --filter @dongchimi/design-system typecheck`
 - [x] `pnpm --filter @dongchimi/design-system test`
 - [x] `pnpm --filter @dongchimi/design-system build`
+- [x] `pnpm --filter @dongchimi/design-system build-storybook`
