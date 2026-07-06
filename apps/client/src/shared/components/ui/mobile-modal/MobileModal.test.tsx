@@ -35,7 +35,9 @@ describe('MobileModal', () => {
 
     expect(dialog).toBeInTheDocument();
     expect(screen.getByText('02-123-4567')).toBeInTheDocument();
-    expect(dialog).toHaveAccessibleDescription('현재 영업중· 21:00까지');
+    expect(dialog).toHaveAccessibleDescription(
+      `${defaultProps.subText} ${defaultProps.description}`,
+    );
   });
 
   it('calls onOpenChange with false when cancel is clicked', async () => {

@@ -52,6 +52,15 @@ export const subTextClassName = style({
   overflowWrap: 'anywhere',
 });
 
+export const descriptionGroupClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  width: '100%',
+  margin: 0,
+  gap: '0.4rem',
+});
+
 export const descriptionClassName = style({
   ...typography['body-3-medium'],
   margin: 0,

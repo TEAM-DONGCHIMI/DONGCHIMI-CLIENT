@@ -88,8 +88,8 @@
 ## Accessibility
 
 - `Dialog.Title`을 사용해 dialog accessible name을 제공합니다.
-- `Dialog.Description`에 설명 문구를 연결해 dialog accessible description을 제공합니다.
-- `subText`는 보조 시각 정보로 노출하며, 주요 액션은 `confirmLabel`의 accessible name으로 제공합니다.
+- `Dialog.Description`에 `subText`와 설명 문구를 함께 연결해 dialog accessible description을 제공합니다.
+- 주요 액션은 `confirmLabel`의 accessible name으로 제공합니다.
 - 취소/주요 액션 버튼은 실제 `<button>`이며 키보드로 조작할 수 있습니다.
 - 취소 버튼은 `event.preventDefault()`를 통해 기본 닫힘 동작을 막을 수 있습니다.
 

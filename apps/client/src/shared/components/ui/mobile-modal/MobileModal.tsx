@@ -51,9 +51,18 @@ export const MobileModal = ({
         <div className={S.containerClassName}>
           <div className={S.messageClassName}>
             <Dialog.Title className={S.titleClassName}>{title}</Dialog.Title>
-            {subText != null ? <p className={S.subTextClassName}>{subText}</p> : null}
-            <Dialog.Description className={S.descriptionClassName}>
-              {description}
+            <Dialog.Description
+              aria-label={subText != null ? `${subText} ${description}` : description}
+              className={S.descriptionGroupClassName}
+            >
+              {subText != null ? (
+                <span aria-hidden className={S.subTextClassName}>
+                  {subText}
+                </span>
+              ) : null}
+              <span aria-hidden={subText != null} className={S.descriptionClassName}>
+                {description}
+              </span>
             </Dialog.Description>
           </div>
 
