@@ -101,6 +101,9 @@ Jira 확인 후 실제 구현 workflow를 선택합니다.
 - disabled, loading, empty, error, invalid, selected 상태가 필요한 만큼 다뤄졌는가
 - focus-visible, accessible name, keyboard interaction이 필요한 영역에서 빠지지 않았는가
 - 긴 텍스트, overflow, 반응형 제약이 깨지지 않는가
+- `docs/code-quality/frontend-fundamentals.md` 기준으로 가독성, 예측 가능성, 응집도, 결합도를 점검했는가
+
+비자명한 프론트엔드 구현, shared/public API 변경, PR 전 품질 점검에는 `frontend-fundamentals-review`를 추가로 적용합니다.
 
 ### 6. 마무리에는 검증 결과와 남은 리스크를 포함합니다.
 

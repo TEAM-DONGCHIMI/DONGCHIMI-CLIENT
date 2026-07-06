@@ -36,6 +36,16 @@ description: apps/client, apps/market-owner, apps/design-system-web, 선택적 a
 
 앱 shared 컴포넌트는 특정 앱의 제품 copy, route, API data에 직접 묶이지 않아야 합니다. 그런 책임이 필요하면 page-local 컴포넌트로 둡니다.
 
+## 읽기 전략
+
+- 항상 읽기:
+  - `recipes/add-app-shared-component.md`
+  - `docs/code-quality/frontend-fundamentals.md`
+- 조건부 읽기:
+  - `docs/workflows/spec-writing.md`: 새 spec 작성 또는 갱신이 필요할 때
+  - `docs/architecture/app-structure.md`: app shared 위치나 승격 경계가 애매할 때
+  - 가까운 앱 shared 또는 page-local 컴포넌트
+
 ## 메인 작업 흐름
 
 1. 컴포넌트가 앱 shared 영역에 속하는지 확인합니다.
@@ -44,6 +54,7 @@ description: apps/client, apps/market-owner, apps/design-system-web, 선택적 a
 4. 스펙에 맞춰 `ComponentName.tsx`를 구현합니다.
 5. 앱 내부 export가 필요한 범위에만 연결됐는지 확인합니다.
 6. text overflow, focus-visible, disabled, hover, responsive constraints를 확인합니다.
+7. Frontend Fundamentals 기준으로 public API 예측 가능성, 조건 분기, DOM 의미, 응집도/결합도를 self-check합니다.
 
 ## 완료 기준
 
@@ -52,6 +63,7 @@ description: apps/client, apps/market-owner, apps/design-system-web, 선택적 a
 - public API는 `ComponentName`과 `ComponentNameProps`만 export합니다.
 - 앱 도메인 API, route, logging, analytics를 컴포넌트 내부에 직접 넣지 않았습니다.
 - 접근성, 상태, 긴 텍스트, 반응형 제약을 확인했습니다.
+- Frontend Fundamentals 기준 self-check를 수행했고, 비자명한 public API 변경이면 `frontend-fundamentals-review`를 추가로 적용했습니다.
 
 ## 예외
 

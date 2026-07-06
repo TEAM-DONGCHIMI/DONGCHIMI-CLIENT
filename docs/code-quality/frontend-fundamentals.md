@@ -1,6 +1,6 @@
 # Frontend Fundamentals
 
-이 문서는 Toss Frontend Fundamentals의 코드 품질 원칙을 DONGCHIMI-CLIENT에서 리뷰할 때 사용하는 repo-local 기준입니다.
+이 문서는 Toss Frontend Fundamentals의 코드 품질 원칙을 DONGCHIMI-CLIENT에서 구현 self-check와 리뷰에 사용하는 repo-local 기준입니다.
 
 원문과 플러그인:
 
@@ -19,7 +19,9 @@ Codex skill은 리뷰할 때 사이트를 자동으로 열거나 fetch하지 않
 
 ## 적용 방식
 
-- 구현 직후, PR 전, 또는 코드 리뷰 요청 시 `$frontend-fundamentals-review`가 이 문서를 읽습니다.
+- 페이지, 컴포넌트, hook/state, API query/mutation, form flow 구현 직후에는 이 문서를 self-check 기준으로 사용합니다.
+- 비자명한 변경, shared/public API 변경, PR 전 품질 점검, 코드 리뷰 요청 시 `$frontend-fundamentals-review`가 이 문서를 읽습니다.
+- 단순 copy, import 정리, formatting-only 변경은 formatter와 정적 검증으로 충분하면 이 기준을 별도 리뷰 단계로 강제하지 않습니다.
 - 브라우저 PR 리뷰에서 FE 코드 diff가 있으면 `browser-pr-review-workflow`로 PR 상태와 기존 review thread를 먼저 분리한 뒤 이 기준을 적용합니다.
 - lint, typecheck, build를 대체하지 않습니다.
 - finding은 파일/라인 근거가 있을 때만 작성합니다.

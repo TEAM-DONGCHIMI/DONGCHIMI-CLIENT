@@ -2,6 +2,10 @@
 
 Use this when extracting or adding non-trivial state, effect, form, query, mutation, or URL logic.
 
+Quality rule:
+
+- `docs/code-quality/frontend-fundamentals.md`
+
 ## Steps
 
 1. logic이 추출할 만큼 복잡한지 확인합니다.
@@ -11,6 +15,7 @@ Use this when extracting or adding non-trivial state, effect, form, query, mutat
 5. `state`, `action`, `field`, `submission`, `query`처럼 의미 단위로 반환값을 묶습니다.
 6. hook 목적이 명확히 소유하지 않으면 navigation, alert, API side effect를 숨기지 않습니다.
 7. edge case와 dependency behavior를 검증합니다.
+8. Frontend Fundamentals 기준으로 hook 응집도, return shape 예측 가능성, usage site 결합도를 self-check합니다.
 
 ## DONGCHIMI Rules
 

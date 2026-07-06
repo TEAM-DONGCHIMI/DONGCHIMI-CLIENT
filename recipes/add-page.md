@@ -2,6 +2,10 @@
 
 Use this when adding or changing a route page.
 
+Quality rule:
+
+- `docs/code-quality/frontend-fundamentals.md`
+
 ## Steps
 
 1. Jira issue 본문과 상태를 확인합니다.
@@ -27,7 +31,8 @@ Use this when adding or changing a route page.
 9. page logic이 dense해질 때만 hook을 추출합니다.
 10. loading, error, empty, disabled, success 상태를 처리합니다.
 11. responsive behavior와 accessibility를 확인합니다.
-12. 검증 명령과 남은 리스크를 요약합니다.
+12. Frontend Fundamentals 기준으로 page composition, hook 추출, 조건 분기, 응집도/결합도를 self-check합니다.
+13. 검증 명령과 남은 리스크를 요약합니다.
 
 ## DONGCHIMI Rules
 
