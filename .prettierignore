@@ -19,3 +19,4 @@ dist
 dist-ssr
 pnpm-lock.yaml
 turbo/generators/templates/**/*.hbs
+packages/shared/src/api/__generated__
