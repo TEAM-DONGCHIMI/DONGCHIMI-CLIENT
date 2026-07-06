@@ -14,7 +14,7 @@ const SvgIcTrash = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>) => 
     ref={ref}
     {...props}
   >
-    <g fill='#191F28'>
+    <g fill='currentColor'>
       <path d='M9.978 10.618c.502 0 .91.397.91.887v4.927c0 .49-.408.886-.91.886a.9.9 0 0 1-.91-.886v-4.927c0-.49.407-.887.91-.887M14.023 10.618c.502 0 .91.397.91.887v4.927c0 .49-.408.886-.91.886a.9.9 0 0 1-.91-.886v-4.927c0-.49.407-.887.91-.887' />
       <path
         fillRule='evenodd'

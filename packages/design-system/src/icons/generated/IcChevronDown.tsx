@@ -15,7 +15,7 @@ const SvgIcChevronDown = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement
     {...props}
   >
     <path
-      fill='var(--fill-0, #191F28)'
+      fill='currentColor'
       d='M3.364 7.363a.9.9 0 0 1 1.272 0L12 14.727l7.364-7.364a.9.9 0 0 1 1.272 1.273l-8 8a.9.9 0 0 1-1.272 0l-8-8a.9.9 0 0 1 0-1.273'
     />
   </svg>

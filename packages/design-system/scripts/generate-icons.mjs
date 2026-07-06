@@ -3,7 +3,7 @@
 import { spawn } from 'node:child_process';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { createIconIndexSource } from './icon-utils.mjs';
+import { createIconIndexSource, normalizeCurrentColorAttributes } from './icon-utils.mjs';
 import {
   buildIconManifest,
   collectGeneratedIconEntries,
@@ -99,17 +99,14 @@ const normalizeGeneratedIconImports = async () => {
       .map(async (entry) => {
         const filePath = path.join(generatedRoot, entry.name);
         const source = await readFile(filePath, 'utf8');
-        const normalizedSource = source
-          .replace('import * as React from "react";\n', '')
-          .replace(
-            'import type { SVGProps } from "react";\nimport { Ref, forwardRef, memo } from "react";',
-            "import { forwardRef, memo, type Ref, type SVGProps } from 'react';",
-          )
-          // Normalize hardcoded black fill/stroke to currentColor so consumers
-          // can control icon color via CSS (e.g. color: token.blue).
-          // Targets only solid-black values that SVGO produces (#000, #000000)
-          // and the raw keyword (black) in case SVGO is skipped.
-          .replace(/(fill|stroke)="(?:#000(?:000)?|black)"/g, '$1="currentColor"');
+        const normalizedSource = normalizeCurrentColorAttributes(
+          source
+            .replace('import * as React from "react";\n', '')
+            .replace(
+              'import type { SVGProps } from "react";\nimport { Ref, forwardRef, memo } from "react";',
+              "import { forwardRef, memo, type Ref, type SVGProps } from 'react';",
+            ),
+        );
 
         await writeFile(filePath, normalizedSource, 'utf8');
       }),

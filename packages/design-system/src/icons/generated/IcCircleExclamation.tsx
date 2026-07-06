@@ -14,7 +14,7 @@ const SvgIcCircleExclamation = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGE
     ref={ref}
     {...props}
   >
-    <g fill='#191F28'>
+    <g fill='currentColor'>
       <path d='M13.01 16.04a1.01 1.01 0 1 1-2.02 0 1.01 1.01 0 0 1 2.02 0M12.91 7.96a.91.91 0 1 0-1.819 0v4.545a.91.91 0 0 0 1.818 0z' />
       <path
         fillRule='evenodd'

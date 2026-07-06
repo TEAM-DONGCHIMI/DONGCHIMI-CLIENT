@@ -14,7 +14,7 @@ const SvgIcCirclePlusSizeSmall = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSV
     ref={ref}
     {...props}
   >
-    <g fill='#191F28'>
+    <g fill='currentColor'>
       <path d='M8.59 5.374a.59.59 0 0 0-1.181 0v2.035H5.373a.59.59 0 0 0 0 1.182H7.41v2.035a.591.591 0 1 0 1.182 0V8.591h2.035a.59.59 0 0 0 0-1.182H8.591z' />
       <path
         fillRule='evenodd'

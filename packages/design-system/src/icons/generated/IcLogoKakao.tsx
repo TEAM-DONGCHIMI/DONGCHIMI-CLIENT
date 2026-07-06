@@ -15,7 +15,7 @@ const SvgIcLogoKakao = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>)
     {...props}
   >
     <path
-      fill='var(--fill-0, #191F28)'
+      fill='currentColor'
       fillRule='evenodd'
       d='M12.5 3C7.256 3 3 6.339 3 10.445c0 2.561 1.644 4.796 4.152 6.159l-1.055 3.904a.4.4 0 0 0 .154.421.39.39 0 0 0 .444.001l4.618-3.098c.389 0 .788.067 1.187.067 5.244 0 9.5-3.339 9.5-7.454S17.744 3 12.5 3'
       clipRule='evenodd'

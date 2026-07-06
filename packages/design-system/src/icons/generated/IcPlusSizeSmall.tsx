@@ -15,7 +15,7 @@ const SvgIcPlusSizeSmall = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGEleme
     {...props}
   >
     <path
-      fill='var(--fill-0, #191F28)'
+      fill='currentColor'
       d='M10 2.5c.419 0 .758.34.758.758v5.984h5.984a.758.758 0 0 1 0 1.516h-5.984v5.984a.758.758 0 0 1-1.516 0v-5.984H3.258a.758.758 0 1 1 0-1.516h5.984V3.258c0-.418.34-.758.758-.758'
     />
   </svg>

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createSvgFingerprint,
   createSvgShapeSignature,
+  normalizeCurrentColorAttributes,
   normalizeSvgSource,
 } from './icon-utils.mjs';
 
@@ -20,6 +21,46 @@ describe('icon-utils SVG normalization', () => {
 
     expect(createSvgFingerprint(blackIcon)).toBe(createSvgFingerprint(currentColorIcon));
     expect(normalizeSvgSource(blackIcon)).toContain('currentColor');
+  });
+
+  it('normalizes neutral icon colors in generated TSX attributes to currentColor', () => {
+    const tsxIconSource = [
+      '<path fill="var(--fill-0, #191F28)" />',
+      "<path stroke='#1A1E27' />",
+      '<path fill={"#000000"} />',
+    ].join('\n');
+
+    expect(normalizeCurrentColorAttributes(tsxIconSource)).toBe(
+      [
+        '<path fill="currentColor" />',
+        "<path stroke='currentColor' />",
+        '<path fill={"currentColor"} />',
+      ].join('\n'),
+    );
+  });
+
+  it('normalizes neutral icon colors in style declarations to currentColor', () => {
+    const styledIconSource = [
+      '<path style="fill:#191F28; stroke: var(--stroke-0, #1A1E27);" />',
+      "const style = { fill: '#000', stroke: 'black' };",
+    ].join('\n');
+
+    expect(normalizeCurrentColorAttributes(styledIconSource)).toBe(
+      [
+        '<path style="fill: currentColor; stroke: currentColor;" />',
+        "const style = { fill: 'currentColor', stroke: 'currentColor' };",
+      ].join('\n'),
+    );
+  });
+
+  it('preserves none and intentional non-neutral icon colors', () => {
+    const coloredIconSource = [
+      '<svg fill="none">',
+      '<path fill="var(--fill-0, #15C47E)" stroke="#FF4242" />',
+      '</svg>',
+    ].join('\n');
+
+    expect(normalizeCurrentColorAttributes(coloredIconSource)).toBe(coloredIconSource);
   });
 
   it('uses SVGO normalization before fingerprinting structurally equivalent paths', () => {

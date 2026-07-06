@@ -15,7 +15,7 @@ const SvgIcClock = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>) => 
     {...props}
   >
     <path
-      stroke='var(--stroke-0, #191F28)'
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={2}
