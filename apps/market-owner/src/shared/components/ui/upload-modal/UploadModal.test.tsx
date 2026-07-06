@@ -93,6 +93,24 @@ describe('UploadModal', () => {
     expect(handleUpload).toHaveBeenCalledTimes(1);
   });
 
+  it('resets the file input value before opening the file picker', async () => {
+    const user = userEvent.setup();
+    const file = new File(['name,price'], 'products.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderUploadModal();
+
+    const fileInput = screen.getByLabelText(fileSelectLabel) as HTMLInputElement;
+
+    await user.upload(fileInput, file);
+    expect(fileInput.files).toHaveLength(1);
+
+    await user.click(screen.getByRole('button', { name: fileSelectLabel }));
+
+    expect(fileInput.value).toBe('');
+  });
+
   it('closes through the cancel button', async () => {
     const handleCancel = vi.fn();
     const handleOpenChange = vi.fn();

@@ -79,7 +79,10 @@ export const UploadModal = ({
         ? { color: 'primary' as const, variant: 'soft' as const }
         : { color: 'negative' as const, variant: 'outlined' as const };
   const handleFileSelectClick = () => {
-    fileInputRef.current?.click();
+    if (fileInputRef.current != null) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.click();
+    }
   };
   const handleCancel: MouseEventHandler<HTMLButtonElement> = (event) => {
     onCancel?.(event);

@@ -120,6 +120,7 @@ UploadModal
 - `Dialog.Title`과 `Dialog.Description`을 사용해 dialog accessible name/description을 제공합니다.
 - 파일 선택 trigger는 design-system `Button`을 사용하며, click handler에서 hidden file input click을 위임합니다.
 - hidden file input은 실제 file picker와 `onFileChange` 연결만 담당하며 `tabIndex={-1}`로 일반 탭 순서에 포함하지 않습니다.
+- 파일 선택 trigger는 같은 파일을 다시 선택해도 change 흐름이 막히지 않도록 file picker를 열기 전에 hidden file input value를 초기화합니다.
 - 파일 선택 icon은 장식 요소로 DS Button의 `leftIcon` slot에 전달되어 `aria-hidden` 처리됩니다.
 - 취소 버튼은 design-system `Button`을 사용하며, 클릭 시 `onCancel` 실행 후 `onOpenChange(false)`로 Dialog open state를 닫습니다.
 - `onCancel`에서 `event.preventDefault()`를 호출하면 닫힘을 막을 수 있습니다.
