@@ -99,6 +99,30 @@ src/
 - `@/*` alias는 `apps/market-owner/src/*`를 가리키며 app-local 절대 경로 import에 사용합니다.
 - 제품 domain, nested route, protected route는 요구사항 확정 후 별도 DCMSM Jira에서 추가합니다.
 
+## Layout Start Criteria
+
+사장님 앱의 page publishing 또는 route layout 작업을 시작하기 전에 아래 항목을 먼저 고정합니다.
+
+- 기준 viewport는 데스크탑 운영툴입니다. Figma frame, target width, 사이드바 폭, topbar 유무, main content max width를 spec에 적습니다.
+- `src/app`은 app shell, provider, router assembly, route boundary, layout만 담당합니다.
+- React Router route object는 `src/app/router.tsx`에서 조립하고, route path는 `src/shared/constants/routes.ts`에 상수화합니다.
+- 좌측 sidebar, topbar, protected layout, no-sidebar result layout처럼 여러 page에서 공유되는 shell은 `src/app/layouts` 또는 `src/shared/components/layout` 후보로 검토합니다.
+- page 본문, table section, form section, CTA 영역처럼 route에 강하게 결합된 UI는 `src/domains/{domain}/{page}/{components|sections}`에 둡니다.
+- 인증 이후 접근이 필요한 route는 protected boundary를 spec에 적고, 실제 auth API가 없으면 fixture 또는 placeholder 정책을 명시합니다.
+- sidebar item, tab, breadcrumb처럼 route active state가 필요한 navigation은 route constant와 동기화합니다.
+
+## Page Publishing Evidence
+
+page publishing PR은 아래 근거를 spec과 PR 본문에 남깁니다.
+
+- Figma URL, frame name 또는 Screen ID
+- 확인한 browser route와 desktop viewport
+- 사용한 design-system `ui`, `layout`, icon component
+- 새로 만든 app-shared 또는 page-local component와 그 위치를 택한 이유
+- sidebar/topbar/main content layout 기준과 active navigation 확인 결과
+- 디자인과 다르게 구현한 부분과 이유
+- keyboard navigation, focus-visible, current page 또는 selected tab semantics 확인 결과
+
 ## Generator Scope
 
 사장님 앱은 Vite React SPA이므로 Next App Router route entry를 생성하는 `gen:next-page` 대상이 아닙니다.

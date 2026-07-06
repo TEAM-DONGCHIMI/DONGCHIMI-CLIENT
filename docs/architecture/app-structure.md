@@ -49,9 +49,12 @@ src/
 - `gen:react-page`, `gen:app-component`, `gen:domain-component`, `gen:domain-section`은 `market-owner`를 지원합니다.
 - `gen:domain-query`, `gen:domain-mutation`은 `market-owner`의 API/query baseline이 생긴 뒤 확장합니다.
 
+사장님 앱의 desktop 운영툴 layout 착수 기준은 [Market Owner App](./market-owner-app.md)을 우선 확인합니다.
+
 ## Base Structure
 
 `apps/client`의 `src/app`은 Next가 해석하는 route entry와 layout을 위한 공간입니다. 실제 화면 조립, API, query, model은 `src/domains`와 `src/shared`로 분리합니다.
+모바일 웹 layout 착수 기준은 [Client App](./client-app.md)을 우선 확인합니다.
 
 ```text
 src/

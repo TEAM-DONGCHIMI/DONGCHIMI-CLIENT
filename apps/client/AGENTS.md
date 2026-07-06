@@ -12,6 +12,7 @@
 ## 먼저 볼 문서
 
 - [App Structure](../../docs/architecture/app-structure.md)
+- [Client App](../../docs/architecture/client-app.md)
 - [Data Layer](../../docs/architecture/data-layer.md)
 - [Local Development](../../docs/workflows/local-development.md)
 - [Add Page Recipe](../../recipes/add-page.md)

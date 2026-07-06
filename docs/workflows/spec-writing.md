@@ -53,6 +53,9 @@ Spec 생략이 가능한 경우:
 - Component: `templates/component.spec.md`
 - Hook, query, mutation, state logic: `templates/hook.spec.md`
 
+Page spec은 Figma frame 또는 Screen ID, target viewport, route/access rule, layout shell, design-system 활용 여부,
+app-shared/page-local 경계, browser route evidence를 함께 적습니다. 디자인과 구현이 다르면 mismatch와 이유를 남깁니다.
+
 ## Depth Rule
 
 - PR 리뷰어가 구현 의도를 이해할 수 있을 정도로만 씁니다.
