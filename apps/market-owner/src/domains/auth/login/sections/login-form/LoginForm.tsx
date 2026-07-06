@@ -1,0 +1,36 @@
+import { Button, TextInput } from '@dongchimi/design-system/components';
+import { IcCheckboxActionSizeSmall, IcCheckboxSizeSmall } from '@dongchimi/design-system/icons';
+
+import * as S from './LoginForm.css';
+
+export const LoginForm = () => {
+  return (
+    <form aria-label='마트 관리자 로그인' className={S.formClassName} noValidate>
+      <TextInput
+        autoComplete='email'
+        label='이메일'
+        placeholder='텍스트를 입력하세요'
+        type='email'
+      />
+      <TextInput
+        autoComplete='current-password'
+        label='비밀번호'
+        placeholder='텍스트를 입력하세요'
+        type='password'
+      />
+
+      <label className={S.keepSignedInClassName}>
+        <input className={S.keepSignedInInputClassName} type='checkbox' />
+        <span aria-hidden='true' className={S.keepSignedInIconClassName}>
+          <IcCheckboxSizeSmall className={S.keepSignedInUncheckedIconClassName} />
+          <IcCheckboxActionSizeSmall className={S.keepSignedInCheckedIconClassName} />
+        </span>
+        <span className={S.keepSignedInTextClassName}>로그인 상태 유지</span>
+      </label>
+
+      <Button className={S.fullWidthButtonClassName} disabled size='medium' type='submit'>
+        로그인
+      </Button>
+    </form>
+  );
+};
