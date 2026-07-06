@@ -72,6 +72,8 @@ Name map은 export 파일명 또는 staging directory 기준 상대 경로를 `i
 
 SVG fingerprint와 shape signature는 SVGO 정규화 뒤 계산합니다. Figma export의 wrapper, attribute order, path data 표현 차이, black/currentColor 차이 때문에 같은 아이콘이 다르게 보이는 false negative를 줄이기 위한 단계입니다.
 
+Generated TSX의 neutral black fill/stroke는 `currentColor`로 정규화됩니다. 의도적인 white, semantic color, product color, `none`은 보존합니다.
+
 ## SVG Input Policy
 
 SVGR is not a sanitizer. The generator validates raw SVG input before TSX transformation.
@@ -88,7 +90,7 @@ Blocked input:
 ```bash
 pnpm --filter @dongchimi/design-system icons:import ./tmp/icons --dry-run
 pnpm --filter @dongchimi/design-system icons:generate
-pnpm --filter @dongchimi/design-system check:icons
+pnpm check:icons
 pnpm --filter @dongchimi/design-system test:unit
 pnpm --filter @dongchimi/design-system lint
 pnpm --filter @dongchimi/design-system typecheck

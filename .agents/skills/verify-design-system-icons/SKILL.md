@@ -12,6 +12,7 @@ description: packages/design-system 아이콘 소스, 생성 산출물, public e
 - 원본 SVG naming rule이 `ic-name.svg`인지 확인합니다.
 - 생성된 React component와 public export가 원본과 맞는지 확인합니다.
 - SVG 입력 검증 정책이 유지되는지 확인합니다.
+- generated icon color contract가 유지되는지 확인합니다.
 - 로컬 build/typecheck가 실제로 통과했는지 확인합니다.
 
 ## 입력 점검
@@ -19,7 +20,7 @@ description: packages/design-system 아이콘 소스, 생성 산출물, public e
 먼저 변경 파일을 확인합니다.
 
 ```bash
-git diff --name-only HEAD -- packages/design-system/src/icons packages/design-system/scripts packages/design-system/package.json docs/architecture/design-system-icons.md recipes/add-icon.md
+git diff --name-only HEAD -- packages/design-system/src/icons packages/design-system/scripts packages/design-system/package.json package.json .github/workflows/ci.yml docs/architecture/design-system-icons.md docs/workflows/ci.md docs/workflows/local-development.md recipes/add-icon.md
 git status --short -- packages/design-system/src/icons packages/design-system/scripts
 ```
 
@@ -32,6 +33,7 @@ git status --short -- packages/design-system/src/icons packages/design-system/sc
 3. `packages/design-system/package.json`에서 icon 관련 script와 `./icons` export를 확인합니다.
 4. `packages/design-system/src/icons/index.ts`와 생성 파일을 비교합니다.
 5. `packages/design-system/scripts/*icon*.mjs`가 있으면 naming, validation, generation 책임을 확인합니다.
+6. root `package.json`과 `.github/workflows/ci.yml`에서 `check:icons` 연결을 확인합니다.
 
 ## Workflow
 
@@ -64,31 +66,66 @@ rg -n "<script|<foreignObject|<iframe|<object|<embed|\\son[a-zA-Z]+\\s*=|javascr
 
 PASS: 출력이 없습니다.
 
-### Step 4: 생성/빌드 검증
+### Step 4: source/generated sync 검사
 
-아이콘 생성 script가 있으면 실제 생성 명령을 실행합니다.
+아이콘 검증 script가 있으면 먼저 비파괴 검사를 실행합니다.
+
+```bash
+pnpm check:icons
+```
+
+PASS: source SVG, `generated/`, `index.ts`, `generated/icons.manifest.json`이 동기화되어 있습니다.
+
+신규 icon source를 의도적으로 추가했거나 drift를 수정하는 중이라면 generator를 실행한 뒤 다시 검사합니다.
 
 ```bash
 pnpm --filter @dongchimi/design-system icons:generate
-pnpm --filter @dongchimi/design-system build
+pnpm check:icons
 ```
 
-아이콘 생성 script가 아직 없으면 `SKIP`으로 보고하고, design-system build만 실행합니다.
+`icons:generate`는 파일을 수정할 수 있으므로 첫 번째 drift 탐지 명령으로 사용하지 않습니다.
+
+### Step 5: script/unit/build 검증
+
+icon script 또는 sync 로직을 바꿨다면 실행합니다.
+
+```bash
+pnpm --filter @dongchimi/design-system test:unit
+```
+
+아이콘 pipeline이 있으면 design-system build도 실행합니다.
 
 ```bash
 pnpm --filter @dongchimi/design-system build
 ```
 
-### Step 5: export 확인
+### Step 6: export 확인
 
 - `packages/design-system/package.json`에 `./icons` export가 있는지 확인합니다.
 - 새 generated component가 `packages/design-system/src/icons/index.ts`에서 export되는지 확인합니다.
 - 원본 SVG 삭제/이름 변경이 generated output과 index export에 반영됐는지 확인합니다.
+- generated TSX의 neutral fill/stroke가 `currentColor`로 생성되는지 확인합니다.
+
+## Related Files
+
+| File or Pattern | Purpose |
+| --- | --- |
+| `packages/design-system/src/icons/svg/**` | source SVG 입력 |
+| `packages/design-system/src/icons/generated/**` | generated React icon component |
+| `packages/design-system/src/icons/index.ts` | public icon export |
+| `packages/design-system/scripts/*icon*.mjs` | import/generate/check utility |
+| `packages/design-system/package.json` | workspace icon scripts and subpath export |
+| `package.json` | root `check:icons` script |
+| `.github/workflows/ci.yml` | CI icon sync enforcement |
+| `docs/architecture/design-system-icons.md` | icon architecture policy |
+| `docs/workflows/ci.md` | CI command policy |
+| `docs/workflows/local-development.md` | local verification command policy |
+| `recipes/add-icon.md` | icon addition procedure |
 
 ## 완료 기준
 
 - 아이콘 pipeline이 없는 baseline에서는 이유와 함께 `SKIP`입니다.
-- 아이콘 pipeline이 있으면 naming, SVG safety, generation, build, export 확인이 완료됩니다.
+- 아이콘 pipeline이 있으면 naming, SVG safety, check:icons, 필요한 generation, unit/build, export 확인이 완료됩니다.
 - Figma 기반 아이콘이면 원본 asset 이름/크기/의미를 최종 보고에 남깁니다.
 
 ## 예외
