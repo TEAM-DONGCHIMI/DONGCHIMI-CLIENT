@@ -13,32 +13,32 @@ const renderRoute = (path: string) => {
 };
 
 describe('marketOwnerRoutes', () => {
-  it('renders public auth routes without the sidebar layout', () => {
+  it('renders public auth routes without the sidebar layout', async () => {
     renderRoute('/login');
 
-    expect(screen.getByRole('heading', { name: '로그인' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '로그인' })).toBeInTheDocument();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   });
 
-  it('renders protected work routes with the sidebar layout', () => {
+  it('renders protected work routes with the sidebar layout', async () => {
     renderRoute('/');
 
-    expect(screen.getByRole('heading', { name: '홈' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '홈' })).toBeInTheDocument();
     expect(screen.getByRole('complementary')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '홈' })).toHaveAttribute('aria-current', 'page');
   });
 
-  it('keeps the registration result route outside the sidebar layout', () => {
+  it('keeps the registration result route outside the sidebar layout', async () => {
     renderRoute('/products/registration-result');
 
-    expect(screen.getByRole('heading', { name: '상품 등록 결과 확인' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '상품 등록 결과 확인' })).toBeInTheDocument();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   });
 
-  it('syncs edit sidebar and tab navigation through route state', () => {
+  it('syncs edit sidebar and tab navigation through route state', async () => {
     renderRoute('/products/event-discount/edit');
 
-    expect(screen.getByRole('heading', { name: '행사 할인 상품 수정' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '행사 할인 상품 수정' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '행사 할인 상품 수정' })).toHaveAttribute(
       'aria-current',
       'page',
@@ -47,9 +47,11 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('link', { name: '행사 할인' })).toHaveAttribute('aria-current', 'page');
   });
 
-  it('renders the not found page for unknown routes', () => {
+  it('renders the not found page for unknown routes', async () => {
     renderRoute('/unknown-route');
 
-    expect(screen.getByRole('heading', { name: '페이지를 찾을 수 없습니다.' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: '페이지를 찾을 수 없습니다.' }),
+    ).toBeInTheDocument();
   });
 });
