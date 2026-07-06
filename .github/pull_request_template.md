@@ -33,7 +33,7 @@ Jira key를 링크로 연결해 주세요.
 
 ## Evidence
 
-<!-- 관찰한 근거만 작성해 주세요. route, preview URL, deployment id, CI run, console/network 상태 등을 적습니다. -->
+<!-- 관찰한 근거만 작성해 주세요. route, viewport, Figma frame, 사용한 DS component, mismatch, preview URL, deployment id, CI run, console/network 상태 등을 적습니다. -->
 
 ## PR Point
 
