@@ -50,3 +50,34 @@ export const searchIconClassName = style({
   border: `0.15rem dashed ${atomic.neutral[90]}`,
   borderRadius: '0.4rem',
 });
+
+export const logoHeaderClassName = style([
+  headerClassName,
+  {
+    height: '6.4rem',
+    gap: '1rem',
+    padding: '0 2.4rem',
+  },
+]);
+
+export const logoSlotClassName = style({
+  display: 'inline-flex',
+  width: '9.2rem',
+  height: '3.2rem',
+  flexShrink: 0,
+  alignItems: 'center',
+  justifyContent: 'center',
+  overflow: 'hidden',
+});
+
+export const logoBreadcrumbClassName = style([
+  breadcrumbClassName,
+  {
+    height: '6.4rem',
+    padding: '0 4rem',
+  },
+]);
+
+export const logoSearchSlotClassName = style({
+  marginLeft: 'auto',
+});
