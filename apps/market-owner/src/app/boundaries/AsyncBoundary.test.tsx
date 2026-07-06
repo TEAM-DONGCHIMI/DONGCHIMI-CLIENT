@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent } from '@/test';
 
@@ -38,6 +38,10 @@ const createTestQueryClient = () => {
 };
 
 describe('AsyncBoundary', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('renders children when no route boundary state is active', () => {
     render(
       <AsyncBoundary>
@@ -59,7 +63,7 @@ describe('AsyncBoundary', () => {
   });
 
   it('renders an accessible error fallback when children throw', () => {
-    const consoleError = muteReactError();
+    muteReactError();
 
     render(
       <AsyncBoundary>
@@ -71,12 +75,10 @@ describe('AsyncBoundary', () => {
       screen.getByRole('heading', { name: '화면을 불러오지 못했습니다.' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '다시 시도' })).toBeInTheDocument();
-
-    consoleError.mockRestore();
   });
 
   it('resets the error boundary through a custom fallback action', async () => {
-    const consoleError = muteReactError();
+    muteReactError();
     const user = userEvent.setup();
 
     const BoundaryResetExample = () => {
@@ -106,12 +108,56 @@ describe('AsyncBoundary', () => {
     await user.click(screen.getByRole('button', { name: '다시 불러오기' }));
 
     expect(screen.getByText('복구된 화면')).toBeInTheDocument();
+  });
 
-    consoleError.mockRestore();
+  it('resets the error boundary when resetKeys change', async () => {
+    muteReactError();
+    const user = userEvent.setup();
+
+    const BoundaryResetKeysExample = () => {
+      const [productId, setProductId] = useState('failed-product');
+
+      return (
+        <>
+          <button onClick={() => setProductId('resolved-product')} type='button'>
+            다른 상품 보기
+          </button>
+          <AsyncBoundary resetKeys={[productId]}>
+            <RecoverableContent shouldThrow={productId === 'failed-product'} />
+          </AsyncBoundary>
+        </>
+      );
+    };
+
+    render(<BoundaryResetKeysExample />);
+
+    expect(
+      screen.getByRole('heading', { name: '화면을 불러오지 못했습니다.' }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '다른 상품 보기' }));
+
+    expect(screen.getByText('복구된 화면')).toBeInTheDocument();
+  });
+
+  it('calls onError when children throw', () => {
+    muteReactError();
+    const onError = vi.fn();
+
+    render(
+      <AsyncBoundary onError={onError}>
+        <BrokenContent />
+      </AsyncBoundary>,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: '화면을 불러오지 못했습니다.' }),
+    ).toBeInTheDocument();
+    expect(onError).toHaveBeenCalledWith(expect.any(Error), expect.any(Object));
   });
 
   it('resets query errors before retrying the failed content', async () => {
-    const consoleError = muteReactError();
+    muteReactError();
     const queryClient = createTestQueryClient();
     const queryFn = vi
       .fn<() => Promise<string>>()
@@ -144,7 +190,5 @@ describe('AsyncBoundary', () => {
 
     expect(await screen.findByText('복구된 데이터')).toBeInTheDocument();
     expect(queryFn).toHaveBeenCalledTimes(2);
-
-    consoleError.mockRestore();
   });
 });

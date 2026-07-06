@@ -21,6 +21,7 @@ DCMSM-17부터 lazy route page는 앱 전용 `AsyncBoundary`를 통해 Suspense 
 - Figma: APPJAM node 1714-120191, node 1553-112507
 - Attachments: `market-owner-edit-tabs.png`, `market-owner-sidebar-layout.png`
 - Decision / Architecture: `docs/architecture/app-structure.md`, `docs/architecture/market-owner-app.md`
+- Lazy route helper: `apps/market-owner/src/app/create-lazy-route.tsx`
 
 ## Scope
 
@@ -31,6 +32,7 @@ DCMSM-17부터 lazy route page는 앱 전용 `AsyncBoundary`를 통해 Suspense 
 - `ProtectedRoute`는 실제 auth API 전까지 fixture 통과 정책을 둡니다.
 - 수정하기 탭은 오늘의 특가와 행사 할인 각각 별도 route로 두어 sidebar active state와 같은 URL을 공유합니다.
 - 존재하지 않는 경로는 app 내부 Not Found 화면을 보여줍니다.
+- lazy route wrapping은 `createLazyRoute` helper에 위임하고, `router.tsx`는 route object와 `createBrowserRouter` 생성만 담당합니다.
 
 ## Out Of Scope
 

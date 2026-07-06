@@ -4,7 +4,7 @@ import { atomic, shadow, typography } from '@dongchimi/design-system/tokens';
 
 export const fallbackRootClassName = style({
   display: 'grid',
-  minHeight: '100vh',
+  minHeight: '100%',
   placeItems: 'center',
   padding: '4rem',
   backgroundColor: atomic.neutral[10],
