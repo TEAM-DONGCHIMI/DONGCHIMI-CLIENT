@@ -73,6 +73,19 @@ export const SquareImage: StoryTypes = {
   },
 };
 
+export const WithoutImage: StoryTypes = {
+  args: {
+    imageAlt: undefined,
+    imageSrc: undefined,
+  },
+};
+
+export const LongPrice: StoryTypes = {
+  args: {
+    priceText: '12,345,678,900',
+  },
+};
+
 export const ProductLink: StoryTypes = {
   args: {
     href: '/markets/sample-market/products/samgyeopsal-500g',

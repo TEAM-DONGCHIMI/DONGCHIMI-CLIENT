@@ -35,21 +35,15 @@ const getProductCardLabel = (productName: string) => `${productName} ${PRODUCT_L
 const hasProductImage = (imageSrc: ImageProps['src'] | undefined): imageSrc is ImageProps['src'] =>
   imageSrc != null && (typeof imageSrc !== 'string' || imageSrc.length > 0);
 
-export const PeriodProductCard = ({
-  'aria-label': ariaLabel,
-  href,
-  className,
+const PeriodProductCardContent = ({
   imageAlt,
   imageSrc,
-  onClick,
   priceText,
   productName,
-  ...props
-}: PeriodProductCardProps) => {
+}: Pick<PeriodProductCardProps, 'imageAlt' | 'imageSrc' | 'priceText' | 'productName'>) => {
   const hasImage = hasProductImage(imageSrc);
-  const accessibleName = ariaLabel ?? getProductCardLabel(productName);
 
-  const content = (
+  return (
     <>
       <span className={S.imageFrameClassName}>
         {hasImage ? (
@@ -74,6 +68,20 @@ export const PeriodProductCard = ({
       </span>
     </>
   );
+};
+
+export const PeriodProductCard = ({
+  'aria-label': ariaLabel,
+  href,
+  className,
+  imageAlt,
+  imageSrc,
+  onClick,
+  priceText,
+  productName,
+  ...props
+}: PeriodProductCardProps) => {
+  const accessibleName = ariaLabel ?? getProductCardLabel(productName);
 
   if (href != null) {
     return (
@@ -84,14 +92,24 @@ export const PeriodProductCard = ({
         onClick={onClick}
         {...props}
       >
-        {content}
+        <PeriodProductCardContent
+          imageAlt={imageAlt}
+          imageSrc={imageSrc}
+          priceText={priceText}
+          productName={productName}
+        />
       </Link>
     );
   }
 
   return (
     <div aria-label={ariaLabel} className={cn(S.rootClassName, className)} {...props}>
-      {content}
+      <PeriodProductCardContent
+        imageAlt={imageAlt}
+        imageSrc={imageSrc}
+        priceText={priceText}
+        productName={productName}
+      />
     </div>
   );
 };
