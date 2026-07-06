@@ -39,7 +39,8 @@
 
 ## Frontend Fundamentals Review
 
-코드 구현 후 또는 PR 전에는 필요에 따라 `$frontend-fundamentals-review`를 사용합니다.
+페이지, 컴포넌트, hook/state, API query/mutation, form flow 구현 후에는 [frontend-fundamentals.md](./frontend-fundamentals.md)를 self-check 기준으로 사용합니다.
+비자명한 변경, shared/public API 변경, PR 전 품질 점검에는 필요에 따라 `$frontend-fundamentals-review`를 사용합니다.
 이 review는 lint/typecheck/build를 대체하지 않습니다. 정적 검증은 실행 가능 여부를 확인하고, 이 review는 변경하기 쉬운 코드인지 판단합니다.
 
 리뷰 결과는 findings-first로 작성합니다.

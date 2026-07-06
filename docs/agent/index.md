@@ -88,7 +88,8 @@ turbo/
 - 앱 내부 shared 컴포넌트 생성과 구현 순서는 `app-shared-component-workflow`에 둡니다.
 - Turbo generator script, template, sample 검증 순서는 `turbo-generator-workflow`에 둡니다.
 - 프론트엔드 workflow와 검증 범위 선택은 `frontend-*` 및 `*-workflow` skill에 둡니다.
-- Toss Frontend Fundamentals 기반 코드 품질 리뷰는 `frontend-fundamentals-review`에 둡니다.
+- Toss Frontend Fundamentals 기반 구현 self-check 기준은 `docs/code-quality/frontend-fundamentals.md`에 둡니다.
+- Toss Frontend Fundamentals 기반 diff 리뷰 절차는 `frontend-fundamentals-review`에 둡니다.
 - 커밋 분해와 stage/commit 계획은 `commit-planning-workflow`에 둡니다.
 - 브라우저 PR 리뷰의 증거 구분은 `browser-pr-review-workflow`에 둡니다.
 - Jira/PR/Notion/check 상태 모니터링 기준은 `project-monitoring-workflow`에 둡니다.

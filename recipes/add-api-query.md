@@ -2,6 +2,10 @@
 
 Use this when adding a query hook, mutation hook, endpoint helper, or API type.
 
+Quality rule:
+
+- `docs/code-quality/frontend-fundamentals.md`
+
 ## Steps
 
 1. API contract를 확인합니다.
@@ -36,6 +40,7 @@ Use this when adding a query hook, mutation hook, endpoint helper, or API type.
 11. `setQueryData`는 서버 응답으로 캐시를 즉시 동기화할 수 있을 때만 사용합니다.
 12. optimistic update는 rollback 기준과 실패 UX가 정리된 경우에만 사용합니다.
 13. endpoint별 retry policy는 필요한 근거가 있을 때만 기본값을 override합니다.
+14. Frontend Fundamentals 기준으로 API helper, query/mutation hook, usage site의 책임 분리와 예측 가능성을 self-check합니다.
 
 ## Query Key Rule
 

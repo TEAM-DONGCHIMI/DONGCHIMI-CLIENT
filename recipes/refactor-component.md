@@ -2,6 +2,10 @@
 
 Use this when changing existing component structure without adding new behavior.
 
+Quality rule:
+
+- `docs/code-quality/frontend-fundamentals.md`
+
 ## Steps
 
 1. Define the current responsibility of the component.
@@ -14,7 +18,8 @@ Use this when changing existing component structure without adding new behavior.
 5. Split when responsibilities, state, or change reasons are different.
 6. Keep unrelated formatting and behavior unchanged.
 7. Remove only unused code created by the refactor.
-8. Run verification commands and compare behavior.
+8. Frontend Fundamentals 기준으로 refactor가 가독성, 예측 가능성, 응집도, 결합도를 실제로 개선하는지 확인합니다.
+9. Run verification commands and compare behavior.
 
 ## Guardrails
 

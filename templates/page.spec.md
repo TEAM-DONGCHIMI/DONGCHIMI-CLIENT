@@ -61,6 +61,7 @@
 ## Verification
 
 - [ ] `git diff --check`
+- [ ] Frontend Fundamentals self-check
 - [ ] format/lint/typecheck/build when package scripts exist
 - [ ] browser route:
 

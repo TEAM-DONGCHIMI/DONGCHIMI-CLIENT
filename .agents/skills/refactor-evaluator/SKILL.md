@@ -31,6 +31,7 @@ Use this skill before refactoring existing code. Evaluate necessity before chang
 
 - Follow `AGENTS.md`.
 - Apply `docs/code-quality/index.md`.
+- Apply `docs/code-quality/frontend-fundamentals.md` when evaluating React component, hook, API, form, or page structure.
 - Avoid unnecessary splitting.
 - Do not refactor unrelated code.
 - Prefer local duplication over premature shared abstraction.

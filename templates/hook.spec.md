@@ -60,6 +60,7 @@
 ## Verification
 
 - [ ] `git diff --check`
+- [ ] Frontend Fundamentals self-check
 - [ ] state transitions covered
 - [ ] API contract checked
 
