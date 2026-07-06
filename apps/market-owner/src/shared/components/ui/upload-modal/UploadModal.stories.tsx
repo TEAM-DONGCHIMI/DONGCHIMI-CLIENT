@@ -19,6 +19,7 @@ const meta = {
   tags: ['autodocs'],
   args: {
     accept: '.xlsx,.xls',
+    heading: '파일 업로드',
     label: sampleText,
     onCancel: noop,
     onOpenChange: noop,

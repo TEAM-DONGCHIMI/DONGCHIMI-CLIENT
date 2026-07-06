@@ -61,6 +61,7 @@ UploadModal
 - exported types: `UploadModalProps`, `UploadModalStateTypes`
 - caller responsibility:
   - `open`, `onOpenChange` 제어
+  - 업로드 흐름별 `heading` 문구 지정
   - 파일 종류별 `accept` 정책 지정
   - 선택 파일 상태와 업로드 가능 여부 계산
   - 실제 업로드 API 호출과 오류 메시지 매핑
@@ -74,7 +75,7 @@ UploadModal
 - `open`: modal open state
 - `onOpenChange`: Dialog open state handler
 - `state`: `default` | `upload` | `error`
-- `heading`: title text, defaults to `엑셀 파일 업로드`
+- `heading`: required title text. 앱 shared 컴포넌트가 엑셀, 전단 같은 특정 업로드 흐름 카피를 기본값으로 소유하지 않도록 호출부가 전달합니다.
 - `label`: default/error 안내 문구 또는 upload fallback 문구
 - `description`: upload 상태에서 label 위에 표시하는 보조 문구
 - `selectedFileText`: upload 상태에서 표시하는 선택 파일/대상 문구

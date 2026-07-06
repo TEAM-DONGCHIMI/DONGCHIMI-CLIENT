@@ -5,13 +5,14 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen, userEvent } from '../../../../test';
 import { UploadModal } from './UploadModal';
 
-const dialogName = '엑셀 파일 업로드';
+const dialogName = '파일 업로드';
 const fileSelectLabel = '파일 선택';
 const uploadButtonLabel = '파일 업로드';
 const cancelLabel = '취소';
 
 const defaultProps = {
   accept: '.xlsx,.xls',
+  heading: dialogName,
   label: '엑셀 파일을 선택해주세요',
   onOpenChange: vi.fn(),
   open: true,

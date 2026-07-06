@@ -25,7 +25,7 @@ export interface UploadModalProps extends NativeDialogContentProps {
   description?: string;
   fileSelectIcon?: ReactNode;
   fileSelectLabel?: string;
-  heading?: string;
+  heading: string;
   label: string;
   open: boolean;
   selectedFileText?: string;
@@ -40,7 +40,6 @@ export interface UploadModalProps extends NativeDialogContentProps {
 
 const DEFAULT_CANCEL_LABEL = '취소';
 const DEFAULT_FILE_SELECT_LABEL = '파일 선택';
-const DEFAULT_HEADING = '엑셀 파일 업로드';
 const DEFAULT_UPLOAD_BUTTON_LABEL = '파일 업로드';
 const DEFAULT_FILE_SELECT_ICON = <IcUpload />;
 
@@ -55,7 +54,7 @@ export const UploadModal = ({
   description,
   fileSelectIcon = DEFAULT_FILE_SELECT_ICON,
   fileSelectLabel = DEFAULT_FILE_SELECT_LABEL,
-  heading = DEFAULT_HEADING,
+  heading,
   label,
   open,
   selectedFileText,
