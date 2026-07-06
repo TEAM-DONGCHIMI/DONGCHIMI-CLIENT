@@ -22,7 +22,7 @@ export const Default: StoryTypes = {
     docs: {
       description: {
         story:
-          'Default 상태입니다. neutral 40 텍스트만 표시하고 밑줄은 없습니다. Figma의 action 상태(밑줄)는 hover/focus-visible CSS pseudo state로 지원하며 브라우저 hover 또는 키보드 focus로 확인합니다.',
+          'Default 상태입니다. neutral 40 텍스트만 표시하고 밑줄은 없습니다. Figma의 action 상태는 caption-1-medium 타이포, neutral 60 텍스트 색상, 밑줄을 hover/focus-visible CSS pseudo state로 지원하며 브라우저 hover 또는 키보드 focus로 확인합니다.',
       },
     },
   },

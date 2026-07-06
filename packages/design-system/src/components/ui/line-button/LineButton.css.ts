@@ -19,9 +19,13 @@ export const lineButton = style({
   transition: 'color 160ms ease, outline-color 160ms ease',
   selectors: {
     '&:not(:disabled):hover': {
+      ...typography['caption-1-medium'],
+      color: atomic.neutral[60],
       textDecorationLine: 'underline',
     },
     '&:focus-visible': {
+      ...typography['caption-1-medium'],
+      color: atomic.neutral[60],
       textDecorationLine: 'underline',
       outline: `3px solid ${focusOutlineColor}`,
       outlineOffset: 2,
