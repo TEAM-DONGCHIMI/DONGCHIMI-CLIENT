@@ -81,7 +81,7 @@
 - title은 neutral 90, subText는 neutral 50, description은 neutral 80 색상을 사용합니다.
 - 하단 버튼은 DS `Button size="mobile"`을 사용하되 modal footer 안에서 동일한 폭을 갖도록 `width: 100%`, `minWidth: 0`으로 제약합니다.
 - footer는 내부 content와 같은 `26.5rem` 폭이며 버튼 간격은 `0.8rem`입니다.
-- 버튼 높이는 `4.4rem`, radius는 `0.8rem`, 라벨은 `body-3-semibold`를 사용합니다.
+- 버튼 높이는 `4.4rem`, 라벨은 `body-3-semibold`를 사용하며 radius는 DS `Button` 기본값을 따릅니다.
 - 취소 버튼은 Figma의 회색 채움 버튼처럼 neutral 30 배경과 흰색 텍스트를 사용합니다.
 - 주요 액션 버튼은 DS primary solid 버튼을 사용합니다.
 

@@ -83,7 +83,6 @@ export const actionButtonClassName = style({
   minWidth: 0,
   height: '4.4rem',
   padding: '1.2rem',
-  borderRadius: '0.8rem',
   ...typography['body-3-semibold'],
 });
 
