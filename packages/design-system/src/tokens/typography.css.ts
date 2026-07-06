@@ -35,10 +35,10 @@ export const typography = {
     lineHeight: 1.4,
     letterSpacing: '-0.01rem',
   },
-  'title-2-bold': {
+  'title-2-semibold': {
     ...base,
     fontSize: '2.8rem',
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: 1.4,
     letterSpacing: '-0.01rem',
   },
