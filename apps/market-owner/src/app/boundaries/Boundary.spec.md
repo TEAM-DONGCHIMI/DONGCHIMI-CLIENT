@@ -25,6 +25,7 @@ Boundary는 React `Suspense`와 `react-error-boundary`를 조합하고, route pa
 - `apps/market-owner/src/app/boundaries`에 앱 전용 Boundary를 둡니다.
 - `apps/market-owner/src/app/router.tsx`의 lazy route component helper에서 Boundary를 적용합니다.
 - `react-error-boundary` 의존성은 `apps/market-owner`에만 추가합니다.
+- TanStack Query query error는 Boundary fallback UI로 전파하고, fallback reset은 `QueryErrorResetBoundary`와 함께 query retry를 허용합니다.
 
 ## Out Of Scope
 
@@ -36,6 +37,7 @@ Boundary는 React `Suspense`와 `react-error-boundary`를 조합하고, route pa
 
 - loading: route component import 또는 하위 UI가 suspend되면 기본 로딩 fallback을 렌더링합니다.
 - error: 하위 route render 중 throw된 error는 기본 error fallback으로 전환합니다.
+- query error: `queries.throwOnError` 기본값으로 Boundary까지 전파하고, mutation error는 사용자 상호작용 흐름을 끊지 않도록 Boundary로 전파하지 않습니다.
 - disabled: 기본 retry 버튼은 별도 disabled 상태를 갖지 않습니다.
 - keyboard / focus: retry 버튼은 native button이며 keyboard로 접근 가능합니다.
 

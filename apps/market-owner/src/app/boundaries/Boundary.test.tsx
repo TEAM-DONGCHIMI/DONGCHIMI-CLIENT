@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -23,6 +24,17 @@ const RecoverableContent = ({ shouldThrow }: { shouldThrow: boolean }) => {
 
 const muteReactError = () => {
   return vi.spyOn(console, 'error').mockImplementation(() => undefined);
+};
+
+const createTestQueryClient = () => {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        throwOnError: true,
+      },
+    },
+  });
 };
 
 describe('Boundary', () => {
@@ -94,6 +106,44 @@ describe('Boundary', () => {
     await user.click(screen.getByRole('button', { name: '다시 불러오기' }));
 
     expect(screen.getByText('복구된 화면')).toBeInTheDocument();
+
+    consoleError.mockRestore();
+  });
+
+  it('resets query errors before retrying the failed content', async () => {
+    const consoleError = muteReactError();
+    const queryClient = createTestQueryClient();
+    const queryFn = vi
+      .fn<() => Promise<string>>()
+      .mockRejectedValueOnce(new Error('query failed'))
+      .mockResolvedValue('복구된 데이터');
+    const user = userEvent.setup();
+
+    const QueryContent = () => {
+      const { data } = useQuery({
+        queryFn,
+        queryKey: ['boundary-reset'],
+      });
+
+      return <p>{data}</p>;
+    };
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <Boundary>
+          <QueryContent />
+        </Boundary>
+      </QueryClientProvider>,
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: '화면을 불러오지 못했습니다.' }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '다시 시도' }));
+
+    expect(await screen.findByText('복구된 데이터')).toBeInTheDocument();
+    expect(queryFn).toHaveBeenCalledTimes(2);
 
     consoleError.mockRestore();
   });

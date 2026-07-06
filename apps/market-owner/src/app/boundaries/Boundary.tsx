@@ -1,3 +1,4 @@
+import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense, type ReactNode } from 'react';
 import { ErrorBoundary, type FallbackProps, type OnErrorCallback } from 'react-error-boundary';
 
@@ -48,8 +49,17 @@ export const Boundary = ({
   resetKeys,
 }: BoundaryProps) => {
   return (
-    <ErrorBoundary fallbackRender={errorFallback} onError={onError} resetKeys={resetKeys}>
-      <Suspense fallback={loadingFallback}>{children}</Suspense>
-    </ErrorBoundary>
+    <QueryErrorResetBoundary>
+      {({ reset }) => (
+        <ErrorBoundary
+          fallbackRender={errorFallback}
+          onError={onError}
+          onReset={reset}
+          resetKeys={resetKeys}
+        >
+          <Suspense fallback={loadingFallback}>{children}</Suspense>
+        </ErrorBoundary>
+      )}
+    </QueryErrorResetBoundary>
   );
 };
