@@ -9,8 +9,8 @@ type AppProvidersProps = Readonly<{
 
 export const AppProviders = ({ children }: AppProvidersProps) => {
   return (
-    <OverlayProvider>
-      <QueryProvider>{children}</QueryProvider>
-    </OverlayProvider>
+    <QueryProvider>
+      <OverlayProvider>{children}</OverlayProvider>
+    </QueryProvider>
   );
 };

@@ -24,9 +24,11 @@ export const queryClientDefaultOptions = {
     refetchOnWindowFocus: false,
     retry: shouldRetryQuery,
     staleTime: QUERY_STALE_TIME_MS,
+    throwOnError: true,
   },
   mutations: {
     retry: false,
+    throwOnError: false,
   },
 } satisfies DefaultOptions;
 

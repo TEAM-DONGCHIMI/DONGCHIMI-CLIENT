@@ -1,30 +1,12 @@
-import type { ComponentType } from 'react';
 import { createBrowserRouter } from 'react-router';
 import type { RouteObject } from 'react-router';
 
+import { createLazyRoute } from '@/app/create-lazy-route';
 import { AuthLayout } from '@/app/layouts/AuthLayout';
 import { NoSidebarLayout } from '@/app/layouts/NoSidebarLayout';
 import { SidebarLayout } from '@/app/layouts/SidebarLayout';
 import { ProtectedRoute } from '@/app/routes/ProtectedRoute';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
-
-const RouteHydrateFallback = () => null;
-
-const createLazyRoute = <ModuleTypes, ExportNameTypes extends keyof ModuleTypes>(
-  importer: () => Promise<ModuleTypes>,
-  exportName: ExportNameTypes,
-) => {
-  return {
-    HydrateFallback: RouteHydrateFallback,
-    lazy: async () => {
-      const routeModule = await importer();
-
-      return {
-        Component: routeModule[exportName] as ComponentType,
-      };
-    },
-  };
-};
 
 export const marketOwnerRoutes = [
   {
