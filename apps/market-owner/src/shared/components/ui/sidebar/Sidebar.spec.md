@@ -74,6 +74,7 @@ Sidebar
 ## Styling
 
 - layout: 290px side panel, vertical flex layout, footer 하단 배치를 사용합니다.
+- overflow: 호출부가 sidebar panel 높이를 제한하면 sidebar panel이 내부 스크롤을 소유해 footer/help 영역이 잘리지 않고 접근 가능해야 합니다.
 - spacing: panel padding, 48px item height, 12px item radius를 사용합니다.
 - text: Pretendard-first font stack과 label/profile text ellipsis를 적용합니다.
 - states: hover, active, disabled, focus-visible 상태를 정의합니다.

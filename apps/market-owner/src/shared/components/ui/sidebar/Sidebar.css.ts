@@ -11,7 +11,10 @@ export const sidebar = style({
   boxSizing: 'border-box',
   width: 290,
   height: '100%',
+  minHeight: 0,
   padding: '32px 16px 16px',
+  overflowX: 'hidden',
+  overflowY: 'auto',
   backgroundColor: atomic.common[0],
   boxShadow: '0 20px 64px rgba(25, 31, 40, 0.08)',
   color: atomic.neutral[90],
@@ -19,6 +22,7 @@ export const sidebar = style({
 
 export const sidebarBrand = style({
   display: 'flex',
+  flexShrink: 0,
   alignItems: 'center',
   gap: 8,
   minHeight: 32,
@@ -27,6 +31,7 @@ export const sidebarBrand = style({
 });
 
 export const sidebarDivider = style({
+  flexShrink: 0,
   width: '100%',
   height: 1,
   margin: '32px 0 24px',
@@ -35,6 +40,7 @@ export const sidebarDivider = style({
 
 export const sidebarProfile = style({
   display: 'flex',
+  flexShrink: 0,
   alignItems: 'center',
   gap: 12,
   padding: '0 16px 24px',
@@ -76,6 +82,7 @@ export const sidebarProfileEmail = style({
 
 export const sidebarNav = style({
   display: 'grid',
+  flexShrink: 0,
   gap: 24,
 });
 
@@ -175,6 +182,7 @@ export const sidebarItemLabel = style({
 
 export const sidebarFooter = style({
   display: 'grid',
+  flexShrink: 0,
   gap: 12,
   marginTop: 'auto',
   paddingTop: 24,

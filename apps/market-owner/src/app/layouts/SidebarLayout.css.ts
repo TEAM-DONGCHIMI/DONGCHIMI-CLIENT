@@ -4,8 +4,9 @@ import { atomic, shadow, typography } from '@dongchimi/design-system/tokens';
 
 export const sidebarLayoutRootClassName = style({
   display: 'grid',
-  minHeight: '100vh',
+  height: '100vh',
   gridTemplateColumns: '290px minmax(0, 1fr)',
+  overflow: 'hidden',
   backgroundColor: atomic.neutral[10],
 });
 
@@ -14,12 +15,15 @@ export const sidebarSlotClassName = style({
   top: 0,
   height: '100vh',
   alignSelf: 'start',
+  overflow: 'hidden',
 });
 
 export const contentSlotClassName = style({
   minWidth: 0,
-  minHeight: '100vh',
-  overflow: 'auto',
+  minHeight: 0,
+  height: '100vh',
+  overflowX: 'hidden',
+  overflowY: 'auto',
 });
 
 export const brandClassName = style({
