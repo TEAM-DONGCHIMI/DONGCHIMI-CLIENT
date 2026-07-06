@@ -24,19 +24,20 @@ packages/design-system/AGENTS.md
 
 ## Source Layers
 
-| Path                            | Indexed as                  | Rule                                             |
-| ------------------------------- | --------------------------- | ------------------------------------------------ |
-| `AGENTS.md`                     | 자동 instruction entrypoint | 짧은 라우팅과 필수 원칙만 둡니다.                |
-| `apps/*/AGENTS.md`              | workspace-local instruction | 앱별 route, domain, 검증 불변량만 둡니다.        |
-| `packages/*/AGENTS.md`          | package-local instruction   | package public boundary와 검증 불변량만 둡니다.  |
-| `README.md`                     | 사람용 repo entrypoint      | 프로젝트 소개, 빠른 시작, 주요 링크만 둡니다.    |
-| `docs/index.md`                 | 문서 링크 허브              | architecture, workflow, agent 문서를 연결합니다. |
-| `docs/agent/*`                  | agent harness 정책          | Codex 인덱싱, config, hook 책임을 설명합니다.    |
-| `.agents/skills/*`              | repo-local skill            | 선택된 작업 유형의 실행 절차를 담습니다.         |
-| `recipes/*`                     | 반복 작업 절차              | 사람이 따라 할 수 있는 절차를 둡니다.            |
-| `templates/*`                   | spec/Jira 작성 형식         | 구현 전 산출물의 형식을 둡니다.                  |
-| `.github/*`                     | PR/CI 자동화                | GitHub 표면의 실행 기준을 둡니다.                |
-| `.node-version`, `package.json` | runtime/package source      | Node와 pnpm 기준은 문서가 아니라 파일을 봅니다.  |
+| Path                                  | Indexed as                  | Rule                                             |
+| ------------------------------------- | --------------------------- | ------------------------------------------------ |
+| `AGENTS.md`                           | 자동 instruction entrypoint | 짧은 라우팅과 필수 원칙만 둡니다.                |
+| `apps/*/AGENTS.md`                    | workspace-local instruction | 앱별 route, domain, 검증 불변량만 둡니다.        |
+| `packages/*/AGENTS.md`                | package-local instruction   | package public boundary와 검증 불변량만 둡니다.  |
+| `README.md`                           | 사람용 repo entrypoint      | 프로젝트 소개, 빠른 시작, 주요 링크만 둡니다.    |
+| `docs/index.md`                       | 문서 링크 허브              | architecture, workflow, agent 문서를 연결합니다. |
+| `docs/agent/*`                        | agent harness 정책          | Codex 인덱싱, config, hook 책임을 설명합니다.    |
+| `.agents/skills/*`                    | repo-local skill            | 선택된 작업 유형의 실행 절차를 담습니다.         |
+| `.agents/skills/*/agents/openai.yaml` | skill metadata              | 선택 skill의 UI 호출 문구를 담습니다.            |
+| `recipes/*`                           | 반복 작업 절차              | 사람이 따라 할 수 있는 절차를 둡니다.            |
+| `templates/*`                         | spec/Jira 작성 형식         | 구현 전 산출물의 형식을 둡니다.                  |
+| `.github/*`                           | PR/CI 자동화                | GitHub 표면의 실행 기준을 둡니다.                |
+| `.node-version`, `package.json`       | runtime/package source      | Node와 pnpm 기준은 문서가 아니라 파일을 봅니다.  |
 
 ## Repo Skills
 
@@ -75,6 +76,7 @@ Repo-scoped Codex skill은 `.agents/skills` 아래에 둡니다.
 
 각 skill은 `SKILL.md` frontmatter에 `name`과 `description`을 가져야 합니다.
 Codex는 처음에는 skill의 이름, 설명, 경로만 컨텍스트에 넣고, 실제로 skill을 선택할 때 전체 `SKILL.md`를 읽습니다.
+UI에서 직접 호출할 필요가 있는 skill은 같은 디렉터리 아래 `agents/openai.yaml`을 둘 수 있습니다. 이 파일은 skill 본문을 대체하지 않고 호출 prompt metadata만 담당합니다.
 
 ## Verify Skill Growth
 
@@ -112,6 +114,7 @@ Sentry 설정과 알림 운영 기준은 `docs/workflows/sentry.md`를 참조합
 ## Path Rules
 
 - repo skill 경로는 `.agents/skills/*/SKILL.md`를 기준으로 안내합니다.
+- skill UI metadata 경로는 `.agents/skills/*/agents/openai.yaml`만 사용합니다.
 - `skills/` 루트 디렉터리는 사용하지 않습니다.
 - repo skill 저장 위치는 `.agents/skills` 하나로 고정합니다.
 - `.agents/skills` 아래에 skill을 중첩 그룹으로 만들지 않습니다.
@@ -128,6 +131,7 @@ Sentry 설정과 알림 운영 기준은 `docs/workflows/sentry.md`를 참조합
 find . -path '*/AGENTS.md' -not -path './node_modules/*' -print | sort
 rg -n "skills/|\\.agents|docs/agent|AGENTS\\.md" AGENTS.md README.md docs recipes templates apps packages .github --glob '!**/node_modules/**' --glob '!**/dist/**' --glob '!**/storybook-static/**' --glob '!**/.next/**'
 find .agents/skills -maxdepth 3 -name SKILL.md -print
+find .agents/skills -path '*/agents/openai.yaml' -print
 git diff --check
 pnpm format:check
 ```

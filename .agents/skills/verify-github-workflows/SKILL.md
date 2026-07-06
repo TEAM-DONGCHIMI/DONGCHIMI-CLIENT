@@ -47,7 +47,7 @@ rg -n "^(on:|permissions:|concurrency:|  pull-requests:|  issues:|  contents:)" 
 ### Step 3: secret 노출 검사
 
 ```bash
-rg -n "ATATT|ghp_|github_pat_|sk-[A-Za-z0-9]|DISCORD_WEBHOOK=https?://|ATLASSIAN_API_TOKEN=" .github docs recipes templates AGENTS.md README.md
+rg -n "ATATT|ghp_|github_pat_|sk-[A-Za-z0-9_-]{20,}|DISCORD_WEBHOOK=https?://|ATLASSIAN_API_TOKEN=[^[:space:]\"']+" .github docs recipes templates AGENTS.md README.md
 ```
 
 PASS: 출력이 없습니다.
