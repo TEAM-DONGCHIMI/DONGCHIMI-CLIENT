@@ -13,7 +13,7 @@
 
 사장님웹의 초기 페이지 라우팅, public/protected boundary, sidebar/no-sidebar layout boundary를 React Router 기준으로 고정합니다.
 실제 auth API와 상품 form/API가 붙기 전에도 각 주요 route가 브라우저에서 진입 가능해야 합니다.
-DCMSM-17부터 lazy route page는 앱 전용 `Boundary`를 통해 Suspense loading fallback과 render error fallback을 가집니다.
+DCMSM-17부터 lazy route page는 앱 전용 `AsyncBoundary`를 통해 Suspense loading fallback과 render error fallback을 가집니다.
 
 ## Source Of Truth
 
@@ -50,10 +50,10 @@ DCMSM-17부터 lazy route page는 앱 전용 `Boundary`를 통해 Suspense loadi
 
 ## States
 
-- loading: lazy route page는 `Boundary`의 Suspense fallback으로 처리합니다.
+- loading: lazy route page는 `AsyncBoundary`의 Suspense fallback으로 처리합니다.
 - empty: 이번 범위에서 다루지 않습니다.
 - error: 알 수 없는 route는 `NotFoundPage`에서 처리합니다.
-  하위 route render error는 `Boundary`의 error fallback으로 처리합니다.
+  하위 route render error는 `AsyncBoundary`의 error fallback으로 처리합니다.
 - disabled: 이번 범위에서 다루지 않습니다.
 - selected / active: sidebar active item은 current pathname으로 계산하고, edit tab active state는 각 edit route로 계산합니다.
 

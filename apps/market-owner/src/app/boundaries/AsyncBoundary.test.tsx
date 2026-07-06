@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent } from '@/test';
 
-import { Boundary } from './Boundary';
+import { AsyncBoundary } from './AsyncBoundary';
 
 const SuspendedContent = () => {
   throw new Promise(() => undefined);
@@ -37,12 +37,12 @@ const createTestQueryClient = () => {
   });
 };
 
-describe('Boundary', () => {
+describe('AsyncBoundary', () => {
   it('renders children when no route boundary state is active', () => {
     render(
-      <Boundary>
+      <AsyncBoundary>
         <p>라우트 화면</p>
-      </Boundary>,
+      </AsyncBoundary>,
     );
 
     expect(screen.getByText('라우트 화면')).toBeInTheDocument();
@@ -50,9 +50,9 @@ describe('Boundary', () => {
 
   it('renders the loading fallback while children suspend', () => {
     render(
-      <Boundary>
+      <AsyncBoundary>
         <SuspendedContent />
-      </Boundary>,
+      </AsyncBoundary>,
     );
 
     expect(screen.getByRole('status')).toHaveTextContent('화면을 불러오는 중입니다.');
@@ -62,9 +62,9 @@ describe('Boundary', () => {
     const consoleError = muteReactError();
 
     render(
-      <Boundary>
+      <AsyncBoundary>
         <BrokenContent />
-      </Boundary>,
+      </AsyncBoundary>,
     );
 
     expect(
@@ -83,7 +83,7 @@ describe('Boundary', () => {
       const [shouldThrow, setShouldThrow] = useState(true);
 
       return (
-        <Boundary
+        <AsyncBoundary
           errorFallback={({ resetErrorBoundary }) => (
             <button
               onClick={() => {
@@ -97,7 +97,7 @@ describe('Boundary', () => {
           )}
         >
           <RecoverableContent shouldThrow={shouldThrow} />
-        </Boundary>
+        </AsyncBoundary>
       );
     };
 
@@ -130,9 +130,9 @@ describe('Boundary', () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <Boundary>
+        <AsyncBoundary>
           <QueryContent />
-        </Boundary>
+        </AsyncBoundary>
       </QueryClientProvider>,
     );
 

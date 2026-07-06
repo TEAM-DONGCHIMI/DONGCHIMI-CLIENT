@@ -1,1 +1,1 @@
-export { Boundary } from './Boundary';
+export { AsyncBoundary } from './AsyncBoundary';

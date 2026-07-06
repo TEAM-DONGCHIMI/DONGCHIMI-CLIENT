@@ -2,7 +2,7 @@ import { lazy, type ComponentType } from 'react';
 import { createBrowserRouter } from 'react-router';
 import type { RouteObject } from 'react-router';
 
-import { Boundary } from '@/app/boundaries';
+import { AsyncBoundary } from '@/app/boundaries';
 import { AuthLayout } from '@/app/layouts/AuthLayout';
 import { NoSidebarLayout } from '@/app/layouts/NoSidebarLayout';
 import { SidebarLayout } from '@/app/layouts/SidebarLayout';
@@ -24,9 +24,9 @@ const createLazyRoute = <ModuleTypes, ExportNameTypes extends keyof ModuleTypes>
   return {
     Component: function BoundariedLazyRouteComponent() {
       return (
-        <Boundary>
+        <AsyncBoundary>
           <LazyRouteComponent />
-        </Boundary>
+        </AsyncBoundary>
       );
     },
   };
