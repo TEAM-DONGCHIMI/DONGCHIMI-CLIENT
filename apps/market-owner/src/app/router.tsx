@@ -1,27 +1,33 @@
-import type { ComponentType } from 'react';
+import { lazy, type ComponentType } from 'react';
 import { createBrowserRouter } from 'react-router';
 import type { RouteObject } from 'react-router';
 
+import { Boundary } from '@/app/boundaries';
 import { AuthLayout } from '@/app/layouts/AuthLayout';
 import { NoSidebarLayout } from '@/app/layouts/NoSidebarLayout';
 import { SidebarLayout } from '@/app/layouts/SidebarLayout';
 import { ProtectedRoute } from '@/app/routes/ProtectedRoute';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
-const RouteHydrateFallback = () => null;
-
 const createLazyRoute = <ModuleTypes, ExportNameTypes extends keyof ModuleTypes>(
   importer: () => Promise<ModuleTypes>,
   exportName: ExportNameTypes,
 ) => {
-  return {
-    HydrateFallback: RouteHydrateFallback,
-    lazy: async () => {
-      const routeModule = await importer();
+  const LazyRouteComponent = lazy(async () => {
+    const routeModule = await importer();
 
-      return {
-        Component: routeModule[exportName] as ComponentType,
-      };
+    return {
+      default: routeModule[exportName] as ComponentType,
+    };
+  });
+
+  return {
+    Component: function BoundariedLazyRouteComponent() {
+      return (
+        <Boundary>
+          <LazyRouteComponent />
+        </Boundary>
+      );
     },
   };
 };
