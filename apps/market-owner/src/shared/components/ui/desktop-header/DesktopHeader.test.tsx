@@ -14,7 +14,7 @@ describe('DesktopHeader', () => {
   });
 
   it('renders home label in only home mode', () => {
-    render(<DesktopHeader mode='onlyHome' />);
+    render(<DesktopHeader variant='onlyHome' />);
 
     expect(screen.getByText('동치미 작업 홈')).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: '현재 위치' })).not.toBeInTheDocument();

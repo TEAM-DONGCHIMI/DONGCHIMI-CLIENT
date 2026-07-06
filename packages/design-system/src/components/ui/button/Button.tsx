@@ -13,7 +13,7 @@ type ButtonVariantTypes = NonNullable<ButtonVariantProps['variant']>;
 
 type ButtonPresetProps =
   | {
-      color?: Extract<ButtonColorTypes, 'primary' | 'assistive'>;
+      color?: Extract<ButtonColorTypes, 'primary' | 'assistive' | 'negative'>;
       variant?: Extract<ButtonVariantTypes, 'solid'>;
     }
   | {
