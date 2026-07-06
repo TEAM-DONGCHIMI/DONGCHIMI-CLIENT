@@ -14,7 +14,7 @@ const SvgIcCirclePlus = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>
     ref={ref}
     {...props}
   >
-    <g fill='#191F28'>
+    <g fill='currentColor'>
       <path d='M12.91 7.96a.91.91 0 1 0-1.82 0v3.13H7.96a.91.91 0 1 0 0 1.819h3.13v3.131a.91.91 0 0 0 1.82 0V12.91h3.13a.91.91 0 1 0 0-1.818h-3.13z' />
       <path
         fillRule='evenodd'

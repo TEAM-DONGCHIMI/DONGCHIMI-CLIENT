@@ -15,7 +15,7 @@ const SvgIcClose = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>) => 
     {...props}
   >
     <path
-      fill='var(--fill-0, #191F28)'
+      fill='currentColor'
       d='M5.267 5.267a.91.91 0 0 1 1.29 0L12.5 11.21l5.943-5.943a.912.912 0 1 1 1.29 1.29L13.79 12.5l5.943 5.943a.912.912 0 1 1-1.29 1.29L12.5 13.79l-5.943 5.943a.912.912 0 1 1-1.29-1.29L11.21 12.5 5.267 6.557a.91.91 0 0 1 0-1.29'
     />
   </svg>

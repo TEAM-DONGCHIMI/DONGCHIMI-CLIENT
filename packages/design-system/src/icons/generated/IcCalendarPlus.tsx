@@ -15,7 +15,7 @@ const SvgIcCalendarPlus = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElemen
     {...props}
   >
     <path
-      fill='var(--fill-0, #1A1E27)'
+      fill='currentColor'
       d='M16 1a1 1 0 0 1 1 1v1h2a3 3 0 0 1 3 3v7a1 1 0 1 1-2 0v-2H4v9a1 1 0 0 0 1 1h8a1 1 0 1 1 0 2H5a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h2V2a1 1 0 0 1 2 0v1h6V2a1 1 0 0 1 1-1m3 14a1 1 0 0 1 1 1v2h2a1 1 0 1 1 0 2h-2v2a1 1 0 1 1-2 0v-2h-2a1 1 0 1 1 0-2h2v-2a1 1 0 0 1 1-1M5 5a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1h-2v1a1 1 0 1 1-2 0V5H9v1a1 1 0 0 1-2 0V5z'
     />
   </svg>

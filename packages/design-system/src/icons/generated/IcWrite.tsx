@@ -14,7 +14,7 @@ const SvgIcWrite = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>) => 
     ref={ref}
     {...props}
   >
-    <g fill='#191F28'>
+    <g fill='currentColor'>
       <path
         fillRule='evenodd'
         d='M21.222 2.779a2.66 2.66 0 0 0-3.76 0l-9.217 9.215a.9.9 0 0 0-.263.634v2.491c0 .495.402.897.897.897h2.491a.9.9 0 0 0 .634-.263l9.218-9.216a2.66 2.66 0 0 0 0-3.758M18.73 4.047a.865.865 0 0 1 1.223 1.222L11 14.222H9.776V13z'

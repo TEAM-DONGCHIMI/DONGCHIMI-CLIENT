@@ -15,7 +15,7 @@ const SvgIcChevronUpSizeXsmall = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSV
     {...props}
   >
     <path
-      fill='var(--fill-0, #191F28)'
+      fill='currentColor'
       d='M10.852 7.866a.54.54 0 0 1-.715 0L6 4.109 1.863 7.866a.54.54 0 0 1-.715 0 .43.43 0 0 1 0-.65l4.494-4.082a.54.54 0 0 1 .716 0l4.494 4.082a.43.43 0 0 1 0 .65'
     />
   </svg>

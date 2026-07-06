@@ -30,8 +30,11 @@ export const listButton = recipe({
         borderRadius: 8,
         pointerEvents: 'none',
       },
-      '&:hover::before': {
+      '&:not(:disabled):hover::before': {
         backgroundColor: atomic.neutral[10],
+      },
+      '&:disabled': {
+        cursor: 'not-allowed',
       },
       '&:focus-visible': {
         outline: `3px solid ${focusOutlineColor}`,
@@ -44,7 +47,7 @@ export const listButton = recipe({
       false: {},
       true: {},
     },
-    hasLeftIcon: {
+    hasLeadingVisual: {
       false: {},
       true: {
         justifyContent: 'flex-start',
@@ -60,7 +63,7 @@ export const listButton = recipe({
     {
       variants: {
         color: 'assistive',
-        hasLeftIcon: false,
+        hasLeadingVisual: false,
         selected: true,
       },
       style: {
@@ -78,7 +81,7 @@ export const listButton = recipe({
     {
       variants: {
         color: 'primary',
-        hasLeftIcon: false,
+        hasLeadingVisual: false,
         selected: true,
       },
       style: {
@@ -96,7 +99,7 @@ export const listButton = recipe({
   ],
   defaultVariants: {
     color: 'assistive',
-    hasLeftIcon: false,
+    hasLeadingVisual: false,
     selected: false,
   },
 });
@@ -111,6 +114,64 @@ export const listButtonIcon = style({
   height: 24,
   padding: 2,
   pointerEvents: 'none',
+});
+
+export const listButtonCheckbox = recipe({
+  base: {
+    display: 'inline-flex',
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxSizing: 'border-box',
+    width: 18,
+    height: 18,
+    borderRadius: 4,
+    borderStyle: 'solid',
+  },
+  variants: {
+    checked: {
+      false: {
+        borderWidth: 1.5,
+        borderColor: atomic.neutral[70],
+        backgroundColor: 'transparent',
+      },
+      true: {
+        borderWidth: 1,
+        borderColor: semantic.primary.normal,
+        backgroundColor: semantic.primary.normal,
+        color: atomic.common[0],
+      },
+    },
+    disabled: {
+      false: {},
+      true: {},
+    },
+  },
+  compoundVariants: [
+    {
+      variants: { checked: false, disabled: true },
+      style: {
+        borderColor: atomic.neutral[40],
+      },
+    },
+    {
+      variants: { checked: true, disabled: true },
+      style: {
+        backgroundColor: atomic.neutral[40],
+        borderColor: atomic.neutral[40],
+      },
+    },
+  ],
+  defaultVariants: {
+    checked: false,
+    disabled: false,
+  },
+});
+
+export const listButtonCheckIcon = style({
+  display: 'block',
+  width: '100%',
+  height: '100%',
 });
 
 export const listButtonLabel = style({

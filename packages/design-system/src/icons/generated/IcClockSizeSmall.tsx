@@ -15,7 +15,7 @@ const SvgIcClockSizeSmall = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElem
     {...props}
   >
     <path
-      stroke='var(--stroke-0, #191F28)'
+      stroke='currentColor'
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={1.667}
