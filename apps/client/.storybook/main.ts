@@ -9,6 +9,7 @@ function getAbsolutePath(value: string) {
 }
 
 const storybookDir = dirname(fileURLToPath(import.meta.url));
+const nextImageMockPath = resolve(storybookDir, './next-image.mock.tsx');
 const nodeEnv = process.env.NODE_ENV ?? 'development';
 const processEnvDefine = {
   'process.env': '{}',
@@ -32,14 +33,12 @@ const config: StorybookConfig = {
       ...config.optimizeDeps,
       exclude: [...(config.optimizeDeps?.exclude ?? []), 'next/image'],
     };
+    const currentAlias = config.resolve?.alias;
     config.resolve = {
       ...config.resolve,
-      alias: {
-        ...(typeof config.resolve?.alias === 'object' && !Array.isArray(config.resolve.alias)
-          ? config.resolve.alias
-          : {}),
-        'next/image': resolve(storybookDir, './next-image.mock.tsx'),
-      },
+      alias: Array.isArray(currentAlias)
+        ? [...currentAlias, { find: 'next/image', replacement: nextImageMockPath }]
+        : { ...(currentAlias ?? {}), 'next/image': nextImageMockPath },
     };
 
     return config;
