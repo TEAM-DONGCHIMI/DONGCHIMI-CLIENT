@@ -22,9 +22,11 @@ description: GitHub 브라우저 PR 리뷰에서 visible diff, review comment, c
 
 1. PR title, base/head branch, linked Jira를 먼저 확인합니다.
 2. changed files에서 실제 리뷰 표면을 파일/라인 기준으로 모읍니다.
-3. visible check status와 CodeRabbit/Copilot/comment thread를 분리합니다.
-4. 로컬 checkout을 쓰면 `git status --short --branch`와 현재 branch가 PR head와 같은지 확인합니다.
-5. repo 문서나 workflow 기준이 필요한 경우 `docs/index.md`에서 가장 가까운 source of truth를 찾습니다.
+3. unresolved review thread, CodeRabbit/Copilot/comment thread를 먼저 확인해 이미 제기된 finding을 표시합니다.
+4. visible check status와 CodeRabbit/Copilot/comment thread를 분리합니다.
+5. FE 코드 diff가 있으면 `frontend-fundamentals-review`와 `docs/code-quality/frontend-fundamentals.md`를 함께 적용합니다.
+6. 로컬 checkout을 쓰면 `git status --short --branch`와 현재 branch가 PR head와 같은지 확인합니다.
+7. repo 문서나 workflow 기준이 필요한 경우 `docs/index.md`에서 가장 가까운 source of truth를 찾습니다.
 
 ## 메인 작업 흐름
 
@@ -36,16 +38,25 @@ description: GitHub 브라우저 PR 리뷰에서 visible diff, review comment, c
 - PR:
 - Base / Head:
 - Jira:
+- PR state:
+- Head commit:
 - Review surface:
+- Existing threads:
 - Visible checks:
+- Preview / Storybook / Chromatic:
 - Local checkout:
 ```
+
+`PR state`에는 draft/ready/merged 여부, approval/change request 상태, merge conflict 또는 mergeability, pushed commit/rebase 여부를 구분해 적습니다.
+`Existing threads`에는 CodeRabbit, Copilot, teammate review 중 이미 같은 내용을 다룬 thread를 표시합니다.
 
 ### Step 2: 파일 단위 검토
 
 - 코드 변경이면 bug, regression, missing test, boundary violation을 우선합니다.
+- FE 코드 변경이면 Frontend Fundamentals의 Readability, Predictability, Cohesion, Coupling 기준을 모두 적용합니다.
 - docs/workflow 변경이면 source of truth 중복, stale reference, 실행 불가능한 명령을 봅니다.
 - GitHub workflow 변경이면 trigger, permission, concurrency, secret, duplicate comment를 봅니다.
+- 디자인시스템 또는 shared UI 변경이면 public API, link/action semantics, ARIA role과 keyboard/focus behavior, React ref 방식, story/spec 동기화를 같이 봅니다.
 
 ### Step 3: 코멘트 작성
 
@@ -54,6 +65,8 @@ description: GitHub 브라우저 PR 리뷰에서 visible diff, review comment, c
 - 파일/라인 또는 section을 명시합니다.
 - 문제와 영향, 제안 수정을 함께 적습니다.
 - 브라우저에서만 본 사실은 `visible diff 기준`처럼 표시합니다.
+- 기존 CodeRabbit 또는 reviewer thread와 같은 내용이면 새 코멘트를 쓰지 않고 "이미 커버됨"으로 기록합니다.
+- 여러 PR을 한 번에 리뷰할 때는 PR별로 review surface, 기존 thread, 남길 코멘트를 분리합니다.
 
 ### Step 4: 검증 상태 분리
 
@@ -62,6 +75,9 @@ description: GitHub 브라우저 PR 리뷰에서 visible diff, review comment, c
 - `브라우저에서 Verify check 통과가 보임`
 - `로컬에서 pnpm build 실행 통과`
 - `PR diff만 확인했고 로컬 검증은 하지 않음`
+- `Storybook/Chromatic preview에서 wrapper 배경이나 Connection lost가 보임`
+
+Storybook, Chromatic, Figma preview에서 보이는 wrapper 배경, Node engine warning, connection loss는 component defect와 분리합니다.
 
 ### Step 5: 후속 작업 라우팅
 

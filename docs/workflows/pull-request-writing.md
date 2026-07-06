@@ -9,6 +9,7 @@ PR 본문은 변경 파일 목록이 아니라 reviewer가 변경 의도, 근거
 - 실제 검증과 계획된 검증을 분리합니다. 실행하지 않은 명령은 체크하거나 성공처럼 쓰지 않습니다.
 - reviewer가 봐야 할 위험 지점을 숨기지 않습니다.
 - docs-only, UI-only, API-only, refactor-only PR은 그 범위를 명확히 적고 없는 증거를 만들지 않습니다.
+- GitHub 화면에서 보이는 approval, check, deployment, preview 상태는 로컬 명령 실행 결과와 분리해 씁니다.
 
 ## Recommended Structure
 
@@ -165,6 +166,17 @@ Logs / CI:
 - CI run 또는 action URL
 - 실패가 있으면 원인과 남은 처리
 
+PR status:
+
+- draft / ready / merged 여부
+- base branch, head branch, head commit
+- approval, change request, unresolved review thread
+- merge conflict 또는 mergeability blocker
+- Vercel, Chromatic, Storybook preview 상태
+
+CodeRabbit, Copilot, teammate review thread에서 이미 제기된 finding은 PR 본문이나 후속 리뷰 코멘트에서 중복하지 않습니다.
+브라우저에서 보인 Storybook wrapper 배경, preview connection loss, Node engine warning은 component defect와 분리해서 적습니다.
+
 ## Performance Section
 
 성능 수치를 넣을 때는 raw value와 해석을 같이 둡니다.
@@ -222,5 +234,6 @@ docs-only PR은 아래처럼 명확히 적습니다.
 - Background: 어떤 workflow 또는 기준이 불명확했는지
 - Tasks: 어떤 문서, template, skill, recipe를 갱신했는지
 - Evidence: `git diff --check`, 링크 검증, stale reference 검색
+- PR Point: `AGENTS.md` 라우팅, skill frontmatter, recipe/docs 링크, verify skill 커버리지 중 reviewer가 봐야 할 지점
 - Screenshot: UI 변경 없음
 - Risk: 실제 app/package 구조가 아직 없어서 실행 검증하지 못한 범위

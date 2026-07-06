@@ -4,15 +4,16 @@
 
 ## Layer Model
 
-| Layer           | Source of truth                      | Role                                 |
-| --------------- | ------------------------------------ | ------------------------------------ |
-| Entry point     | `AGENTS.md`                          | agent가 먼저 읽는 짧은 라우팅 허브   |
-| Project guide   | `README.md`, `docs/index.md`         | 사람이 빠르게 보는 프로젝트 진입점   |
-| Detailed docs   | `docs/**`                            | 아키텍처, 컨벤션, workflow 기준      |
-| Repeatable flow | `recipes/**`, `templates/**`         | 반복 작업 절차와 spec/Jira 작성 형식 |
-| Agent workflow  | `.agents/skills/*/SKILL.md`          | 작업 유형별 agent 실행 절차          |
-| Automation      | `.github/**`, `turbo/generators/**`  | CI, PR 자동화, generator 실행 기준   |
-| Runtime source  | `.node-version`, root `package.json` | Node runtime과 package manager 기준  |
+| Layer           | Source of truth                       | Role                                 |
+| --------------- | ------------------------------------- | ------------------------------------ |
+| Entry point     | `AGENTS.md`                           | agent가 먼저 읽는 짧은 라우팅 허브   |
+| Project guide   | `README.md`, `docs/index.md`          | 사람이 빠르게 보는 프로젝트 진입점   |
+| Detailed docs   | `docs/**`                             | 아키텍처, 컨벤션, workflow 기준      |
+| Repeatable flow | `recipes/**`, `templates/**`          | 반복 작업 절차와 spec/Jira 작성 형식 |
+| Agent workflow  | `.agents/skills/*/SKILL.md`           | 작업 유형별 agent 실행 절차          |
+| Skill metadata  | `.agents/skills/*/agents/openai.yaml` | 선택 skill의 UI 호출 메타데이터      |
+| Automation      | `.github/**`, `turbo/generators/**`   | CI, PR 자동화, generator 실행 기준   |
+| Runtime source  | `.node-version`, root `package.json`  | Node runtime과 package manager 기준  |
 
 ## Documents
 
@@ -55,6 +56,7 @@ AGENTS.md
     verify-e2e-smoke/SKILL.md
     verify-performance-budget/SKILL.md
     verify-<name>/SKILL.md
+    <workflow>/agents/openai.yaml
 .github/
 apps/
   client/
@@ -81,6 +83,7 @@ turbo/
 - 상세 규칙은 `docs/`, `recipes/`, `templates/`, `.agents/skills/`의 가장 가까운 source of truth에 둡니다.
 - 실행 지침은 가장 가까운 `AGENTS.md`에 두되, 다른 문서 내용을 길게 복사하지 않습니다.
 - 재사용 가능한 사고 프레임은 `.agents/skills/*/SKILL.md`에 둡니다.
+- skill UI 호출 메타데이터가 필요하면 같은 skill 디렉터리 아래 `agents/openai.yaml`에 둡니다.
 - Jira/Figma/사진 근거 확인과 구현 착수 순서는 `jira-design-implementation-workflow`에 둡니다.
 - 앱 내부 shared 컴포넌트 생성과 구현 순서는 `app-shared-component-workflow`에 둡니다.
 - Turbo generator script, template, sample 검증 순서는 `turbo-generator-workflow`에 둡니다.
@@ -103,7 +106,7 @@ AGENTS, README, agent harness 문서를 갱신할 때는 아래 순서로 확인
 
 - 실제 workspace와 script는 `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `.github/workflows`, `turbo/generators`에서 먼저 확인합니다.
 - 문서 구조는 `docs/index.md`, `docs/agent/index.md`, `docs/agent/indexing.md`가 같은 계층을 설명하는지 확인합니다.
-- 새 workflow나 검증 기준이 생기면 `.agents/skills/*/SKILL.md`와 `docs/index.md` 링크를 함께 확인합니다.
+- 새 workflow나 검증 기준이 생기면 `.agents/skills/*/SKILL.md`, 선택적 `agents/openai.yaml`, `docs/index.md` 링크를 함께 확인합니다.
 - 오래된 runtime, PR template, compatibility 문구는 `verify-agent-docs`의 stale reference 검사에 추가합니다.
 - 문서-only 변경도 `git diff --check`와 `pnpm format:check`를 실행합니다.
 

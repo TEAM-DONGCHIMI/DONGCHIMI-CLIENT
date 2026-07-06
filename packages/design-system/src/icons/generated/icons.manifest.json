@@ -516,8 +516,8 @@
   },
   "ic-upload.svg": {
     "generatedFile": "IcUpload.tsx",
-    "generatedFingerprint": "32a89035101318fd3cf16991e468825c5b1cb78922106d6652029e3c6e2e55dd",
-    "sourceFingerprint": "47163b5d7defe4b09bdc4592bf774c6e6826e226a04b8fd000c9a2809f38350c"
+    "generatedFingerprint": "1b48295b766b279d9554650ab3fd695a0db04dc283f76b5e375c391173571a47",
+    "sourceFingerprint": "f4895f0eac5a899b302ae8017c8eb5dd3162737a9228c77174cfcb004bd42928"
   },
   "ic-write.svg": {
     "generatedFile": "IcWrite.tsx",

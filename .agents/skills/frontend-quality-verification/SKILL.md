@@ -55,6 +55,8 @@ package script가 있는 변경은 가벼운 검증에서 무거운 검증으로
 pnpm format:check
 pnpm lint
 pnpm typecheck
+pnpm test
+pnpm check:icons
 pnpm build
 ```
 
@@ -72,7 +74,7 @@ package manager는 `docs/conventions/package-management.md`를 따릅니다.
 | `apps/design-system-web/**` | design-system web lint/typecheck/build |
 | `apps/admin/**` | admin app lint/typecheck/build, 앱이 생성된 뒤 적용 |
 | `apps/mobile/**` | web check와 별도 mobile command |
-| `packages/design-system/**` | design-system lint/typecheck/build/storybook |
+| `packages/design-system/**` | design-system lint/typecheck/test/check:icons/build/storybook |
 | `packages/shared/**` | 소비 app build 필요 여부 확인 |
 | `docs/**`, `recipes/**`, `templates/**`, `.agents/**` | `git diff --check` + format check if available |
 
@@ -94,5 +96,6 @@ Residual risk:
 ## 예외
 
 - 문서-only 변경은 `git diff --check`에서 멈출 수 있습니다.
+- 아이콘 source, generated output, icon script, root `check:icons`, CI icon step 변경은 `pnpm check:icons`를 포함합니다.
 - package script가 없는 상태에서 npm 검증을 성공한 것으로 쓰지 않습니다.
 - web build 성공을 native/mobile 검증으로 간주하지 않습니다.

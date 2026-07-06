@@ -47,6 +47,7 @@ pnpm format:check
 pnpm lint
 pnpm typecheck
 pnpm test
+pnpm check:icons
 pnpm build
 ```
 
@@ -90,7 +91,7 @@ apps/market-owner/** -> market-owner lint/typecheck/test/build/storybook
 apps/design-system-web/** -> design-system web lint/typecheck/build
 apps/admin/** -> admin lint/typecheck/build, 앱이 생성된 뒤 적용
 apps/mobile/** -> web check와 별도 mobile command
-packages/design-system/** -> design-system lint/typecheck/test/build/storybook
+packages/design-system/** -> design-system lint/typecheck/test/check:icons/build/storybook
 packages/shared/** -> shared lint/typecheck/test/build/storybook + 소비 app build 필요 여부 확인
 docs/**, recipes/**, templates/** -> git diff --check + format check
 turbo/generators/** -> pnpm check:generators + sample generation
@@ -98,11 +99,12 @@ turbo/generators/** -> pnpm check:generators + sample generation
 
 ## App Scripts
 
-| Workspace           | Dev                     | Targeted verification                                                                                                                                                                                                   |
-| ------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/client`       | `pnpm dev:web`          | `pnpm --filter client lint`, `pnpm --filter client typecheck`, `pnpm --filter client test`, `pnpm --filter client build`                                                                                                |
-| `apps/market-owner` | `pnpm dev:market-owner` | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner test`, `pnpm --filter market-owner build`, `pnpm --filter market-owner build-storybook`                          |
-| `packages/shared`   | `pnpm storybook:shared` | `pnpm --filter @dongchimi/shared lint`, `pnpm --filter @dongchimi/shared typecheck`, `pnpm --filter @dongchimi/shared test`, `pnpm --filter @dongchimi/shared build`, `pnpm --filter @dongchimi/shared build-storybook` |
+| Workspace                | Dev                            | Targeted verification                                                                                                                                                                                                                                                          |
+| ------------------------ | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `apps/client`            | `pnpm dev:web`                 | `pnpm --filter client lint`, `pnpm --filter client typecheck`, `pnpm --filter client test`, `pnpm --filter client build`                                                                                                                                                       |
+| `apps/market-owner`      | `pnpm dev:market-owner`        | `pnpm --filter market-owner lint`, `pnpm --filter market-owner typecheck`, `pnpm --filter market-owner test`, `pnpm --filter market-owner build`, `pnpm --filter market-owner build-storybook`                                                                                 |
+| `packages/design-system` | `pnpm storybook:design-system` | `pnpm --filter @dongchimi/design-system lint`, `pnpm --filter @dongchimi/design-system typecheck`, `pnpm --filter @dongchimi/design-system test`, `pnpm check:icons`, `pnpm --filter @dongchimi/design-system build`, `pnpm --filter @dongchimi/design-system build-storybook` |
+| `packages/shared`        | `pnpm storybook:shared`        | `pnpm --filter @dongchimi/shared lint`, `pnpm --filter @dongchimi/shared typecheck`, `pnpm --filter @dongchimi/shared test`, `pnpm --filter @dongchimi/shared build`, `pnpm --filter @dongchimi/shared build-storybook`                                                        |
 
 테스트 종류별 명령과 작성 기준은 [Testing](./testing.md)을 따릅니다.
 
