@@ -25,7 +25,6 @@ export { default as IcChevronLeft } from './generated/IcChevronLeft';
 export { default as IcChevronRightColor50 } from './generated/IcChevronRightColor50';
 export { default as IcChevronRightColor70 } from './generated/IcChevronRightColor70';
 export { default as IcChevronRight } from './generated/IcChevronRight';
-export { default as IcUpload } from './generated/IcUpload';
 export { default as IcChevronUpColorPrimary } from './generated/IcChevronUpColorPrimary';
 export { default as IcChevronUpSizeSmallColor50 } from './generated/IcChevronUpSizeSmallColor50';
 export { default as IcChevronUpSizeXsmall } from './generated/IcChevronUpSizeXsmall';
