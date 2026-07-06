@@ -16,6 +16,7 @@ Codex skill은 사이트를 자동으로 fetch하지 않습니다. 사이트의 
 - 구현 직후 코드 품질을 점검할 때
 - PR 전 lint/typecheck/build와 별개로 유지보수성을 검토할 때
 - 코드 리뷰 요청을 받았고 프론트엔드 변경이 포함되어 있을 때
+- 브라우저 PR 리뷰 중 FE 코드 diff가 있어 repo-local code quality 기준을 함께 적용해야 할 때
 - 반복 개선을 요청받았고 quality finding을 먼저 줄여야 할 때
 
 ## Steps
@@ -29,7 +30,9 @@ git diff --name-only
 
 2. 지정 파일이 있으면 지정 파일만, 없으면 현재 diff를 기준으로 봅니다.
 
-3. 네 가지 기준으로 확인합니다.
+3. PR 리뷰라면 unresolved thread, CodeRabbit, teammate review에서 이미 제기된 finding을 먼저 표시합니다.
+
+4. 네 가지 기준으로 확인합니다.
 
 자세한 판단 기준은 `docs/code-quality/frontend-fundamentals.md`를 따릅니다.
 
@@ -38,7 +41,11 @@ git diff --name-only
 - Cohesion: 함께 수정되는 코드가 가까이 있는가
 - Coupling: 변경 영향 범위가 작고 불필요한 연결이 없는가
 
-4. findings-first로 정리합니다.
+디자인시스템/shared UI diff에서는 ARIA role과 keyboard/focus behavior, checkbox/toggle/menu/listbox semantics, link/action semantics, React ref 방식이 public API와 맞는지도 같이 확인합니다.
+
+React component diff에서는 `null` 삼항, 중첩 삼항, JSX 내부 IIFE/중첩 return, render side effect, derived state effect, props-state 복사, 조건부 hook 호출, unstable key, memoization 남용도 같이 확인합니다.
+
+5. findings-first로 정리합니다.
 
 ```markdown
 ## Frontend Fundamentals Review
@@ -61,10 +68,11 @@ Residual risk:
 - 확인하지 못한 범위
 ```
 
-5. 사용자가 수정을 요청하면 finding 단위로 고칩니다.
+6. 사용자가 수정을 요청하면 finding 단위로 고칩니다.
 
 ## Notes
 
 - lint/typecheck/build 결과와 code quality review를 섞지 않습니다.
 - 기준 밖 취향 문제를 finding으로 만들지 않습니다.
 - 파일/라인 근거가 없으면 finding으로 쓰지 않습니다.
+- 기존 CodeRabbit 또는 reviewer thread와 같은 내용은 새 코멘트로 반복하지 않습니다.

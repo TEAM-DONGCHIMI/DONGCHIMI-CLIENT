@@ -20,8 +20,10 @@ Codex skill은 리뷰할 때 사이트를 자동으로 열거나 fetch하지 않
 ## 적용 방식
 
 - 구현 직후, PR 전, 또는 코드 리뷰 요청 시 `$frontend-fundamentals-review`가 이 문서를 읽습니다.
+- 브라우저 PR 리뷰에서 FE 코드 diff가 있으면 `browser-pr-review-workflow`로 PR 상태와 기존 review thread를 먼저 분리한 뒤 이 기준을 적용합니다.
 - lint, typecheck, build를 대체하지 않습니다.
 - finding은 파일/라인 근거가 있을 때만 작성합니다.
+- CodeRabbit 또는 기존 reviewer thread가 이미 같은 문제를 다뤘다면 중복 코멘트를 만들지 않습니다.
 - 기준 밖 취향 문제나 아직 없는 요구사항은 finding으로 만들지 않습니다.
 
 ## 1. Readability
@@ -76,6 +78,20 @@ Codex skill은 리뷰할 때 사이트를 자동으로 열거나 fetch하지 않
 - 조건 분기가 2단계 이상이면 `if`, early return, 작은 함수로 펼칩니다.
 - JSX 내부 삼항은 단일 조건 전환까지만 허용합니다.
 
+#### 조건부 렌더링 의도 드러내기
+
+- else 분기가 `null`뿐이면 boolean 조건의 `&&` 렌더링을 우선 검토합니다.
+- 조건값이 number, string, object처럼 React가 렌더할 수 있는 값이면 `items.length > 0`, `value != null`처럼 boolean으로 명시합니다.
+- 양쪽 분기가 모두 의미 있는 UI이면 삼항 연산자를 사용합니다.
+- 조건 분기가 2단계 이상이면 JSX 내부 중첩 삼항보다 named variable, early return, 작은 컴포넌트 분리를 우선합니다.
+
+#### JSX 내부 절차형 로직 줄이기
+
+- JSX 안 IIFE, switch, 중첩 return은 렌더링 선언부에 절차형 흐름을 숨기므로 피합니다.
+- 분기 계산은 JSX 위에서 이름 있는 값으로 정리하고, JSX는 화면 구조가 먼저 보이게 둡니다.
+- 같은 조건을 여러 위치에서 반복하면 조건 이름을 붙이거나 하위 컴포넌트로 분리합니다.
+- 분기용 하위 컴포넌트는 실제로 읽는 맥락을 줄일 때만 만들고, 한 줄 조건을 과도하게 숨기지 않습니다.
+
 #### 왼쪽에서 오른쪽으로 읽히게 하기
 
 - 범위 조건은 시작값에서 끝값으로 읽히게 작성합니다.
@@ -86,6 +102,8 @@ Codex skill은 리뷰할 때 사이트를 자동으로 열거나 fetch하지 않
 
 - 동시에 실행되지 않는 분기 로직이 한 컴포넌트나 함수에 얽혀 있지 않은가
 - 중첩 삼항, 복잡한 boolean 조건, 긴 inline expression이 의미 있는 이름 없이 노출되지 않았는가
+- `condition ? <A /> : null`처럼 else가 `null`인 단순 렌더링이 불필요하게 삼항으로 작성되지 않았는가
+- JSX 내부 IIFE, switch, 중첩 return이 렌더링 흐름을 숨기지 않는가
 - 읽는 순서가 위에서 아래로 자연스러운가
 - 구현 상세가 호출부를 불필요하게 흐리지 않는가
 - 주석으로 나쁜 구조를 설명하는 대신 코드 구조로 의도를 드러냈는가
@@ -122,6 +140,15 @@ type ValidationResult = { ok: true } | { ok: false; reason: string };
 - logging, tracking, toast, navigation은 호출 지점 또는 명시적 wrapper로 분리합니다.
 - 필요하면 `fetchBalanceWithLogging`처럼 부수효과를 이름으로 노출합니다.
 
+### React 상태와 렌더링 예측 가능성
+
+- 렌더 중 toast, navigation, logging, mutation, storage write 같은 부수효과를 실행하지 않습니다.
+- props나 state에서 바로 계산 가능한 값은 `useEffect`와 별도 state로 동기화하지 않습니다.
+- props를 state로 복사할 때는 "초기값만 쓰는 uncontrolled 상태"인지, "props 변경을 따라가는 controlled 상태"인지 public API에서 명확히 합니다.
+- hook은 조건부로 호출하지 않고, 조건은 hook option이나 내부 guard로 전달합니다.
+- list key는 stable id를 사용합니다. 순서가 변할 수 있는 list의 index key와 매 렌더마다 바뀌는 random key는 피합니다.
+- `useMemo`와 `useCallback`은 참조 안정성 또는 계산 비용이 실제 요구될 때만 사용하고, 단순 값을 습관적으로 감싸지 않습니다.
+
 ### Predictability 체크 질문
 
 - `get`, `fetch`, `calculate`, `use*` 이름과 실제 부수 효과가 어긋나지 않는가
@@ -130,6 +157,20 @@ type ValidationResult = { ok: true } | { ok: false; reason: string };
 - 라이브러리나 도메인 개념과 헷갈리는 이름을 쓰지 않는가
 - hook return shape이 호출부에서 오해하기 어렵게 고정되어 있는가
 - 함수 내부 부수효과가 실패해도 핵심 로직 실패로 전이되지 않게 분리됐는가
+- 렌더 중 부수효과, derived state 동기화 effect, props-state 복사가 동작을 예측하기 어렵게 만들지 않는가
+- hook 호출 순서, list key 안정성, memoization 사용 이유가 React 동작 규칙과 맞는가
+
+### UI semantics 예측 가능성
+
+디자인시스템, shared UI, 앱 공통 컴포넌트는 이름과 public API만 보고 DOM 의미와 상호작용을 예측할 수 있어야 합니다.
+
+- `role`은 컴포넌트가 해당 keyboard/focus behavior를 실제로 제공할 때만 사용합니다.
+- `role="checkbox"`를 쓰면 `aria-checked`, Space key toggle, focus target이 함께 맞아야 합니다.
+- toggle button은 상태 전환 command이면 `aria-pressed`, 선택 항목 모델이면 listbox/menu/checkbox 등 더 맞는 semantics를 검토합니다.
+- `role="menu"`와 `role="listbox"`는 arrow key navigation, active option, focus management를 소유할 때만 사용합니다.
+- navigation은 link semantics를, mutation/action은 button semantics를 사용합니다. 스타일 때문에 link와 button을 바꾸지 않습니다.
+- 새 React 19 기준 디자인시스템 컴포넌트는 React 18 호환 요구가 없으면 `forwardRef`보다 `ref` prop 패턴을 우선 검토합니다.
+- Storybook/Chromatic wrapper 배경, preview connection loss, Node engine warning은 component behavior finding과 분리합니다.
 
 ## 3. Cohesion
 
