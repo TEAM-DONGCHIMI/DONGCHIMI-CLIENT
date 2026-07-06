@@ -45,8 +45,8 @@ LineButton
 ## States
 
 - default: 배경/밑줄 없이 neutral 40 텍스트로 표시합니다.
-- hover: 마우스 오버 시 밑줄(`text-decoration: underline`)이 나타납니다. Figma의 `state=action`에 대응합니다.
-- focus-visible: 키보드 focus 시에도 동일하게 밑줄과 focus outline을 표시합니다.
+- hover: 마우스 오버 시 `caption-1-medium` 타이포, `neutral 60` 텍스트 색상, 밑줄(`text-decoration: underline`)이 나타납니다. Figma의 `state=action`에 대응합니다.
+- focus-visible: 키보드 focus 시에도 동일하게 `caption-1-medium` 타이포, `neutral 60` 텍스트 색상, 밑줄, focus outline을 표시합니다.
 - disabled: native `disabled` prop을 전달할 수 있으며, 브라우저 기본 동작에 따라 포인터/키보드 상호작용과 hover/focus가 발생하지 않습니다. 별도 시각 상태는 정의하지 않습니다.
 - loading: 지원하지 않습니다.
 - invalid/error: 지원하지 않습니다.
@@ -63,8 +63,8 @@ LineButton
 - spacing: padding 0.
 - shape: 배경/테두리 없음.
 - responsive: 고정 크기가 없으며 부모 layout이 배치를 책임집니다.
-- hover/focus/disabled: hover와 focus-visible에서 `text-decoration: underline`을 적용하고, focus-visible에서는 outline도 함께 표시합니다. disabled는 별도 시각 스타일 없이 브라우저 기본 동작을 따릅니다.
-- token usage: typography는 `typography['body-3-semibold']`, 색상은 `atomic.neutral[40]`을 사용합니다.
+- hover/focus/disabled: hover와 focus-visible에서 `typography['caption-1-medium']`, `atomic.neutral[60]` 색상, `text-decoration: underline`을 적용하고, focus-visible에서는 outline도 함께 표시합니다. disabled는 별도 시각 스타일 없이 브라우저 기본 동작을 따릅니다.
+- token usage: default typography는 `typography['body-3-semibold']`, 색상은 `atomic.neutral[40]`, action typography는 `typography['caption-1-medium']`, 색상은 `atomic.neutral[60]`을 사용합니다.
 
 ## Accessibility
 
