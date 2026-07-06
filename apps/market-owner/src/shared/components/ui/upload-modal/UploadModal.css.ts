@@ -153,5 +153,4 @@ export const footerClassName = style({
 export const footerButtonClassName = style({
   boxSizing: 'border-box',
   width: '20rem',
-  padding: '1.6rem 7.4rem',
 });
