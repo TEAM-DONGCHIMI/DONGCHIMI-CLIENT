@@ -58,7 +58,7 @@ UploadModal
 ## Public API
 
 - component: `UploadModal`
-- exported types: `UploadModalProps`, `UploadModalStateTypes`
+- exported types: `UploadModalProps`
 - caller responsibility:
   - `open`, `onOpenChange` 제어
   - 업로드 흐름별 `heading` 문구 지정

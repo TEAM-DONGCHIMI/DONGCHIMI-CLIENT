@@ -14,4 +14,4 @@ export type {
 export { PaginationFooter } from './pagination-footer';
 export type { PaginationFooterProps } from './pagination-footer';
 export { UploadModal } from './upload-modal';
-export type { UploadModalProps, UploadModalStateTypes } from './upload-modal';
+export type { UploadModalProps } from './upload-modal';

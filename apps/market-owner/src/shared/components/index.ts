@@ -16,4 +16,4 @@ export type { SidebarItem, SidebarProfile, SidebarProps, SidebarSection } from '
 export { PaginationFooter } from './ui/pagination-footer';
 export type { PaginationFooterProps } from './ui/pagination-footer';
 export { UploadModal } from './ui/upload-modal';
-export type { UploadModalProps, UploadModalStateTypes } from './ui/upload-modal';
+export type { UploadModalProps } from './ui/upload-modal';

@@ -17,7 +17,7 @@ type NativeDialogContentProps = Omit<
   'aria-describedby' | 'aria-labelledby' | 'children' | 'onCancel' | 'onClose' | 'open'
 >;
 
-export type UploadModalStateTypes = 'default' | 'upload' | 'error';
+type UploadModalStateTypes = 'default' | 'upload' | 'error';
 
 export interface UploadModalProps extends NativeDialogContentProps {
   accept: string;
