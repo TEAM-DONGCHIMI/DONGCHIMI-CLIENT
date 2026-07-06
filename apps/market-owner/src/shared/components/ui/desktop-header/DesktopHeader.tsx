@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 
 import { Flex } from '@dongchimi/design-system/components';
+import { IcSearchSizeSmall } from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
 import { SearchBar, type SearchBarProps } from '../search-bar';
@@ -32,7 +33,7 @@ interface DesktopHeaderOnlyHomeProps {
 export type DesktopHeaderProps = DesktopHeaderBaseProps &
   (DesktopHeaderDefaultProps | DesktopHeaderOnlyHomeProps);
 
-const searchIcon = <span aria-hidden='true' className={S.searchIconClassName} />;
+const searchIcon = <IcSearchSizeSmall />;
 
 const renderSearchBar = ({
   searchValue,

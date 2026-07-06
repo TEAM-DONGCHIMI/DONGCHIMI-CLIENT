@@ -43,14 +43,6 @@ export const homeLabelClassName = style({
   whiteSpace: 'nowrap',
 });
 
-export const searchIconClassName = style({
-  display: 'block',
-  width: '1.6rem',
-  height: '1.6rem',
-  border: `0.15rem dashed ${atomic.neutral[90]}`,
-  borderRadius: '0.4rem',
-});
-
 export const logoHeaderClassName = style([
   headerClassName,
   {

@@ -137,10 +137,11 @@ export const sortButtonTextClassName = style({
 });
 
 export const iconClassName = style({
-  display: 'block',
+  display: 'inline-flex',
   width: '1.6rem',
   height: '1.6rem',
+  alignItems: 'center',
+  justifyContent: 'center',
   flexShrink: 0,
-  border: `0.15rem dashed ${atomic.neutral[90]}`,
-  borderRadius: '0.4rem',
+  color: atomic.neutral[70],
 });

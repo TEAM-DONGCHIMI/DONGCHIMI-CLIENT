@@ -1,6 +1,11 @@
 import { type MouseEventHandler } from 'react';
 
 import { Flex } from '@dongchimi/design-system/components';
+import {
+  IcChevronDownSizeSmallColor70,
+  IcSearchSizeSmall,
+  IcTuneSizeXsmallColor70,
+} from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
 import { SearchBar, type SearchBarProps } from '../search-bar';
@@ -29,8 +34,9 @@ const segmentLabels: Record<UploadSegmentTypes, string> = {
   needsEdit: '수정 필요',
 };
 
-const searchIcon = <span aria-hidden='true' className={S.iconClassName} />;
-const sortIcon = <span aria-hidden='true' className={S.iconClassName} />;
+const searchIcon = <IcSearchSizeSmall />;
+const sortLeadingIcon = <IcTuneSizeXsmallColor70 />;
+const sortTrailingIcon = <IcChevronDownSizeSmallColor70 />;
 
 const SegmentNavigation = ({
   completedCount,
@@ -101,8 +107,13 @@ const SelectedProductAction = ({
 const SortButton = ({ onSortClick }: { onSortClick?: MouseEventHandler<HTMLButtonElement> }) => {
   return (
     <button className={S.sortButtonClassName} onClick={onSortClick} type='button'>
-      {sortIcon}
+      <span aria-hidden='true' className={S.iconClassName}>
+        {sortLeadingIcon}
+      </span>
       <span className={S.sortButtonTextClassName}>정렬</span>
+      <span aria-hidden='true' className={S.iconClassName}>
+        {sortTrailingIcon}
+      </span>
     </button>
   );
 };

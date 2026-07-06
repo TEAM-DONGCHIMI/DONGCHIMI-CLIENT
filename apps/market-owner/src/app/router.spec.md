@@ -3,7 +3,7 @@
 ## Metadata
 
 - Jira: DCMSM-15
-- Related Jira: DCMSM-17
+- Related Jira: DCMSM-17, DCMSM-20
 - Screen ID: APPJAM login/signup, 행사 할인 상품 등록 flow, sidebar/edit tabs screenshots
 - Route: `/`, `/login`, `/signup`, `/products/today-special/new`, `/products/event-discount/new`, `/products/today-special/edit`, `/products/event-discount/edit`, `/products/registration-result`, `/leaflets/share`, `*`
 - Owner: FE
@@ -28,7 +28,7 @@ DCMSM-17부터 lazy route page는 앱 전용 `AsyncBoundary`를 통해 Suspense 
 - route path를 `src/shared/constants/routes.ts`에 상수화합니다.
 - `/login`, `/signup`은 public auth layout에서 sidebar 없이 렌더링합니다.
 - 홈, 상품 등록, 상품 수정, 오늘의 전단 공유 route는 protected route 아래 sidebar layout에서 렌더링합니다.
-- 상품 등록 결과 확인 route는 protected route이지만 no-sidebar layout에서 렌더링합니다.
+- 상품 결과 등록 확인 route는 protected route이지만 no-sidebar layout에서 렌더링합니다.
 - `ProtectedRoute`는 실제 auth API 전까지 fixture 통과 정책을 둡니다.
 - 수정하기 탭은 오늘의 특가와 행사 할인 각각 별도 route로 두어 sidebar active state와 같은 URL을 공유합니다.
 - 존재하지 않는 경로는 app 내부 Not Found 화면을 보여줍니다.
@@ -39,7 +39,7 @@ DCMSM-17부터 lazy route page는 앱 전용 `AsyncBoundary`를 통해 Suspense 
 - 실제 로그인/회원가입 API, token 저장, refresh 처리
 - 상품 등록/수정 form validation, submit mutation, cache invalidation
 - 각 page 본문 UI의 pixel-perfect 퍼블리싱
-- 등록 결과 데이터 연동
+- 등록 결과 데이터 API 연동
 - 새 design-system public component 구현
 - 서버 HTTP 404 응답 정책
 
@@ -101,4 +101,4 @@ DCMSM-17부터 lazy route page는 앱 전용 `AsyncBoundary`를 통해 Suspense 
 ## Open Questions
 
 - 실제 auth API가 붙으면 `ProtectedRoute`의 fixture 통과 정책을 제거하고 session/token 판단으로 교체합니다.
-- 등록 결과 확인 화면의 상세 CTA와 데이터는 후속 flow 이슈에서 확정합니다.
+- 상품 결과 등록 확인 화면 본문 UI는 DCMSM-20에서 route-local page로 구현하고, 실제 API/polling/최종 등록 완료 이동은 후속 flow 이슈에서 확정합니다.

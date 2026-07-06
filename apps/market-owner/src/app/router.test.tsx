@@ -31,7 +31,7 @@ describe('marketOwnerRoutes', () => {
   it('keeps the registration result route outside the sidebar layout', async () => {
     renderRoute('/products/registration-result');
 
-    expect(await screen.findByRole('heading', { name: '상품 등록 결과 확인' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   });
 
