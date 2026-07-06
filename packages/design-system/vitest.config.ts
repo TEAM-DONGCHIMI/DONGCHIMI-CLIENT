@@ -27,6 +27,14 @@ export default defineConfig({
           name: 'integration',
         },
       },
+      {
+        test: {
+          environment: 'node',
+          include: ['scripts/**/*.test.mjs'],
+          name: 'scripts',
+          passWithNoTests: true,
+        },
+      },
     ],
   },
 });

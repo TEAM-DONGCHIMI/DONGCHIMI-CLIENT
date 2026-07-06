@@ -1,44 +1,19 @@
-import { readdir, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { collectSvgFiles, iconFileNamePattern } from './icon-utils.mjs';
 
 const blockedTagPattern = /<\s*(script|foreignObject|iframe|object|embed)\b/i;
 const eventAttributePattern = /\s(on[a-z][\w:-]*)\s*=/i;
 const javascriptUrlPattern = /(?:href|xlink:href)\s*=\s*["']\s*javascript:/i;
 const hrefAttributePattern = /\s(?:href|xlink:href)\s*=\s*["']([^"']*)["']/gi;
-const iconFileNamePattern = /^ic-[a-z0-9]+(?:-[a-z0-9]+)*\.svg$/;
 
-export const collectSvgFiles = async (directory) => {
-  let entries = [];
+export { collectSvgFiles };
 
-  try {
-    entries = await readdir(directory, { withFileTypes: true });
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return [];
-    }
-
-    throw error;
-  }
-
-  const files = await Promise.all(
-    entries.map((entry) => {
-      const entryPath = path.join(directory, entry.name);
-
-      if (entry.isDirectory()) {
-        return collectSvgFiles(entryPath);
-      }
-
-      return entry.isFile() && entry.name.endsWith('.svg') ? [entryPath] : [];
-    }),
-  );
-
-  return files.flat().sort();
-};
-
-const validateSvgContent = (filePath, source, packageRoot) => {
+export const validateSvgContent = (filePath, source, packageRoot, options = {}) => {
   const errors = [];
+  const fileName = options.fileName ?? path.basename(filePath);
 
-  if (!iconFileNamePattern.test(path.basename(filePath))) {
+  if (!iconFileNamePattern.test(fileName)) {
     errors.push('file name must match ic-name.svg');
   }
 

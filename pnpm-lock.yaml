@@ -114,6 +114,9 @@ catalogs:
     react-router:
       specifier: ^7.18.0
       version: 7.18.0
+    svgo:
+      specifier: ^3.3.3
+      version: 3.3.3
     turbo:
       specifier: ^2.9.18
       version: 2.9.18
@@ -440,6 +443,9 @@ importers:
       storybook:
         specifier: ^10.4.6
         version: 10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      svgo:
+        specifier: 'catalog:'
+        version: 3.3.3
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
