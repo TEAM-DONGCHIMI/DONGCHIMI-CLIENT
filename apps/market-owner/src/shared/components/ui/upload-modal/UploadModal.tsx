@@ -43,6 +43,12 @@ const DEFAULT_FILE_SELECT_LABEL = '파일 선택';
 const DEFAULT_UPLOAD_BUTTON_LABEL = '파일 업로드';
 const DEFAULT_FILE_SELECT_ICON = <IcUpload />;
 
+const fileSelectButtonPropsByState = {
+  default: { color: 'assistive', variant: 'solid' },
+  upload: { color: 'primary', variant: 'soft' },
+  error: { color: 'negative', variant: 'outlined' },
+} as const;
+
 const hasRenderableIcon = (icon: ReactNode) => {
   return icon != null && icon !== false;
 };
@@ -72,12 +78,7 @@ export const UploadModal = ({
   const isUploadDisabled = uploadButtonDisabled ?? !isUploadState;
   const mainText = isUploadState && selectedFileText != null ? selectedFileText : label;
   const hasFileSelectIcon = hasRenderableIcon(fileSelectIcon);
-  const fileSelectButtonProps =
-    state === 'default'
-      ? { color: 'assistive' as const, variant: 'solid' as const }
-      : state === 'upload'
-        ? { color: 'primary' as const, variant: 'soft' as const }
-        : { color: 'negative' as const, variant: 'outlined' as const };
+  const fileSelectButtonProps = fileSelectButtonPropsByState[state];
   const handleFileSelectClick = () => {
     if (fileInputRef.current != null) {
       fileInputRef.current.value = '';
