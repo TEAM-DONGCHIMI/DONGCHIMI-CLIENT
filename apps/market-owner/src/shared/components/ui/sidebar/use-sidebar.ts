@@ -32,6 +32,10 @@ export const useSidebarItem = (item: SidebarItem) => {
       return;
     }
 
+    if (item.href && onItemSelect) {
+      event.preventDefault();
+    }
+
     onItemSelect?.(item);
   };
 
