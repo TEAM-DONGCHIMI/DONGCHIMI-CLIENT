@@ -49,6 +49,7 @@ catalog:
   msw: ^2.14.6
   typescript-eslint: ^8.61.1
   '@svgr/cli': ^8.1.0
+  svgo: ^3.3.3
   '@vanilla-extract/css': ^1.20.1
   '@vanilla-extract/next-plugin': ^2.5.2
   '@vanilla-extract/recipes': ^0.5.7

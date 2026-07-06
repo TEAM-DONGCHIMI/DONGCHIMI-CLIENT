@@ -20,6 +20,7 @@
     "build": "tsc --noEmit",
     "check:icons": "node scripts/check-icons.mjs",
     "icons:generate": "node scripts/generate-icons.mjs",
+    "icons:import": "node scripts/import-icons.mjs",
     "lint": "eslint . --max-warnings=0",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
@@ -27,7 +28,7 @@
     "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
     "test:integration": "vitest run --project integration --passWithNoTests",
-    "test:unit": "vitest run --project unit --passWithNoTests",
+    "test:unit": "vitest run --project unit --project scripts --passWithNoTests",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
@@ -64,6 +65,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "storybook": "^10.4.6",
+    "svgo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

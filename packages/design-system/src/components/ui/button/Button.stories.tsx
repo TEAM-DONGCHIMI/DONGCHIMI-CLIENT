@@ -6,6 +6,7 @@ import { IcChevronRight } from '../../../icons';
 const desktopButtonSizes = ['large', 'medium', 'small'] as const;
 const buttonPresets = [
   { color: 'primary', disabled: false, variant: 'solid' },
+  { color: 'negative', disabled: false, variant: 'solid' },
   { color: 'assistive', disabled: false, variant: 'outlined' },
   { color: 'assistiveLight', disabled: false, variant: 'outlined' },
   { color: 'negative', disabled: false, variant: 'outlined' },
@@ -15,6 +16,7 @@ const buttonPresets = [
 ] as const;
 const xsmallButtonPresets = [
   { label: 'Primary', props: { color: 'primary', disabled: false, variant: 'solid' } },
+  { label: 'Negative', props: { color: 'negative', disabled: false, variant: 'solid' } },
   {
     label: 'Outline / Negative',
     props: { color: 'negative', disabled: false, variant: 'outlined' },
@@ -189,7 +191,7 @@ export const VariantMatrix: StoryTypes = {
             key={size}
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(7, max-content)',
+              gridTemplateColumns: 'repeat(8, max-content)',
               gap: 16,
             }}
           >
@@ -209,7 +211,7 @@ export const VariantMatrix: StoryTypes = {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, max-content)',
+            gridTemplateColumns: 'repeat(4, max-content)',
             gap: 16,
           }}
         >
@@ -242,7 +244,7 @@ export const VariantICN: StoryTypes = {
             key={size}
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(7, max-content)',
+              gridTemplateColumns: 'repeat(8, max-content)',
               gap: 16,
             }}
           >

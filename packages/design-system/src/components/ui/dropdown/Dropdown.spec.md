@@ -80,7 +80,7 @@ Dropdown
   필요하면 후속 이슈에서 다룹니다.
 - keyboard interaction: 항목(`ListButton`)의 native button interaction을 사용합니다.
 - focus-visible: 각 `ListButton`이 focus-visible outline을 제공합니다.
-- ARIA: 선택 상태는 항목의 `aria-pressed`로 노출합니다.
+- ARIA: Page/Category(단일 선택) 항목은 `aria-pressed`, Checkbox use 항목은 `Dropdown.Item`이 래핑한 `ListButton` checkbox variant가 `role="checkbox"`+`aria-checked`를 담당합니다.
 
 ## Public API
 
@@ -114,7 +114,7 @@ Dropdown
 - [x] Category (primary 단일 선택)
 - [x] Long text overflow
 - [x] role/aria-label 주입 예시 (Page/Category 스토리)
-- [ ] Checkbox multi-select: 범위 외 (ListButton `checkbox` variant 보완 후 별도 이슈에서 지원)
+- [x] Checkbox multi-select (Dropdown 자체 로직 없이 `Dropdown.Item`/`ListButton` checkbox variant에 위임)
 - [ ] Disabled / Loading / Invalid: 미지원
 
 ## Verification
