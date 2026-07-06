@@ -23,7 +23,17 @@
 ## Usage
 
 기본 라우트 페이지는 `src/app/router.tsx`의 `createLazyRoute` helper가 자동으로 `AsyncBoundary`를 적용합니다.
-페이지 로컬에서 특정 section만 별도로 감싸야 할 때는 아래처럼 사용합니다.
+새 lazy route를 추가할 때는 기존 route와 동일하게 `createLazyRoute(() => import(...), 'ExportName')`를 사용합니다.
+
+```tsx
+{
+  path: MARKET_OWNER_ROUTES.home,
+  ...createLazyRoute(() => import('@/domains/home/overview/HomePage'), 'HomePage'),
+}
+```
+
+페이지 로컬에서 특정 section만 별도로 loading/error 경계로 제한해야 할 때는 아래처럼 사용합니다.
+이 방식은 페이지 전체를 fallback으로 바꾸기보다 table, preview, chart처럼 독립적으로 복구할 수 있는 영역에 사용합니다.
 
 ```tsx
 import { AsyncBoundary } from '@/app/boundaries';
@@ -38,6 +48,54 @@ export const ProductSection = () => {
 ```
 
 section 크기에 맞는 fallback이 필요하면 `loadingFallback` 또는 `errorFallback`을 주입합니다.
+
+```tsx
+import { type FallbackProps } from 'react-error-boundary';
+
+import { AsyncBoundary } from '@/app/boundaries';
+
+const ProductTableErrorFallback = ({ resetErrorBoundary }: FallbackProps) => {
+  return (
+    <TableErrorState description='상품 목록을 불러오지 못했습니다.' onRetry={resetErrorBoundary} />
+  );
+};
+
+export const ProductTableSection = () => {
+  return (
+    <AsyncBoundary
+      errorFallback={ProductTableErrorFallback}
+      loadingFallback={<TableSkeleton rowCount={8} />}
+    >
+      <ProductTable />
+    </AsyncBoundary>
+  );
+};
+```
+
+route param, tab id, filter id처럼 복구 기준이 되는 값이 바뀌면 `resetKeys`를 전달합니다.
+이 값이 바뀌면 이전 error fallback 상태를 유지하지 않고 새로운 화면 상태로 다시 렌더링합니다.
+
+```tsx
+import { AsyncBoundary } from '@/app/boundaries';
+
+type ProductDetailSectionProps = Readonly<{
+  productId: string;
+}>;
+
+export const ProductDetailSection = ({ productId }: ProductDetailSectionProps) => {
+  return (
+    <AsyncBoundary resetKeys={[productId]}>
+      <ProductDetail productId={productId} />
+    </AsyncBoundary>
+  );
+};
+```
+
+TanStack Query 조회 에러를 fallback에서 재시도해야 하는 영역도 `AsyncBoundary`로 감쌉니다.
+기본 query 정책은 조회 에러를 boundary로 전파하고, `다시 시도`는 `QueryErrorResetBoundary` reset과 함께 실행됩니다.
+mutation-only 버튼이나 form submit 에러는 화면 fallback보다 toast 또는 inline error가 맞으므로 이 boundary로 우선 감싸지 않습니다.
+
+`onError`는 Sentry 또는 logging 정책이 정해진 뒤 route/section 단위 로깅이 필요할 때 연결합니다.
 
 ## Scope
 
