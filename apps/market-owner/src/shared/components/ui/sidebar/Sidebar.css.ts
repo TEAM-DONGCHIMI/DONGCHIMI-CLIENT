@@ -11,9 +11,8 @@ export const sidebar = style({
   boxSizing: 'border-box',
   width: 290,
   height: '100%',
-  padding: '32px 16px 16px',
+  padding: 0,
   backgroundColor: atomic.common[0],
-  boxShadow: '0 20px 64px rgba(25, 31, 40, 0.08)',
   color: atomic.neutral[90],
 });
 
@@ -21,23 +20,26 @@ export const sidebarBrand = style({
   display: 'flex',
   alignItems: 'center',
   gap: 8,
-  minHeight: 32,
-  padding: '0 16px',
+  minHeight: 96,
+  padding: '32px 24px',
+  boxSizing: 'border-box',
   ...typography['heading-3-semibold'],
 });
 
 export const sidebarDivider = style({
-  width: '100%',
+  width: 'calc(100% - 32px)',
   height: 1,
-  margin: '32px 0 24px',
-  backgroundColor: atomic.neutral[20],
+  margin: '0 16px',
+  backgroundColor: atomic.neutral[10],
 });
 
 export const sidebarProfile = style({
   display: 'flex',
   alignItems: 'center',
+  height: 85,
+  boxSizing: 'border-box',
   gap: 12,
-  padding: '0 16px 24px',
+  padding: '23px 16px 22px',
 });
 
 export const sidebarProfileAvatar = style({
@@ -76,17 +78,18 @@ export const sidebarProfileEmail = style({
 
 export const sidebarNav = style({
   display: 'grid',
-  gap: 24,
+  gap: 28,
+  padding: '0 16px',
 });
 
 export const sidebarSection = style({
   display: 'grid',
-  gap: 8,
+  gap: 12,
 });
 
 export const sidebarSectionTitle = style({
   margin: 0,
-  padding: '0 16px 4px',
+  padding: 0,
   color: atomic.neutral[80],
   ...typography['body-3-semibold'],
 });
@@ -99,12 +102,12 @@ export const sidebarItem = recipe({
     width: '100%',
     minHeight: 48,
     boxSizing: 'border-box',
-    gap: 12,
+    gap: 10,
     border: 0,
     borderRadius: 12,
-    padding: '0 16px',
+    padding: 12,
     backgroundColor: 'transparent',
-    color: atomic.neutral[60],
+    color: atomic.neutral[50],
     cursor: 'pointer',
     ...typography['body-2-medium'],
     textAlign: 'left',
@@ -143,7 +146,7 @@ export const sidebarItem = recipe({
         selectors: {
           '&:hover': {
             backgroundColor: 'transparent',
-            color: atomic.neutral[60],
+            color: atomic.neutral[50],
           },
         },
       },
@@ -175,16 +178,19 @@ export const sidebarItemLabel = style({
 
 export const sidebarFooter = style({
   display: 'grid',
-  gap: 12,
-  marginTop: 'auto',
-  paddingTop: 24,
-  borderTop: `1px solid ${atomic.neutral[20]}`,
+  boxSizing: 'border-box',
+  width: 'calc(100% - 32px)',
+  gap: 6,
+  margin: 'auto 16px 0',
+  padding: '12px 0 18px',
+  borderTop: `1px solid ${atomic.neutral[10]}`,
 });
 
 export const sidebarHelpCard = style({
   display: 'grid',
+  boxSizing: 'border-box',
   gap: 10,
-  borderRadius: 10,
-  padding: '14px 16px 16px',
+  borderRadius: 12,
+  padding: 16,
   backgroundColor: atomic.neutral[10],
 });

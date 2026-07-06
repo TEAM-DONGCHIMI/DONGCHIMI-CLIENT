@@ -50,4 +50,4 @@
 
 - [ ] `/leaflets/share` route renders `오늘의 전단 공유하기`
 - [ ] route renders sidebar complementary landmark
-- [ ] sidebar `오늘의 전단 공유하기` link has `aria-current="page"`
+- [ ] sidebar `오늘의 전단 공유` link has `aria-current="page"`

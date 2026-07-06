@@ -80,10 +80,10 @@ const sidebarSections: SidebarSection[] = [
       createSidebarItem({
         icon: <IcShare aria-hidden='true' />,
         id: 'leafletShare',
-        label: '오늘의 전단 공유하기',
+        label: '오늘의 전단 공유',
       }),
     ],
-    title: '상품을 등록하고 오늘 전단을 만들어보세요',
+    title: '상품을 등록하고 오늘의 전단을 만들어보세요',
   },
 ];
 
@@ -116,7 +116,7 @@ const SidebarBrand = () => (
 const SidebarHelp = () => (
   <div className={S.helpCardClassName}>
     <p className={S.helpTextClassName}>
-      <IcCircleQuestion aria-hidden='true' /> 도움이 필요하신가요?
+      <IcCircleQuestion aria-hidden='true' className={S.helpIconClassName} /> 도움이 필요하신가요?
     </p>
     <button className={S.helpButtonClassName} type='button'>
       문의 남기기

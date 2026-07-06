@@ -73,8 +73,9 @@ Sidebar
 
 ## Styling
 
+- design reference: APPJAM `SNB` node `1553:112510`의 desktop sidebar 수치를 기준으로 합니다.
 - layout: 290px side panel, vertical flex layout, footer 하단 배치를 사용합니다.
-- spacing: panel padding, 48px item height, 12px item radius를 사용합니다.
+- spacing: brand 96px, profile 86px, nav/footer 16px inset, 258px content width, 48px item height, 12px item radius를 사용합니다.
 - text: Pretendard-first font stack과 label/profile text ellipsis를 적용합니다.
 - states: hover, active, disabled, focus-visible 상태를 정의합니다.
 - token usage: `atomic`, `semantic` color token을 우선 사용합니다.
@@ -108,7 +109,8 @@ Sidebar
 - [x] `git -c safe.directory=C:/DONGCHIMI-CLIENT diff --check`
 - [x] `pnpm exec prettier --check apps/market-owner/src/shared/components/index.ts apps/market-owner/src/shared/components/ui/sidebar`
 - [x] `pnpm --filter market-owner exec vitest run src/shared/components/ui/sidebar/Sidebar.test.tsx --project unit`
+- [x] `pnpm --filter market-owner test -- Sidebar`
 - [x] `pnpm --filter market-owner lint`
 - [x] `pnpm --filter market-owner typecheck`
-- [ ] `pnpm --filter market-owner build` - `apps/market-owner/dist` 쓰기 권한 EPERM으로 Vite public asset copy 단계가 제한됩니다.
+- [x] `pnpm --filter market-owner build`
 - [ ] `pnpm --filter market-owner build-storybook`
