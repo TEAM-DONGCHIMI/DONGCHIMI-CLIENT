@@ -77,6 +77,7 @@ ComponentName
 ## Verification
 
 - [ ] `git diff --check`
+- [ ] Frontend Fundamentals self-check
 - [ ] visual states checked
 - [ ] accessibility checked
 

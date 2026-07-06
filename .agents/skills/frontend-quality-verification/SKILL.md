@@ -9,6 +9,8 @@ description: DONGCHIMI-CLIENT 프론트엔드 변경 후 변경 범위 기준으
 
 변경 범위에 맞는 검증 명령을 선택합니다.
 
+이 skill은 format, lint, typecheck, test, build처럼 실행 가능한 검증을 고르는 역할입니다. 가독성, 예측 가능성, 응집도, 결합도 같은 구현 품질은 `docs/code-quality/frontend-fundamentals.md` self-check와 필요 시 `frontend-fundamentals-review`로 별도 확인합니다.
+
 ## 입력 점검
 
 ### 필수 입력
@@ -29,6 +31,7 @@ description: DONGCHIMI-CLIENT 프론트엔드 변경 후 변경 범위 기준으
 - 조건부 읽기:
   - `docs/workflows/local-development.md`: 명령이 헷갈릴 때
   - `docs/workflows/ci.md`: CI와 같은 검증 범위를 맞춰야 할 때
+  - `docs/code-quality/frontend-fundamentals.md`: FE 구현 변경의 품질 self-check 기준을 확인할 때
   - `.agents/skills/frontend-fundamentals-review/SKILL.md`: 코드 품질 리뷰까지 요청받았거나 PR 전 품질 점검이 필요할 때
   - 관련 workspace `package.json`: workspace 전용 script가 필요한 때
   - `docs/conventions/package-management.md`: package manager가 불명확할 때
@@ -62,7 +65,8 @@ pnpm build
 
 package manager는 `docs/conventions/package-management.md`를 따릅니다.
 
-코드 품질 자체를 검토해야 하면 명령 검증과 별도로 `frontend-fundamentals-review`를 실행합니다.
+FE 구현 변경은 명령 검증과 별도로 `docs/code-quality/frontend-fundamentals.md` 기준 self-check를 수행합니다.
+비자명한 변경, shared/public API 변경, PR 전 품질 점검처럼 코드 품질 자체를 리뷰해야 하면 `frontend-fundamentals-review`를 실행합니다.
 
 ## Workspace 매핑
 
@@ -88,6 +92,10 @@ package manager는 `docs/conventions/package-management.md`를 따릅니다.
 | Command | Status | Notes |
 | --- | --- | --- |
 | `git diff --check` | PASS | - |
+
+Frontend quality:
+- self-check:
+- review skill:
 
 Residual risk:
 - <확인하지 못한 영역과 이유>
