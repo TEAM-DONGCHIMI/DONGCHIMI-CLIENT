@@ -13,9 +13,9 @@ const DEFAULT_CONFIRM_LABEL = '확인';
 export interface MobileModalProps {
   cancelLabel?: string;
   className?: string;
-  confirmButtonDisabled?: boolean;
   confirmLabel?: string;
   description: string;
+  isConfirmButtonDisabled?: boolean;
   onCancel?: MouseEventHandler<HTMLButtonElement>;
   onConfirm?: MouseEventHandler<HTMLButtonElement>;
   onOpenChange: (open: boolean) => void;
@@ -27,9 +27,9 @@ export interface MobileModalProps {
 export const MobileModal = ({
   cancelLabel = DEFAULT_CANCEL_LABEL,
   className,
-  confirmButtonDisabled = false,
   confirmLabel = DEFAULT_CONFIRM_LABEL,
   description,
+  isConfirmButtonDisabled = false,
   onCancel,
   onConfirm,
   onOpenChange,
@@ -69,7 +69,7 @@ export const MobileModal = ({
             </Button>
             <Button
               className={S.actionButtonClassName}
-              disabled={confirmButtonDisabled}
+              disabled={isConfirmButtonDisabled}
               onClick={onConfirm}
               size='mobile'
               variant='solid'

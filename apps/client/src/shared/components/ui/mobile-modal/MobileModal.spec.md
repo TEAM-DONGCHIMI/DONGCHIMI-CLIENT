@@ -44,7 +44,7 @@
   - 취소 버튼 라벨입니다. 기본값은 `취소`입니다.
 - `confirmLabel?: string`
   - 주요 액션 버튼 라벨입니다. 기본값은 `확인`입니다.
-- `confirmButtonDisabled?: boolean`
+- `isConfirmButtonDisabled?: boolean`
   - 주요 액션을 막아야 할 때 사용합니다. 기본값은 `false`입니다.
 - `onCancel?: MouseEventHandler<HTMLButtonElement>`
   - 취소 버튼 클릭 시 호출합니다.
@@ -64,7 +64,7 @@
 - closed:
   - `open=false`일 때 dialog content는 DOM에 렌더링되지 않습니다.
 - disabled:
-  - `confirmButtonDisabled=true`이면 주요 액션 버튼이 disabled 상태가 됩니다.
+  - `isConfirmButtonDisabled=true`이면 주요 액션 버튼이 disabled 상태가 됩니다.
 - loading:
   - 지원하지 않습니다. 호출부에서 필요하면 라벨 또는 disabled 상태로 표현합니다.
 - error:

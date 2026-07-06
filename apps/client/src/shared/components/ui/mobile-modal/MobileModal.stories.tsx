@@ -21,7 +21,7 @@ const meta = {
     className: {
       control: false,
     },
-    confirmButtonDisabled: {
+    isConfirmButtonDisabled: {
       control: 'boolean',
     },
     confirmLabel: {
@@ -51,7 +51,7 @@ const meta = {
   },
   args: {
     cancelLabel: '취소',
-    confirmButtonDisabled: false,
+    isConfirmButtonDisabled: false,
     confirmLabel: '전화걸기',
     description: '현재 영업중· 21:00까지',
     onCancel: fn(),
@@ -70,7 +70,7 @@ const ControlledPreview = (args: Partial<MobileModalProps>) => {
   const [open, setOpen] = useState(false);
   const mobileModalProps = {
     cancelLabel: '취소',
-    confirmButtonDisabled: false,
+    isConfirmButtonDisabled: false,
     confirmLabel: '전화걸기',
     description: '현재 영업중· 21:00까지',
     onCancel: fn(),
@@ -109,7 +109,7 @@ export const Controlled: StoryTypes = {
 
 export const ConfirmDisabled: StoryTypes = {
   args: {
-    confirmButtonDisabled: true,
+    isConfirmButtonDisabled: true,
     description: '현재 영업 종료',
     open: true,
   },

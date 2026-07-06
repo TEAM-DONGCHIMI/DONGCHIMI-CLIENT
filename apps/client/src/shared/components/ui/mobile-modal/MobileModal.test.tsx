@@ -82,12 +82,12 @@ describe('MobileModal', () => {
     expect(handleConfirm).toHaveBeenCalledTimes(1);
   });
 
-  it('disables confirm action when confirmButtonDisabled is true', () => {
+  it('disables confirm action when isConfirmButtonDisabled is true', () => {
     const handleConfirm = vi.fn();
 
     renderMobileModal({
-      confirmButtonDisabled: true,
       confirmLabel: '전화걸기',
+      isConfirmButtonDisabled: true,
       onConfirm: handleConfirm,
     });
 
