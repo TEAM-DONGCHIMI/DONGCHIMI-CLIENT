@@ -4,7 +4,7 @@
 
 - App: `market-owner`
 - Category: domain-local component
-- Path: `apps/market-owner/src/domains/auth/login/components/LoginCardLayout/LoginCardLayout.tsx`
+- Path: `apps/market-owner/src/domains/auth/login/components/login-card-layout/LoginCardLayout.tsx`
 - Jira: `DCMSM-23`
 - Figma: [APPJAM Background+Border+Shadow node 1608:108630](https://www.figma.com/design/xIDbjqPKzG4bQL5Gaoqfvb/APPJAM?node-id=1608-108630)
 - Status: Implemented
@@ -20,6 +20,7 @@
 - `children`: 카드 내부에 배치할 호출부 소유 콘텐츠입니다.
 - `className`: 호출부에서 추가 스타일을 합성할 때 사용합니다.
 - Native `section` props: `aria-label`, `aria-labelledby`, `id`, `data-*` 등 section attribute를 전달할 수 있습니다.
+- `마트 관리자 로그인` 타이틀은 이 카드 전용 고정 문구입니다. 다른 auth 페이지(회원가입 등)는 카드쉘 자체가 달라 재사용하지 않으므로 `title`/`titleId` 커스터마이징은 제공하지 않습니다.
 
 ## Styling Constraints
 

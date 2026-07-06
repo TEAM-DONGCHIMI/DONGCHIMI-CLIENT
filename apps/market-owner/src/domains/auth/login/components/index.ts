@@ -1,1 +1,1 @@
-export { LoginCardLayout, type LoginCardLayoutProps } from './LoginCardLayout';
+export { LoginCardLayout, type LoginCardLayoutProps } from './login-card-layout';
