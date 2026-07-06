@@ -1,18 +1,18 @@
 {
   "ic-blank.svg": {
     "generatedFile": "IcBlank.tsx",
-    "generatedFingerprint": "862bbfbc727fc443142918c5c39c540ecc4d90d6c5a7ddb3c4bafded47d7cae6",
-    "sourceFingerprint": "762b0322cc0a3edfb70d707181fed1d8f77e3bef5d1637f0ed7e477332a3adcc"
+    "generatedFingerprint": "9aad7568f515cdf247d4dfe35d548f8e72ff53b4533dee9091c729a225556e6c",
+    "sourceFingerprint": "0060ec33cfa13c215cafc6c55b0a0ce1261abfc00fe4ac634707a3f2e52a8f30"
   },
   "ic-calendar-plus-size-small.svg": {
     "generatedFile": "IcCalendarPlusSizeSmall.tsx",
-    "generatedFingerprint": "ec5019ffe741c17f004cc55756e5f796c2dbceec7815b729502cf49d0b180426",
-    "sourceFingerprint": "db7cbeffd2185f03e67ae1bf184d0d425766d874991be8f7e2dd01c963d28953"
+    "generatedFingerprint": "4c801fea7188c6b2a044ce2a9fc55e9fba0ff5ab7588971829a61d67a926d17e",
+    "sourceFingerprint": "3ee2846e1ef3cdd680d3b4a8143fe4842181821cdf80ca51335648e9644c62fb"
   },
   "ic-calendar-plus.svg": {
     "generatedFile": "IcCalendarPlus.tsx",
-    "generatedFingerprint": "f9d28e71b8facc05ed0a19284f94e7b1e0db637ba8b97a0e44f762b7ce619485",
-    "sourceFingerprint": "4c02e658e989cf50bf143f710ccd1f7b8544ee9c921dcbe8f4a5407a5e04b379"
+    "generatedFingerprint": "5fe2ed8e41d39ea92398b309f01bcebf48e545e66a84d57659844eddf51492d8",
+    "sourceFingerprint": "eeb8514336f650538d1c1e8802f96e7e8d0d87718fc403ea9afdabfb4c6c62a1"
   },
   "ic-calendar-size-xsmall-color-primary-strong.svg": {
     "generatedFile": "IcCalendarSizeXsmallColorPrimaryStrong.tsx",
@@ -26,8 +26,8 @@
   },
   "ic-calendar.svg": {
     "generatedFile": "IcCalendar.tsx",
-    "generatedFingerprint": "70c44d89aaf523645266cb1f967c3e83e6b3781416c72b2d7f3599c056c5faff",
-    "sourceFingerprint": "946ddaae7978e0ed078b6bdca560e889477d01eb2ac83a233c40a7911a5ac473"
+    "generatedFingerprint": "3795a8d5ed86b21057924e93b9d472d03311428fcb476b9f2df30fc074737c72",
+    "sourceFingerprint": "e94e05a1b719fa06d1186e102acd342260676b4b546331c7c9ea4ad8f545440c"
   },
   "ic-camera-color-0.svg": {
     "generatedFile": "IcCameraColor0.tsx",
@@ -36,8 +36,8 @@
   },
   "ic-camera.svg": {
     "generatedFile": "IcCamera.tsx",
-    "generatedFingerprint": "e59a5943042e0b9b03a5f9f7ced25192d07ab6fda01a48a8c36bdb0c071bfd3d",
-    "sourceFingerprint": "77bb9e29615f1e98e0e0d8010430fc61e186751002fafa9859c26ce36d737219"
+    "generatedFingerprint": "5f0c9356444338397584a408c23e043ec566a8ede2932b3cce6f15e986b5db42",
+    "sourceFingerprint": "91ab3ada313b096e43fdb400ead6f07d4865abc3777005f5535be95cb8aa70b9"
   },
   "ic-checkbox-action-size-small.svg": {
     "generatedFile": "IcCheckboxActionSizeSmall.tsx",
@@ -76,13 +76,13 @@
   },
   "ic-chevron-down-size-small.svg": {
     "generatedFile": "IcChevronDownSizeSmall.tsx",
-    "generatedFingerprint": "715aafaaaaa5217bd9a3696c593dcf2e8edc765b1dcb4d9d8edd55742dc11e99",
-    "sourceFingerprint": "7abdb6beeba88cc2afc8c9120d6b3d164563bd17377bb85abd00e2049faed035"
+    "generatedFingerprint": "b7a13d0444e4a28815c5d528a1966614ca21a7b757ed6e19f6d14ddc8020106c",
+    "sourceFingerprint": "f91f8b3f8f015eaca593aa0dd845248af5f9684203d9ba2002497bbf8e654e93"
   },
   "ic-chevron-down-size-xsmall.svg": {
     "generatedFile": "IcChevronDownSizeXsmall.tsx",
-    "generatedFingerprint": "0b241a6ea8efb3b3e240dffbdf8d491c594fa1c9d24c9705ced6066f72d302e0",
-    "sourceFingerprint": "045ceb3da32265573f249170068805d6312346ae891ff315022f1066dfe11b9b"
+    "generatedFingerprint": "f324c28f7f97a879c96939c0f7188e1bac079cd6818f8ac2e6401dd42e24524f",
+    "sourceFingerprint": "a5a587cb566a332c5088699dfaf6cc5295b6373605c04aff52663a91c2364b8b"
   },
   "ic-chevron-down-small-color-primary-strong.svg": {
     "generatedFile": "IcChevronDownSmallColorPrimaryStrong.tsx",
@@ -91,8 +91,8 @@
   },
   "ic-chevron-down.svg": {
     "generatedFile": "IcChevronDown.tsx",
-    "generatedFingerprint": "998a75f1e7a8ca8d8bdb7ac26d64be19be9b77225d0a85432e1349461b4f960a",
-    "sourceFingerprint": "80a1969402377164f35ecbfb567e269f5e961ba94734b11d22b05f1dcdf9f94b"
+    "generatedFingerprint": "aeaf8a7ef8d2ff34040118c3a8dec3e5f3745e41b82936b04c69338f9ca8d1a1",
+    "sourceFingerprint": "14b0b6a6a9e6c5c4fb8497bb0eef760b546648033b2202abd017c818e323e3bd"
   },
   "ic-chevron-left-color-50.svg": {
     "generatedFile": "IcChevronLeftColor50.tsx",
@@ -106,8 +106,8 @@
   },
   "ic-chevron-left.svg": {
     "generatedFile": "IcChevronLeft.tsx",
-    "generatedFingerprint": "7791839f584146e9e20edc13c3d30646f0768056e6c75695ebaa85ca853c7639",
-    "sourceFingerprint": "bd60475e2d71bf602bc797eb02104432884caadd54312d31e0cd55e81781cd96"
+    "generatedFingerprint": "0b6b07d93205255af877d89109db5665cf7e01d39e6c1c646ba18ab1e73e8811",
+    "sourceFingerprint": "8f8cffec4e9eea130353570ab5d4580026469db6262cbfbc725bb2ee6f61443d"
   },
   "ic-chevron-right-color-50.svg": {
     "generatedFile": "IcChevronRightColor50.tsx",
@@ -136,13 +136,13 @@
   },
   "ic-chevron-up-size-xsmall.svg": {
     "generatedFile": "IcChevronUpSizeXsmall.tsx",
-    "generatedFingerprint": "e6685a3e692ce190906cef7ab5479c8e688f381fdf6ccec76eced1d4e3bbd68b",
-    "sourceFingerprint": "f566b7885a0ee5f9e37529af27c49e2103247f95606e07534bbd1d093d7f0756"
+    "generatedFingerprint": "65e5874c5eb961843b4957bbe6ea3c44ef296ab9f2475edcbf840b50a7d8ad69",
+    "sourceFingerprint": "a6c52dd120bdd854237e5ebc459c533c083941fe6fea4bfcc841944c327a9156"
   },
   "ic-chevron-up.svg": {
     "generatedFile": "IcChevronUp.tsx",
-    "generatedFingerprint": "ec36dd575e7f872083509a3319e8844cf0c58474bc0a51822ea0aa25641c8c49",
-    "sourceFingerprint": "49a0f83907db82388fe2dd595cfd2d4d51e325f482f68c11c5b3ffa68beb5205"
+    "generatedFingerprint": "ea7e9e1587afd773a5a671a390117aa945645d6a0199e5dabd2389d120021fea",
+    "sourceFingerprint": "9a83bdc38edca42bc7ab4226e517543c835bdb1dbfb8be85c42e39de6604270b"
   },
   "ic-circle-check-color-0.svg": {
     "generatedFile": "IcCircleCheckColor0.tsx",
@@ -166,8 +166,8 @@
   },
   "ic-circle-check.svg": {
     "generatedFile": "IcCircleCheck.tsx",
-    "generatedFingerprint": "f1cb08680b7686c30609b68921ab606b2233d5bf3b60c71e21b9269474258f72",
-    "sourceFingerprint": "f55b45156216ac79515f0c2cf580cc4c3b11ac9a78f2e848ffc616379f258bcb"
+    "generatedFingerprint": "0783730beab53d0c4444d613c96c4691771f77aff64b842b54d21e43294b748a",
+    "sourceFingerprint": "4ab750d4252c9abd908fb3435f8f10aa48db7ce3497e402d991ce000d210c12f"
   },
   "ic-circle-exclamation-fill-color-0.svg": {
     "generatedFile": "IcCircleExclamationFillColor0.tsx",
@@ -191,18 +191,18 @@
   },
   "ic-circle-exclamation.svg": {
     "generatedFile": "IcCircleExclamation.tsx",
-    "generatedFingerprint": "53aea2f4056e373754d972aeaf0b615f779bca3f04924337dae1b30f029138d1",
-    "sourceFingerprint": "1cc6c7e6860b2c8454e32c8f34db351eb44bb5a7e7be61dca0ff306623ad9c08"
+    "generatedFingerprint": "4e97274073eb31ffd3f7f7c54724be7e20d6f139cb609daf7cba3a8aeba4c922",
+    "sourceFingerprint": "70104f998d17a8363f5e73fb0703bb7110565485416369737660fdf0afe604c1"
   },
   "ic-circle-plus-size-small.svg": {
     "generatedFile": "IcCirclePlusSizeSmall.tsx",
-    "generatedFingerprint": "cbd09d1d0e4d53419dd82fe5dcf6862d0d1e293dd92b8eb4dacfc1f3679609ef",
-    "sourceFingerprint": "bf9698fd1a70b2aeb72607b8b3012edb714e0e0e30b61028012fd6ba262eead8"
+    "generatedFingerprint": "181bebaddffc9e8190eab77bbdc37f6a4368ba42c10448b66fa302a52a199655",
+    "sourceFingerprint": "322ce6f06cacee5ba7aeffeff221b8bc9daafade3c3a4cf88f0d7b0d2242d0fd"
   },
   "ic-circle-plus.svg": {
     "generatedFile": "IcCirclePlus.tsx",
-    "generatedFingerprint": "9a981745ea3f25f578f952c24d25a53b5012465699fab763fa17ac25b3a38157",
-    "sourceFingerprint": "ed47b9be6ca4a0bb8eba8a081d15bd2fc734c1242849ac4205323b8234129f7d"
+    "generatedFingerprint": "3bc1a59061c27b36feb6aa9b20904da8ff93b810aa3188478a57efc77f2052fb",
+    "sourceFingerprint": "cf1efd02563325ec8905f81eac09f0592bdbcbbff2f747955087f67981c24186"
   },
   "ic-circle-question-size-xsmall-color-80.svg": {
     "generatedFile": "IcCircleQuestionSizeXsmallColor80.tsx",
@@ -211,8 +211,8 @@
   },
   "ic-circle-question.svg": {
     "generatedFile": "IcCircleQuestion.tsx",
-    "generatedFingerprint": "52aecd6df61956b97861fd905fc02610574ae56e8b1918f0cd1bcac9fe6c4944",
-    "sourceFingerprint": "24ef2deca1e9c29130a0e712048a02aed441bab6482317b3a98bdfac9097e957"
+    "generatedFingerprint": "c6f3667ff6a240d6a6fb205b6ce0b2a970c547e07cad52c7cd12794dcffc9e1f",
+    "sourceFingerprint": "0771942cc9c3c6edfce085eb78e0d96ad8b4855edf17f1a37ed2cb5f14fb0bd6"
   },
   "ic-clock-size-small-color-60.svg": {
     "generatedFile": "IcClockSizeSmallColor60.tsx",
@@ -221,8 +221,8 @@
   },
   "ic-clock-size-small.svg": {
     "generatedFile": "IcClockSizeSmall.tsx",
-    "generatedFingerprint": "92c9107eeda37724229d9b87f48c56f11deba323a28350dc45f147e3b67cd2a5",
-    "sourceFingerprint": "4880ed4d0c7fb6a46d1e4b8343ff3bf7936ccc8b3eee010a1330f88fcf332e3f"
+    "generatedFingerprint": "67c210d1439630da047e94450fe6141ccac6740da77ac7666dd69835deabc8d2",
+    "sourceFingerprint": "9879ffaf4f9f6d5787cb3e9f3fc9896dbf3c04d64d3ce473b40f3df39daa769b"
   },
   "ic-clock-size-xsmall-color-60.svg": {
     "generatedFile": "IcClockSizeXsmallColor60.tsx",
@@ -231,13 +231,13 @@
   },
   "ic-clock.svg": {
     "generatedFile": "IcClock.tsx",
-    "generatedFingerprint": "ed7eabc33359011265ff93a24ef3695f9058d23add88a21f902c2d83f32897c3",
-    "sourceFingerprint": "f1eae9a4c4bbecabaaa677455bee43411bb48d2ef5cd97d554fd3c6829cf36c2"
+    "generatedFingerprint": "99e53d26033d69565c4362f5aac5e49c2bf4074c739528cb2178a6c32fde4d28",
+    "sourceFingerprint": "627eabe67f0f0cfaab1c33e6c0f62e3d5fb2d9f294e8d7291c0a712c55d7532e"
   },
   "ic-close.svg": {
     "generatedFile": "IcClose.tsx",
-    "generatedFingerprint": "12be42fda21bdcd5ead7a2ae398bbfe2b860e7f4d5576243b41c2d9e4732d7c0",
-    "sourceFingerprint": "a3f29d52f2b17d9602f846aaed597e32da1ed1d5f7738fcda9ba2eadfb710c04"
+    "generatedFingerprint": "3609ebf0e43ff9ff3aa65cb5f7ccf09d29e344a664c8d787731f2cc97b080018",
+    "sourceFingerprint": "a91b5f6803ee3765745096418cb123b6352d70ed46af6249938a1505819f930e"
   },
   "ic-copy-color-50.svg": {
     "generatedFile": "IcCopyColor50.tsx",
@@ -246,8 +246,8 @@
   },
   "ic-copy-size-small.svg": {
     "generatedFile": "IcCopySizeSmall.tsx",
-    "generatedFingerprint": "7babd7fa9399867f89f42529b10569b2ebbb9264e4c0ff4d33ddd32769dfcf60",
-    "sourceFingerprint": "0b0f1da973ebab645954107548121437f3996006f973436f82fb02bb8c3ad5c8"
+    "generatedFingerprint": "58c96ce4d5d4089160022c954bc04bb2f184572588a2daeed8277a4c5dc952a6",
+    "sourceFingerprint": "5cff5d6cdaf6456f4aa1fb99b00137c1abeb721c27d990d28f21380f22bc3368"
   },
   "ic-copy-size-xsmall-color-50.svg": {
     "generatedFile": "IcCopySizeXsmallColor50.tsx",
@@ -256,13 +256,13 @@
   },
   "ic-copy-size-xsmall.svg": {
     "generatedFile": "IcCopySizeXsmall.tsx",
-    "generatedFingerprint": "efadf9791da8419088981f8b79c06223d5aafeb9145ad6230009c449d33e1a06",
-    "sourceFingerprint": "9d1f66daa770257c3884e50ddcbc635c024b3b0cf17e5ef8c072d6be41779a5a"
+    "generatedFingerprint": "230804a8cd209d01a7002704a0439fe7706634c7ed416ec8b071c04bdad0b1f4",
+    "sourceFingerprint": "a05ac793d236fbba56dab896b4f4bc38b22ab163ac408ca41be076bae65a1a33"
   },
   "ic-copy.svg": {
     "generatedFile": "IcCopy.tsx",
-    "generatedFingerprint": "2128cd84b6ec207f0c1e8a691ecd46fd9474c5af515e679530d029c90653a659",
-    "sourceFingerprint": "975504c22185c63b47ee1fc84fb3439902e2281f8ce084d09f7267010dcd3fbd"
+    "generatedFingerprint": "05c219f1b4b4968bf3fec9573ada336e6e96a7e3d5c7faaeae1fe034e4786631",
+    "sourceFingerprint": "2e1c5ac4856a2f71c929347eef43403eef8c88909062dd22b6d19930fa0b35e2"
   },
   "ic-download-size-small-color-0.svg": {
     "generatedFile": "IcDownloadSizeSmallColor0.tsx",
@@ -271,13 +271,13 @@
   },
   "ic-download-size-small.svg": {
     "generatedFile": "IcDownloadSizeSmall.tsx",
-    "generatedFingerprint": "d4cb92325043abb3d5cfa4c0ac65318d6e1aee89fbf45da1e910b293b1ce70fd",
-    "sourceFingerprint": "7abd48eb657d81d814fd46f3803a77618ca2fac79f08799aaf42cc10f4e451da"
+    "generatedFingerprint": "a5963cb34a38820c41aa538384b8dec83edd04b554779fcc74c8ac4b8a6b8a99",
+    "sourceFingerprint": "9beb564dac814fc467115f1b1d46705dc0701f6cf75a9cdeae6783887aeee299"
   },
   "ic-download.svg": {
     "generatedFile": "IcDownload.tsx",
-    "generatedFingerprint": "28025438d4fbd46edea6ea28072094d077cfb4b153a3cdca878edbc5b129fb1b",
-    "sourceFingerprint": "f8a4ec426e4e0b20cb51d39d01973dace89805e25b9284eb798af23d4360f7a1"
+    "generatedFingerprint": "c22ebfbdd9cee5d23eb0beef162e7eba81a944ce88f5d0be95102c3c8a310c7d",
+    "sourceFingerprint": "a3acddd6197e9b501600aadb348379fb7dc11c3359954b7e80c68dc659ada3b2"
   },
   "ic-home-color-50.svg": {
     "generatedFile": "IcHomeColor50.tsx",
@@ -286,28 +286,28 @@
   },
   "ic-home.svg": {
     "generatedFile": "IcHome.tsx",
-    "generatedFingerprint": "f6625a6c4eea74e68d8e96c74495a2ffc3717600bf8120006f809a8b1f755912",
-    "sourceFingerprint": "f6e2be2847f347b5a8a8cb88cb2a1ecd26e1c356870a9456f5b20cb15cea2fd9"
+    "generatedFingerprint": "efc56a9bdb102bfa41394a9422081d781384aa65538fbc75fccca0d17fa5b8e2",
+    "sourceFingerprint": "dfaf3e01b0ceb40d67e7d096321a351a5cff334db0bab10f07a1b95c7ebf6135"
   },
   "ic-icons-responsive-size-default.svg": {
     "generatedFile": "IcIconsResponsiveSizeDefault.tsx",
-    "generatedFingerprint": "89917704e1c6b949df0f2d719a81502890169aa8307ee6e11180240827bb4eea",
-    "sourceFingerprint": "762b0322cc0a3edfb70d707181fed1d8f77e3bef5d1637f0ed7e477332a3adcc"
+    "generatedFingerprint": "0ef34daf7cebc5dd28012215da6bb6a92b2084ec53d61e86c692fa8d8644b521",
+    "sourceFingerprint": "0060ec33cfa13c215cafc6c55b0a0ce1261abfc00fe4ac634707a3f2e52a8f30"
   },
   "ic-icons-responsive-size-large.svg": {
     "generatedFile": "IcIconsResponsiveSizeLarge.tsx",
-    "generatedFingerprint": "fd3b47118d956ef521465a792318ec43623d37b1b72c3be6b014bffb6f10bb9a",
-    "sourceFingerprint": "8469247614f52177850181ce0797c788982c2d15559469b336fc7f1562555db8"
+    "generatedFingerprint": "6b5309a8332e935eebfa4c18ad6048e915d54c416d7b961b546c8fa6e23f3967",
+    "sourceFingerprint": "f6b6489bcf84ef0d085060aa0a7ba82b58b0a517bd271432c2e4c27074edb58e"
   },
   "ic-icons-responsive-size-size4.svg": {
     "generatedFile": "IcIconsResponsiveSizeSize4.tsx",
-    "generatedFingerprint": "e1c8f34eef9960699def0a2f3d6bcb83010ae2c126e4b5ed88e8ad34dd99ec95",
-    "sourceFingerprint": "4e5ebb755975944aefc2540264a167bd05dbd41cdc8efa603011943f1632c35b"
+    "generatedFingerprint": "61fe7073b521d840543b0c51aacd14deefc59aba06c9fd48d0867bce683a9cdd",
+    "sourceFingerprint": "1bd6f8be46c8481ac613917aea64a8fe1be8667df5ba89d6947dfa7055b4f2d4"
   },
   "ic-icons-responsive-size-small.svg": {
     "generatedFile": "IcIconsResponsiveSizeSmall.tsx",
-    "generatedFingerprint": "2ef8e08f89697fac15373883a869a1c1f21338c78c1ffe39375d6387d6e27ac1",
-    "sourceFingerprint": "33aebf7e967d6adc2a335a535375f83f4b142eaee37a857b4049504804de7097"
+    "generatedFingerprint": "a52e684d0fa5b9e7595273da36b11beb04160c5de13d161c6714c5561b3fe4bd",
+    "sourceFingerprint": "31b802e4c4c92af4f12c351e342273e21f0e288bb25543a187988d7c6c726a4d"
   },
   "ic-line-horizontal-size-small.svg": {
     "generatedFile": "IcLineHorizontalSizeSmall.tsx",
@@ -326,8 +326,8 @@
   },
   "ic-link.svg": {
     "generatedFile": "IcLink.tsx",
-    "generatedFingerprint": "4c6a5f6efffd527bbf812d5fab0e14997cbe10630b32e11f83b210ca0a804041",
-    "sourceFingerprint": "fc61302932a99de1f219ca41eef16ae4717bbe1471daa9d779d4081140dc1eaa"
+    "generatedFingerprint": "23fe6a8936c5d8316dfcf01f36f4ac5d19f72b60781add5487cf6785bb4803a2",
+    "sourceFingerprint": "ed949af087aa9f4c67b1cc2d2aed56291702eae4d95f517ffcf5c8fd19634efd"
   },
   "ic-location-size-small-color-60.svg": {
     "generatedFile": "IcLocationSizeSmallColor60.tsx",
@@ -341,33 +341,33 @@
   },
   "ic-location.svg": {
     "generatedFile": "IcLocation.tsx",
-    "generatedFingerprint": "f49495802a9ec30fa08bc7308e90b2f0fe38ad46245ed2cb4dbace14697b960a",
-    "sourceFingerprint": "c56a31af88f7be25da3916867d1f0a0dfcbfd9a836f9f7f8556776d76380b36b"
+    "generatedFingerprint": "37d5c83f3acdb1e0d651df41769b2928edd6f39323c234effaf1a1e08790e646",
+    "sourceFingerprint": "cc22eb32fd00fbfc91042f99e4b2c9be645e1d593b4974e4b12c62a8f1394025"
   },
   "ic-login-size-small.svg": {
     "generatedFile": "IcLoginSizeSmall.tsx",
-    "generatedFingerprint": "40c493e4fdda332f277560d9e69ab1222290fff32c749f7702f47a569c0dd819",
-    "sourceFingerprint": "92f611240bd0ef14516c3731b8a0d5d1268780e029f45e60bf0f111935de9f16"
+    "generatedFingerprint": "343358d32a03b0602898fde9bf5378644405b3b679b535df0f5f0619fdf85c4f",
+    "sourceFingerprint": "892c9e152081d94242d6f1b430c23471c4dd5f50353a21fd14edde82a76e3d52"
   },
   "ic-login-size-xsmall.svg": {
     "generatedFile": "IcLoginSizeXsmall.tsx",
-    "generatedFingerprint": "53635a454ab69cbefe0b64382c3b0bcb7d60e05ce0a942b0d72f85f38b2528c2",
-    "sourceFingerprint": "7a865c5aefa24c8421ec9336271c56b2a3341215a18a9ce7da7828f5e3db5aaa"
+    "generatedFingerprint": "b9dd3d682fdbed0a09f640aad7182dd14bf674df45c9d691bf77633f48424e65",
+    "sourceFingerprint": "85b48912585609c443b60333ca7922acd3474269c70af44641dd56d9bf25d3b9"
   },
   "ic-login.svg": {
     "generatedFile": "IcLogin.tsx",
-    "generatedFingerprint": "a92101f18a49bbe2a4353102e2cc8200170010c1fbdab39782efca5ea4c475f0",
-    "sourceFingerprint": "38be8ba1128e3f54aa75264bc2ed4fd8ae11e07fd719f30e1bd98668d4a511f9"
+    "generatedFingerprint": "02410c36085516f8977adf0747f973386c3517aecd3226cf66864478db52f7d2",
+    "sourceFingerprint": "cb3ee21da1008cd17b11e1a85ccadf176b37a169fcc718d688a3ca4e5f5cf447"
   },
   "ic-logo-kakao-size-small.svg": {
     "generatedFile": "IcLogoKakaoSizeSmall.tsx",
-    "generatedFingerprint": "75fd77101cfc64f61cc122aff579c78090c40c4355585fc8e53b3f1a1f03ca99",
-    "sourceFingerprint": "6828cf14a2022e8c91bd224d0353d911983e09e75fd20ecbf10b717668081021"
+    "generatedFingerprint": "db11313cf43acc7ca2a8930d8d39f5dc23117a82be410c8840a52625ee407009",
+    "sourceFingerprint": "24e29ff54bf8bb0e438938cf15f79de10eecad157c28663f2289ec055d0d7007"
   },
   "ic-logo-kakao.svg": {
     "generatedFile": "IcLogoKakao.tsx",
-    "generatedFingerprint": "26deae12c37ab34e88f4c4e025db5a83ec220a1b77139bbd3155f829af5ce082",
-    "sourceFingerprint": "891b549f90e7d2b2e23d6356d1454d7600e2f88632e8c6b95e4d15fd178a6fe6"
+    "generatedFingerprint": "cc973e67a0b91eb94fad3c5bb9658ce812b9854679233e410bbc402ac5ed697d",
+    "sourceFingerprint": "5fc23b6ce200bed8e15d8b76787322f73ef18bc474d516ca261f98c106c1c8ec"
   },
   "ic-phone-size-small-color-60.svg": {
     "generatedFile": "IcPhoneSizeSmallColor60.tsx",
@@ -376,8 +376,8 @@
   },
   "ic-phone-size-small.svg": {
     "generatedFile": "IcPhoneSizeSmall.tsx",
-    "generatedFingerprint": "00082a973a4040e264214403cbfe4c414dac78a878512a7804a2ee6243cae3b1",
-    "sourceFingerprint": "2c2e95620aaa55faadb210d0cf1985002c9c2128f8fa9f2f3896363795aa5a0a"
+    "generatedFingerprint": "9506a10829bc46bf508eb3a63af646d6865d77aaa1bf8a64af4307a485c73d3b",
+    "sourceFingerprint": "6f3cf1585d198e0de6d655164f504a3c324a0c6ff8a0a17eab30920ca9f8670f"
   },
   "ic-phone-size-xsmall.svg": {
     "generatedFile": "IcPhoneSizeXsmall.tsx",
@@ -386,8 +386,8 @@
   },
   "ic-phone.svg": {
     "generatedFile": "IcPhone.tsx",
-    "generatedFingerprint": "be368ed91a45d1f8508b50a5b429296d84ff3f13bce39f018c400b2b2fd7b0e4",
-    "sourceFingerprint": "62090f029821c44196e8bf1febaf30bfa215c13f1b82152db526514f3aca6005"
+    "generatedFingerprint": "c5b48b1b35b843f3716f7a2e626a6051fe8a3d4b3c13b0762852b850f74a8148",
+    "sourceFingerprint": "eba8cbc62860f64ee33d8bf4e8faa8adc93cc2fbe64642faf864ab5c82b63d95"
   },
   "ic-plus-color-60.svg": {
     "generatedFile": "IcPlusColor60.tsx",
@@ -401,13 +401,13 @@
   },
   "ic-plus-size-small.svg": {
     "generatedFile": "IcPlusSizeSmall.tsx",
-    "generatedFingerprint": "e678cc3ee9e54771b7f7852be7e75a4e1253e4ce4435dcd8660a4a45ebecffbf",
-    "sourceFingerprint": "0add01c7ff751b3b49ec9013e75fb784ee43550388499c20db5e0a5ce6059551"
+    "generatedFingerprint": "12effdaecb8887d196a345f22f6b8e79c0c5463c9592ad909a38a4c6673e8257",
+    "sourceFingerprint": "5ab1b83f447c457fe9e5a07ace165b4e2e583412866fbbcc62ac48f4faf6dee6"
   },
   "ic-plus.svg": {
     "generatedFile": "IcPlus.tsx",
-    "generatedFingerprint": "76d204a20ec53887aee7983bdc3373cf3cdebe1825f76aa73a039fb025336686",
-    "sourceFingerprint": "10c2f417d190c3aa49dda0878e4c318384b6cb87f0049e731a86fd01caaadbf1"
+    "generatedFingerprint": "57a666f8cdb38bf0f590f269a160f4d5807b25bfe530a576be583d411ed4679b",
+    "sourceFingerprint": "5e509ad435fff2562114b403a995187a2cc6486923140203502106d6b2cf141e"
   },
   "ic-progress-fill.svg": {
     "generatedFile": "IcProgressFill.tsx",
@@ -426,8 +426,8 @@
   },
   "ic-reset.svg": {
     "generatedFile": "IcReset.tsx",
-    "generatedFingerprint": "b2bb2731d16d8f6fd6d7eb9f348566c7a7618f4882329bff1f5bc6d866d8609b",
-    "sourceFingerprint": "0c1eed59da7d0e04be548f006dadb945d09530b7145bf97817282e794bb79b73"
+    "generatedFingerprint": "9cebc5411fd6a182ddcb02b46def2794f0d99a09a01826948d85de40ba2794b3",
+    "sourceFingerprint": "98edd5fb60642480690c9139819c5df95b43bf24ee101c66bf899e3e1b289f79"
   },
   "ic-search-size-small.svg": {
     "generatedFile": "IcSearchSizeSmall.tsx",
@@ -436,8 +436,8 @@
   },
   "ic-search.svg": {
     "generatedFile": "IcSearch.tsx",
-    "generatedFingerprint": "913ae18aa95abe2eaf4672b7a15d4d06f33e822e881b9e479eaacb561ac1499e",
-    "sourceFingerprint": "a31b0b328ada26c8b7cd87894ddec1c83177c02aca5da94351f6f10416c8f501"
+    "generatedFingerprint": "67fc979942f42db4c0bdad64673581e2f0db248df8980ae5dd728d05a12919a8",
+    "sourceFingerprint": "46d02a238a4355cba5f66a5339ad946dc7ad4e5fb240f17892a7dc53741bc22b"
   },
   "ic-setting-color-50.svg": {
     "generatedFile": "IcSettingColor50.tsx",
@@ -446,8 +446,8 @@
   },
   "ic-setting.svg": {
     "generatedFile": "IcSetting.tsx",
-    "generatedFingerprint": "0bb9b54ce0acf5ef3d709255ff008a9842221e8479031c6a6448518c71ff530e",
-    "sourceFingerprint": "df9e9a7517bc79f997ed4195c253f0bb2a1f590f8214594838400079c25767e8"
+    "generatedFingerprint": "6e1c13a9fdd90a65627420219e0dda41fc2e2894072afa607d58cc0e5996808e",
+    "sourceFingerprint": "c05e4c2ecc03773642566b947bb725150d2d93780a3edac5d56a868a583d8816"
   },
   "ic-share-color-50.svg": {
     "generatedFile": "IcShareColor50.tsx",
@@ -471,18 +471,18 @@
   },
   "ic-share-ios.svg": {
     "generatedFile": "IcShareIos.tsx",
-    "generatedFingerprint": "f688c380b718e1f432b5fb2382cfa746b7b34409175567a5572358c318df9e7f",
-    "sourceFingerprint": "ae1a3b240e2dac95627a6b44561cd4ae033672cb3efe6902155373f9da1d6396"
+    "generatedFingerprint": "e489c3b13b2d40774f2b46688baa1a1271a4d7db1c940cd7f5f2af6da78ad34f",
+    "sourceFingerprint": "65ee65d48fe737bcab8391499f6b29fb243fae4106d9ba72fd27745c977b7160"
   },
   "ic-share-size-xsmall.svg": {
     "generatedFile": "IcShareSizeXsmall.tsx",
-    "generatedFingerprint": "18c7c8c46b89831b3e436e8b5698fc31363efdee630490be0952b1ca0c2ad80b",
-    "sourceFingerprint": "ad8f5791404b725cb60e5cfc66e9ef561ef39214ab2da58f534f09ff7c82c26f"
+    "generatedFingerprint": "69b50170f5ff39a8cdaae14772760f59ec66d578035de37469ff0afe6ba54eee",
+    "sourceFingerprint": "766305864d3c241ebb2cce29c0aa6ac74df73856d5ec0cef47ac88bebae49d92"
   },
   "ic-share.svg": {
     "generatedFile": "IcShare.tsx",
-    "generatedFingerprint": "e3079faeb0f7618b4c1dba212570cdaab8cf38851fba838fde7f8ef876802fe3",
-    "sourceFingerprint": "7b1a981fe4214032a61148b894df6fcfe9d0c1e71f7ea56cbb94a5a06058d241"
+    "generatedFingerprint": "0ac72246b7fdef93962296b8ad1c0a7294a62c395b061fa705a55bd1c26eacaf",
+    "sourceFingerprint": "480f3b5a01497bf45c1248083f1b0d96d16ff1f15ca77aea9bd07717db61e62d"
   },
   "ic-trash-size-small-color-negative-strong.svg": {
     "generatedFile": "IcTrashSizeSmallColorNegativeStrong.tsx",
@@ -496,8 +496,8 @@
   },
   "ic-trash.svg": {
     "generatedFile": "IcTrash.tsx",
-    "generatedFingerprint": "a73e7c68fb78d15c10a90aef4978ef291e1508f42662bb271caf9aeab1c47272",
-    "sourceFingerprint": "85adce34ee016cecb0cff4f0a13e53e05afaf2f27be850051cc84a37f8326d33"
+    "generatedFingerprint": "910e996645238296691cad3f1a34717f61c85b0fa6c3270faf3bbbcfa533d988",
+    "sourceFingerprint": "058d1ea9c00a0a3ce183443b054bd04054fdcf139a7c9e27a804c224d2595efa"
   },
   "ic-tune-size-xsmall-color-70.svg": {
     "generatedFile": "IcTuneSizeXsmallColor70.tsx",
@@ -506,8 +506,8 @@
   },
   "ic-tune.svg": {
     "generatedFile": "IcTune.tsx",
-    "generatedFingerprint": "47ceb87ba4a3138ea0a5f253a7b24a92f8ee8a8492217f5ade76ba1fc584caa1",
-    "sourceFingerprint": "96b5a8067d1f24ac4d8a5e50bc3c5059b0457748d80a2270d230f3152e8722d9"
+    "generatedFingerprint": "5acaf1ddeb1c34f21a5e3c6f9e71208e1a529d5e09c1c8c36ec103ffc27ec756",
+    "sourceFingerprint": "934b4c39bdc69d302a0bb71262d8ffac766dada8eeb365863785d4f91fcf6fd4"
   },
   "ic-upload-size-small-color-0.svg": {
     "generatedFile": "IcUploadSizeSmallColor0.tsx",
@@ -516,12 +516,12 @@
   },
   "ic-upload.svg": {
     "generatedFile": "IcUpload.tsx",
-    "generatedFingerprint": "49c9153bd6e3c6eaa0a0443ad9d0981e3035fbcd67d4848754bedab862da3fe0",
-    "sourceFingerprint": "f24866a511b2a3d756b8d785a55fde14038cb712b1e4ae097dfb33f1f7a1c04d"
+    "generatedFingerprint": "32a89035101318fd3cf16991e468825c5b1cb78922106d6652029e3c6e2e55dd",
+    "sourceFingerprint": "47163b5d7defe4b09bdc4592bf774c6e6826e226a04b8fd000c9a2809f38350c"
   },
   "ic-write.svg": {
     "generatedFile": "IcWrite.tsx",
-    "generatedFingerprint": "805f22ded7d43c65451e9e9452f2057e47ffc02b9a68f1b44f03326544e468dc",
-    "sourceFingerprint": "24cd79a862a2ba8841b9b779f8438ef58085dec1a0716a4688fe112462030390"
+    "generatedFingerprint": "6115494cc08108c62d8e865f6c899d19c862bd6fa4d7ed736e8b760eddd74af7",
+    "sourceFingerprint": "ce1f720db74f9645d7739e6a88f9e5004bfdfb7817069d5db30903802d6876a9"
   }
 }

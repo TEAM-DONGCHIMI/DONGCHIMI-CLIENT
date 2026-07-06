@@ -43,14 +43,36 @@ export const toIconComponentName = (svgFileOrName) => {
     .join('');
 };
 
-const normalizeBlackColorAttributes = (source) => {
+const neutralIconColorValuePattern = String.raw`(?:#000(?:000)?|#191f28|#1a1e27|black|var\(\s*--(?:fill|stroke)-0\s*,\s*(?:#000(?:000)?|#191f28|#1a1e27|black)\s*\))`;
+const neutralIconColorValueRegExp = new RegExp(`^${neutralIconColorValuePattern}$`, 'i');
+
+const normalizeCurrentColorValue = (value) =>
+  neutralIconColorValueRegExp.test(value.trim()) ? 'currentColor' : value;
+
+export const normalizeCurrentColorAttributes = (source) => {
   return source
-    .replace(/\b(fill|stroke)\s*=\s*(["'])(?:#000(?:000)?|black)\2/gi, '$1=$2currentColor$2')
-    .replace(/\b(fill|stroke):\s*(?:#000(?:000)?|black)\b/gi, '$1:currentColor');
+    .replace(
+      /\b(fill|stroke)\s*=\s*(["'])([^"']+)\2/gi,
+      (match, name, quote, value) => `${name}=${quote}${normalizeCurrentColorValue(value)}${quote}`,
+    )
+    .replace(
+      /\b(fill|stroke)\s*=\s*{\s*(["'])([^"']+)\2\s*}/gi,
+      (match, name, quote, value) =>
+        `${name}={${quote}${normalizeCurrentColorValue(value)}${quote}}`,
+    )
+    .replace(
+      /\b(fill|stroke):\s*(["'])([^"']+)\2/gi,
+      (match, name, quote, value) =>
+        `${name}: ${quote}${normalizeCurrentColorValue(value)}${quote}`,
+    )
+    .replace(
+      /\b(fill|stroke):\s*([^;}"'\s][^;}"'\n]*)(?=[;}"'\n]|$)/gi,
+      (match, name, value) => `${name}: ${normalizeCurrentColorValue(value)}`,
+    );
 };
 
 export const optimizeSvgSource = (source) => {
-  const colorNormalizedSource = normalizeBlackColorAttributes(source);
+  const colorNormalizedSource = normalizeCurrentColorAttributes(source);
 
   try {
     const result = optimize(colorNormalizedSource, {
@@ -79,7 +101,7 @@ export const optimizeSvgSource = (source) => {
 };
 
 export const normalizeSvgSource = (source) => {
-  return normalizeBlackColorAttributes(optimizeSvgSource(source))
+  return normalizeCurrentColorAttributes(optimizeSvgSource(source))
     .replace(/\r\n?/g, '\n')
     .replace(/<!--[\s\S]*?-->/g, '')
     .replace(/'/g, '"')
