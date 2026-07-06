@@ -40,7 +40,7 @@ export const typography = {
     fontSize: '2.8rem',
     fontWeight: 600,
     lineHeight: 1.4,
-    letterSpacing: '-0.02rem',
+    letterSpacing: '-0.01rem',
   },
   'title-2-medium': {
     ...base,
