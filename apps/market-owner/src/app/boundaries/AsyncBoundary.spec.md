@@ -20,6 +20,25 @@
 - `resetKeys`: 값이 바뀌면 error boundary를 reset합니다.
 - `onError`: route render error 로깅이 필요할 때 전달합니다.
 
+## Usage
+
+기본 라우트 페이지는 `src/app/router.tsx`의 `createLazyRoute` helper가 자동으로 `AsyncBoundary`를 적용합니다.
+페이지 로컬에서 특정 section만 별도로 감싸야 할 때는 아래처럼 사용합니다.
+
+```tsx
+import { AsyncBoundary } from '@/app/boundaries';
+
+export const ProductSection = () => {
+  return (
+    <AsyncBoundary>
+      <ProductTable />
+    </AsyncBoundary>
+  );
+};
+```
+
+section 크기에 맞는 fallback이 필요하면 `loadingFallback` 또는 `errorFallback`을 주입합니다.
+
 ## Scope
 
 - `apps/market-owner/src/app/boundaries`에 앱 전용 `AsyncBoundary`를 둡니다.
