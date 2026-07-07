@@ -1,5 +1,1 @@
-export {
-  defaultTodaySpecialCategory,
-  maxTodaySpecialProductCount,
-  todaySpecialCategoryOptions,
-} from './category-options.fixture';
+export { todaySpecialCategoryOptions } from './category-options.fixture';
