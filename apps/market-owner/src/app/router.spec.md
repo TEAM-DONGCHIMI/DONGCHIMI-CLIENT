@@ -27,7 +27,8 @@ DCMSM-17부터 lazy route page는 앱 전용 `AsyncBoundary`를 통해 Suspense 
 
 - route path를 `src/shared/constants/routes.ts`에 상수화합니다.
 - `/login`, `/signup`은 public auth layout에서 sidebar 없이 렌더링합니다.
-- 홈, 상품 등록, 상품 수정, 오늘의 전단 공유 route는 protected route 아래 sidebar layout에서 렌더링합니다.
+- 홈, 상품 등록, 상품 수정 route는 protected route 아래 sidebar layout에서 렌더링하고 sidebar item으로 노출합니다.
+- `/leaflets/share` route는 protected sidebar layout을 유지하지만, 요구사항에서 제외되어 sidebar item으로 노출하지 않습니다.
 - 상품 등록 결과 확인 route는 protected route이지만 no-sidebar layout에서 렌더링합니다.
 - `ProtectedRoute`는 실제 auth API 전까지 fixture 통과 정책을 둡니다.
 - 수정하기 탭은 오늘의 특가와 행사 할인 각각 별도 route로 두어 sidebar active state와 같은 URL을 공유합니다.
@@ -58,6 +59,7 @@ DCMSM-17부터 lazy route page는 앱 전용 `AsyncBoundary`를 통해 Suspense 
   하위 route render error는 `AsyncBoundary`의 error fallback으로 처리합니다.
 - disabled: 이번 범위에서 다루지 않습니다.
 - selected / active: sidebar active item은 current pathname으로 계산하고, edit tab active state는 각 edit route로 계산합니다.
+- selected / active: `/leaflets/share`는 sidebar item이 없으므로 active sidebar item을 갖지 않습니다.
 
 ## Behavior
 
@@ -96,6 +98,7 @@ DCMSM-17부터 lazy route page는 앱 전용 `AsyncBoundary`를 통해 Suspense 
 - [ ] browser route: `/products/event-discount/edit`
 - [ ] browser route: `/products/registration-result`
 - [ ] browser route: `/leaflets/share`
+- [ ] sidebar does not render `오늘의 전단 공유` item
 - [ ] browser route: unknown path renders Not Found
 
 ## Open Questions
