@@ -17,7 +17,7 @@ import {
   formatMobilePhoneNumber,
   isValidMarketPhone,
   isValidOwnerPhone,
-} from '../MarketInformationRegistrationPage.schema';
+} from '../model';
 import * as S from './ContactSection.css';
 
 const additionalMarketPhoneErrorMessage = '올바른 전화번호를 입력해주세요.';

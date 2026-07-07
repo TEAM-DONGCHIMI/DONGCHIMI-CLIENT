@@ -11,7 +11,7 @@ import {
 
 import { RequiredMark } from '../components/RequiredMark';
 import { marketInformationRegistrationFixture } from '../fixtures';
-import { type MarketInformationFormState } from '../MarketInformationRegistrationPage';
+import { type MarketInformationFormState } from '../model';
 import * as S from './BusinessContactRowSection.css';
 
 const businessDayOptions = ['전체', ...marketInformationRegistrationFixture.businessDays];

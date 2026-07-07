@@ -14,10 +14,7 @@ import {
 
 import { RequiredMark } from '../components/RequiredMark';
 import { holidayOptions, marketInformationRegistrationFixture } from '../fixtures';
-import {
-  formatBusinessTime,
-  isValidBusinessTime,
-} from '../MarketInformationRegistrationPage.schema';
+import { formatBusinessTime, isValidBusinessTime } from '../model';
 import * as S from './BusinessOperationSection.css';
 
 const businessDayOptions = marketInformationRegistrationFixture.businessDays;
