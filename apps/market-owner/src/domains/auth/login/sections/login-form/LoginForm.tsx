@@ -1,16 +1,22 @@
 import { Button, TextInput } from '@dongchimi/design-system/components';
 import { IcCheckboxActionSizeSmall, IcCheckboxSizeSmall } from '@dongchimi/design-system/icons';
 
+import { useLoginForm } from '../../hooks/use-login-form';
 import * as S from './LoginForm.css';
 
 export const LoginForm = () => {
+  const { email, emailStatusProps, handleEmailChange } = useLoginForm();
+
   return (
     <form aria-label='마트 관리자 로그인' className={S.formClassName} noValidate>
       <TextInput
+        {...emailStatusProps}
         autoComplete='email'
         label='이메일'
+        onChange={handleEmailChange}
         placeholder='이메일을 입력해주세요.'
         type='email'
+        value={email}
       />
       <TextInput
         autoComplete='current-password'

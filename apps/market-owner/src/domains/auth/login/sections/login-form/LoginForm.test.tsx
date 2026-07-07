@@ -27,4 +27,41 @@ describe('LoginForm', () => {
 
     expect(keepSignedInCheckbox).toBeChecked();
   });
+
+  it('validates the required email field while the user edits it', async () => {
+    const user = userEvent.setup();
+
+    render(<LoginForm />);
+
+    const emailInput = screen.getByLabelText('이메일');
+
+    await user.type(emailInput, 'invalid-email');
+
+    expect(emailInput).toHaveValue('invalid-email');
+    expect(screen.getByText('올바른 이메일 형식이 아닙니다.')).toBeInTheDocument();
+    expect(emailInput).toBeInvalid();
+
+    await user.clear(emailInput);
+
+    expect(screen.getByText('이메일을 입력해주세요.')).toBeInTheDocument();
+    expect(emailInput).toBeInvalid();
+  });
+
+  it('accepts only email-safe characters and clears the error for a valid email', async () => {
+    const user = userEvent.setup();
+
+    render(<LoginForm />);
+
+    const emailInput = screen.getByLabelText('이메일');
+
+    await user.type(emailInput, 'owner_01-test@example.co.kr');
+
+    expect(emailInput).toHaveValue('owner_01-test@example.co.kr');
+    expect(screen.queryByText('올바른 이메일 형식이 아닙니다.')).not.toBeInTheDocument();
+    expect(emailInput).toBeValid();
+
+    await user.type(emailInput, '한글!');
+
+    expect(emailInput).toHaveValue('owner_01-test@example.co.kr');
+  });
 });
