@@ -22,7 +22,7 @@ auth 작업에서 연결합니다.
 - React Router route object imports this page from `src/app/router.tsx`.
 - Page-local components, sections, hooks, fixtures, and utils stay under this page folder.
 - Public auth layout responsibility stays in `src/app/layouts/AuthLayout.tsx`.
-- Login card shell lives in `components/login-card-layout` (`LoginCardLayout`).
+- Login card shell is composed directly in `LoginPage` with the design-system layout primitive.
 - Login card content is composed directly in this page from two independent screen sections: `sections/login-form` (`LoginForm`) and `sections/signup-prompt` (`SignupPrompt`), laid out with the page-local `contentClassName` in `LoginPage.css.ts`.
 
 ## UI States

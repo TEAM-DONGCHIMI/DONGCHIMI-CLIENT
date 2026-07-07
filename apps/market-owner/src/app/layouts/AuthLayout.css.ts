@@ -12,7 +12,7 @@ export const authLayoutRootClassName = style({
 });
 
 export const authLayoutContentClassName = style({
-  width: '44rem',
+  width: 'fit-content',
   maxWidth: '100%',
   overflow: 'hidden',
   borderRadius: '1.6rem',
