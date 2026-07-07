@@ -190,7 +190,7 @@ export const sidebarFooter = style({
   width: 'calc(100% - 32px)',
   gap: 6,
   margin: 'auto 16px 0',
-  padding: '12px 0 18px',
+  padding: '12px 0 26px',
   borderTop: `1px solid ${atomic.neutral[10]}`,
 });
 

@@ -67,7 +67,7 @@ export const helpCardClassName = style({
 export const helpTextClassName = style({
   display: 'inline-flex',
   alignItems: 'center',
-  gap: '0.6rem',
+  gap: '0.8rem',
   margin: 0,
   color: atomic.neutral[80],
   ...typography['caption-1-medium'],
