@@ -90,11 +90,6 @@ const offerItems: SidebarItem[] = [
     label: '날짜 지정 할인 상품 수정',
     icon: <PlaceholderIcon />,
   },
-  {
-    id: 'flyer-share',
-    label: '오늘의 전단 공유',
-    icon: <PlaceholderIcon />,
-  },
 ];
 
 export const Default: StoryTypes = {

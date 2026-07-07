@@ -32,6 +32,7 @@
 - [Performance Budget](./workflows/performance-budget.md)
 - [Deployment](./workflows/deployment.md)
 - [Sentry Workflow](./workflows/sentry.md)
+- [OpenAPI Type Generation](./workflows/openapi-type-generation.md)
 - [Testing](./workflows/testing.md)
 - [E2E Testing](./workflows/e2e-testing.md)
 - [Jira Issue Authoring](./workflows/jira-issue-authoring.md)

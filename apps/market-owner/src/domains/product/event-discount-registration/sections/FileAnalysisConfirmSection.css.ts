@@ -29,7 +29,7 @@ export const titleClassName = style({
 export const descriptionClassName = style({
   ...typography['body-3-regular'],
   margin: 0,
-  color: atomic.neutral[50],
+  color: atomic.neutral[60],
   letterSpacing: 0,
   textAlign: 'center',
 });

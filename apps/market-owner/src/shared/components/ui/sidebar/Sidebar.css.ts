@@ -11,13 +11,17 @@ export const sidebar = style({
   boxSizing: 'border-box',
   width: 290,
   height: '100%',
+  minHeight: 0,
   padding: 0,
+  overflowX: 'hidden',
+  overflowY: 'auto',
   backgroundColor: atomic.common[0],
   color: atomic.neutral[90],
 });
 
 export const sidebarBrand = style({
   display: 'flex',
+  flexShrink: 0,
   alignItems: 'center',
   gap: 8,
   minHeight: 96,
@@ -27,6 +31,7 @@ export const sidebarBrand = style({
 });
 
 export const sidebarDivider = style({
+  flexShrink: 0,
   width: 'calc(100% - 32px)',
   height: 1,
   margin: '0 16px',
@@ -35,6 +40,7 @@ export const sidebarDivider = style({
 
 export const sidebarProfile = style({
   display: 'flex',
+  flexShrink: 0,
   alignItems: 'center',
   height: 85,
   boxSizing: 'border-box',
@@ -78,6 +84,7 @@ export const sidebarProfileEmail = style({
 
 export const sidebarNav = style({
   display: 'grid',
+  flexShrink: 0,
   gap: 28,
   padding: '0 16px',
 });
@@ -178,11 +185,12 @@ export const sidebarItemLabel = style({
 
 export const sidebarFooter = style({
   display: 'grid',
+  flexShrink: 0,
   boxSizing: 'border-box',
   width: 'calc(100% - 32px)',
   gap: 6,
   margin: 'auto 16px 0',
-  padding: '12px 0 18px',
+  padding: '12px 0 26px',
   borderTop: `1px solid ${atomic.neutral[10]}`,
 });
 
