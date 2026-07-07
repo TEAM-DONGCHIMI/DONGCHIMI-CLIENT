@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@dongchimi/design-system": "workspace:*",
+    "@hookform/resolvers": "catalog:",
     "@sentry/react": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@vanilla-extract/css": "catalog:",
@@ -26,8 +27,10 @@
     "overlay-kit": "1.9.0",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-hook-form": "catalog:",
     "react-error-boundary": "^6.1.2",
-    "react-router": "catalog:"
+    "react-router": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@dongchimi/eslint-config": "workspace:*",
