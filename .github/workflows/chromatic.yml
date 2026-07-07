@@ -12,6 +12,20 @@ on:
       - 'pnpm-workspace.yaml'
       - 'turbo.json'
       - '.github/workflows/chromatic.yml'
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'apps/client/**'
+      - 'apps/market-owner/**'
+      - 'packages/design-system/**'
+      - 'packages/shared/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'turbo.json'
+      - '.github/workflows/chromatic.yml'
 
 concurrency:
   group: chromatic-${{ github.ref }}
@@ -21,25 +35,106 @@ permissions:
   contents: read
 
 jobs:
+  detect-changes:
+    name: Detect Storybook targets
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.targets.outputs.has_changes }}
+      matrix: ${{ steps.targets.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Build target matrix
+        id: targets
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+          PUSH_AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            base_sha="$PR_BASE_SHA"
+            head_sha="$PR_HEAD_SHA"
+          else
+            base_sha="$PUSH_BEFORE_SHA"
+            head_sha="$PUSH_AFTER_SHA"
+          fi
+
+          if [ -z "$base_sha" ] || [ "$base_sha" = "0000000000000000000000000000000000000000" ]; then
+            base_sha="$(git rev-parse "$head_sha^")"
+          fi
+
+          git diff --name-only "$base_sha" "$head_sha" > changed-files.txt
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          changed_files = Path('changed-files.txt').read_text().splitlines()
+          root_files = {
+              '.github/workflows/chromatic.yml',
+              'package.json',
+              'pnpm-lock.yaml',
+              'pnpm-workspace.yaml',
+              'turbo.json',
+          }
+
+          def has_prefix(prefix):
+              return any(path.startswith(prefix) for path in changed_files)
+
+          root_changed = any(path in root_files for path in changed_files)
+          design_system_changed = has_prefix('packages/design-system/')
+          shared_changed = has_prefix('packages/shared/')
+          client_changed = has_prefix('apps/client/')
+          market_owner_changed = has_prefix('apps/market-owner/')
+          affects_all = root_changed or design_system_changed
+
+          targets = []
+
+          if affects_all:
+              targets.append({
+                  'id': 'design-system',
+                  'name': 'Design System',
+                  'working_dir': 'packages/design-system',
+                  'project_token_secret': 'CHROMATIC_PROJECT_TOKEN',
+              })
+
+          if affects_all or shared_changed or client_changed:
+              targets.append({
+                  'id': 'client',
+                  'name': 'Client Web',
+                  'working_dir': 'apps/client',
+                  'project_token_secret': 'CHROMATIC_PROJECT_TOKEN_CLIENT',
+              })
+
+          if affects_all or shared_changed or market_owner_changed:
+              targets.append({
+                  'id': 'market-owner',
+                  'name': 'Market Owner Web',
+                  'working_dir': 'apps/market-owner',
+                  'project_token_secret': 'CHROMATIC_PROJECT_TOKEN_MARKET_OWNER',
+              })
+
+          with Path(__import__('os').environ['GITHUB_OUTPUT']).open('a') as output:
+              output.write(f"has_changes={str(bool(targets)).lower()}\n")
+              output.write(f"matrix={json.dumps({'include': targets}, separators=(',', ':'))}\n")
+          PY
+
   publish:
     name: Publish ${{ matrix.name }} Storybook
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - id: design-system
-            name: Design System
-            working_dir: packages/design-system
-            project_token_secret: CHROMATIC_PROJECT_TOKEN
-          - id: client
-            name: Client Web
-            working_dir: apps/client
-            project_token_secret: CHROMATIC_PROJECT_TOKEN_CLIENT
-          - id: market-owner
-            name: Market Owner Web
-            working_dir: apps/market-owner
-            project_token_secret: CHROMATIC_PROJECT_TOKEN_MARKET_OWNER
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
     permissions:
       contents: read
       pull-requests: write
@@ -67,9 +162,10 @@ jobs:
       - name: Verify Chromatic project token
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets[matrix.project_token_secret] }}
+          SECRET_NAME: ${{ matrix.project_token_secret }}
         run: |
           if [ -z "$CHROMATIC_PROJECT_TOKEN" ]; then
-            echo "::error::Missing GitHub secret ${{ matrix.project_token_secret }}"
+            echo "::error::Missing GitHub secret $SECRET_NAME"
             exit 1
           fi
 
