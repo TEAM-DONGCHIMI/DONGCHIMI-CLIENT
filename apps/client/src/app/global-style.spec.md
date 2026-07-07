@@ -37,7 +37,7 @@
 - target viewport: Figma 기준 375px mobile web frame
 - background: top-level mobile frames use white surface
 - app shell: mobile viewport에서는 기기 폭을 채우고, desktop viewport에서는 mobile max width 안에서 중앙 정렬합니다.
-- app shell shadow: desktop viewport에서 mobile shell과 page background가 구분되도록 shell shadow를 적용합니다.
+- app shell shadow: 430px 이상 viewport에서 mobile shell과 page background가 구분되도록 shell shadow를 적용합니다.
 - content gutter: repeated content sections use 20px horizontal gutter
 - safe area: app global style exposes safe-area variables, but page or shell layout decides where to apply padding
 - scroll: long home/leaflet/product list screens remain vertically scrollable unless a route shell explicitly owns fixed behavior
@@ -55,7 +55,7 @@
 - global style must not block vertical page scroll by default.
 - global style must use the 375px Figma frame as a reference, not as a hard cap for larger mobile devices.
 - global style must constrain the app surface to a mobile max width only on wide browser viewports.
-- global style must show a shell shadow only after the viewport is wider than the mobile max width.
+- global style must show a shell shadow from the 430px viewport breakpoint.
 - global style must prevent unintended horizontal page overflow at the root.
 - route-level fixed or no-scroll behavior must be implemented in the route/page shell that owns it.
 

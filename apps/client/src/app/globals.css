@@ -38,7 +38,7 @@ body {
   color: var(--client-foreground);
 }
 
-@media (min-width: 43.0625rem) {
+@media (min-width: 430px) {
   .client-app-shell {
     box-shadow: var(--client-shell-shadow);
   }
