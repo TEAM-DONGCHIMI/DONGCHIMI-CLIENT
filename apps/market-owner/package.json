@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "catalog:",
     "@dongchimi/design-system": "workspace:*",
     "@sentry/react": "catalog:",
     "@tanstack/react-query": "catalog:",
@@ -27,6 +28,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-error-boundary": "^6.1.2",
+    "react-hook-form": "catalog:",
     "react-router": "catalog:",
     "zod": "catalog:"
   },
