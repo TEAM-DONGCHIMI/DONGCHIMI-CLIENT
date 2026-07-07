@@ -38,7 +38,6 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
         label='이메일'
         onChange={handleEmailChange}
         placeholder='이메일을 입력해주세요.'
-        required
         type='email'
         value={email}
       />
@@ -48,7 +47,6 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
         label='비밀번호'
         onChange={handlePasswordChange}
         placeholder='비밀번호를 입력해주세요.'
-        required
         type='password'
         value={password}
       />
