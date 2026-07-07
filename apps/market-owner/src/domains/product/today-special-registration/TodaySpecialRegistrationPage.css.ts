@@ -37,6 +37,7 @@ export const titleMainClassName = style({
   display: 'inline-flex',
   alignItems: 'center',
   gap: '0.8rem',
+  minWidth: 0,
 });
 
 export const titleClassName = style({
@@ -50,6 +51,7 @@ export const titleClassName = style({
 
 export const titleCountClassName = style({
   display: 'inline-flex',
+  fontVariantNumeric: 'tabular-nums',
   whiteSpace: 'pre',
 });
 
@@ -60,6 +62,7 @@ export const titleCurrentCountClassName = style({
 export const titleButtonGroupClassName = style({
   display: 'inline-flex',
   alignItems: 'center',
+  width: '8rem',
 });
 
 export const titleNavigationButtonClassName = style({
@@ -67,6 +70,10 @@ export const titleNavigationButtonClassName = style({
   height: '4rem',
   padding: '0.8rem',
   fontSize: '2.4rem',
+});
+
+export const titleNextIconClassName = style({
+  transform: 'rotate(180deg)',
 });
 
 export const titleRemoveButtonClassName = style({
@@ -258,6 +265,10 @@ export const categoryTriggerClassName = style({
   },
 });
 
+export const categoryPlaceholderClassName = style({
+  color: atomic.neutral[60],
+});
+
 export const categoryDropdownClassName = style({
   position: 'absolute',
   zIndex: 1,
@@ -276,6 +287,50 @@ export const dateRowClassName = style({
   gap: '1.4rem',
   alignItems: 'center',
   width: '100%',
+});
+
+export const datePickerFieldClassName = style({
+  ...typography['body-3-medium'],
+  position: 'relative',
+  boxSizing: 'border-box',
+  display: 'flex',
+  alignItems: 'center',
+  width: '100%',
+  height: '4rem',
+  minWidth: 0,
+  padding: '1rem 1.6rem',
+  overflow: 'hidden',
+  border: `0.1rem solid ${atomic.neutral[20]}`,
+  borderRadius: '0.4rem',
+  backgroundColor: atomic.common[0],
+  cursor: 'pointer',
+  transition: 'border-color 160ms ease, outline-color 160ms ease',
+  selectors: {
+    '&:hover': {
+      borderColor: atomic.neutral[80],
+    },
+    '&:focus-within': {
+      borderColor: atomic.neutral[80],
+    },
+  },
+});
+
+export const dateValueClassName = style({
+  color: atomic.neutral[90],
+});
+
+export const datePlaceholderClassName = style({
+  color: atomic.neutral[60],
+});
+
+export const dateNativeInputClassName = style({
+  position: 'absolute',
+  inset: 0,
+  zIndex: 1,
+  width: '100%',
+  height: '100%',
+  opacity: 0,
+  cursor: 'pointer',
 });
 
 export const dateSeparatorClassName = style({
