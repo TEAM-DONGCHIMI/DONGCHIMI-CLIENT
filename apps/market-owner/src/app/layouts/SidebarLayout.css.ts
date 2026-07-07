@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css';
 
-import { atomic, shadow, typography } from '@dongchimi/design-system/tokens';
+import { atomic, typography } from '@dongchimi/design-system/tokens';
 
 export const sidebarLayoutRootClassName = style({
   display: 'grid',
@@ -24,6 +24,8 @@ export const contentSlotClassName = style({
 
 export const brandClassName = style({
   display: 'inline-flex',
+  width: '9.2rem',
+  height: '3.2rem',
   alignItems: 'center',
   gap: '0.8rem',
   color: atomic.neutral[90],
@@ -59,19 +61,27 @@ export const helpCardClassName = style({
 });
 
 export const helpTextClassName = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '0.6rem',
   margin: 0,
-  color: atomic.neutral[70],
+  color: atomic.neutral[80],
   ...typography['caption-1-medium'],
+});
+
+export const helpIconClassName = style({
+  flexShrink: 0,
+  width: '1.6rem',
+  height: '1.6rem',
 });
 
 export const helpButtonClassName = style({
   appearance: 'none',
-  minHeight: '4.8rem',
+  minHeight: '4.4rem',
   border: `0.1rem solid ${atomic.neutral[20]}`,
   borderRadius: '0.8rem',
   backgroundColor: atomic.common[0],
-  boxShadow: shadow.normal.small,
-  color: atomic.neutral[80],
+  color: atomic.neutral[70],
   cursor: 'pointer',
   ...typography['body-3-semibold'],
   selectors: {

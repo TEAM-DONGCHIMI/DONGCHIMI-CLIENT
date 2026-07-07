@@ -12,7 +12,7 @@
 
 ## Purpose
 
-오늘의 전단 공유 page가 protected sidebar layout 안에서 진입되는지 확인합니다. 실제 공유 link 생성과 배포 상태는 후속 flow 작업에서 구현합니다.
+오늘의 전단 공유 page가 protected sidebar layout 안에서 직접 route 진입되는지 확인합니다. 실제 공유 link 생성과 배포 상태, sidebar 진입 item은 이번 범위에서 제외합니다.
 
 ## Ownership
 
@@ -42,12 +42,12 @@
 ## Accessibility
 
 - heading order: page root는 visible `h1`으로 `오늘의 전단 공유하기`를 제공합니다.
-- keyboard: sidebar item은 native keyboard navigation을 사용합니다.
+- keyboard: sidebar/route 관련 native focus order를 유지합니다.
 - focus: focus-visible 스타일을 제거하지 않습니다.
-- current state: sidebar item은 현재 route에 `aria-current="page"`를 적용합니다.
+- current state: 요구사항에서 sidebar 진입 item이 제외되어 `/leaflets/share`는 sidebar active item을 갖지 않습니다.
 
 ## Verification
 
 - [ ] `/leaflets/share` route renders `오늘의 전단 공유하기`
 - [ ] route renders sidebar complementary landmark
-- [ ] sidebar `오늘의 전단 공유하기` link has `aria-current="page"`
+- [ ] sidebar does not render `오늘의 전단 공유` item
