@@ -59,12 +59,14 @@ const PRODUCT_DETAIL_FIXTURE_BY_ID: Record<string, ProductDetailFixtureTypes> = 
   'today-special-samgyeopsal-500g': TODAY_SPECIAL_PRODUCT_DETAIL,
 };
 
-export const getProductDetailFixture = (productId: string): ProductDetailFixtureTypes => {
+export const getProductDetailFixture = (
+  productId: string,
+): ProductDetailFixtureTypes | undefined => {
   const productDetailFixture = PRODUCT_DETAIL_FIXTURE_BY_ID[productId];
 
   if (productDetailFixture != null) {
     return productDetailFixture;
   }
 
-  return TODAY_SPECIAL_PRODUCT_DETAIL;
+  return undefined;
 };

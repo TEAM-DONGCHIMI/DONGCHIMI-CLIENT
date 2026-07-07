@@ -1,3 +1,6 @@
+import { notFound } from 'next/navigation';
+
+import { CardText } from '@/shared/components/ui/card-text';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
 import { ProductDetailHeader } from './components/ProductDetailHeader';
@@ -40,10 +43,13 @@ const ProductPrice = ({ promotion }: { promotion: ProductDetailPromotionTypes })
 
 const MartCommentCard = ({ comment }: { comment: string }) => {
   return (
-    <aside className={S.commentCardClassName} aria-label='점장 한마디'>
-      <p className={S.commentTitleClassName}>점장 한마디</p>
-      <p className={S.commentTextClassName}>{comment}</p>
-    </aside>
+    <CardText
+      aria-label='점장 한마디'
+      className={S.commentCardClassName}
+      label='점장 한마디'
+      role='note'
+      text={comment}
+    />
   );
 };
 
@@ -58,6 +64,10 @@ const MartCommentSection = ({ comment }: { comment?: string }) => {
 export const ProductDetailPage = ({ marketId, productId }: ProductDetailPageProps) => {
   const productDetail = getProductDetailFixture(productId);
   const marketProductsHref = CLIENT_ROUTES.market(marketId);
+
+  if (productDetail == null) {
+    notFound();
+  }
 
   return (
     <main className={S.pageClassName}>

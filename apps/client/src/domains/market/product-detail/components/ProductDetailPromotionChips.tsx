@@ -27,7 +27,7 @@ export const ProductDetailPromotionChips = ({
   promotion,
 }: ProductDetailPromotionChipsProps) => {
   return (
-    <div className={S.chipRowClassName} aria-label='상품 행사 정보'>
+    <div aria-label='상품 행사 정보' className={S.chipRowClassName} role='group'>
       <Chip color='primary' size='desktop' variant='soft'>
         {label}
       </Chip>

@@ -121,28 +121,7 @@ export const singlePriceClassName = style({
 });
 
 export const commentCardClassName = style({
-  width: '100%',
   marginTop: '0.8rem',
-  borderRadius: 12,
-  backgroundColor: atomic.neutral[5],
-  padding: '1.4rem 1.8rem',
-});
-
-export const commentTitleClassName = style({
-  ...typography['body-3-semibold'],
-  margin: 0,
-  color: atomic.neutral[60],
-  letterSpacing: 0,
-});
-
-export const commentTextClassName = style({
-  ...typography['body-2-medium'],
-  margin: '0.4rem 0 0',
-  overflow: 'hidden',
-  color: atomic.neutral[90],
-  letterSpacing: 0,
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
 });
 
 export const visuallyHiddenClassName = style({

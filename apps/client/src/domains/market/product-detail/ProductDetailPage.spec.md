@@ -31,6 +31,7 @@
 - package public export surface는 상품 상세 구현에서 새로 확장하지 않습니다.
 - 상품 이미지가 없으면 기본 카테고리 이미지 제작 전까지 fallback surface를 노출합니다.
 - 점장 한마디가 없으면 comment card를 노출하지 않습니다.
+- 미등록 `productId`는 fallback 상품으로 숨기지 않고 404로 처리합니다.
 
 ## Out Of Scope
 
@@ -80,7 +81,7 @@
 - navigation: 뒤로가기 button은 `router.back()`을 우선하고 fallback으로 `/markets/[marketId]`로 이동합니다.
 - interaction: 상세 action은 후속 이슈에서 구현합니다.
 - form / validation: 없음
-- API: 없음. `productId` fixture로 variant를 선택합니다.
+- API: 없음. `productId` fixture로 variant를 선택하고, 미등록 fixture는 `notFound()`로 처리합니다.
 
 ## Accessibility
 
@@ -111,8 +112,8 @@
 - [x] `pnpm --filter client lint`
 - [x] `pnpm --filter client typecheck`
 - [x] `pnpm --filter client build`
-- [x] browser route: `/markets/mangwon/products/samgyeopsal-500g` at 375px and 430px
-- [x] browser route: `/markets/mangwon/products/event-discount-samgyeopsal-500g` at 375px and 430px
+- [x] browser route: `/markets/mangwon/products/samgyeopsal-500g` at 375px, 390px, 414px, 430px
+- [x] browser route: `/markets/mangwon/products/event-discount-samgyeopsal-500g` at 375px, 390px, 414px, 430px
 
 ## Open Questions
 
