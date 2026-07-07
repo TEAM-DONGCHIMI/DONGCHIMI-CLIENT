@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 // form type
 export interface TodaySpecialProductForm {
   category: string;
@@ -60,6 +62,29 @@ export const parsePriceInput = (value: string) => {
   return Number(value.replace(/,/g, ''));
 };
 
+const requiredTextSchema = z.string().trim().min(1);
+const priceInputSchema = requiredTextSchema.transform(parsePriceInput).pipe(z.number().min(1));
+const dateInputSchema = requiredTextSchema;
+
+export const todaySpecialProductFormSchema = z
+  .object({
+    category: requiredTextSchema,
+    description: z.string(),
+    endDate: dateInputSchema,
+    imageFile: z.file().nullable(),
+    imagePreviewUrl: z.string().nullable(),
+    name: requiredTextSchema.max(todaySpecialProductNameMaxLength),
+    salePrice: priceInputSchema,
+    specialPrice: priceInputSchema,
+    startDate: dateInputSchema,
+  })
+  .refine((product) => product.salePrice >= product.specialPrice, {
+    path: ['salePrice'],
+  })
+  .refine((product) => product.endDate >= product.startDate, {
+    path: ['endDate'],
+  });
+
 // 시작일 변경 시 종료일이 시작일보다 이전이면 종료일 초기화
 export const resolveEndDateAfterStartDateChange = (startDate: string, endDate: string) => {
   return endDate && endDate < startDate ? '' : endDate;
@@ -74,21 +99,7 @@ export const isValidTodaySpecialImageFile = (file: File) => {
 
 // 등록 완료 버튼 활성화 조건
 export const isTodaySpecialProductFormComplete = (product: TodaySpecialProductForm) => {
-  const specialPrice = parsePriceInput(product.specialPrice);
-  const salePrice = parsePriceInput(product.salePrice);
-
-  return (
-    product.name.trim() !== '' &&
-    product.category.trim() !== '' &&
-    product.specialPrice.trim() !== '' &&
-    product.salePrice.trim() !== '' &&
-    specialPrice >= 1 &&
-    salePrice >= 1 &&
-    salePrice >= specialPrice &&
-    product.startDate.trim() !== '' &&
-    product.endDate.trim() !== '' &&
-    product.endDate >= product.startDate
-  );
+  return todaySpecialProductFormSchema.safeParse(product).success;
 };
 
 // object URL 정리
