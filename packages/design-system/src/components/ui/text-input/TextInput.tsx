@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from 'react';
 
+import { IcCircleExclamationSizeSmallColorNegative } from '../../../icons';
 import { cn } from '../../../styles/class-name';
 import type { RecipeVariantProps } from '../../../styles/recipe';
 import {
@@ -162,7 +163,11 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 
         {hasMessage && (
           <div className={messageRow} id={messageId}>
-            {isError && <span aria-hidden='true' className={errorIconSlot} />}
+            {isError && (
+              <span aria-hidden='true' className={errorIconSlot}>
+                <IcCircleExclamationSizeSmallColorNegative />
+              </span>
+            )}
             <span className={messageText({ tone: isError ? 'error' : 'helper' })}>
               {displayedMessage}
             </span>
