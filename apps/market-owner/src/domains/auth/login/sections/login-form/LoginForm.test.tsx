@@ -8,8 +8,8 @@ describe('LoginForm', () => {
   it('renders reusable form controls for market owner login', () => {
     render(<LoginForm />);
 
-    expect(screen.getByLabelText('이메일')).toBeInTheDocument();
-    expect(screen.getByLabelText('비밀번호')).toBeInTheDocument();
+    expect(screen.getByLabelText('이메일')).toBeRequired();
+    expect(screen.getByLabelText('비밀번호')).toBeRequired();
     expect(screen.getByRole('checkbox', { name: '로그인 상태 유지' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '로그인' })).toBeDisabled();
   });
@@ -63,5 +63,26 @@ describe('LoginForm', () => {
     await user.type(emailInput, '한글!');
 
     expect(emailInput).toHaveValue('owner_01-test@example.co.kr');
+  });
+
+  it('masks and validates the required password field while the user edits it', async () => {
+    const user = userEvent.setup();
+
+    render(<LoginForm />);
+
+    const passwordInput = screen.getByLabelText('비밀번호');
+
+    expect(passwordInput).toHaveAttribute('type', 'password');
+
+    await user.type(passwordInput, 'secret');
+
+    expect(passwordInput).toHaveValue('secret');
+    expect(screen.queryByText('비밀번호를 입력해주세요.')).not.toBeInTheDocument();
+    expect(passwordInput).toBeValid();
+
+    await user.clear(passwordInput);
+
+    expect(screen.getByText('비밀번호를 입력해주세요.')).toBeInTheDocument();
+    expect(passwordInput).toBeInvalid();
   });
 });

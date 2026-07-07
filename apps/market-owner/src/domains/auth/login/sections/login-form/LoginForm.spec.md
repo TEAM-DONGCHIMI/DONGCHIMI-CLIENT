@@ -17,10 +17,10 @@
 ## Composition
 
 - components: 디자인 시스템 `TextInput`, `Button`, `IcCheckboxSizeSmall`, `IcCheckboxActionSizeSmall`
-- hook: `login/hooks/use-login-form.ts`가 이메일 입력 상태, 수정 여부, error 표시 props를 관리합니다.
-- utils: `login/utils/email-validation.ts`가 이메일 허용 문자와 형식 검증 규칙을 제공합니다.
+- hook: `login/hooks/use-login-form.ts`가 이메일/비밀번호 입력 상태, 수정 여부, error 표시 props를 관리합니다.
+- utils: `login/utils/email-validation.ts`, `login/utils/password-validation.ts`가 필드별 순수 검증 규칙을 제공합니다.
 - data: 없음. auth API 연동은 후속 이슈 범위입니다.
-- states: default(초기 빈 폼), email editing, email validation error를 다룹니다. loading/server error는 이번 범위에서 다루지 않습니다.
+- states: default(초기 빈 폼), email/password editing, field validation error를 다룹니다. loading/server error는 이번 범위에서 다루지 않습니다.
 
 ## Email Validation
 
@@ -32,8 +32,17 @@
 - `example@email.com`, `example@email.co.kr`처럼 `@`와 점으로 구분된 도메인을 포함하지 않으면 `올바른 이메일 형식이 아닙니다.` 오류를 표시합니다.
 - 오류 상태는 디자인 시스템 `TextInput`의 `status='error'`와 `errorMessage`로 표시합니다.
 
+## Password Validation
+
+- 비밀번호 필드는 필수 입력 항목입니다.
+- 비밀번호 입력값은 native `type='password'`로 마스킹합니다.
+- 사용자가 비밀번호 필드를 수정하기 전에는 초기 빈 값 오류를 노출하지 않습니다.
+- 사용자가 비밀번호 값을 수정하면 입력값을 실시간으로 검증합니다.
+- 빈 값이면 `비밀번호를 입력해주세요.` 오류를 표시합니다.
+- 오류 상태는 디자인 시스템 `TextInput`의 `status='error'`와 `errorMessage`로 표시합니다.
+
 ## Verification
 
 - [x] `git diff --check`
-- [x] `pnpm.cmd --filter market-owner test -- src/domains/auth/login/sections/login-form/LoginForm.test.tsx src/domains/auth/login/utils/email-validation.test.ts`
+- [x] `pnpm.cmd --filter market-owner test -- src/domains/auth/login/sections/login-form/LoginForm.test.tsx src/domains/auth/login/utils/email-validation.test.ts src/domains/auth/login/utils/password-validation.test.ts`
 - [x] `pnpm.cmd --filter market-owner typecheck`
