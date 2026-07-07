@@ -8,8 +8,8 @@ const requiredTextSchema = z.string().trim().min(1);
 // 가격은 콤마 포함 string 값을 숫자로 해석해서 검증
 const priceInputSchema = requiredTextSchema.refine((value) => parsePriceInput(value) >= 1);
 
-// date input 값은 YYYY-MM-DD string
-const dateInputSchema = requiredTextSchema;
+// date input 값은 YYYY-MM-DD ISO date string
+const dateInputSchema = z.iso.date();
 
 // 상품 1개의 제출 가능 여부 검증
 export const todaySpecialProductFormSchema = z
