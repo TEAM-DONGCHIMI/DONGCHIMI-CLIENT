@@ -26,6 +26,7 @@ describe('marketOwnerRoutes', () => {
     expect(await screen.findByRole('heading', { name: '홈' })).toBeInTheDocument();
     expect(screen.getByRole('complementary')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '홈' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.queryByRole('link', { name: '오늘의 전단 공유' })).not.toBeInTheDocument();
   });
 
   it('keeps the registration result route outside the sidebar layout', async () => {
