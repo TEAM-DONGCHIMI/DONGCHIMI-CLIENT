@@ -43,8 +43,12 @@ Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, drop
 - `components/DateField.tsx`
   - visible `YYYY-MM-DD` field와 투명 native `type=date` input overlay를 결합합니다.
   - native date icon/text는 숨기고, `showPicker()`로 date picker를 엽니다.
-- `model/product-form.ts`
-  - form type, 빈 form 생성, 입력값 정제, 가격 포맷, image file 검증, submit 가능 여부, 날짜 보정, preview URL 정리를 담당합니다.
+- `model/product-form.types.ts`
+  - form value와 text field 타입을 정의합니다.
+- `model/product-form.schema.ts`
+  - `zod` schema로 submit 가능 여부를 검증합니다.
+- `model/product-form.utils.ts`
+  - 빈 form 생성, 입력값 정제, 가격 포맷, image file 검증, 날짜 보정, preview URL 정리를 담당합니다.
 
 ## UI States
 
