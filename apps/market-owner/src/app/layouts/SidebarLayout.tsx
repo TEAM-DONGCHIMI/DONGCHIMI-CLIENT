@@ -6,7 +6,6 @@ import {
   IcHome,
   IcPlus,
   IcSetting,
-  IcShare,
   IcWrite,
 } from '@dongchimi/design-system/icons';
 
@@ -19,7 +18,6 @@ const sidebarItemRoutes = {
   eventDiscountEdit: MARKET_OWNER_ROUTES.eventDiscountEdit,
   eventDiscountRegistration: MARKET_OWNER_ROUTES.eventDiscountRegistration,
   home: MARKET_OWNER_ROUTES.home,
-  leafletShare: MARKET_OWNER_ROUTES.leafletShare,
   todaySpecialEdit: MARKET_OWNER_ROUTES.todaySpecialEdit,
   todaySpecialRegistration: MARKET_OWNER_ROUTES.todaySpecialRegistration,
 } as const;
@@ -77,13 +75,8 @@ const sidebarSections: SidebarSection[] = [
         id: 'eventDiscountEdit',
         label: '행사 할인 상품 수정',
       }),
-      createSidebarItem({
-        icon: <IcShare aria-hidden='true' />,
-        id: 'leafletShare',
-        label: '오늘의 전단 공유하기',
-      }),
     ],
-    title: '상품을 등록하고 오늘 전단을 만들어보세요',
+    title: '상품을 등록하고 오늘의 전단을 만들어보세요',
   },
 ];
 
@@ -116,7 +109,7 @@ const SidebarBrand = () => (
 const SidebarHelp = () => (
   <div className={S.helpCardClassName}>
     <p className={S.helpTextClassName}>
-      <IcCircleQuestion aria-hidden='true' /> 도움이 필요하신가요?
+      <IcCircleQuestion aria-hidden='true' className={S.helpIconClassName} /> 도움이 필요하신가요?
     </p>
     <button className={S.helpButtonClassName} type='button'>
       문의 남기기
