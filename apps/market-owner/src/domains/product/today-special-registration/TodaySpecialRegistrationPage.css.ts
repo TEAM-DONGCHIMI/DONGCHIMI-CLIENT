@@ -249,14 +249,17 @@ export const categoryTriggerClassName = style({
   backgroundColor: atomic.common[0],
   color: atomic.neutral[90],
   cursor: 'pointer',
-  transition: 'border-color 160ms ease, outline-color 160ms ease',
+  transition: 'border-color 160ms ease',
   selectors: {
+    '&:hover': {
+      borderColor: atomic.neutral[80],
+    },
     '&[aria-expanded="true"]': {
-      borderColor: 'transparent',
+      borderColor: atomic.neutral[80],
     },
     '&:focus-visible': {
-      outline: `0.3rem solid ${focusOutlineColor}`,
-      outlineOffset: '0.2rem',
+      borderColor: atomic.neutral[80],
+      outline: 0,
     },
   },
 });
