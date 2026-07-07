@@ -1,4 +1,4 @@
-import type { ChangeEventHandler } from 'react';
+import { useEffect, useId, useRef, type ChangeEventHandler } from 'react';
 
 import { Dropdown, InlineField } from '@dongchimi/design-system/components';
 import { cn } from '@dongchimi/design-system/styles';
@@ -27,6 +27,35 @@ export const ProductInfoSection = ({
   onNameChange,
   product,
 }: ProductInfoSectionProps) => {
+  const categoryWrapperRef = useRef<HTMLDivElement>(null);
+  const categoryDropdownId = useId();
+
+  useEffect(() => {
+    if (!isCategoryOpen) {
+      return;
+    }
+
+    const closeCategoryDropdownOnOutsidePointerDown = (event: PointerEvent) => {
+      if (!categoryWrapperRef.current?.contains(event.target as Node)) {
+        onCategoryOpenChange(false);
+      }
+    };
+
+    const closeCategoryDropdownOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onCategoryOpenChange(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', closeCategoryDropdownOnOutsidePointerDown);
+    document.addEventListener('keydown', closeCategoryDropdownOnEscape);
+
+    return () => {
+      document.removeEventListener('pointerdown', closeCategoryDropdownOnOutsidePointerDown);
+      document.removeEventListener('keydown', closeCategoryDropdownOnEscape);
+    };
+  }, [isCategoryOpen, onCategoryOpenChange]);
+
   return (
     <section className={S.fieldSectionClassName} aria-labelledby='product-info-title'>
       <h2 className={S.sectionTitleClassName} id='product-info-title'>
@@ -100,8 +129,9 @@ export const ProductInfoSection = ({
 
           <div className={S.fieldGroupClassName}>
             <span className={S.fieldLabelClassName}>상품 구분</span>
-            <div className={S.categoryWrapperClassName}>
+            <div className={S.categoryWrapperClassName} ref={categoryWrapperRef}>
               <button
+                aria-controls={isCategoryOpen ? categoryDropdownId : undefined}
                 aria-expanded={isCategoryOpen}
                 className={S.categoryTriggerClassName}
                 onClick={() => onCategoryOpenChange(!isCategoryOpen)}
@@ -118,7 +148,7 @@ export const ProductInfoSection = ({
               </button>
 
               {isCategoryOpen && (
-                <Dropdown className={S.categoryDropdownClassName}>
+                <Dropdown className={S.categoryDropdownClassName} id={categoryDropdownId}>
                   {todaySpecialCategoryOptions.map((category) => (
                     <Dropdown.Item
                       className={S.categoryDropdownItemClassName}

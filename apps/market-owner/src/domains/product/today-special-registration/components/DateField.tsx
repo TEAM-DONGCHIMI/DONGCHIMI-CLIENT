@@ -11,9 +11,17 @@ interface DateFieldProps {
 
 export const DateField = ({ ariaLabel, min, onChange, value }: DateFieldProps) => {
   const preventManualDateInput: KeyboardEventHandler<HTMLInputElement> = (event) => {
-    if (event.key !== 'Tab') {
+    if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
+      event.currentTarget.showPicker?.();
+      return;
     }
+
+    if (event.key === 'Tab' || event.key.startsWith('Arrow')) {
+      return;
+    }
+
+    event.preventDefault();
   };
 
   const openDatePicker: MouseEventHandler<HTMLInputElement> = (event) => {
