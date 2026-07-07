@@ -58,7 +58,7 @@ TextInput
     TrailingIcon (optional, decorative)
     TrailingAction (optional, interactive)
   SupportingText (optional)
-    ErrorIconSlot (error only, reserved)
+    ErrorIcon (error only, decorative)
     HelperText | ErrorMessage
 ```
 
@@ -167,7 +167,7 @@ TextInput
 - default: white background와 neutral-20 border를 사용합니다.
 - hover: 활성 input 위에 pointer가 있으면 neutral-80 border를 사용합니다.
 - focus: input이 focus되고 pointer가 input 밖에 있으면 primary-normal border를 사용합니다. Figma에 없는 외부 focus ring이나 box-shadow는 추가하지 않습니다.
-- error: `status='error'`일 때 negative-light border, 16px 오류 아이콘 영역과 negative 오류 문구를 표시하고 `aria-invalid='true'`를 적용합니다.
+- error: `status='error'`일 때 negative-light border, 16px negative circleExclamation 오류 아이콘과 negative 오류 문구를 표시하고 `aria-invalid='true'`를 적용합니다.
 - success: `status='success'`일 때 neutral-20 background와 border를 사용합니다. Figma에서는 filled 조합만 제공하지만 컴포넌트가 input 값의 유무를 추론하지 않습니다.
 - disabled: native `disabled` semantics를 input에 전달하고 hover를 적용하지 않습니다. `trailingAction`에도 `disabled` 상태를 전달해 호출부가 부가 액션을 함께 비활성화하도록 합니다. 전용 Figma visual이 없어 별도 opacity나 색상을 추가하지 않습니다.
 - readOnly: native `readOnly` semantics를 전달합니다. 전용 Figma visual이 없어 별도 색상을 추가하지 않으며 success와 동일한 상태로 간주하지 않습니다.
@@ -211,7 +211,7 @@ TextInput
 - helper/error text: Caption 1 Medium, 12px/1.4
 - label/helper/error text: 긴 문구와 공백 없는 문자열을 줄바꿈해 전체 내용을 표시합니다.
 - trailing icon/action slot: 24×24px, input 오른쪽 12px, text와 8px 간격
-- error icon slot: 16×16px, error text와 4px 간격. 실제 아이콘 asset이 확정되기 전까지 빈 영역으로 유지합니다.
+- error icon: Figma node `1148:29939`의 `Name=circleExclamation, size=small, color=negative, Fill=false`에 대응하는 16×16px 장식 아이콘을 error text와 4px 간격으로 표시합니다.
 - transition: border/background/color 변화에만 짧게 적용하고 layout은 움직이지 않습니다.
 - token usage: 기존 `atomic`, `semantic`, `typography` token과 component-local vanilla-extract style을 사용합니다.
 
@@ -239,7 +239,7 @@ TextInput
 - required: native `required`를 input에 적용하고 시각적 `*`는 중복 낭독을 방지합니다.
 - trailing icon: 장식 요소로 렌더링하고 accessible name과 tab order에 포함하지 않습니다.
 - trailing action: interactive element의 accessible name과 native keyboard interaction을 유지합니다.
-- error icon slot: 장식 요소로 렌더링하고 오류 의미는 `aria-invalid`와 error message로 전달합니다.
+- error icon: 장식 요소로 렌더링하고 오류 의미는 `aria-invalid`와 error message로 전달합니다.
 - error announcement: 입력 중 매 keystroke마다 강제 announcement하지 않습니다. live-region 정책은 실제 form validation 흐름이 필요할 때 호출부가 결정합니다.
 
 ## Storybook
@@ -266,16 +266,15 @@ TextInput
 
 ## Verification
 
-- [ ] `git diff --check`
+- [x] `git diff --check`
 - [ ] `pnpm format:check`
-- [ ] `pnpm --filter @dongchimi/design-system lint`
-- [ ] `pnpm --filter @dongchimi/design-system typecheck`
-- [ ] `pnpm --filter @dongchimi/design-system test`
-- [ ] `pnpm --filter @dongchimi/design-system build`
+- [x] `pnpm.cmd --filter @dongchimi/design-system lint`
+- [x] `pnpm.cmd --filter @dongchimi/design-system typecheck`
+- [x] `pnpm.cmd --filter @dongchimi/design-system test -- src/components/ui/text-input/TextInput.test.tsx`
+- [x] `pnpm.cmd --filter @dongchimi/design-system build`
 - [ ] `pnpm --filter @dongchimi/design-system build-storybook`
 - [ ] Storybook interaction and a11y checks
 
 ## Open Questions
 
-- Figma error status icon에 대응하는 영구 SVG source가 현재 package에 없어 16×16px 빈 slot만 확보합니다. 원본이 확정되면 slot 내부에 generated icon을 렌더링합니다.
 - disabled/readOnly 전용 Figma visual이 제공되면 상태 색상과 interaction 우선순위를 추가합니다. 현재는 native semantics만 지원합니다.

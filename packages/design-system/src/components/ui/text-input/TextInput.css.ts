@@ -141,9 +141,14 @@ export const messageRow = style({
 });
 
 export const errorIconSlot = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   flexShrink: 0,
   width: 16,
   height: 16,
+  fontSize: 16,
+  lineHeight: 0,
 });
 
 export const messageText = recipe({
