@@ -158,7 +158,7 @@ export const TodaySpecialRegistrationPage = () => {
     setProducts((previousProducts) =>
       previousProducts.filter((_, index) => index !== currentIndex),
     );
-    setCurrentIndex((previousIndex) => Math.max(previousIndex - 1, 0));
+    setCurrentIndex((previousIndex) => Math.min(previousIndex, products.length - 2));
     setIsCategoryOpen(false);
   };
 
