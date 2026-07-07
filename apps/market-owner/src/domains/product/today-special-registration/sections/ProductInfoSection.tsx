@@ -76,7 +76,7 @@ export const ProductInfoSection = ({
             )}
           </label>
           <input
-            accept='image/*'
+            accept='.jpg,.jpeg,.png,image/jpeg,image/png'
             className={S.fileInputClassName}
             id='today-special-product-image'
             onChange={onImageChange}
@@ -107,7 +107,9 @@ export const ProductInfoSection = ({
                 onClick={() => onCategoryOpenChange(!isCategoryOpen)}
                 type='button'
               >
-                <span>{product.category}</span>
+                <span className={!product.category ? S.categoryPlaceholderClassName : undefined}>
+                  {product.category || '카테고리'}
+                </span>
                 {isCategoryOpen ? (
                   <IcChevronUp aria-hidden='true' />
                 ) : (

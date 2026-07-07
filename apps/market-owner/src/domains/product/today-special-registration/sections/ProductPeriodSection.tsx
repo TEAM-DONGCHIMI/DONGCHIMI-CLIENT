@@ -1,7 +1,6 @@
 import type { ChangeEventHandler } from 'react';
 
-import { InlineField } from '@dongchimi/design-system/components';
-
+import { DateField } from '../components/DateField';
 import type { TodaySpecialProductForm } from '../model';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
@@ -26,19 +25,18 @@ export const ProductPeriodSection = ({
         <div className={S.fieldGroupClassName}>
           <span className={S.fieldLabelClassName}>행사 기간</span>
           <div className={S.dateRowClassName}>
-            <InlineField
-              aria-label='행사 시작일'
+            <DateField
+              ariaLabel='행사 시작일'
               onChange={onStartDateChange}
-              placeholder='YYYY-MM-DD'
               value={product.startDate}
             />
             <span className={S.dateSeparatorClassName} aria-hidden='true'>
               ~
             </span>
-            <InlineField
-              aria-label='행사 종료일'
+            <DateField
+              ariaLabel='행사 종료일'
+              min={product.startDate || undefined}
               onChange={onEndDateChange}
-              placeholder='YYYY-MM-DD'
               value={product.endDate}
             />
           </div>
