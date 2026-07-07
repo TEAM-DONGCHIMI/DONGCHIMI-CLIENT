@@ -4,8 +4,9 @@ import { atomic, shadow } from '@dongchimi/design-system/tokens';
 
 export const authLayoutRootClassName = style({
   display: 'flex',
-  minHeight: '100vh',
+  height: '100vh',
   boxSizing: 'border-box',
+  overflow: 'hidden',
   backgroundColor: atomic.neutral[5],
 });
 
