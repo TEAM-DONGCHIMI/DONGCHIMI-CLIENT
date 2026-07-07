@@ -44,3 +44,22 @@ packages/shared/src/api/__generated__/owner/data-contracts.ts
 현재 저장소에는 app-local Ky client, `ApiError` 정규화, QueryClient 기본 정책이 이미 있습니다. 생성된 request 함수를 그대로 사용하면 이 경계를 우회하거나, 별도 custom template 유지보수가 필요할 수 있습니다. 따라서 이번 단계에서는 `swagger-typescript-api`의 client 생성을 비활성화하고 contract 타입 생성에만 사용합니다.
 
 API helper 반복 비용이 커지면, app-local `httpClient`를 호출하는 template 기반 generated client를 후속 작업에서 검토합니다.
+
+## Generic Response 복원
+
+백엔드 OpenAPI 스펙이 `x-generic-base`, `x-generic-type-arg` extension을 제공하면 `scripts/swagger-typescript-api.config.mjs`의 `onParseSchema` hook이 flatten된 response 타입을 generic 타입 표현으로 복원합니다.
+
+예를 들어 백엔드 스펙이 아래 extension을 포함하면:
+
+```yaml
+x-generic-base: ApiResponse
+x-generic-type-arg: OAuthLoginResponse
+```
+
+생성 타입은 아래 형태로 복원될 수 있습니다.
+
+```ts
+export type ApiResponseOAuthLoginResponse = ApiResponse<OAuthLoginResponse>;
+```
+
+현재 스펙에 해당 extension이 없으면 이 설정은 아무 동작도 하지 않습니다. Generic response extension은 백엔드 `springdoc-generic-response` 적용 이후부터 효과가 있습니다.

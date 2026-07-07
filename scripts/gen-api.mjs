@@ -20,6 +20,11 @@ const SWAGGER_TYPESCRIPT_API_CLI = path.join(
   'dist',
   'cli.mjs',
 );
+const SWAGGER_TYPESCRIPT_API_CONFIG = path.join(
+  ROOT_DIR,
+  'scripts',
+  'swagger-typescript-api.config.mjs',
+);
 
 const loadEnvFile = (fileName) => {
   const filePath = path.join(ROOT_DIR, fileName);
@@ -67,6 +72,8 @@ const generateApiContracts = ({ envName, outputDirName }) => {
       outputDir,
       '--name',
       'data-contracts.ts',
+      '--custom-config',
+      SWAGGER_TYPESCRIPT_API_CONFIG,
       '--no-client',
       '--modular',
       '--default-as-success',
