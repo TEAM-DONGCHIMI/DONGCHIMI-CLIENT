@@ -1,5 +1,9 @@
 import { IconButton } from '@dongchimi/design-system/components';
-import { IcChevronLeft, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
+import {
+  IcChevronLeft,
+  IcChevronRight,
+  IcLineHorizontalSizeSmall,
+} from '@dongchimi/design-system/icons';
 
 import * as S from '../TodaySpecialRegistrationPage.css';
 
@@ -50,7 +54,7 @@ export const RegistrationTitleSection = ({
                 className={S.titleNavigationButtonClassName}
                 color='assistive'
                 disabled={currentIndex === productCount - 1}
-                icon={<IcChevronLeft className={S.titleNextIconClassName} />}
+                icon={<IcChevronRight />}
                 onClick={onNextProduct}
                 variant='ghost'
               />

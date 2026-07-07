@@ -109,11 +109,6 @@
     "generatedFingerprint": "0b6b07d93205255af877d89109db5665cf7e01d39e6c1c646ba18ab1e73e8811",
     "sourceFingerprint": "8f8cffec4e9eea130353570ab5d4580026469db6262cbfbc725bb2ee6f61443d"
   },
-  "ic-chevron-right-color-30.svg": {
-    "generatedFile": "IcChevronRightColor30.tsx",
-    "generatedFingerprint": "dc7b509d03429ad19fce88fde22a76d157a2ec9fbafee4373d26798444c50128",
-    "sourceFingerprint": "dcb703341aa50c52c7948ece547b85b39d39ca27e48c6f2593d56551af678df2"
-  },
   "ic-chevron-right-color-50.svg": {
     "generatedFile": "IcChevronRightColor50.tsx",
     "generatedFingerprint": "b9e901732be0d8432c50e0d524744805ea44a490cbf43914531227e55bf5f797",
@@ -126,8 +121,8 @@
   },
   "ic-chevron-right.svg": {
     "generatedFile": "IcChevronRight.tsx",
-    "generatedFingerprint": "6bd48cfe801b9b3c7dfe09ff39de9d58ea744a530d850f3828532b02c2f2b72b",
-    "sourceFingerprint": "9e7b01ade19c6bda7f616a0f360805526a3c8b3e7e914cc67f23a41eaa3de393"
+    "generatedFingerprint": "91fdc63e1e242e0d8c816486dd2b691227b2f4d1a44def4862185369dca92a95",
+    "sourceFingerprint": "1dd875d3ea8e948169bf866ae8fccd89021a93cb892f4faa44ebf55b7d182b2f"
   },
   "ic-chevron-up-color-primary.svg": {
     "generatedFile": "IcChevronUpColorPrimary.tsx",
