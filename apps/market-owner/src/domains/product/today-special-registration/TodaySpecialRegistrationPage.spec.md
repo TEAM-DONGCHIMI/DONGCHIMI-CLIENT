@@ -154,14 +154,16 @@ Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, drop
 - [ ] category trigger shows `카테고리` placeholder before selection
 - [ ] category dropdown can select a category and closes after selection
 - [ ] selected category item is highlighted in dropdown
+- [ ] category dropdown closes on outside click and Escape
 - [ ] product name trims edge spaces and limits input to 15 characters
 - [ ] product description trims edge spaces, remains optional, and limits input to 25 characters
 - [ ] price fields accept digits only and display comma-formatted values with `원` unit
 - [ ] submit stays disabled when sale price is lower than today special price
 - [ ] DateField displays `YYYY-MM-DD` placeholder without browser date icon text
 - [ ] clicking DateField opens native date picker
+- [ ] pressing Enter or Space on DateField opens native date picker
 - [ ] end date cannot be earlier than start date
 - [ ] changing start date clears an already-selected earlier end date
 - [ ] `상품 계속 등록` stays enabled and opens a fresh product draft
 - [ ] title count and previous/next/delete controls render when there are multiple drafts
-- [ ] valid `등록 완료` submit navigates to home while API is pending
+- [ ] valid `등록 완료` submit navigates to home before API integration is wired
