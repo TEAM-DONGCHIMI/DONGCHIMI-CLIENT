@@ -3,6 +3,7 @@ export {
   formatPriceInput,
   isTodaySpecialProductFormComplete,
   isValidTodaySpecialImageFile,
+  resolveEndDateAfterStartDateChange,
   sanitizeProductDescription,
   sanitizeProductName,
   revokePreviewUrl,
