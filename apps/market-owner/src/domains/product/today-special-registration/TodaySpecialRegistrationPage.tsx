@@ -1,4 +1,6 @@
-import { type ChangeEvent, type FormEvent, useEffect, useRef, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
 import { Button } from '@dongchimi/design-system/components';
@@ -10,14 +12,15 @@ import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import {
   createEmptyTodaySpecialProductForm,
   formatPriceInput,
-  isTodaySpecialProductFormComplete,
   isValidTodaySpecialImageFile,
   resolveEndDateAfterStartDateChange,
   revokePreviewUrl,
   sanitizeProductDescription,
   sanitizeProductName,
+  todaySpecialRegistrationFormSchema,
   type TodaySpecialProductForm,
   type TodaySpecialProductTextFieldTypes,
+  type TodaySpecialRegistrationForm,
 } from './model';
 import {
   ProductInfoSection,
@@ -29,18 +32,34 @@ import * as S from './TodaySpecialRegistrationPage.css';
 
 // 새 상품 등록시 빈 form 생성
 const createInitialProductForm = () => createEmptyTodaySpecialProductForm();
+type TodaySpecialProductTextFieldPathTypes =
+  `products.${number}.${TodaySpecialProductTextFieldTypes}`;
 
 export const TodaySpecialRegistrationPage = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState<TodaySpecialProductForm[]>([createInitialProductForm()]);
+  const {
+    control,
+    formState: { isValid },
+    handleSubmit,
+    setValue,
+  } = useForm<TodaySpecialRegistrationForm>({
+    defaultValues: {
+      products: [createInitialProductForm()],
+    },
+    mode: 'onChange',
+    resolver: zodResolver(todaySpecialRegistrationFormSchema),
+  });
+  const { append, fields, remove } = useFieldArray({
+    control,
+    name: 'products',
+  });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const productsRef = useRef(products); // 이미지 preview 정리
+  const products = useWatch({ control, name: 'products' });
+  const productsRef = useRef<TodaySpecialProductForm[]>(products); // 이미지 preview 정리
 
-  const currentProduct = products[currentIndex];
-  const isSubmitDisabled =
-    products.length === 0 ||
-    products.some((product) => !isTodaySpecialProductFormComplete(product));
+  const currentProduct = products[currentIndex] ?? createInitialProductForm();
+  const isSubmitDisabled = products.length === 0 || !isValid;
 
   // 이미지 변경시 초기화
   useEffect(() => {
@@ -55,52 +74,47 @@ export const TodaySpecialRegistrationPage = () => {
     };
   }, []);
 
-  // 현재 상품 업데이트
-  const updateCurrentProduct = (nextProduct: TodaySpecialProductForm) => {
-    setProducts((previousProducts) =>
-      previousProducts.map((product, index) => (index === currentIndex ? nextProduct : product)),
-    );
+  const updateCurrentProductField = (field: TodaySpecialProductTextFieldTypes, value: string) => {
+    setValue(`products.${currentIndex}.${field}` as TodaySpecialProductTextFieldPathTypes, value, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
   };
 
   const handleFieldChange =
     (field: TodaySpecialProductTextFieldTypes) => (event: ChangeEvent<HTMLInputElement>) => {
-      updateCurrentProduct({
-        ...currentProduct,
-        [field]: event.target.value,
-      });
+      updateCurrentProductField(field, event.target.value);
     };
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    updateCurrentProduct({
-      ...currentProduct,
-      name: sanitizeProductName(event.target.value),
-    });
+    updateCurrentProductField('name', sanitizeProductName(event.target.value));
   };
 
   const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
-    updateCurrentProduct({
-      ...currentProduct,
-      description: sanitizeProductDescription(event.target.value),
-    });
+    updateCurrentProductField('description', sanitizeProductDescription(event.target.value));
   };
 
   const handlePriceChange =
     (field: Extract<TodaySpecialProductTextFieldTypes, 'salePrice' | 'specialPrice'>) =>
     (event: ChangeEvent<HTMLInputElement>) => {
-      updateCurrentProduct({
-        ...currentProduct,
-        [field]: formatPriceInput(event.target.value),
-      });
+      updateCurrentProductField(field, formatPriceInput(event.target.value));
     };
 
   const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
     const startDate = event.target.value;
 
-    updateCurrentProduct({
-      ...currentProduct,
-      startDate,
-      endDate: resolveEndDateAfterStartDateChange(startDate, currentProduct.endDate),
+    setValue(`products.${currentIndex}.startDate`, startDate, {
+      shouldDirty: true,
+      shouldValidate: true,
     });
+    setValue(
+      `products.${currentIndex}.endDate`,
+      resolveEndDateAfterStartDateChange(startDate, currentProduct.endDate),
+      {
+        shouldDirty: true,
+        shouldValidate: true,
+      },
+    );
   };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -118,23 +132,25 @@ export const TodaySpecialRegistrationPage = () => {
     const previewUrl = URL.createObjectURL(file);
 
     revokePreviewUrl(currentProduct.imagePreviewUrl);
-    updateCurrentProduct({
-      ...currentProduct,
-      imageFile: file,
-      imagePreviewUrl: previewUrl,
+    setValue(`products.${currentIndex}.imageFile`, file, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    setValue(`products.${currentIndex}.imagePreviewUrl`, previewUrl, {
+      shouldDirty: true,
     });
   };
 
   const handleCategorySelect = (category: string) => {
-    updateCurrentProduct({
-      ...currentProduct,
-      category,
+    setValue(`products.${currentIndex}.category`, category, {
+      shouldDirty: true,
+      shouldValidate: true,
     });
     setIsCategoryOpen(false);
   };
 
   const handleAddProduct = () => {
-    setProducts((previousProducts) => [...previousProducts, createInitialProductForm()]);
+    append(createInitialProductForm());
     setCurrentIndex(products.length);
     setIsCategoryOpen(false);
   };
@@ -155,29 +171,21 @@ export const TodaySpecialRegistrationPage = () => {
     }
 
     revokePreviewUrl(currentProduct.imagePreviewUrl);
-    setProducts((previousProducts) =>
-      previousProducts.filter((_, index) => index !== currentIndex),
-    );
+    remove(currentIndex);
     setCurrentIndex((previousIndex) => Math.min(previousIndex, products.length - 2));
     setIsCategoryOpen(false);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (isSubmitDisabled) {
-      return;
-    }
-
+  const handleFormSubmit = handleSubmit(() => {
     // TODO: presigned URL 발급, storage PUT, 상품 payload submit 순서로 API 연동.
     navigate(MARKET_OWNER_ROUTES.home);
-  };
+  });
 
   return (
     <main className={S.pageRootClassName}>
       <DesktopHeader currentLabel='오늘의 특가 상품 등록' parentLabel='홈' showSearchBar={false} />
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleFormSubmit}>
         <section
           className={S.formContentClassName}
           aria-labelledby='today-special-registration-title'
@@ -187,7 +195,7 @@ export const TodaySpecialRegistrationPage = () => {
             onNextProduct={handleNextProduct}
             onPreviousProduct={handlePreviousProduct}
             onRemoveCurrentProduct={handleRemoveCurrentProduct}
-            productCount={products.length}
+            productCount={fields.length}
           />
 
           <div className={S.fieldSectionsClassName}>
