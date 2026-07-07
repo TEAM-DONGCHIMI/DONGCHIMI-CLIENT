@@ -17,7 +17,6 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
     handleKeepSignedInChange,
     handlePasswordChange,
     handleSubmit,
-    isSubmitting,
     isSubmitDisabled,
     keepSignedIn,
     loginErrorMessage,
@@ -71,7 +70,7 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
         size='medium'
         type='submit'
       >
-        {isSubmitting ? '로그인 중' : '로그인'}
+        로그인
       </Button>
 
       {loginErrorMessage !== undefined && <Toast status='error'>{loginErrorMessage}</Toast>}
