@@ -9,7 +9,9 @@ export const LoginForm = () => {
     email,
     emailStatusProps,
     handleEmailChange,
+    handleKeepSignedInChange,
     handlePasswordChange,
+    keepSignedIn,
     password,
     passwordStatusProps,
   } = useLoginForm();
@@ -36,7 +38,12 @@ export const LoginForm = () => {
       />
 
       <label className={S.keepSignedInClassName}>
-        <input className={S.keepSignedInInputClassName} type='checkbox' />
+        <input
+          checked={keepSignedIn}
+          className={S.keepSignedInInputClassName}
+          onChange={handleKeepSignedInChange}
+          type='checkbox'
+        />
         <span aria-hidden='true' className={S.keepSignedInIconClassName}>
           <IcCheckboxSizeSmall className={S.keepSignedInUncheckedIconClassName} />
           <IcCheckboxActionSizeSmall className={S.keepSignedInCheckedIconClassName} />

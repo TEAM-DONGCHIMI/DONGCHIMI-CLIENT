@@ -14,6 +14,12 @@ describe('LoginForm', () => {
     expect(screen.getByRole('button', { name: '로그인' })).toBeDisabled();
   });
 
+  it('keeps the user on a normal login by default', () => {
+    render(<LoginForm />);
+
+    expect(screen.getByRole('checkbox', { name: '로그인 상태 유지' })).not.toBeChecked();
+  });
+
   it('toggles the design-system checkbox control for keeping the user signed in', async () => {
     const user = userEvent.setup();
 
@@ -26,6 +32,10 @@ describe('LoginForm', () => {
     await user.click(keepSignedInCheckbox);
 
     expect(keepSignedInCheckbox).toBeChecked();
+
+    await user.click(keepSignedInCheckbox);
+
+    expect(keepSignedInCheckbox).not.toBeChecked();
   });
 
   it('validates the required email field while the user edits it', async () => {

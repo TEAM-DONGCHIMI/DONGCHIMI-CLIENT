@@ -8,6 +8,7 @@ export const useLoginForm = () => {
   const [hasEditedEmail, setHasEditedEmail] = useState(false);
   const [password, setPassword] = useState('');
   const [hasEditedPassword, setHasEditedPassword] = useState(false);
+  const [keepSignedIn, setKeepSignedIn] = useState(false);
 
   const emailErrorMessage = hasEditedEmail ? getEmailErrorMessage(email) : undefined;
   const emailStatusProps =
@@ -35,11 +36,17 @@ export const useLoginForm = () => {
     setPassword(event.target.value);
   };
 
+  const handleKeepSignedInChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setKeepSignedIn(event.target.checked);
+  };
+
   return {
     email,
     emailStatusProps,
     handleEmailChange,
+    handleKeepSignedInChange,
     handlePasswordChange,
+    keepSignedIn,
     password,
     passwordStatusProps,
   };

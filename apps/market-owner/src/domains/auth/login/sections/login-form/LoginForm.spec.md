@@ -17,7 +17,7 @@
 ## Composition
 
 - components: 디자인 시스템 `TextInput`, `Button`, `IcCheckboxSizeSmall`, `IcCheckboxActionSizeSmall`
-- hook: `login/hooks/use-login-form.ts`가 이메일/비밀번호 입력 상태, 수정 여부, error 표시 props를 관리합니다.
+- hook: `login/hooks/use-login-form.ts`가 이메일/비밀번호 입력 상태, 수정 여부, 로그인 상태 유지 선택, error 표시 props를 관리합니다.
 - utils: `login/utils/email-validation.ts`, `login/utils/password-validation.ts`가 필드별 순수 검증 규칙을 제공합니다.
 - data: 없음. auth API 연동은 후속 이슈 범위입니다.
 - states: default(초기 빈 폼), email/password editing, field validation error를 다룹니다. loading/server error는 이번 범위에서 다루지 않습니다.
@@ -31,6 +31,14 @@
 - 빈 값이면 `이메일을 입력해주세요.` 오류를 표시합니다.
 - `example@email.com`, `example@email.co.kr`처럼 `@`와 점으로 구분된 도메인을 포함하지 않으면 `올바른 이메일 형식이 아닙니다.` 오류를 표시합니다.
 - 오류 상태는 디자인 시스템 `TextInput`의 `status='error'`와 `errorMessage`로 표시합니다.
+
+## Keep Signed In
+
+- 로그인 상태 유지 체크박스의 기본값은 해제 상태입니다.
+- 체크하면 로그인 성공 시 로그인 유지 정책을 적용할 수 있도록 `keepSignedIn=true`로 관리합니다.
+- 체크 해제하면 일반 로그인으로 진행할 수 있도록 `keepSignedIn=false`로 관리합니다.
+- 체크 상태는 native checkbox의 `checked` 상태를 기준으로 디자인 시스템 체크박스 아이콘의 활성/비활성 visual을 표시합니다.
+- 로그인 성공 시 로그인 정보 저장, 로그아웃 시 저장된 로그인 정보 삭제, 로그인 유지 기간 만료 후 재로그인 요구는 실제 auth API/session 연결 시 처리합니다.
 
 ## Password Validation
 
