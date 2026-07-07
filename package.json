@@ -17,6 +17,7 @@
     "gen:domain-section": "turbo gen domain-section",
     "gen:domain-query": "turbo gen domain-query",
     "gen:domain-mutation": "turbo gen domain-mutation",
+    "api:generate": "node scripts/gen-api.mjs",
     "check:generators": "tsc -p turbo/generators/tsconfig.json",
     "build:design-system": "pnpm --filter @dongchimi/design-system build",
     "storybook:client": "pnpm --filter client storybook",
@@ -63,6 +64,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7",
     "prettier": "3.8.4",
+    "swagger-typescript-api": "^13.12.4",
     "turbo": "catalog:",
     "typescript": "catalog:"
   }
