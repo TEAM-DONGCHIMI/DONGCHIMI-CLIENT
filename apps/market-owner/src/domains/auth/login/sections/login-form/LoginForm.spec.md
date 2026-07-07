@@ -16,8 +16,10 @@
 
 ## Composition
 
-- components: 디자인 시스템 `TextInput`, `Button`, `IcCheckboxSizeSmall`, `IcCheckboxActionSizeSmall`
-- hook: `login/hooks/use-login-form.ts`가 이메일/비밀번호 입력 상태, 수정 여부, 로그인 상태 유지 선택, error 표시 props를 관리합니다.
+- components: 디자인 시스템 `TextInput`, `Button`, `Toast`, `IcCheckboxSizeSmall`, `IcCheckboxActionSizeSmall`
+- hook: `login/hooks/use-login-form.ts`가 field hook과 submit hook을 조합합니다.
+- field hook: `login/hooks/use-login-fields.ts`가 이메일/비밀번호 입력 상태, 수정 여부, 로그인 상태 유지 선택, error 표시 props를 관리합니다.
+- submit hook: `login/hooks/use-login-submit.ts`가 submit loading, redirect, error toast message 상태를 관리합니다.
 - utils: `login/utils/email-validation.ts`, `login/utils/password-validation.ts`가 필드별 순수 검증 규칙을 제공합니다.
 - data: 없음. auth API 연동은 후속 이슈 범위입니다.
 - states: default(초기 빈 폼), email/password editing, field validation error를 다룹니다. loading/server error는 이번 범위에서 다루지 않습니다.
@@ -40,6 +42,23 @@
 - 체크 상태는 native checkbox의 `checked` 상태를 기준으로 디자인 시스템 체크박스 아이콘의 활성/비활성 visual을 표시합니다.
 - 로그인 성공 시 로그인 정보 저장, 로그아웃 시 저장된 로그인 정보 삭제, 로그인 유지 기간 만료 후 재로그인 요구는 실제 auth API/session 연결 시 처리합니다.
 
+## Submit
+
+- 기본 상태의 로그인 버튼은 비활성화합니다.
+- 이메일과 비밀번호가 모두 입력되고 모든 유효성 검사를 통과하면 로그인 버튼을 활성화합니다.
+- 활성화된 로그인 버튼은 디자인 시스템 `Button`의 기본 primary solid visual을 사용합니다.
+- 필수 입력 항목이 비어 있거나 유효성 검사를 통과하지 못하면 로그인 버튼은 비활성화 상태를 유지합니다.
+- 비활성화 상태에서는 submit 요청을 보내지 않습니다.
+- 로그인 요청 중에는 버튼을 비활성화하고 `로그인 중` 문구를 표시해 중복 요청을 방지합니다.
+- 로그인 성공 시 submit 결과의 `redirectTo`로 이동합니다. 실제 auth API 연결 전 기본 submit은 등록 완료 케이스로 `/` 이동을 반환합니다.
+- 로그인 실패 시 현재 화면을 유지하고 디자인 시스템 `Toast`의 error 상태로 오류 메시지를 표시합니다.
+
+## Submit Error Toast
+
+- 이메일 또는 비밀번호가 일치하지 않으면 `이메일 또는 비밀번호가 일치하지 않습니다.`를 표시합니다.
+- 네트워크 오류가 발생하면 `네트워크 연결을 확인한 후 다시 시도해주세요.`를 표시합니다.
+- 토스트는 `status='error'`로 렌더링하며 `role='alert'`, `aria-live='assertive'`는 디자인 시스템 `Toast` 기본값을 따릅니다.
+
 ## Password Validation
 
 - 비밀번호 필드는 필수 입력 항목입니다.
@@ -53,4 +72,5 @@
 
 - [x] `git diff --check`
 - [x] `pnpm.cmd --filter market-owner test -- src/domains/auth/login/sections/login-form/LoginForm.test.tsx src/domains/auth/login/utils/email-validation.test.ts src/domains/auth/login/utils/password-validation.test.ts`
+- [x] `pnpm.cmd --filter market-owner lint`
 - [x] `pnpm.cmd --filter market-owner typecheck`

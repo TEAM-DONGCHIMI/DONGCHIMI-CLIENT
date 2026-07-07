@@ -1,53 +1,47 @@
-import { useState, type ChangeEvent } from 'react';
+import { type FormEvent } from 'react';
 
-import { getEmailErrorMessage, isAllowedEmailInputValue } from '../utils/email-validation';
-import { getPasswordErrorMessage } from '../utils/password-validation';
+import { useLoginFields } from './use-login-fields';
+import { type LoginSubmitHandlerTypes, useLoginSubmit } from './use-login-submit';
 
-export const useLoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [hasEditedEmail, setHasEditedEmail] = useState(false);
-  const [password, setPassword] = useState('');
-  const [hasEditedPassword, setHasEditedPassword] = useState(false);
-  const [keepSignedIn, setKeepSignedIn] = useState(false);
+export interface UseLoginFormOptions {
+  submitLogin?: LoginSubmitHandlerTypes;
+}
 
-  const emailErrorMessage = hasEditedEmail ? getEmailErrorMessage(email) : undefined;
-  const emailStatusProps =
-    emailErrorMessage !== undefined
-      ? { errorMessage: emailErrorMessage, status: 'error' as const }
-      : { status: 'default' as const };
-  const passwordErrorMessage = hasEditedPassword ? getPasswordErrorMessage(password) : undefined;
-  const passwordStatusProps =
-    passwordErrorMessage !== undefined
-      ? { errorMessage: passwordErrorMessage, status: 'error' as const }
-      : { status: 'default' as const };
+export const useLoginForm = ({ submitLogin }: UseLoginFormOptions = {}) => {
+  const { clearLoginErrorMessage, isSubmitting, loginErrorMessage, submit } = useLoginSubmit({
+    submitLogin,
+  });
+  const fields = useLoginFields({ onFieldChange: clearLoginErrorMessage });
+  const isSubmitDisabled = isSubmitting || !fields.isValid;
 
-  const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextEmail = event.target.value;
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    setHasEditedEmail(true);
+    fields.markFieldsEdited();
 
-    if (isAllowedEmailInputValue(nextEmail)) {
-      setEmail(nextEmail);
+    if (isSubmitDisabled) {
+      return;
     }
-  };
 
-  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setHasEditedPassword(true);
-    setPassword(event.target.value);
-  };
-
-  const handleKeepSignedInChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setKeepSignedIn(event.target.checked);
+    await submit({
+      email: fields.email,
+      keepSignedIn: fields.keepSignedIn,
+      password: fields.password,
+    });
   };
 
   return {
-    email,
-    emailStatusProps,
-    handleEmailChange,
-    handleKeepSignedInChange,
-    handlePasswordChange,
-    keepSignedIn,
-    password,
-    passwordStatusProps,
+    email: fields.email,
+    emailStatusProps: fields.emailStatusProps,
+    handleEmailChange: fields.handleEmailChange,
+    handleKeepSignedInChange: fields.handleKeepSignedInChange,
+    handlePasswordChange: fields.handlePasswordChange,
+    handleSubmit,
+    isSubmitting,
+    isSubmitDisabled,
+    keepSignedIn: fields.keepSignedIn,
+    loginErrorMessage,
+    password: fields.password,
+    passwordStatusProps: fields.passwordStatusProps,
   };
 };

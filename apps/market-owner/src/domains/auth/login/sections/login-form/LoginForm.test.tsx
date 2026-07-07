@@ -1,12 +1,21 @@
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { MemoryRouter } from 'react-router';
+import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen } from '../../../../../test';
-import { LoginForm } from './LoginForm';
+import { LoginForm, type LoginFormProps } from './LoginForm';
+
+const renderLoginForm = (props: LoginFormProps = {}) => {
+  return render(
+    <MemoryRouter>
+      <LoginForm {...props} />
+    </MemoryRouter>,
+  );
+};
 
 describe('LoginForm', () => {
   it('renders reusable form controls for market owner login', () => {
-    render(<LoginForm />);
+    renderLoginForm();
 
     expect(screen.getByLabelText('이메일')).toBeRequired();
     expect(screen.getByLabelText('비밀번호')).toBeRequired();
@@ -15,7 +24,7 @@ describe('LoginForm', () => {
   });
 
   it('keeps the user on a normal login by default', () => {
-    render(<LoginForm />);
+    renderLoginForm();
 
     expect(screen.getByRole('checkbox', { name: '로그인 상태 유지' })).not.toBeChecked();
   });
@@ -23,7 +32,7 @@ describe('LoginForm', () => {
   it('toggles the design-system checkbox control for keeping the user signed in', async () => {
     const user = userEvent.setup();
 
-    render(<LoginForm />);
+    renderLoginForm();
 
     const keepSignedInCheckbox = screen.getByRole('checkbox', { name: '로그인 상태 유지' });
 
@@ -41,7 +50,7 @@ describe('LoginForm', () => {
   it('validates the required email field while the user edits it', async () => {
     const user = userEvent.setup();
 
-    render(<LoginForm />);
+    renderLoginForm();
 
     const emailInput = screen.getByLabelText('이메일');
 
@@ -60,7 +69,7 @@ describe('LoginForm', () => {
   it('accepts only email-safe characters and clears the error for a valid email', async () => {
     const user = userEvent.setup();
 
-    render(<LoginForm />);
+    renderLoginForm();
 
     const emailInput = screen.getByLabelText('이메일');
 
@@ -78,7 +87,7 @@ describe('LoginForm', () => {
   it('masks and validates the required password field while the user edits it', async () => {
     const user = userEvent.setup();
 
-    render(<LoginForm />);
+    renderLoginForm();
 
     const passwordInput = screen.getByLabelText('비밀번호');
 
@@ -94,5 +103,76 @@ describe('LoginForm', () => {
 
     expect(screen.getByText('비밀번호를 입력해주세요.')).toBeInTheDocument();
     expect(passwordInput).toBeInvalid();
+  });
+
+  it('enables the login button only after email and password pass validation', async () => {
+    const user = userEvent.setup();
+
+    renderLoginForm();
+
+    const loginButton = screen.getByRole('button', { name: '로그인' });
+
+    await user.type(screen.getByLabelText('이메일'), 'owner@example.com');
+
+    expect(loginButton).toBeDisabled();
+
+    await user.type(screen.getByLabelText('비밀번호'), 'secret');
+
+    expect(loginButton).toBeEnabled();
+  });
+
+  it('submits login once and disables the button while the request is pending', async () => {
+    const user = userEvent.setup();
+    const submitLogin = vi.fn(() => new Promise<{ redirectTo: '/' }>(() => undefined));
+
+    renderLoginForm({ submitLogin });
+
+    await user.type(screen.getByLabelText('이메일'), 'owner@example.com');
+    await user.type(screen.getByLabelText('비밀번호'), 'secret');
+
+    const loginButton = screen.getByRole('button', { name: '로그인' });
+
+    await user.click(loginButton);
+
+    expect(submitLogin).toHaveBeenCalledOnce();
+
+    const pendingLoginButton = await screen.findByRole('button', { name: '로그인 중' });
+
+    expect(pendingLoginButton).toBeDisabled();
+
+    await user.click(pendingLoginButton);
+
+    expect(submitLogin).toHaveBeenCalledOnce();
+  });
+
+  it('shows a toast and keeps the form visible when auth login fails', async () => {
+    const user = userEvent.setup();
+    const submitLogin = vi.fn().mockRejectedValue({ type: 'auth' });
+
+    renderLoginForm({ submitLogin });
+
+    await user.type(screen.getByLabelText('이메일'), 'owner@example.com');
+    await user.type(screen.getByLabelText('비밀번호'), 'secret');
+    await user.click(screen.getByRole('button', { name: '로그인' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '이메일 또는 비밀번호가 일치하지 않습니다.',
+    );
+    expect(screen.getByRole('form', { name: '마트 관리자 로그인' })).toBeInTheDocument();
+  });
+
+  it('shows a network toast when the login request fails by network error', async () => {
+    const user = userEvent.setup();
+    const submitLogin = vi.fn().mockRejectedValue({ type: 'network' });
+
+    renderLoginForm({ submitLogin });
+
+    await user.type(screen.getByLabelText('이메일'), 'owner@example.com');
+    await user.type(screen.getByLabelText('비밀번호'), 'secret');
+    await user.click(screen.getByRole('button', { name: '로그인' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '네트워크 연결을 확인한 후 다시 시도해주세요.',
+    );
   });
 });
