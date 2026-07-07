@@ -42,7 +42,7 @@
 ## Accessibility
 
 - heading order: page root는 visible `h1`으로 `오늘의 전단 공유하기`를 제공합니다.
-- keyboard: route 직접 진입 시 page heading을 제공합니다.
+- keyboard: sidebar/route 관련 native focus order를 유지합니다.
 - focus: focus-visible 스타일을 제거하지 않습니다.
 - current state: 요구사항에서 sidebar 진입 item이 제외되어 `/leaflets/share`는 sidebar active item을 갖지 않습니다.
 
