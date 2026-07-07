@@ -21,7 +21,9 @@ const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <html lang='ko'>
       <body>
-        <AppProviders>{children}</AppProviders>
+        <div className='client-app-shell'>
+          <AppProviders>{children}</AppProviders>
+        </div>
       </body>
     </html>
   );
