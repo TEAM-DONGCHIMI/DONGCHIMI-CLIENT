@@ -25,7 +25,7 @@ export const useLoginForm = ({ submitLogin }: UseLoginFormOptions = {}) => {
 
     await submit({
       email: fields.email,
-      keepSignedIn: fields.keepSignedIn,
+      isAutoLogin: fields.keepSignedIn,
       password: fields.password,
     });
   };

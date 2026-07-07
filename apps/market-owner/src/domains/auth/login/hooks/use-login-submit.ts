@@ -8,7 +8,7 @@ const LOGIN_NETWORK_ERROR_MESSAGE = '네트워크 연결을 확인한 후 다시
 
 export interface LoginSubmitParams {
   email: string;
-  keepSignedIn: boolean;
+  isAutoLogin: boolean;
   password: string;
 }
 
