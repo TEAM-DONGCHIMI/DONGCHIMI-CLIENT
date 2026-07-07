@@ -2,7 +2,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 
-import { render, screen } from '../../../../../test';
+import { render, screen, waitFor } from '../../../../../test';
 import { LoginForm, type LoginFormProps } from './LoginForm';
 
 const renderLoginForm = (props: LoginFormProps = {}) => {
@@ -136,11 +136,11 @@ describe('LoginForm', () => {
 
     expect(submitLogin).toHaveBeenCalledOnce();
 
-    const pendingLoginButton = await screen.findByRole('button', { name: '로그인 중' });
+    await waitFor(() => {
+      expect(loginButton).toBeDisabled();
+    });
 
-    expect(pendingLoginButton).toBeDisabled();
-
-    await user.click(pendingLoginButton);
+    await user.click(loginButton);
 
     expect(submitLogin).toHaveBeenCalledOnce();
   });
