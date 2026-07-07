@@ -13,9 +13,9 @@ export const rootClassName = style({
 });
 
 export const promptClassName = style({
-  ...typography['body-2-medium'],
+  ...typography['caption-1-medium'],
   margin: 0,
-  color: atomic.neutral[50],
+  color: atomic.neutral[70],
 });
 
 export const linkClassName = style({
