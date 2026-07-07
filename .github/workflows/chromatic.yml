@@ -3,8 +3,14 @@ name: Chromatic
 on:
   pull_request:
     paths:
+      - 'apps/client/**'
+      - 'apps/market-owner/**'
       - 'packages/design-system/**'
+      - 'packages/shared/**'
+      - 'package.json'
       - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'turbo.json'
       - '.github/workflows/chromatic.yml'
 
 concurrency:
@@ -16,8 +22,24 @@ permissions:
 
 jobs:
   publish:
-    name: Publish Design System Storybook
+    name: Publish ${{ matrix.name }} Storybook
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: design-system
+            name: Design System
+            working_dir: packages/design-system
+            project_token_secret: CHROMATIC_PROJECT_TOKEN
+          - id: client
+            name: Client Web
+            working_dir: apps/client
+            project_token_secret: CHROMATIC_PROJECT_TOKEN_CLIENT
+          - id: market-owner
+            name: Market Owner Web
+            working_dir: apps/market-owner
+            project_token_secret: CHROMATIC_PROJECT_TOKEN_MARKET_OWNER
     permissions:
       contents: read
       pull-requests: write
@@ -42,12 +64,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Verify Chromatic project token
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets[matrix.project_token_secret] }}
+        run: |
+          if [ -z "$CHROMATIC_PROJECT_TOKEN" ]; then
+            echo "::error::Missing GitHub secret ${{ matrix.project_token_secret }}"
+            exit 1
+          fi
+
       - name: Publish to Chromatic
         id: chromatic
         uses: chromaui/action@c93e0bc3a63aa176e14a75b61a31847cbfdd341c
         with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          workingDir: packages/design-system
+          projectToken: ${{ secrets[matrix.project_token_secret] }}
+          workingDir: ${{ matrix.working_dir }}
           buildScriptName: build-storybook
           exitZeroOnChanges: true
 
@@ -63,7 +94,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          comment-tag: chromatic-preview
+          comment-tag: chromatic-preview-${{ matrix.id }}
           message: |
-            Storybook preview URL: ${{ steps.chromatic.outputs.storybookUrl }}
+            ${{ matrix.name }} Storybook preview URL: ${{ steps.chromatic.outputs.storybookUrl }}
             Update time: ${{ steps.current-time.outputs.formattedTime }}
