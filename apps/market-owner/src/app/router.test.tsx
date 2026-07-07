@@ -16,7 +16,7 @@ describe('marketOwnerRoutes', () => {
   it('renders public auth routes without the sidebar layout', async () => {
     renderRoute('/login');
 
-    expect(await screen.findByRole('heading', { name: '로그인' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '마트 관리자 로그인' })).toBeInTheDocument();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   });
 
