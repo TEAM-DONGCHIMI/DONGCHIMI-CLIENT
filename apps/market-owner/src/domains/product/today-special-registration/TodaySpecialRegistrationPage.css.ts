@@ -72,10 +72,6 @@ export const titleNavigationButtonClassName = style({
   fontSize: '2.4rem',
 });
 
-export const titleNextIconClassName = style({
-  transform: 'rotate(180deg)',
-});
-
 export const titleRemoveButtonClassName = style({
   borderColor: atomic.neutral[20],
 });
