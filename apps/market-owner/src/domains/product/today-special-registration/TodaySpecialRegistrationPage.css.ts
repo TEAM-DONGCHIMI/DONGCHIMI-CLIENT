@@ -300,11 +300,14 @@ export const categoryTriggerErrorClassName = style({
   },
 });
 
-export const categoryDropdownClassName = style({
-  position: 'absolute',
-  top: '4.9rem',
-  left: 0,
+export const categoryDropdownOverlayClassName = style({
+  position: 'fixed',
+  top: 'var(--today-special-category-dropdown-top)',
+  left: 'var(--today-special-category-dropdown-left)',
   zIndex: 1,
+});
+
+export const categoryDropdownClassName = style({
   width: '20.6rem',
   border: 0,
 });

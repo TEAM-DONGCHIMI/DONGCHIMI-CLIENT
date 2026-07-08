@@ -1,6 +1,6 @@
-import type { ChangeEventHandler, FocusEventHandler, MouseEventHandler } from 'react';
+import type { ChangeEventHandler, FocusEventHandler, MouseEventHandler, RefObject } from 'react';
 
-import { Dropdown, InlineField } from '@dongchimi/design-system/components';
+import { InlineField } from '@dongchimi/design-system/components';
 import { cn } from '@dongchimi/design-system/styles';
 import {
   IcCamera,
@@ -15,13 +15,12 @@ import {
   type TodaySpecialProductErrorMessageTypes,
   type TodaySpecialProductFormTypes,
 } from '../model';
-import { todaySpecialCategoryOptions } from '../fixtures';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface ProductInfoSectionProps {
   categoryDropdownId: string;
+  categoryTriggerRef: RefObject<HTMLButtonElement | null>;
   isCategoryOpen: boolean;
-  onCategorySelect: (category: string) => void;
   onCategoryTriggerClick: MouseEventHandler<HTMLButtonElement>;
   onDescriptionBlur: FocusEventHandler<HTMLInputElement>;
   onDescriptionChange: ChangeEventHandler<HTMLInputElement>;
@@ -34,8 +33,8 @@ interface ProductInfoSectionProps {
 
 export const ProductInfoSection = ({
   categoryDropdownId,
+  categoryTriggerRef,
   isCategoryOpen,
-  onCategorySelect,
   onCategoryTriggerClick,
   onDescriptionBlur,
   onDescriptionChange,
@@ -134,6 +133,7 @@ export const ProductInfoSection = ({
                 )}
                 data-today-special-category-trigger
                 onClick={onCategoryTriggerClick}
+                ref={categoryTriggerRef}
                 type='button'
               >
                 <span className={!product.category ? S.categoryPlaceholderClassName : undefined}>
@@ -145,24 +145,6 @@ export const ProductInfoSection = ({
                   <IcChevronDown aria-hidden='true' />
                 )}
               </button>
-              {isCategoryOpen && (
-                <div data-today-special-category-overlay>
-                  <Dropdown className={S.categoryDropdownClassName} id={categoryDropdownId}>
-                    {todaySpecialCategoryOptions.map((category) => (
-                      <Dropdown.Item
-                        checkbox={false}
-                        className={S.categoryDropdownItemClassName}
-                        color='primary'
-                        key={category}
-                        onClick={() => onCategorySelect(category)}
-                        selected={category === product.category}
-                      >
-                        {category}
-                      </Dropdown.Item>
-                    ))}
-                  </Dropdown>
-                </div>
-              )}
             </div>
             {productErrorMessages.category && (
               <p className={S.fieldErrorMessageClassName} id={categoryErrorId}>

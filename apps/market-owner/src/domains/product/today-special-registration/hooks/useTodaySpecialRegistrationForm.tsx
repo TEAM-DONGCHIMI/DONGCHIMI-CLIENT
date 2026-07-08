@@ -1,10 +1,21 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ChangeEvent, type FocusEvent, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  type CSSProperties,
+  type ChangeEvent,
+  type FocusEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { type FieldError, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { overlay } from 'overlay-kit';
 
+import { Dropdown } from '@dongchimi/design-system/components';
+
 import { getVisibleFieldErrorMessage } from '@/shared/utils/form-error.utils';
 
+import { todaySpecialCategoryOptions } from '../fixtures';
 import {
   createEmptyTodaySpecialProductForm,
   formatPriceInput,
@@ -20,6 +31,7 @@ import {
   type TodaySpecialProductTextFieldTypes,
   type TodaySpecialRegistrationFormTypes,
 } from '../model';
+import * as S from '../TodaySpecialRegistrationPage.css';
 
 // 새 상품 등록시 빈 form 생성
 const createInitialProductForm = () => createEmptyTodaySpecialProductForm();
@@ -55,6 +67,7 @@ export const useTodaySpecialRegistrationForm = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const products = useWatch({ control, name: 'products' });
+  const categoryTriggerRef = useRef<HTMLButtonElement>(null);
   const productsRef = useRef<TodaySpecialProductFormTypes[]>(products); // 이미지 preview 정리
 
   const currentProduct = products[currentIndex] ?? createInitialProductForm();
@@ -156,13 +169,28 @@ export const useTodaySpecialRegistrationForm = ({
       updateCurrentProductField(field, formatPriceInput(event.target.value));
     };
 
-  // Dropdown UI는 기존 위치에서 렌더링하고, OverlayKit에는 열린 상태만 등록
-  const openCategoryDropdown = () => {
-    overlay.open(() => null, { overlayId: categoryOverlayId });
-    setIsCategoryOpen(true);
+  // 선택한 카테고리를 현재 상품 form 값에 반영
+  const handleCategorySelect = useCallback(
+    (category: string) => {
+      setValue(`products.${currentIndex}.category`, category, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+    },
+    [currentIndex, setValue],
+  );
+
+  const getCategoryDropdownOverlayStyle = () => {
+    const triggerRect = categoryTriggerRef.current?.getBoundingClientRect();
+
+    return {
+      '--today-special-category-dropdown-left': `${triggerRect?.left ?? 0}px`,
+      '--today-special-category-dropdown-top': `${(triggerRect?.bottom ?? 0) + 8}px`,
+    } as CSSProperties;
   };
 
-  // OverlayKit에 등록한 카테고리 드롭다운 상태를 닫고 필요하면 category를 touched 처리
+  // OverlayKit에 등록한 카테고리 드롭다운을 닫고 필요하면 category를 touched 처리
   const closeCategoryDropdown = useCallback(
     (shouldTouchCategory = true) => {
       if (!isCategoryOpen) {
@@ -183,6 +211,42 @@ export const useTodaySpecialRegistrationForm = ({
     },
     [currentIndex, currentProduct.category, isCategoryOpen, setValue],
   );
+
+  // Trigger 위치 기준으로 OverlayKit에 실제 Dropdown UI를 렌더링
+  const openCategoryDropdown = () => {
+    setIsCategoryOpen(true);
+
+    overlay.open(
+      ({ close, unmount }) => (
+        <div
+          className={S.categoryDropdownOverlayClassName}
+          data-today-special-category-overlay
+          style={getCategoryDropdownOverlayStyle()}
+        >
+          <Dropdown className={S.categoryDropdownClassName} id={categoryDropdownId}>
+            {todaySpecialCategoryOptions.map((category) => (
+              <Dropdown.Item
+                checkbox={false}
+                className={S.categoryDropdownItemClassName}
+                color='primary'
+                key={category}
+                onClick={() => {
+                  handleCategorySelect(category);
+                  close();
+                  unmount();
+                  setIsCategoryOpen(false);
+                }}
+                selected={category === currentProduct.category}
+              >
+                {category}
+              </Dropdown.Item>
+            ))}
+          </Dropdown>
+        </div>
+      ),
+      { overlayId: categoryOverlayId },
+    );
+  };
 
   useEffect(() => {
     if (!isCategoryOpen) {
@@ -215,7 +279,7 @@ export const useTodaySpecialRegistrationForm = ({
     };
   }, [closeCategoryDropdown, isCategoryOpen]);
 
-  // Trigger 클릭시 OverlayKit open/close 호출과 로컬 렌더링 상태를 함께 토글
+  // Trigger 클릭시 OverlayKit Dropdown을 열거나 닫기
   const handleCategoryTriggerClick = () => {
     if (isCategoryOpen) {
       closeCategoryDropdown();
@@ -223,24 +287,6 @@ export const useTodaySpecialRegistrationForm = ({
     }
 
     openCategoryDropdown();
-  };
-
-  // 선택한 카테고리를 현재 상품 form 값에 반영
-  const handleCategorySelect = useCallback(
-    (category: string) => {
-      setValue(`products.${currentIndex}.category`, category, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      });
-    },
-    [currentIndex, setValue],
-  );
-
-  // 카테고리 선택 후 드롭다운 닫기
-  const handleCategoryDropdownSelect = (category: string) => {
-    handleCategorySelect(category);
-    closeCategoryDropdown(false);
   };
 
   // 이미지 파일을 검증하고 미리보기 object URL을 생성
@@ -307,8 +353,8 @@ export const useTodaySpecialRegistrationForm = ({
     handleFormSubmit: handleSubmit(onSubmit),
     productInfoSectionProps: {
       categoryDropdownId,
+      categoryTriggerRef,
       isCategoryOpen,
-      onCategorySelect: handleCategoryDropdownSelect,
       onCategoryTriggerClick: handleCategoryTriggerClick,
       onDescriptionBlur: handleDescriptionBlur,
       onDescriptionChange: handleDescriptionChange,

@@ -35,8 +35,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `hooks/useTodaySpecialRegistrationForm.tsx`
   - RHF form 상태, 여러 상품 draft 배열, 현재 draft index, category dropdown open 상태를 조율합니다.
   - form submit, 상품 추가/이전/다음/삭제, field change handler를 소유합니다.
-  - category dropdown은 기존 trigger 하단 DOM 위치에서 렌더링하고, OverlayKit은 open/close 등록에만 사용합니다.
-  - 실제 `Dropdown`, `Dropdown.Item` UI는 trigger 하단 기존 DOM 위치에서 조건부 렌더링합니다.
+  - category dropdown은 `overlay.open(({ close, unmount }) => <Dropdown />)` 형태로 OverlayKit에 렌더링합니다.
+  - trigger 위치를 기준으로 overlay dropdown 좌표를 계산합니다.
   - 외부 click과 Escape close 동작을 담당합니다.
 - `sections/RegistrationTitleSection.tsx`
   - title, `(현재/전체)` count, 이전/다음/삭제 icon button을 렌더링합니다.
