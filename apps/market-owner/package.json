@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@dongchimi/design-system": "workspace:*",
+    "@hookform/resolvers": "^5.4.0",
     "@sentry/react": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@vanilla-extract/css": "catalog:",
@@ -27,7 +28,9 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-error-boundary": "^6.1.2",
-    "react-router": "catalog:"
+    "react-hook-form": "^7.81.0",
+    "react-router": "catalog:",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@dongchimi/eslint-config": "workspace:*",

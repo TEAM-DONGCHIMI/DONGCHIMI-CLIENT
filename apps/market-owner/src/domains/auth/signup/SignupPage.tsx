@@ -2,9 +2,7 @@ import type { FormEventHandler } from 'react';
 
 import { Button, Flex, TextInput } from '@dongchimi/design-system/components';
 
-import { useSignupEmailField } from './hooks/use-signup-email-field';
-import { useSignupPasswordConfirmField } from './hooks/use-signup-password-confirm-field';
-import { useSignupPasswordField } from './hooks/use-signup-password-field';
+import { useSignupForm } from './hooks/use-signup-form';
 import * as S from './SignupPage.css';
 
 const preventSignupSubmit: FormEventHandler<HTMLFormElement> = (event) => {
@@ -12,9 +10,7 @@ const preventSignupSubmit: FormEventHandler<HTMLFormElement> = (event) => {
 };
 
 export const SignupPage = () => {
-  const emailField = useSignupEmailField();
-  const passwordField = useSignupPasswordField();
-  const passwordConfirmField = useSignupPasswordConfirmField(passwordField.password);
+  const signupForm = useSignupForm();
 
   return (
     <main className={S.pageClassName}>
@@ -34,33 +30,33 @@ export const SignupPage = () => {
             autoComplete='email'
             label='이메일'
             name='email'
-            onChange={emailField.handleEmailChange}
+            onChange={signupForm.handleEmailChange}
             placeholder='example@email.com'
             type='email'
-            value={emailField.email}
-            {...emailField.textInputStatusProps}
+            value={signupForm.email}
+            {...signupForm.emailStatusProps}
           />
 
           <TextInput
             autoComplete='new-password'
             label='비밀번호'
             name='password'
-            onChange={passwordField.handlePasswordChange}
+            onChange={signupForm.handlePasswordChange}
             placeholder='비밀번호 입력'
             type='password'
-            value={passwordField.password}
-            {...passwordField.textInputStatusProps}
+            value={signupForm.password}
+            {...signupForm.passwordStatusProps}
           />
 
           <TextInput
             autoComplete='new-password'
             label='비밀번호 확인'
             name='passwordConfirm'
-            onChange={passwordConfirmField.handlePasswordConfirmChange}
+            onChange={signupForm.handlePasswordConfirmChange}
             placeholder='비밀번호 확인'
             type='password'
-            value={passwordConfirmField.passwordConfirm}
-            {...passwordConfirmField.textInputStatusProps}
+            value={signupForm.passwordConfirm}
+            {...signupForm.passwordConfirmStatusProps}
           />
         </Flex>
 
