@@ -15,3 +15,5 @@ export { PaginationFooter } from './pagination-footer';
 export type { PaginationFooterProps } from './pagination-footer';
 export { UploadModal } from './upload-modal';
 export type { UploadModalProps } from './upload-modal';
+export { ProductSearchPanel } from './product-search-panel';
+export type { ProductSearchPanelItemTypes, ProductSearchPanelProps } from './product-search-panel';
