@@ -40,10 +40,10 @@ export const pageHeaderClassName = style({
   flexShrink: 0,
 });
 
-export const shareToastLayerClassName = style({
+export const homeToastLayerClassName = style({
   position: 'absolute',
   zIndex: 20,
-  top: '8rem',
+  top: '2rem',
   left: '50%',
   display: 'flex',
   maxWidth: 'calc(100% - 8rem)',
@@ -51,7 +51,7 @@ export const shareToastLayerClassName = style({
   transform: 'translateX(-50%)',
 });
 
-export const shareToastIconClassName = style({
+export const homeToastIconClassName = style({
   display: 'block',
   width: '2rem',
   height: '2rem',

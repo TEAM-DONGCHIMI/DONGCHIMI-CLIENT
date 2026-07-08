@@ -21,6 +21,7 @@ interface HomeHeroActionFixtureTypes {
 
 interface HomeSearchProductFixtureTypes extends ProductSearchPanelItemTypes {
   editRoute: MarketOwnerRouteTypes;
+  isProductInfoLoadable?: boolean;
 }
 
 const todaySpecialProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
@@ -42,6 +43,7 @@ export const homeSearchProducts: HomeSearchProductFixtureTypes[] = [
   {
     editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
     id: 'search-today-tofu',
+    isProductInfoLoadable: false,
     label: '오늘의 특가',
     name: '풀무원 두부 1팩',
     registeredAt: '2026-07-08T07:30:00.000Z',

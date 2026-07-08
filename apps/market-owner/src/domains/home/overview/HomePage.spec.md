@@ -125,8 +125,8 @@ HomePage(main)
 
 - loading: 검색 loading은 이번 범위에서 다루지 않습니다.
 - empty: fixture 기준 기본 상품 목록을 노출하고, 검색 결과가 없으면 검색 dropdown에 empty message를 표시합니다.
-- error: 알 수 없는 route는 router fallback에서 처리합니다. 상품 정보 load 실패는 `ProductSearchPanel`
-  error 상태로 표현할 수 있으나, 실제 API failure 연결은 후속 작업에서 처리합니다.
+- error: 알 수 없는 route는 router fallback에서 처리합니다. 검색 결과에서 상품을 선택했지만 상품 정보를
+  불러오지 못하면 상단 error toast로 `상품 정보를 불러오지 못했어요.`를 표시합니다.
 - disabled: QR 보기 실제 동작이 없으면 버튼 노출 정책을 구현 전 확정합니다.
 - selected / active: sidebar `홈` item은 현재 route에 `aria-current="page"`를 적용합니다.
 - hover/focus: 검색 입력의 focus-visible 상태를 유지합니다. 검색 결과 item hover 시 해당 item button에
@@ -139,7 +139,7 @@ HomePage(main)
 - fixture:
   - 오늘의 특가 상품 카드와 행사 할인 상품 카드에 들어갈 상품 목록
   - 각 카드의 `itemVariant`, `totalCount`, edit route
-  - 검색 dropdown에 사용할 상품명, 구분 label, 등록일, edit route
+  - 검색 dropdown에 사용할 상품명, 구분 label, 등록일, edit route, 상품 정보 load 가능 여부
   - hero quick action title, description, route
   - 전단 공유 링크와 공유 설명 copy
 - model: none
@@ -160,7 +160,9 @@ HomePage(main)
 - 검색 결과는 일치도 높은 순으로 표시하고, 동일한 일치도는 최신 등록순으로 표시합니다.
 - 검색 dropdown은 4개 기본 노출, 4개 초과 시 scroll 영역으로 전환하며 최대 10개까지만 렌더링합니다.
 - 검색 dropdown 외부 영역을 클릭하면 dropdown을 닫습니다.
-- 검색 결과 item을 클릭하면 해당 fixture의 edit route로 즉시 이동하고, route state에 `productId`를 전달합니다.
+- 검색 결과 item을 클릭하면 상품 정보 load 가능 여부를 확인합니다.
+- 상품 정보를 불러올 수 있으면 해당 fixture의 edit route로 즉시 이동하고, route state에 `productId`를 전달합니다.
+- 상품 정보를 불러오지 못하면 route 이동 없이 `상품 정보를 불러오지 못했어요.` error toast를 표시합니다.
 
 ## Accessibility
 
@@ -171,7 +173,8 @@ HomePage(main)
 - product cards: `ProductCard`의 section/list/button semantics를 유지합니다.
 - product actions: `등록한 상품 전체보기`는 native `button`으로 렌더링하고 accessible name을 제공합니다.
 - share actions: 링크 복사, QR 보기 액션은 native `button`으로 렌더링하고 accessible name을 제공합니다.
-- share toast: 링크 복사 성공 toast는 `role="status"`, 실패 toast는 `role="alert"`로 노출합니다.
+- toast: 링크 복사 성공 toast는 `role="status"`, 링크 복사 실패와 상품 정보 load 실패 toast는
+  `role="alert"`로 노출합니다.
 - keyboard: 검색 입력, 상품 row button, 공유 action button은 keyboard focus와 activation을 지원합니다.
 - focus: focus-visible 스타일을 제거하지 않습니다.
 - current state: sidebar `홈` item은 현재 route에 `aria-current="page"`를 적용합니다.
@@ -220,6 +223,7 @@ HomePage(main)
 - [x] search dropdown opens after one or more characters
 - [x] search dropdown closes on outside click
 - [x] search result click navigates to product edit route
+- [x] search result product load failure shows error toast
 - [x] `git diff --check`
 - [x] `pnpm --filter market-owner lint`
 - [x] `pnpm --filter market-owner typecheck`

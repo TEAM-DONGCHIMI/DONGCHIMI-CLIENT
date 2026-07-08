@@ -126,6 +126,33 @@ describe('marketOwnerRoutes', () => {
     );
   });
 
+  it('navigates a loaded search result to the product edit page', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '콩나물 100g');
+    await user.click(screen.getByRole('button', { name: /풀무원 콩나물 100g/ }));
+
+    expect(
+      await screen.findByRole('heading', { name: '오늘의 특가 상품 수정' }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows an error toast when selected search product info cannot be loaded', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '두부 1팩');
+    await user.click(screen.getByRole('button', { name: /풀무원 두부 1팩/ }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('상품 정보를 불러오지 못했어요.');
+    expect(screen.getByRole('heading', { name: '동치미 홈' })).toBeInTheDocument();
+  });
+
   it.each([
     ['오늘의 특가 상품 등록하기', '오늘의 특가 상품 등록'],
     ['행사 할인 상품 등록하기', '등록한 파일을 확인해주세요'],

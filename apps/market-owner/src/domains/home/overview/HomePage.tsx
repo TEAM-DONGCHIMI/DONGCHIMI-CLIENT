@@ -15,11 +15,12 @@ import { homeHeroActions, homeProductSections, homeSearchProducts, homeShare } f
 import * as S from './HomePage.css';
 
 const TODAY_SPECIAL_VISIBLE_COUNT = 4;
-const SHARE_TOAST_DISMISS_MS = 2500;
+const HOME_TOAST_DISMISS_MS = 2500;
 const SHARE_COPY_SUCCESS_MESSAGE = '전단 링크가 복사되었습니다.';
 const SHARE_COPY_ERROR_MESSAGE = '링크를 복사하지 못했습니다. 다시 시도해주세요.';
+const SEARCH_PRODUCT_LOAD_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요.';
 
-interface ShareToastTypes {
+interface HomeToastTypes {
   id: number;
   message: string;
   status: 'completed' | 'error';
@@ -43,15 +44,19 @@ const getSearchProductById = (productId: string) => {
   return homeSearchProducts.find((product) => product.id === productId);
 };
 
-const getShareToastIcon = (status: ShareToastTypes['status']) => {
+const getHomeToastIcon = (status: HomeToastTypes['status']) => {
   if (status === 'error') {
-    return <IcCircleExclamationFillColor0 className={S.shareToastIconClassName} />;
+    return <IcCircleExclamationFillColor0 className={S.homeToastIconClassName} />;
   }
 
-  return <IcCircleCheckFillSizeSmall className={S.shareToastIconClassName} />;
+  return <IcCircleCheckFillSizeSmall className={S.homeToastIconClassName} />;
 };
 
-const HomeSearchPanel = () => {
+interface HomeSearchPanelProps {
+  onProductLoadError: () => void;
+}
+
+const HomeSearchPanel = ({ onProductLoadError }: HomeSearchPanelProps) => {
   const navigate = useNavigate();
 
   return (
@@ -60,7 +65,9 @@ const HomeSearchPanel = () => {
       onSelectProduct={(item) => {
         const selectedProduct = getSearchProductById(item.id);
 
-        if (!selectedProduct) {
+        if (!selectedProduct || selectedProduct.isProductInfoLoadable === false) {
+          onProductLoadError();
+
           return;
         }
 
@@ -169,48 +176,56 @@ const HomeDashboardSection = ({ onCopyLinkResult }: HomeDashboardSectionProps) =
 };
 
 export const HomePage = () => {
-  const [shareToast, setShareToast] = useState<ShareToastTypes | null>(null);
+  const [homeToast, setHomeToast] = useState<HomeToastTypes | null>(null);
 
   useEffect(() => {
-    if (shareToast == null) {
+    if (homeToast == null) {
       return;
     }
 
     const timeoutId = window.setTimeout(() => {
-      setShareToast(null);
-    }, SHARE_TOAST_DISMISS_MS);
+      setHomeToast(null);
+    }, HOME_TOAST_DISMISS_MS);
 
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [shareToast]);
+  }, [homeToast]);
 
   const handleCopyLinkResult = (isCopied: boolean) => {
-    setShareToast({
+    setHomeToast({
       id: Date.now(),
       message: isCopied ? SHARE_COPY_SUCCESS_MESSAGE : SHARE_COPY_ERROR_MESSAGE,
       status: isCopied ? 'completed' : 'error',
     });
   };
 
+  const handleProductLoadError = () => {
+    setHomeToast({
+      id: Date.now(),
+      message: SEARCH_PRODUCT_LOAD_ERROR_MESSAGE,
+      status: 'error',
+    });
+  };
+
   return (
     <main className={S.pageRootClassName}>
       <h1 className={S.visuallyHiddenHeadingClassName}>동치미 홈</h1>
-      {shareToast && (
-        <div className={S.shareToastLayerClassName}>
+      {homeToast && (
+        <div className={S.homeToastLayerClassName}>
           <Toast
-            key={shareToast.id}
-            icon={getShareToastIcon(shareToast.status)}
-            status={shareToast.status}
+            key={homeToast.id}
+            icon={getHomeToastIcon(homeToast.status)}
+            status={homeToast.status}
           >
-            {shareToast.message}
+            {homeToast.message}
           </Toast>
         </div>
       )}
       <DesktopHeader
         className={S.pageHeaderClassName}
         homeLabel='동치미 홈'
-        searchSlot={<HomeSearchPanel />}
+        searchSlot={<HomeSearchPanel onProductLoadError={handleProductLoadError} />}
         showSearchBar
         variant='onlyHome'
       />
