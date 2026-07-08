@@ -1,5 +1,6 @@
 import { RouterProvider, createMemoryRouter } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen } from '../test';
 import { marketOwnerRoutes } from './router';
@@ -10,6 +11,15 @@ const renderRoute = (path: string) => {
   });
 
   return render(<RouterProvider router={router} />);
+};
+
+const mockClipboardWriteText = (writeText: (text: string) => Promise<void>) => {
+  Object.defineProperty(navigator, 'clipboard', {
+    configurable: true,
+    value: {
+      writeText,
+    },
+  });
 };
 
 describe('marketOwnerRoutes', () => {
@@ -23,10 +33,112 @@ describe('marketOwnerRoutes', () => {
   it('renders protected work routes with the sidebar layout', async () => {
     renderRoute('/');
 
-    expect(await screen.findByRole('heading', { name: '홈' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '동치미 홈' })).toBeInTheDocument();
     expect(screen.getByRole('complementary')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '홈' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('search', { name: '상품 검색' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /오늘의 특가 상품 등록하기/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /행사 할인 상품 등록하기/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /상품 수정하러 가기/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '오늘의 특가 상품' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '행사 할인 상품' })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: '등록한 상품 전체보기' })).toHaveLength(2);
+    expect(screen.getByRole('heading', { name: '전단 공유하기' })).toBeInTheDocument();
+    expect(screen.getByText('dongchimi.kr/mangwon-fresh')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '링크 복사' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '매장 고유 QR코드 보기' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '오늘의 전단 공유' })).not.toBeInTheDocument();
+  });
+
+  it('navigates the today-special summary action to the edit page', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.click(screen.getAllByRole('button', { name: '등록한 상품 전체보기' })[0]);
+
+    expect(
+      await screen.findByRole('heading', { name: '오늘의 특가 상품 수정' }),
+    ).toBeInTheDocument();
+  });
+
+  it('navigates a today-special product row to the edit page', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.click(screen.getAllByRole('button', { name: '상품 보기: 풀무원 콩나물 500g' })[0]);
+
+    expect(
+      await screen.findByRole('heading', { name: '오늘의 특가 상품 수정' }),
+    ).toBeInTheDocument();
+  });
+
+  it('navigates the event-discount summary action to the edit page', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.click(screen.getAllByRole('button', { name: '등록한 상품 전체보기' })[1]);
+
+    expect(await screen.findByRole('heading', { name: '행사 할인 상품 수정' })).toBeInTheDocument();
+  });
+
+  it('navigates an event-discount product row to the edit page', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.click(screen.getByRole('button', { name: '1위 상품 보기: 풀무원 콩나물 500g' }));
+
+    expect(await screen.findByRole('heading', { name: '행사 할인 상품 수정' })).toBeInTheDocument();
+  });
+
+  it('shows a completed toast when leaflet link copy succeeds', async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+
+    mockClipboardWriteText(writeText);
+    renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.click(screen.getByRole('button', { name: '링크 복사' }));
+
+    expect(writeText).toHaveBeenCalledWith('dongchimi.kr/mangwon-fresh');
+    expect(await screen.findByRole('status')).toHaveTextContent('전단 링크가 복사되었습니다.');
+  });
+
+  it('shows an error toast when leaflet link copy fails', async () => {
+    const user = userEvent.setup();
+
+    mockClipboardWriteText(vi.fn().mockRejectedValue(new Error('copy failed')));
+    renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.click(screen.getByRole('button', { name: '링크 복사' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '링크를 복사하지 못했습니다. 다시 시도해주세요.',
+    );
+  });
+
+  it.each([
+    ['오늘의 특가 상품 등록하기', '오늘의 특가 상품 등록'],
+    ['행사 할인 상품 등록하기', '등록한 파일을 확인해주세요'],
+    ['상품 수정하러 가기', '오늘의 특가 상품 수정'],
+  ])('navigates the %s hero action to its work page', async (buttonName, headingName) => {
+    const user = userEvent.setup();
+
+    renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.click(screen.getByRole('button', { name: new RegExp(buttonName) }));
+
+    expect(await screen.findByRole('heading', { name: headingName })).toBeInTheDocument();
   });
 
   it('keeps the registration result route outside the sidebar layout', async () => {
