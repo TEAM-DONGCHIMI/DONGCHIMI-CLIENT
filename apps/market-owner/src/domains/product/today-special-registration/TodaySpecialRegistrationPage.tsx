@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ChangeEvent, useEffect, useRef, useState } from 'react';
-import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { type ChangeEvent, type FocusEvent, useEffect, useRef, useState } from 'react';
+import { type FieldError, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
 import { Button } from '@dongchimi/design-system/components';
@@ -13,11 +13,14 @@ import {
   createEmptyTodaySpecialProductForm,
   formatPriceInput,
   isValidTodaySpecialImageFile,
+  limitProductDescriptionInput,
+  limitProductNameInput,
   resolveEndDateAfterStartDateChange,
   revokePreviewUrl,
   sanitizeProductDescription,
   sanitizeProductName,
   todaySpecialRegistrationFormSchema,
+  type TodaySpecialProductErrorMessageTypes,
   type TodaySpecialProductForm,
   type TodaySpecialProductTextFieldTypes,
   type TodaySpecialRegistrationForm,
@@ -39,7 +42,7 @@ export const TodaySpecialRegistrationPage = () => {
   const navigate = useNavigate();
   const {
     control,
-    formState: { isValid },
+    formState: { errors, isSubmitted, isValid, touchedFields },
     handleSubmit,
     setValue,
   } = useForm<TodaySpecialRegistrationForm>({
@@ -59,6 +62,8 @@ export const TodaySpecialRegistrationPage = () => {
   const productsRef = useRef<TodaySpecialProductForm[]>(products); // 이미지 preview 정리
 
   const currentProduct = products[currentIndex] ?? createInitialProductForm();
+  const currentProductErrors = errors.products?.[currentIndex];
+  const currentProductTouchedFields = touchedFields.products?.[currentIndex];
   const isSubmitDisabled = products.length === 0 || !isValid;
 
   // 이미지 변경시 초기화
@@ -74,11 +79,35 @@ export const TodaySpecialRegistrationPage = () => {
     };
   }, []);
 
-  const updateCurrentProductField = (field: TodaySpecialProductTextFieldTypes, value: string) => {
+  const updateCurrentProductField = (
+    field: TodaySpecialProductTextFieldTypes,
+    value: string,
+    options?: {
+      shouldTouch?: boolean;
+    },
+  ) => {
     setValue(`products.${currentIndex}.${field}` as TodaySpecialProductTextFieldPathTypes, value, {
       shouldDirty: true,
+      shouldTouch: options?.shouldTouch,
       shouldValidate: true,
     });
+  };
+
+  const getVisibleErrorMessage = (field: keyof TodaySpecialProductForm) => {
+    const error = currentProductErrors?.[field] as FieldError | undefined;
+    const isTouched = currentProductTouchedFields?.[field];
+
+    return isSubmitted || isTouched ? error?.message : undefined;
+  };
+
+  const currentProductErrorMessages: TodaySpecialProductErrorMessageTypes = {
+    category: getVisibleErrorMessage('category'),
+    description: getVisibleErrorMessage('description'),
+    endDate: getVisibleErrorMessage('endDate'),
+    name: getVisibleErrorMessage('name'),
+    salePrice: getVisibleErrorMessage('salePrice'),
+    specialPrice: getVisibleErrorMessage('specialPrice'),
+    startDate: getVisibleErrorMessage('startDate'),
   };
 
   const handleFieldChange =
@@ -87,11 +116,28 @@ export const TodaySpecialRegistrationPage = () => {
     };
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    updateCurrentProductField('name', sanitizeProductName(event.target.value));
+    updateCurrentProductField('name', limitProductNameInput(event.target.value));
   };
 
   const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
-    updateCurrentProductField('description', sanitizeProductDescription(event.target.value));
+    updateCurrentProductField('description', limitProductDescriptionInput(event.target.value));
+  };
+
+  const handleFieldBlur =
+    (field: TodaySpecialProductTextFieldTypes) => (event: FocusEvent<HTMLInputElement>) => {
+      updateCurrentProductField(field, event.target.value, { shouldTouch: true });
+    };
+
+  const handleNameBlur = (event: FocusEvent<HTMLInputElement>) => {
+    updateCurrentProductField('name', sanitizeProductName(event.target.value), {
+      shouldTouch: true,
+    });
+  };
+
+  const handleDescriptionBlur = (event: FocusEvent<HTMLInputElement>) => {
+    updateCurrentProductField('description', sanitizeProductDescription(event.target.value), {
+      shouldTouch: true,
+    });
   };
 
   const handlePriceChange =
@@ -99,6 +145,18 @@ export const TodaySpecialRegistrationPage = () => {
     (event: ChangeEvent<HTMLInputElement>) => {
       updateCurrentProductField(field, formatPriceInput(event.target.value));
     };
+
+  const handleCategoryOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setValue(`products.${currentIndex}.category`, currentProduct.category, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+    }
+
+    setIsCategoryOpen(isOpen);
+  };
 
   const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
     const startDate = event.target.value;
@@ -144,6 +202,7 @@ export const TodaySpecialRegistrationPage = () => {
   const handleCategorySelect = (category: string) => {
     setValue(`products.${currentIndex}.category`, category, {
       shouldDirty: true,
+      shouldTouch: true,
       shouldValidate: true,
     });
     setIsCategoryOpen(false);
@@ -201,22 +260,31 @@ export const TodaySpecialRegistrationPage = () => {
           <div className={S.fieldSectionsClassName}>
             <ProductInfoSection
               isCategoryOpen={isCategoryOpen}
-              onCategoryOpenChange={setIsCategoryOpen}
+              onCategoryOpenChange={handleCategoryOpenChange}
               onCategorySelect={handleCategorySelect}
+              onDescriptionBlur={handleDescriptionBlur}
               onDescriptionChange={handleDescriptionChange}
               onImageChange={handleImageChange}
+              onNameBlur={handleNameBlur}
               onNameChange={handleNameChange}
               product={currentProduct}
+              productErrorMessages={currentProductErrorMessages}
             />
             <ProductPriceSection
+              onSalePriceBlur={handleFieldBlur('salePrice')}
               onSalePriceChange={handlePriceChange('salePrice')}
+              onSpecialPriceBlur={handleFieldBlur('specialPrice')}
               onSpecialPriceChange={handlePriceChange('specialPrice')}
               product={currentProduct}
+              productErrorMessages={currentProductErrorMessages}
             />
             <ProductPeriodSection
+              onEndDateBlur={handleFieldBlur('endDate')}
               onEndDateChange={handleFieldChange('endDate')}
+              onStartDateBlur={handleFieldBlur('startDate')}
               onStartDateChange={handleStartDateChange}
               product={currentProduct}
+              productErrorMessages={currentProductErrorMessages}
             />
           </div>
 

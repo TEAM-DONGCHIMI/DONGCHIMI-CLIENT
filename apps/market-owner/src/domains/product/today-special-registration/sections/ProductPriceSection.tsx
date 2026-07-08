@@ -1,21 +1,30 @@
-import type { ChangeEventHandler } from 'react';
+import type { ChangeEventHandler, FocusEventHandler } from 'react';
 
 import { InlineField } from '@dongchimi/design-system/components';
 
-import type { TodaySpecialProductForm } from '../model';
+import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductForm } from '../model';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface ProductPriceSectionProps {
+  onSalePriceBlur: FocusEventHandler<HTMLInputElement>;
   onSalePriceChange: ChangeEventHandler<HTMLInputElement>;
+  onSpecialPriceBlur: FocusEventHandler<HTMLInputElement>;
   onSpecialPriceChange: ChangeEventHandler<HTMLInputElement>;
   product: TodaySpecialProductForm;
+  productErrorMessages: TodaySpecialProductErrorMessageTypes;
 }
 
 export const ProductPriceSection = ({
+  onSalePriceBlur,
   onSalePriceChange,
+  onSpecialPriceBlur,
   onSpecialPriceChange,
   product,
+  productErrorMessages,
 }: ProductPriceSectionProps) => {
+  const specialPriceErrorId = 'today-special-special-price-error';
+  const salePriceErrorId = 'today-special-sale-price-error';
+
   return (
     <section className={S.fieldSectionClassName} aria-labelledby='product-price-title'>
       <h2 className={S.sectionTitleClassName} id='product-price-title'>
@@ -30,13 +39,21 @@ export const ProductPriceSection = ({
             </label>
             <InlineField
               aria-label='오늘의 특가'
+              aria-describedby={productErrorMessages.specialPrice ? specialPriceErrorId : undefined}
               id='today-special-special-price'
               inputMode='numeric'
+              onBlur={onSpecialPriceBlur}
               onChange={onSpecialPriceChange}
               placeholder='오늘의 특가를 입력하세요.'
+              status={productErrorMessages.specialPrice ? 'error' : 'default'}
               unit='원'
               value={product.specialPrice}
             />
+            {productErrorMessages.specialPrice && (
+              <p className={S.fieldErrorMessageClassName} id={specialPriceErrorId}>
+                {productErrorMessages.specialPrice}
+              </p>
+            )}
           </div>
 
           <div className={S.fieldGroupClassName}>
@@ -45,13 +62,21 @@ export const ProductPriceSection = ({
             </label>
             <InlineField
               aria-label='판매가'
+              aria-describedby={productErrorMessages.salePrice ? salePriceErrorId : undefined}
               id='today-special-sale-price'
               inputMode='numeric'
+              onBlur={onSalePriceBlur}
               onChange={onSalePriceChange}
               placeholder='판매가를 입력하세요.'
+              status={productErrorMessages.salePrice ? 'error' : 'default'}
               unit='원'
               value={product.salePrice}
             />
+            {productErrorMessages.salePrice && (
+              <p className={S.fieldErrorMessageClassName} id={salePriceErrorId}>
+                {productErrorMessages.salePrice}
+              </p>
+            )}
           </div>
         </div>
       </div>

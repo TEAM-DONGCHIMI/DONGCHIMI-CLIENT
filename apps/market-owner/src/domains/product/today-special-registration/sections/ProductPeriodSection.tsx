@@ -1,20 +1,29 @@
-import type { ChangeEventHandler } from 'react';
+import type { ChangeEventHandler, FocusEventHandler } from 'react';
 
 import { DateField } from '../components/DateField';
-import type { TodaySpecialProductForm } from '../model';
+import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductForm } from '../model';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface ProductPeriodSectionProps {
+  onEndDateBlur: FocusEventHandler<HTMLInputElement>;
   onEndDateChange: ChangeEventHandler<HTMLInputElement>;
+  onStartDateBlur: FocusEventHandler<HTMLInputElement>;
   onStartDateChange: ChangeEventHandler<HTMLInputElement>;
   product: TodaySpecialProductForm;
+  productErrorMessages: TodaySpecialProductErrorMessageTypes;
 }
 
 export const ProductPeriodSection = ({
+  onEndDateBlur,
   onEndDateChange,
+  onStartDateBlur,
   onStartDateChange,
   product,
+  productErrorMessages,
 }: ProductPeriodSectionProps) => {
+  const startDateErrorId = 'today-special-start-date-error';
+  const endDateErrorId = 'today-special-end-date-error';
+
   return (
     <section className={S.fieldSectionClassName} aria-labelledby='period-title'>
       <h2 className={S.sectionTitleClassName} id='period-title'>
@@ -25,20 +34,40 @@ export const ProductPeriodSection = ({
         <div className={S.fieldGroupClassName}>
           <span className={S.fieldLabelClassName}>행사 기간</span>
           <div className={S.dateRowClassName}>
-            <DateField
-              ariaLabel='행사 시작일'
-              onChange={onStartDateChange}
-              value={product.startDate}
-            />
+            <div className={S.dateFieldGroupClassName}>
+              <DateField
+                ariaLabel='행사 시작일'
+                describedBy={productErrorMessages.startDate ? startDateErrorId : undefined}
+                hasError={Boolean(productErrorMessages.startDate)}
+                onBlur={onStartDateBlur}
+                onChange={onStartDateChange}
+                value={product.startDate}
+              />
+              {productErrorMessages.startDate && (
+                <p className={S.fieldErrorMessageClassName} id={startDateErrorId}>
+                  {productErrorMessages.startDate}
+                </p>
+              )}
+            </div>
             <span className={S.dateSeparatorClassName} aria-hidden='true'>
               ~
             </span>
-            <DateField
-              ariaLabel='행사 종료일'
-              min={product.startDate || undefined}
-              onChange={onEndDateChange}
-              value={product.endDate}
-            />
+            <div className={S.dateFieldGroupClassName}>
+              <DateField
+                ariaLabel='행사 종료일'
+                describedBy={productErrorMessages.endDate ? endDateErrorId : undefined}
+                hasError={Boolean(productErrorMessages.endDate)}
+                min={product.startDate || undefined}
+                onBlur={onEndDateBlur}
+                onChange={onEndDateChange}
+                value={product.endDate}
+              />
+              {productErrorMessages.endDate && (
+                <p className={S.fieldErrorMessageClassName} id={endDateErrorId}>
+                  {productErrorMessages.endDate}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

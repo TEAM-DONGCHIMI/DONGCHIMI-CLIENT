@@ -229,6 +229,12 @@ export const fieldGroupClassName = style({
   minWidth: 0,
 });
 
+export const fieldErrorMessageClassName = style({
+  ...typography['caption-1-medium'],
+  margin: 0,
+  color: semantic.status.negative,
+});
+
 export const categoryWrapperClassName = style({
   position: 'relative',
   minWidth: '13.4rem',
@@ -269,6 +275,21 @@ export const categoryPlaceholderClassName = style({
   color: atomic.neutral[60],
 });
 
+export const categoryTriggerErrorClassName = style({
+  borderColor: semantic.status.negativeLight,
+  selectors: {
+    '&:hover': {
+      borderColor: semantic.status.negativeLight,
+    },
+    '&[aria-expanded="true"]': {
+      borderColor: semantic.status.negativeLight,
+    },
+    '&:focus-visible': {
+      borderColor: semantic.status.negativeLight,
+    },
+  },
+});
+
 export const categoryDropdownClassName = style({
   position: 'absolute',
   zIndex: 1,
@@ -285,8 +306,15 @@ export const dateRowClassName = style({
   display: 'grid',
   gridTemplateColumns: '1fr 1.6rem 1fr',
   gap: '1.4rem',
-  alignItems: 'center',
+  alignItems: 'start',
   width: '100%',
+});
+
+export const dateFieldGroupClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.8rem',
+  minWidth: 0,
 });
 
 export const datePickerFieldClassName = style({
@@ -311,6 +339,18 @@ export const datePickerFieldClassName = style({
     },
     '&:focus-within': {
       borderColor: atomic.neutral[80],
+    },
+  },
+});
+
+export const datePickerFieldErrorClassName = style({
+  borderColor: semantic.status.negativeLight,
+  selectors: {
+    '&:hover': {
+      borderColor: semantic.status.negativeLight,
+    },
+    '&:focus-within': {
+      borderColor: semantic.status.negativeLight,
     },
   },
 });

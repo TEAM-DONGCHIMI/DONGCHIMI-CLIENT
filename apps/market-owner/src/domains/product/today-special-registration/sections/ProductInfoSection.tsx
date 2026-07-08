@@ -1,34 +1,43 @@
-import { useEffect, useId, useRef, type ChangeEventHandler } from 'react';
+import { useEffect, useId, useRef, type ChangeEventHandler, type FocusEventHandler } from 'react';
 
 import { Dropdown, InlineField } from '@dongchimi/design-system/components';
 import { cn } from '@dongchimi/design-system/styles';
 import { IcCamera, IcChevronDown, IcChevronUp, IcPlus } from '@dongchimi/design-system/icons';
 
 import { todaySpecialCategoryOptions } from '../fixtures';
-import type { TodaySpecialProductForm } from '../model';
+import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductForm } from '../model';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface ProductInfoSectionProps {
   isCategoryOpen: boolean;
   onCategoryOpenChange: (isOpen: boolean) => void;
   onCategorySelect: (category: string) => void;
+  onDescriptionBlur: FocusEventHandler<HTMLInputElement>;
   onDescriptionChange: ChangeEventHandler<HTMLInputElement>;
   onImageChange: ChangeEventHandler<HTMLInputElement>;
+  onNameBlur: FocusEventHandler<HTMLInputElement>;
   onNameChange: ChangeEventHandler<HTMLInputElement>;
   product: TodaySpecialProductForm;
+  productErrorMessages: TodaySpecialProductErrorMessageTypes;
 }
 
 export const ProductInfoSection = ({
   isCategoryOpen,
   onCategoryOpenChange,
   onCategorySelect,
+  onDescriptionBlur,
   onDescriptionChange,
   onImageChange,
+  onNameBlur,
   onNameChange,
   product,
+  productErrorMessages,
 }: ProductInfoSectionProps) => {
   const categoryWrapperRef = useRef<HTMLDivElement>(null);
   const categoryDropdownId = useId();
+  const nameErrorId = 'today-special-product-name-error';
+  const categoryErrorId = 'today-special-product-category-error';
+  const descriptionErrorId = 'today-special-product-description-error';
 
   useEffect(() => {
     if (!isCategoryOpen) {
@@ -120,20 +129,32 @@ export const ProductInfoSection = ({
             </label>
             <InlineField
               aria-label='상품명'
+              aria-describedby={productErrorMessages.name ? nameErrorId : undefined}
               id='today-special-product-name'
+              onBlur={onNameBlur}
               onChange={onNameChange}
               placeholder='상품명을 입력하세요.'
+              status={productErrorMessages.name ? 'error' : 'default'}
               value={product.name}
             />
+            {productErrorMessages.name && (
+              <p className={S.fieldErrorMessageClassName} id={nameErrorId}>
+                {productErrorMessages.name}
+              </p>
+            )}
           </div>
 
           <div className={S.fieldGroupClassName}>
             <span className={S.fieldLabelClassName}>상품 구분</span>
             <div className={S.categoryWrapperClassName} ref={categoryWrapperRef}>
               <button
+                aria-describedby={productErrorMessages.category ? categoryErrorId : undefined}
                 aria-controls={isCategoryOpen ? categoryDropdownId : undefined}
                 aria-expanded={isCategoryOpen}
-                className={S.categoryTriggerClassName}
+                className={cn(
+                  S.categoryTriggerClassName,
+                  productErrorMessages.category && S.categoryTriggerErrorClassName,
+                )}
                 onClick={() => onCategoryOpenChange(!isCategoryOpen)}
                 type='button'
               >
@@ -163,20 +184,33 @@ export const ProductInfoSection = ({
                 </Dropdown>
               )}
             </div>
+            {productErrorMessages.category && (
+              <p className={S.fieldErrorMessageClassName} id={categoryErrorId}>
+                {productErrorMessages.category}
+              </p>
+            )}
           </div>
         </div>
 
         <div className={S.fieldGroupClassName}>
           <label className={S.fieldLabelClassName} htmlFor='today-special-product-description'>
-            상품 한줄 홍보글
+            상품 한줄 홍보문구
           </label>
           <InlineField
-            aria-label='상품 한줄 홍보글'
+            aria-label='상품 한줄 홍보문구'
+            aria-describedby={productErrorMessages.description ? descriptionErrorId : undefined}
             id='today-special-product-description'
+            onBlur={onDescriptionBlur}
             onChange={onDescriptionChange}
             placeholder='홍보문구를 입력하세요.'
+            status={productErrorMessages.description ? 'error' : 'default'}
             value={product.description}
           />
+          {productErrorMessages.description && (
+            <p className={S.fieldErrorMessageClassName} id={descriptionErrorId}>
+              {productErrorMessages.description}
+            </p>
+          )}
         </div>
       </div>
     </section>
