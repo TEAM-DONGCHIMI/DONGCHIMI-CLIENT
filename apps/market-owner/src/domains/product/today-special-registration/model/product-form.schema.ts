@@ -1,37 +1,69 @@
 import { z } from 'zod';
 
-import { parsePriceInput, todaySpecialProductNameMaxLength } from './product-form.utils';
+import {
+  parsePriceInput,
+  todaySpecialProductDescriptionMaxLength,
+  todaySpecialProductNameMaxLength,
+} from './product-form.utils';
 
 // 필수 text 값
-const requiredTextSchema = z.string().trim().min(1);
+const requiredTextSchema = (message: string) => z.string().trim().min(1, { message });
 
 // 가격은 콤마 포함 string 값을 숫자로 해석해서 검증
-const priceInputSchema = requiredTextSchema.refine((value) => parsePriceInput(value) >= 1);
+const createPriceInputSchema = (requiredMessage: string) =>
+  requiredTextSchema(requiredMessage)
+    .refine((value) => /^[\d,]+$/.test(value), {
+      message: '숫자만 입력할 수 있습니다.',
+    })
+    .refine((value) => parsePriceInput(value) >= 1, {
+      message: '1원 이상 입력해주세요.',
+    });
 
-// date input 값은 YYYY-MM-DD ISO date string
-const dateInputSchema = z.iso.date();
+// 상품명 필수, 15자 제한
+const productNameSchema = requiredTextSchema('상품명을 입력해주세요.').max(
+  todaySpecialProductNameMaxLength,
+  {
+    message: '상품명은 공백 포함 15자 이하로 입력해주세요.',
+  },
+);
+
+// 홍보문구 선택 입력, 25자 제한
+const productDescriptionSchema = z.string().trim().max(todaySpecialProductDescriptionMaxLength, {
+  message: '홍보문구는 공백 포함 25자 이하로 입력해주세요.',
+});
 
 // 상품 1개의 제출 가능 여부 검증
 export const todaySpecialProductFormSchema = z
   .object({
-    category: requiredTextSchema,
-    description: z.string(),
-    endDate: dateInputSchema,
+    category: requiredTextSchema('카테고리를 선택해주세요.'),
+    description: productDescriptionSchema,
+    endDate: z.iso.date('행사 종료일을 선택해주세요.'),
     imageFile: z.file().nullable(),
     imagePreviewUrl: z.string().nullable(),
-    name: requiredTextSchema.max(todaySpecialProductNameMaxLength),
-    salePrice: priceInputSchema,
-    specialPrice: priceInputSchema,
-    startDate: dateInputSchema,
+    name: productNameSchema,
+    salePrice: createPriceInputSchema('판매가를 입력해주세요.'),
+    specialPrice: createPriceInputSchema('오늘의 특가를 입력해주세요.'),
+    startDate: z.iso.date('행사 시작일을 선택해주세요.'),
   })
-  .refine(
-    (product) => parsePriceInput(product.salePrice) >= parsePriceInput(product.specialPrice),
-    {
-      path: ['salePrice'],
-    },
-  )
-  .refine((product) => product.endDate >= product.startDate, {
-    path: ['endDate'],
+  .superRefine((product, context) => {
+    const salePrice = parsePriceInput(product.salePrice);
+    const specialPrice = parsePriceInput(product.specialPrice);
+
+    if (salePrice >= 1 && specialPrice >= 1 && salePrice < specialPrice) {
+      context.addIssue({
+        code: 'custom',
+        message: '판매가는 오늘의 특가 이상으로 입력해주세요.',
+        path: ['salePrice'],
+      });
+    }
+
+    if (product.startDate && product.endDate && product.endDate < product.startDate) {
+      context.addIssue({
+        code: 'custom',
+        message: '행사 종료일은 시작일 이후로 선택해주세요.',
+        path: ['endDate'],
+      });
+    }
   });
 
 // 오늘의 특가 상품 등록 전체 form 검증

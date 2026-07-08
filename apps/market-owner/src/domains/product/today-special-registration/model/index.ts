@@ -3,6 +3,8 @@ export {
   createEmptyTodaySpecialProductForm,
   formatPriceInput,
   isValidTodaySpecialImageFile,
+  limitProductDescriptionInput,
+  limitProductNameInput,
   resolveEndDateAfterStartDateChange,
   revokePreviewUrl,
   sanitizeProductDescription,
@@ -10,6 +12,7 @@ export {
 } from './product-form.utils';
 export { todaySpecialRegistrationFormSchema } from './product-form.schema';
 export type {
+  TodaySpecialProductErrorMessageTypes,
   TodaySpecialProductForm,
   TodaySpecialProductTextFieldTypes,
   TodaySpecialRegistrationForm,

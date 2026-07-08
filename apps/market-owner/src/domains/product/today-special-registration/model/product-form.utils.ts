@@ -21,14 +21,24 @@ export const createEmptyTodaySpecialProductForm = (): TodaySpecialProductForm =>
   startDate: '',
 });
 
-// 상품명 앞뒤 공백 제거, 15자 제한
-export const sanitizeProductName = (value: string) => {
-  return value.trim().slice(0, todaySpecialProductNameMaxLength);
+// 상품명 입력 중 15자 제한
+export const limitProductNameInput = (value: string) => {
+  return value.slice(0, todaySpecialProductNameMaxLength);
 };
 
-// 홍보문구 앞뒤 공백 제거, 25자 제한
+// 홍보문구 입력 중 25자 제한
+export const limitProductDescriptionInput = (value: string) => {
+  return value.slice(0, todaySpecialProductDescriptionMaxLength);
+};
+
+// 상품명 앞뒤 공백 제거
+export const sanitizeProductName = (value: string) => {
+  return limitProductNameInput(value.trim());
+};
+
+// 홍보문구 앞뒤 공백 제거
 export const sanitizeProductDescription = (value: string) => {
-  return value.trim().slice(0, todaySpecialProductDescriptionMaxLength);
+  return limitProductDescriptionInput(value.trim());
 };
 
 // 숫자만 남기고, 1,000 단위로 콤마 추가

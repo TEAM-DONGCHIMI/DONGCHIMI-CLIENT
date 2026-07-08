@@ -11,6 +11,11 @@ export interface TodaySpecialProductForm {
   startDate: string;
 }
 
+// 필드별 error message
+export type TodaySpecialProductErrorMessageTypes = Partial<
+  Record<keyof TodaySpecialProductForm, string>
+>;
+
 // input으로 직접 변경하는 text field
 export type TodaySpecialProductTextFieldTypes = keyof Pick<
   TodaySpecialProductForm,
