@@ -5,9 +5,10 @@ import { atomic, typography } from '@dongchimi/design-system/tokens';
 export const headerClassName = style({
   width: '100%',
   minWidth: 0,
-  minHeight: '6.4rem',
+  height: '6.4rem',
+  boxSizing: 'border-box',
   padding: '0 4rem',
-  backgroundColor: atomic.common[0],
+  backgroundColor: 'transparent',
 });
 
 export const breadcrumbClassName = style({
@@ -47,8 +48,6 @@ export const searchIconClassName = style({
   display: 'block',
   width: '1.6rem',
   height: '1.6rem',
-  border: `0.15rem dashed ${atomic.neutral[90]}`,
-  borderRadius: '0.4rem',
 });
 
 export const logoHeaderClassName = style([

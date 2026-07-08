@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 
 import { Flex } from '@dongchimi/design-system/components';
+import { IcSearchSizeSmall } from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
 import { SearchBar, type SearchBarProps } from '../search-bar';
@@ -14,6 +15,7 @@ interface DesktopHeaderSearchProps {
 
 interface DesktopHeaderBaseProps extends DesktopHeaderSearchProps {
   className?: string;
+  searchSlot?: ReactNode;
   showSearchBar?: boolean;
 }
 
@@ -32,7 +34,7 @@ interface DesktopHeaderOnlyHomeProps {
 export type DesktopHeaderProps = DesktopHeaderBaseProps &
   (DesktopHeaderDefaultProps | DesktopHeaderOnlyHomeProps);
 
-const searchIcon = <span aria-hidden='true' className={S.searchIconClassName} />;
+const searchIcon = <IcSearchSizeSmall aria-hidden='true' className={S.searchIconClassName} />;
 
 const renderSearchBar = ({
   searchValue,
@@ -49,8 +51,18 @@ const renderSearchBar = ({
   />
 );
 
+const renderSearchArea = ({
+  searchSlot,
+  searchValue,
+  onSearch,
+  onSearchValueChange,
+}: DesktopHeaderSearchProps & { searchSlot?: ReactNode }) => {
+  return searchSlot ?? renderSearchBar({ searchValue, onSearch, onSearchValueChange });
+};
+
 export const DesktopHeader = ({
   className,
+  searchSlot,
   searchValue,
   showSearchBar = true,
   onSearch,
@@ -76,7 +88,7 @@ export const DesktopHeader = ({
 
         {showSearchBar && (
           <span className={S.logoSearchSlotClassName}>
-            {renderSearchBar({ searchValue, onSearch, onSearchValueChange })}
+            {renderSearchArea({ searchSlot, searchValue, onSearch, onSearchValueChange })}
           </span>
         )}
       </Flex>
@@ -99,7 +111,8 @@ export const DesktopHeader = ({
         </Flex>
       )}
 
-      {showSearchBar && renderSearchBar({ searchValue, onSearch, onSearchValueChange })}
+      {showSearchBar &&
+        renderSearchArea({ searchSlot, searchValue, onSearch, onSearchValueChange })}
     </Flex>
   );
 };
