@@ -4,7 +4,7 @@ export const EMAIL_ERROR_MESSAGES = {
 } as const;
 
 const EMAIL_ALLOWED_CHARACTERS_PATTERN = /^[A-Za-z0-9@._-]*$/;
-const EMAIL_PATTERN = /^[A-Za-z0-9._-]+@[A-Za-z0-9-]+(?:\.[A-Za-z]{2,})+$/;
+export const EMAIL_PATTERN = /^[A-Za-z0-9._-]+@[A-Za-z0-9-]+(?:\.[A-Za-z]{2,})+$/;
 
 export const isAllowedEmailInputValue = (email: string) => {
   return EMAIL_ALLOWED_CHARACTERS_PATTERN.test(email);

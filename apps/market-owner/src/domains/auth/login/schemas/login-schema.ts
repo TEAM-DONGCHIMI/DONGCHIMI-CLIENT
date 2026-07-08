@@ -1,10 +1,12 @@
 import { type Resolver } from 'react-hook-form';
 import { z } from 'zod';
 
-import { EMAIL_ERROR_MESSAGES, isAllowedEmailInputValue } from '../utils/email-validation';
+import {
+  EMAIL_ERROR_MESSAGES,
+  EMAIL_PATTERN,
+  isAllowedEmailInputValue,
+} from '../utils/email-validation';
 import { PASSWORD_ERROR_MESSAGES } from '../utils/password-validation';
-
-const EMAIL_PATTERN = /^[A-Za-z0-9._-]+@[A-Za-z0-9-]+(?:\.[A-Za-z]{2,})+$/;
 
 export const loginSchema = z.object({
   email: z.string().superRefine((email, context) => {
