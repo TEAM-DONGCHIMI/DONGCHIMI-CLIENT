@@ -3,13 +3,21 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { getNearbyMarkets, type NearbyMarketsListParamsTypes } from '../api/nearby-markets-api';
+import { mapNearbyMarketDtoToViewTypes } from '../model/nearby-market-mapper';
 import { nearbyMarketsQueryKeys } from '../query-keys';
 
 export const useNearbyMarketsInfiniteQuery = (params: NearbyMarketsListParamsTypes = {}) => {
   return useInfiniteQuery({
     queryKey: nearbyMarketsQueryKeys.list(params),
-    queryFn: ({ pageParam }) => getNearbyMarkets({ ...params, cursor: pageParam }),
-    initialPageParam: undefined as string | undefined,
+    queryFn: async ({ pageParam }) => {
+      const response = await getNearbyMarkets({ ...params, cursor: pageParam });
+
+      return {
+        items: response.markets.map(mapNearbyMarketDtoToViewTypes),
+        nextCursor: response.nextCursor,
+      };
+    },
+    initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
 };

@@ -25,7 +25,8 @@
     "next": "catalog:",
     "overlay-kit": "1.9.0",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@dongchimi/eslint-config": "workspace:*",
