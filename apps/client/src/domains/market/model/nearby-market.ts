@@ -5,7 +5,7 @@ export type NearbyMarketProductTypes = MartSummaryCardProps['products'][number];
 export type NearbyMarketTypes = Readonly<
   Pick<
     MartSummaryCardProps,
-    'areaName' | 'discountCount' | 'martName' | 'profileImageAlt' | 'profileImageSrc'
+    'discountCount' | 'isOpen' | 'martName' | 'profileImageAlt' | 'profileImageSrc'
   > & {
     id: string;
     products: MartSummaryCardProps['products'];

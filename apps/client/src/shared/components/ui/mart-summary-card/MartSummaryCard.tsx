@@ -16,8 +16,8 @@ export type MartSummaryProductTypes = Pick<
 
 export interface MartSummaryCardProps extends NativeMartSummaryCardProps {
   actionLabel?: string;
-  areaName: string;
   discountCount: number;
+  isOpen: boolean;
   martName: string;
   onActionClick?: () => void;
   profileImageAlt: string;
@@ -29,9 +29,9 @@ export const MartSummaryCard = forwardRef<HTMLElement, MartSummaryCardProps>(
   (
     {
       actionLabel = '전단보기',
-      areaName,
       className,
       discountCount,
+      isOpen,
       martName,
       onActionClick,
       products,
@@ -57,7 +57,7 @@ export const MartSummaryCard = forwardRef<HTMLElement, MartSummaryCardProps>(
             <div className={S.titleGroupClassName}>
               <h2 className={S.martNameClassName}>{martName}</h2>
               <div className={S.metaRowClassName}>
-                <span className={S.locationMetaClassName}>{areaName}</span>
+                <span className={S.statusMetaClassName}>{isOpen ? '영업중' : '영업 종료'}</span>
                 <Chip color='primary' variant='soft' size='mobile'>
                   할인 {discountCount}개
                 </Chip>

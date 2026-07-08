@@ -56,8 +56,8 @@ export const NearbyMarketsMarketListSection = () => {
       {markets.map((market) => (
         <MartSummaryCard
           key={market.id}
-          areaName={market.areaName}
           discountCount={market.discountCount}
+          isOpen={market.isOpen}
           martName={market.martName}
           onActionClick={() => router.push(CLIENT_ROUTES.market(market.id))}
           products={market.products}

@@ -68,7 +68,7 @@ export const metaRowClassName = style({
   whiteSpace: 'nowrap',
 });
 
-export const locationMetaClassName = style({
+export const statusMetaClassName = style({
   display: 'inline-flex',
   minWidth: 0,
   alignItems: 'center',

@@ -6,8 +6,8 @@ import type { NearbyMarketDtoTypes } from './nearby-markets-schema';
 export const mapNearbyMarketDtoToViewTypes = (dto: NearbyMarketDtoTypes): NearbyMarketTypes => {
   return {
     id: String(dto.marketId),
-    areaName: dto.distance,
-    discountCount: dto.previewProducts.filter((product) => product.discountRate > 0).length,
+    discountCount: dto.productCount,
+    isOpen: dto.isOpen,
     martName: dto.name,
     products: dto.previewProducts.map((product) => {
       const isDiscounted = product.discountRate > 0;
