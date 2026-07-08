@@ -5,7 +5,7 @@ import { render, screen } from '../../../../../test';
 import { SignupPrompt } from './SignupPrompt';
 
 describe('SignupPrompt', () => {
-  it('renders a link that routes to the signup page', () => {
+  it('renders a prompt and a link that routes to the signup page', () => {
     render(
       <MemoryRouter>
         <SignupPrompt />

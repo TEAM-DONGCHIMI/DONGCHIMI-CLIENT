@@ -16,6 +16,7 @@ export const keepSignedInClassName = style({
   display: 'inline-flex',
   width: 'fit-content',
   maxWidth: '100%',
+  alignSelf: 'center',
   alignItems: 'center',
   gap: '0.8rem',
   cursor: 'pointer',

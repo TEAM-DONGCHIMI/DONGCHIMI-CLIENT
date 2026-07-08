@@ -8,8 +8,9 @@ export const cardClassName = style({
   maxWidth: '100%',
   minHeight: 'min(60.3rem, calc(100vh - min(3.2rem, 10vh)))',
   minWidth: 0,
-  gap: 'clamp(2rem, 4vw, 3rem)',
-  padding: 'clamp(2rem, 5vw, 4rem)',
+  gap: '3rem',
+  paddingBlock: 'clamp(2rem, 5vw, 4rem)',
+  paddingInline: 'clamp(2rem, 4vw, 3.1rem)',
 });
 
 export const headerClassName = style({
