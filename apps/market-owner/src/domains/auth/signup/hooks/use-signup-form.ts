@@ -1,4 +1,4 @@
-import { type ChangeEvent } from 'react';
+import { type ChangeEvent, useState } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import {
@@ -30,6 +30,7 @@ const getTextInputStatusProps = (errorMessage: string | undefined): TextInputSta
 };
 
 export const useSignupForm = () => {
+  const [submitErrorMessage, setSubmitErrorMessage] = useState<string>();
   const form = useForm<SignupFormTypes>({
     defaultValues: SIGNUP_FORM_DEFAULT_VALUES,
     mode: 'onChange',
@@ -49,18 +50,26 @@ export const useSignupForm = () => {
   });
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSubmitErrorMessage(undefined);
     emailController.field.onChange(event.target.value);
   };
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSubmitErrorMessage(undefined);
     passwordController.field.onChange(event.target.value);
   };
 
   const handlePasswordConfirmChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSubmitErrorMessage(undefined);
     passwordConfirmController.field.onChange(event.target.value);
   };
 
+  const clearSubmitErrorMessage = () => {
+    setSubmitErrorMessage(undefined);
+  };
+
   return {
+    clearSubmitErrorMessage,
     email: emailController.field.value,
     emailStatusProps: getTextInputStatusProps(emailController.fieldState.error?.message),
     handleEmailChange,
@@ -74,5 +83,6 @@ export const useSignupForm = () => {
       passwordConfirmController.fieldState.error?.message,
     ),
     passwordStatusProps: getTextInputStatusProps(passwordController.fieldState.error?.message),
+    submitErrorMessage,
   };
 };

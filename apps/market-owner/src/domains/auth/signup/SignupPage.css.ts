@@ -74,6 +74,13 @@ export const fieldGroupClassName = style({
   minWidth: 0,
 });
 
+export const submitToastClassName = style({
+  display: 'flex',
+  justifyContent: 'center',
+  width: '100%',
+  minWidth: 0,
+});
+
 export const submitButtonClassName = style({
   width: '100%',
 });

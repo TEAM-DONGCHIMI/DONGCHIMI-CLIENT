@@ -22,7 +22,7 @@
 - React Router route object imports this page from `src/app/router.tsx`.
 - Public auth layout responsibility stays in `src/app/layouts/AuthLayout.tsx`.
 - Page-local spacing and signup-specific presentation stay in `SignupPage.css.ts`.
-- Signup form state, field handlers, and `TextInput` status props stay in `hooks/use-signup-form.ts`.
+- Signup form state, field handlers, submit error state, and `TextInput` status props stay in `hooks/use-signup-form.ts`.
 - Zod validation schema, resolver, default values, API request/response types, and temporary duplicate email list stay in `schemas/signup-schema.ts`.
 - Form primitives use design-system `Flex`, `TextInput`, and `Button`.
 
@@ -32,9 +32,9 @@
 - validation: 이메일 입력은 touched 이후 실시간으로 필수값, 공백, 한글, 허용 문자, 이메일 형식, 중복 여부를 검증합니다.
 - validation: 비밀번호 입력은 touched 이후 실시간으로 필수값, 6-20자 길이, 공백, 한글 여부를 검증합니다.
 - validation: 비밀번호 확인 입력은 touched 이후 실시간으로 필수값과 비밀번호 일치 여부를 검증합니다.
-- disabled: API와 full validation 전까지 `가입 완료` CTA는 disabled 상태입니다.
+- disabled: full validation 전까지 `가입 완료` CTA는 disabled 상태입니다.
 - loading: 이번 범위에서 다루지 않습니다.
-- error: 이번 범위에서 서버 오류 상태는 다루지 않습니다.
+- error: field validation error는 각 `TextInput` 아래에 표시하고, 네트워크 또는 가입 실패 같은 submit error는 field group 아래 toast로 표시합니다.
 - success: 이번 범위에서 다루지 않습니다.
 
 ## Data
@@ -54,14 +54,16 @@
 - 비밀번호 입력은 6-20자만 유효합니다.
 - 비밀번호 입력은 공백과 한글을 허용하지 않습니다.
 - 비밀번호 확인 입력은 비밀번호와 동일한 값을 입력해야 유효합니다.
-- submit CTA는 비활성화되어 실제 submit을 발생시키지 않습니다.
+- submit CTA는 전체 입력값이 유효할 때 활성화됩니다.
+- 네트워크 오류 또는 가입 실패 오류는 field error message가 아니라 form-level toast로 표시합니다.
 
 ## Accessibility
 
 - heading order: page root는 visible `h1`으로 `회원가입`을 제공합니다.
 - field labels: `TextInput` visible label이 각 input의 accessible name입니다.
 - validation messages: `TextInput` error message는 `aria-describedby`와 `aria-invalid`로 input에 연결됩니다.
-- button: `가입 완료`는 native disabled button으로 노출합니다.
+- button: `가입 완료`는 full validation 전까지 native disabled button으로 노출합니다.
+- submit error toast: error toast는 alert live region으로 노출합니다.
 - decorative logo: 체크무늬 logo slot은 accessible name에서 제외합니다.
 - focus: design-system input/button focus-visible style을 유지합니다.
 
@@ -77,4 +79,6 @@
 - [ ] empty touched password renders `비밀번호를 입력해주세요.`
 - [ ] password confirmation mismatch renders `비밀번호가 일치하지 않습니다.`
 - [ ] empty touched password confirmation renders `비밀번호를 다시 입력해주세요.`
-- [ ] submit button renders as disabled `가입 완료`
+- [ ] submit button renders as disabled before valid input
+- [ ] submit button is enabled when email, password, and password confirmation are valid
+- [ ] submit failure renders as an error toast instead of a field error

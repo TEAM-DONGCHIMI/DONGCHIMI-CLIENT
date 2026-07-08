@@ -1,16 +1,13 @@
-import type { FormEventHandler } from 'react';
-
-import { Button, Flex, TextInput } from '@dongchimi/design-system/components';
+import { Button, Flex, TextInput, Toast } from '@dongchimi/design-system/components';
 
 import { useSignupForm } from './hooks/use-signup-form';
 import * as S from './SignupPage.css';
 
-const preventSignupSubmit: FormEventHandler<HTMLFormElement> = (event) => {
-  event.preventDefault();
-};
-
 export const SignupPage = () => {
   const signupForm = useSignupForm();
+  const handleSignupSubmit = signupForm.handleSubmit(() => {
+    signupForm.clearSubmitErrorMessage();
+  });
 
   return (
     <main className={S.pageClassName}>
@@ -24,7 +21,7 @@ export const SignupPage = () => {
         </p>
       </Flex>
 
-      <form className={S.formClassName} onSubmit={preventSignupSubmit}>
+      <form className={S.formClassName} onSubmit={handleSignupSubmit}>
         <Flex className={S.fieldGroupClassName} direction='column'>
           <TextInput
             autoComplete='email'
@@ -60,7 +57,18 @@ export const SignupPage = () => {
           />
         </Flex>
 
-        <Button className={S.submitButtonClassName} disabled size='large' type='submit'>
+        {signupForm.submitErrorMessage !== undefined && (
+          <div className={S.submitToastClassName}>
+            <Toast status='error'>{signupForm.submitErrorMessage}</Toast>
+          </div>
+        )}
+
+        <Button
+          className={S.submitButtonClassName}
+          disabled={!signupForm.isValid}
+          size='large'
+          type='submit'
+        >
           가입 완료
         </Button>
       </form>
