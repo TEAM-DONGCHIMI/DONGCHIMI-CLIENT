@@ -42,9 +42,7 @@ export const marketInformationRegistrationSchema = z.object({
     message: businessOperationErrorMessage,
   }),
   holiday: z.string(),
-  marketName: z
-    .string()
-    .min(1, marketNameErrorMessages.empty)
+  marketName: requiredString(marketNameErrorMessages.empty)
     .max(15)
     .refine((marketName) => !marketName.startsWith(' '), {
       message: marketNameErrorMessages.startsWithSpace,
