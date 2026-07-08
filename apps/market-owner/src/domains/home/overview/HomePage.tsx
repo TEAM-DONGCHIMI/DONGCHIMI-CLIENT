@@ -19,6 +19,7 @@ const HOME_TOAST_DISMISS_MS = 2500;
 const SHARE_COPY_SUCCESS_MESSAGE = '전단 링크가 복사되었습니다.';
 const SHARE_COPY_ERROR_MESSAGE = '링크를 복사하지 못했습니다. 다시 시도해주세요.';
 const SEARCH_PRODUCT_LOAD_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요.';
+const QR_CODE_PREPARING_MESSAGE = 'QR코드 보기 기능은 준비 중입니다.';
 
 interface HomeToastTypes {
   id: number;
@@ -137,9 +138,10 @@ const HomeProductSummarySection = () => {
 
 interface HomeShareSectionProps {
   onCopyLinkResult: (isCopied: boolean) => void;
+  onQrCodePreparing: () => void;
 }
 
-const HomeShareSection = ({ onCopyLinkResult }: HomeShareSectionProps) => {
+const HomeShareSection = ({ onCopyLinkResult, onQrCodePreparing }: HomeShareSectionProps) => {
   const handleCopyShareUrl = async () => {
     const isCopied = await copyToClipboard(homeShare.url);
 
@@ -147,7 +149,7 @@ const HomeShareSection = ({ onCopyLinkResult }: HomeShareSectionProps) => {
   };
 
   const handleOpenQrCode = () => {
-    // TODO(DCMSM-27): QR 표시 flow가 확정되면 modal 또는 route로 연결합니다.
+    onQrCodePreparing();
   };
 
   return (
@@ -164,13 +166,17 @@ const HomeShareSection = ({ onCopyLinkResult }: HomeShareSectionProps) => {
 
 interface HomeDashboardSectionProps {
   onCopyLinkResult: HomeShareSectionProps['onCopyLinkResult'];
+  onQrCodePreparing: HomeShareSectionProps['onQrCodePreparing'];
 }
 
-const HomeDashboardSection = ({ onCopyLinkResult }: HomeDashboardSectionProps) => {
+const HomeDashboardSection = ({
+  onCopyLinkResult,
+  onQrCodePreparing,
+}: HomeDashboardSectionProps) => {
   return (
     <div className={S.dashboardGridClassName}>
       <HomeProductSummarySection />
-      <HomeShareSection onCopyLinkResult={onCopyLinkResult} />
+      <HomeShareSection onCopyLinkResult={onCopyLinkResult} onQrCodePreparing={onQrCodePreparing} />
     </div>
   );
 };
@@ -208,6 +214,14 @@ export const HomePage = () => {
     });
   };
 
+  const handleQrCodePreparing = () => {
+    setHomeToast({
+      id: Date.now(),
+      message: QR_CODE_PREPARING_MESSAGE,
+      status: 'completed',
+    });
+  };
+
   return (
     <main className={S.pageRootClassName}>
       <h1 className={S.visuallyHiddenHeadingClassName}>동치미 홈</h1>
@@ -232,7 +246,10 @@ export const HomePage = () => {
 
       <div className={S.contentSectionClassName}>
         <HomeHeroSection />
-        <HomeDashboardSection onCopyLinkResult={handleCopyLinkResult} />
+        <HomeDashboardSection
+          onCopyLinkResult={handleCopyLinkResult}
+          onQrCodePreparing={handleQrCodePreparing}
+        />
       </div>
     </main>
   );

@@ -127,7 +127,7 @@ HomePage(main)
 - empty: fixture 기준 기본 상품 목록을 노출하고, 검색 결과가 없으면 검색 dropdown에 empty message를 표시합니다.
 - error: 알 수 없는 route는 router fallback에서 처리합니다. 검색 결과에서 상품을 선택했지만 상품 정보를
   불러오지 못하면 상단 error toast로 `상품 정보를 불러오지 못했어요.`를 표시합니다.
-- disabled: QR 보기 실제 동작이 없으면 버튼 노출 정책을 구현 전 확정합니다.
+- disabled: QR 보기 실제 API 동작은 후속 범위이며, 현재는 버튼 클릭 시 준비 중 toast를 표시합니다.
 - selected / active: sidebar `홈` item은 현재 route에 `aria-current="page"`를 적용합니다.
 - hover/focus: 검색 입력의 focus-visible 상태를 유지합니다. 검색 결과 item hover 시 해당 item button에
   focus를 이동합니다.
@@ -155,7 +155,8 @@ HomePage(main)
   이동합니다.
 - 링크 복사는 clipboard 성공 시 `전단 링크가 복사되었습니다.` completed toast를 표시합니다.
 - 링크 복사 실패 또는 clipboard 미지원 시 `링크를 복사하지 못했습니다. 다시 시도해주세요.` error toast를 표시합니다.
-- QR 보기 클릭은 QR 표시 flow가 확정되지 않았으므로 구현 전에 disabled/placeholder/handler 정책을 확정합니다.
+- QR 보기 클릭은 QR 표시 API/flow가 확정되기 전까지 `QR코드 보기 기능은 준비 중입니다.` completed toast를 표시합니다.
+- toast는 홈 본문 스크롤 위치와 무관하게 viewport 상단 20px 아래에 표시합니다.
 - 상품 검색은 한 글자 이상 입력 시 dropdown을 열고, 검색창과 dropdown 사이 gap은 4px입니다.
 - 검색 결과는 일치도 높은 순으로 표시하고, 동일한 일치도는 최신 등록순으로 표시합니다.
 - 검색 dropdown은 4개 기본 노출, 4개 초과 시 scroll 영역으로 전환하며 최대 10개까지만 렌더링합니다.
@@ -219,6 +220,7 @@ HomePage(main)
 - [x] share card renders share URL, copy action, and QR action
 - [x] link copy success shows completed toast
 - [x] link copy failure shows error toast
+- [x] QR code action shows preparing toast
 - [x] search input is keyboard/focus accessible
 - [x] search dropdown opens after one or more characters
 - [x] search dropdown closes on outside click
@@ -234,5 +236,5 @@ HomePage(main)
 
 - 수정 페이지에서 `location.state.productId`를 소비하는 방식
 - 실제 상품 검색 API와 상품 정보 load 실패 처리 위치
-- QR 보기 클릭 시 동작
+- QR 보기 실제 API와 modal 또는 route 연결 방식
 - Figma URL 또는 Screen ID

@@ -41,7 +41,7 @@ export const pageHeaderClassName = style({
 });
 
 export const homeToastLayerClassName = style({
-  position: 'absolute',
+  position: 'fixed',
   zIndex: 20,
   top: '2rem',
   left: '50%',
