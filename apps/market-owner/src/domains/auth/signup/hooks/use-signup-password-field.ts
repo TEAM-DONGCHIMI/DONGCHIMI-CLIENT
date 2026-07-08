@@ -2,18 +2,20 @@ import { useState, type ChangeEventHandler } from 'react';
 
 import { validateSignupPassword } from '../utils/signup-password-validation';
 
-type SignupPasswordFieldStateTypes =
+type SignupPasswordTextInputStatusPropsTypes =
   | {
       errorMessage: string;
-      handlePasswordChange: ChangeEventHandler<HTMLInputElement>;
-      hasError: true;
-      password: string;
+      status: 'error';
     }
   | {
-      handlePasswordChange: ChangeEventHandler<HTMLInputElement>;
-      hasError: false;
-      password: string;
+      status: 'default';
     };
+
+interface SignupPasswordFieldStateTypes {
+  handlePasswordChange: ChangeEventHandler<HTMLInputElement>;
+  password: string;
+  textInputStatusProps: SignupPasswordTextInputStatusPropsTypes;
+}
 
 export const useSignupPasswordField = (): SignupPasswordFieldStateTypes => {
   const [password, setPassword] = useState('');
@@ -27,16 +29,20 @@ export const useSignupPasswordField = (): SignupPasswordFieldStateTypes => {
 
   if (isPasswordTouched && !passwordValidation.ok) {
     return {
-      errorMessage: passwordValidation.message,
       handlePasswordChange,
-      hasError: true,
       password,
+      textInputStatusProps: {
+        errorMessage: passwordValidation.message,
+        status: 'error',
+      },
     };
   }
 
   return {
     handlePasswordChange,
-    hasError: false,
     password,
+    textInputStatusProps: {
+      status: 'default',
+    },
   };
 };

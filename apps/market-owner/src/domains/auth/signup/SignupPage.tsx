@@ -28,53 +28,27 @@ export const SignupPage = () => {
 
       <form className={S.formClassName} onSubmit={preventSignupSubmit}>
         <Flex className={S.fieldGroupClassName} direction='column'>
-          {emailField.hasError ? (
-            <TextInput
-              autoComplete='email'
-              errorMessage={emailField.errorMessage}
-              label='이메일'
-              name='email'
-              onChange={emailField.handleEmailChange}
-              placeholder='example@email.com'
-              status='error'
-              type='email'
-              value={emailField.email}
-            />
-          ) : (
-            <TextInput
-              autoComplete='email'
-              label='이메일'
-              name='email'
-              onChange={emailField.handleEmailChange}
-              placeholder='example@email.com'
-              type='email'
-              value={emailField.email}
-            />
-          )}
+          <TextInput
+            autoComplete='email'
+            label='이메일'
+            name='email'
+            onChange={emailField.handleEmailChange}
+            placeholder='example@email.com'
+            type='email'
+            value={emailField.email}
+            {...emailField.textInputStatusProps}
+          />
 
-          {passwordField.hasError ? (
-            <TextInput
-              autoComplete='new-password'
-              errorMessage={passwordField.errorMessage}
-              label='비밀번호'
-              name='password'
-              onChange={passwordField.handlePasswordChange}
-              placeholder='비밀번호 입력'
-              status='error'
-              type='password'
-              value={passwordField.password}
-            />
-          ) : (
-            <TextInput
-              autoComplete='new-password'
-              label='비밀번호'
-              name='password'
-              onChange={passwordField.handlePasswordChange}
-              placeholder='비밀번호 입력'
-              type='password'
-              value={passwordField.password}
-            />
-          )}
+          <TextInput
+            autoComplete='new-password'
+            label='비밀번호'
+            name='password'
+            onChange={passwordField.handlePasswordChange}
+            placeholder='비밀번호 입력'
+            type='password'
+            value={passwordField.password}
+            {...passwordField.textInputStatusProps}
+          />
 
           <TextInput
             autoComplete='new-password'

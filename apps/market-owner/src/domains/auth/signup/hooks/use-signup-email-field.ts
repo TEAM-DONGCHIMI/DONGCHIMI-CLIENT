@@ -2,18 +2,20 @@ import { useState, type ChangeEventHandler } from 'react';
 
 import { validateSignupEmail } from '../utils/signup-email-validation';
 
-type SignupEmailFieldStateTypes =
+type SignupEmailTextInputStatusPropsTypes =
   | {
-      email: string;
       errorMessage: string;
-      handleEmailChange: ChangeEventHandler<HTMLInputElement>;
-      hasError: true;
+      status: 'error';
     }
   | {
-      email: string;
-      handleEmailChange: ChangeEventHandler<HTMLInputElement>;
-      hasError: false;
+      status: 'default';
     };
+
+interface SignupEmailFieldStateTypes {
+  email: string;
+  handleEmailChange: ChangeEventHandler<HTMLInputElement>;
+  textInputStatusProps: SignupEmailTextInputStatusPropsTypes;
+}
 
 export const useSignupEmailField = (): SignupEmailFieldStateTypes => {
   const [email, setEmail] = useState('');
@@ -28,15 +30,19 @@ export const useSignupEmailField = (): SignupEmailFieldStateTypes => {
   if (isEmailTouched && !emailValidation.ok) {
     return {
       email,
-      errorMessage: emailValidation.message,
       handleEmailChange,
-      hasError: true,
+      textInputStatusProps: {
+        errorMessage: emailValidation.message,
+        status: 'error',
+      },
     };
   }
 
   return {
     email,
     handleEmailChange,
-    hasError: false,
+    textInputStatusProps: {
+      status: 'default',
+    },
   };
 };
