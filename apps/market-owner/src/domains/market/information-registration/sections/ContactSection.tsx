@@ -2,7 +2,6 @@ import { useState, type ChangeEvent } from 'react';
 
 import { type UseFormRegisterReturn } from 'react-hook-form';
 
-import { cn } from '@dongchimi/design-system/styles';
 import { AddableField, Chip, Stack } from '@dongchimi/design-system/components';
 import {
   IcCircleExclamationSizeSmallColorNegative,
@@ -51,16 +50,20 @@ export const ContactSection = ({
     setIsAdditionalMarketPhoneVisible(false);
     setAdditionalMarketPhone('');
   };
+
   const handleRemoveAdditionalOwnerPhone = () => {
     setIsAdditionalOwnerPhoneVisible(false);
     setAdditionalOwnerPhone('');
   };
+
   const handleAdditionalMarketPhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
     setAdditionalMarketPhone(formatMarketPhoneNumber(event.currentTarget.value));
   };
+
   const handleAdditionalOwnerPhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
     setAdditionalOwnerPhone(formatMobilePhoneNumber(event.currentTarget.value));
   };
+
   const additionalMarketPhoneStatusProps =
     additionalMarketPhone.length > 0 && !isValidMarketPhone(additionalMarketPhone)
       ? ({
@@ -77,13 +80,17 @@ export const ContactSection = ({
           status: 'error',
         } as const)
       : {};
-  const ownerPhoneErrorMessageId = ownerPhoneErrorMessage
-    ? 'market-information-owner-phone-error-message'
-    : undefined;
   const marketPhoneStatusProps = marketPhoneErrorMessage
     ? ({
         errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
         errorMessage: marketPhoneErrorMessage,
+        status: 'error',
+      } as const)
+    : {};
+  const ownerPhoneStatusProps = ownerPhoneErrorMessage
+    ? ({
+        errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
+        errorMessage: ownerPhoneErrorMessage,
         status: 'error',
       } as const)
     : {};
@@ -143,47 +150,22 @@ export const ContactSection = ({
           <RequiredMark />
         </span>
         <div className={S.ownerPhoneRowsClassName}>
-          <div
-            className={cn(
-              S.textIconFieldClassName,
-              ownerPhoneErrorMessage && S.textIconFieldErrorClassName,
-            )}
-          >
-            <IcPhoneSizeSmallColor60 aria-hidden='true' className={S.inputIconClassName} />
-            <input
-              aria-describedby={ownerPhoneErrorMessageId}
-              aria-invalid={ownerPhoneErrorMessage ? true : undefined}
-              aria-label='점주 번호'
-              className={S.textIconInputClassName}
-              inputMode='numeric'
-              placeholder='번호를 입력해주세요.'
-              required
-              type='tel'
-              {...ownerPhoneField}
-              value={ownerPhone}
-              onChange={onInputChange}
-            />
-            <button
-              aria-label='점주 번호 추가'
-              className={S.textIconActionButtonClassName}
-              type='button'
-              onClick={() => setIsAdditionalOwnerPhoneVisible(true)}
-            >
-              <IcPlusSizeSmallColor60
-                aria-hidden='true'
-                className={S.textIconActionIconClassName}
-              />
-            </button>
-          </div>
-          {ownerPhoneErrorMessage && (
-            <div className={S.ownerPhoneErrorMessageClassName} id={ownerPhoneErrorMessageId}>
-              <IcCircleExclamationSizeSmallColorNegative
-                aria-hidden='true'
-                className={S.errorIconClassName}
-              />
-              <span>{ownerPhoneErrorMessage}</span>
-            </div>
-          )}
+          <AddableField
+            aria-label='점주 번호'
+            className={S.addableFieldClassName}
+            inputMode='numeric'
+            leadingIcon={<IcPhoneSizeSmallColor60 />}
+            placeholder='번호를 입력해주세요.'
+            required
+            trailingActionLabel='점주 번호 추가'
+            trailingIcon={<IcPlusSizeSmallColor60 />}
+            type='tel'
+            {...ownerPhoneField}
+            value={ownerPhone}
+            onChange={onInputChange}
+            onTrailingAction={() => setIsAdditionalOwnerPhoneVisible(true)}
+            {...ownerPhoneStatusProps}
+          />
           {isAdditionalOwnerPhoneVisible && (
             <AddableField
               aria-label='추가 점주 번호'
