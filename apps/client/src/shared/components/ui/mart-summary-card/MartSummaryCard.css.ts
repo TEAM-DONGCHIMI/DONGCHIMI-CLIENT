@@ -5,7 +5,6 @@ import { atomic, typography } from '@dongchimi/design-system/tokens';
 export const martSummaryCardClassName = style({
   display: 'flex',
   width: '100%',
-  maxWidth: '37.5rem',
   flexDirection: 'column',
   gap: '1.2rem',
   overflow: 'hidden',

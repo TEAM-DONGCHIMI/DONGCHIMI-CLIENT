@@ -87,3 +87,10 @@ export const mapAreaClassName = style({
   border: '0.707px solid #e5e7eb',
   backgroundColor: '#e8f0e4',
 });
+
+export const marketListSectionClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2rem',
+  padding: '1.6rem 0',
+});

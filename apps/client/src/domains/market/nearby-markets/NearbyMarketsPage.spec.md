@@ -21,6 +21,7 @@
 
 - `/markets` route entry와 `NearbyMarketsPage` domain page shell을 제공합니다.
 - 상단에 공통 `MobileHeader`를 사용합니다.
+- 화면 섹션은 `sections` 폴더의 page-local 컴포넌트로 분리합니다.
 - 현재 위치 기준 안내 타이틀과 위치/마트 검색 input을 표시합니다.
 - 지도 SDK 연동 전까지 Figma 높이 기준의 지도 placeholder 영역을 표시합니다.
 - 마트 상세 전단 route인 `/markets/[marketId]`로 이동 가능한 placeholder link를 둡니다.
@@ -35,10 +36,9 @@
 ## Layout And Sections
 
 - 앱 헤더
-- 현재 위치 기준 타이틀
-- 위치/마트 검색 input
-- 지도 영역 placeholder
-- 마트 전단 진입 link
+- `NearbyMarketsSearchSection`: 현재 위치 기준 타이틀, 위치/마트 검색 input
+- `NearbyMarketsMapSection`: 지도 영역 placeholder
+- `NearbyMarketsNavigationSection`: 마트 전단 진입 link
 
 ## States
 
@@ -78,4 +78,4 @@
 
 ## Open Questions
 
-- 검색 활성화 시 위치 검색, 마트명 검색, 주소 검색 중 어떤 플로우를 우선 노출할지 확정이 필요합니다.
+- 검색 동작 연결 시 위치 검색, 마트명 검색, 주소 검색 중 어떤 플로우를 우선 노출할지 확정이 필요합니다.
