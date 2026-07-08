@@ -1,5 +1,3 @@
-import { type FormEvent } from 'react';
-
 import { useLoginFields } from './use-login-fields';
 import { type LoginSubmitHandlerTypes, useLoginSubmit } from './use-login-submit';
 
@@ -14,21 +12,17 @@ export const useLoginForm = ({ submitLogin }: UseLoginFormOptions = {}) => {
   const fields = useLoginFields({ onFieldChange: clearLoginErrorMessage });
   const isSubmitDisabled = isSubmitting || !fields.isValid;
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    fields.markFieldsEdited();
-
-    if (isSubmitDisabled) {
+  const handleSubmit = fields.handleSubmit(async (values) => {
+    if (isSubmitting) {
       return;
     }
 
     await submit({
-      email: fields.email,
-      isAutoLogin: fields.keepSignedIn,
-      password: fields.password,
+      email: values.email,
+      isAutoLogin: values.isAutoLogin,
+      password: values.password,
     });
-  };
+  });
 
   return {
     email: fields.email,

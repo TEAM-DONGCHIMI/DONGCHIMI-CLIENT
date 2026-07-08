@@ -1,70 +1,76 @@
-import { useState, type ChangeEvent } from 'react';
+import { type ChangeEvent } from 'react';
+import { useController, useForm } from 'react-hook-form';
 
-import { getEmailErrorMessage, isAllowedEmailInputValue } from '../utils/email-validation';
-import { getPasswordErrorMessage } from '../utils/password-validation';
+import {
+  LOGIN_FORM_DEFAULT_VALUES,
+  loginFormResolver,
+  type LoginFormTypes,
+} from '../schemas/login-schema';
+import { isAllowedEmailInputValue } from '../utils/email-validation';
 
 interface UseLoginFieldsOptions {
   onFieldChange?: () => void;
 }
 
 export const useLoginFields = ({ onFieldChange }: UseLoginFieldsOptions = {}) => {
-  const [email, setEmail] = useState('');
-  const [hasEditedEmail, setHasEditedEmail] = useState(false);
-  const [password, setPassword] = useState('');
-  const [hasEditedPassword, setHasEditedPassword] = useState(false);
-  const [keepSignedIn, setKeepSignedIn] = useState(false);
+  const form = useForm<LoginFormTypes>({
+    defaultValues: LOGIN_FORM_DEFAULT_VALUES,
+    mode: 'onChange',
+    resolver: loginFormResolver,
+  });
+  const emailController = useController({
+    control: form.control,
+    name: 'email',
+  });
+  const passwordController = useController({
+    control: form.control,
+    name: 'password',
+  });
+  const isAutoLoginController = useController({
+    control: form.control,
+    name: 'isAutoLogin',
+  });
 
-  const emailValidationErrorMessage = getEmailErrorMessage(email);
-  const emailErrorMessage = hasEditedEmail ? emailValidationErrorMessage : undefined;
+  const emailErrorMessage = emailController.fieldState.error?.message;
   const emailStatusProps =
     emailErrorMessage !== undefined
       ? { errorMessage: emailErrorMessage, status: 'error' as const }
       : { status: 'default' as const };
-  const passwordValidationErrorMessage = getPasswordErrorMessage(password);
-  const passwordErrorMessage = hasEditedPassword ? passwordValidationErrorMessage : undefined;
+  const passwordErrorMessage = passwordController.fieldState.error?.message;
   const passwordStatusProps =
     passwordErrorMessage !== undefined
       ? { errorMessage: passwordErrorMessage, status: 'error' as const }
       : { status: 'default' as const };
-  const isValid =
-    emailValidationErrorMessage === undefined && passwordValidationErrorMessage === undefined;
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextEmail = event.target.value;
 
-    setHasEditedEmail(true);
     onFieldChange?.();
 
     if (isAllowedEmailInputValue(nextEmail)) {
-      setEmail(nextEmail);
+      emailController.field.onChange(nextEmail);
     }
   };
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setHasEditedPassword(true);
     onFieldChange?.();
-    setPassword(event.target.value);
+    passwordController.field.onChange(event.target.value);
   };
 
   const handleKeepSignedInChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setKeepSignedIn(event.target.checked);
-  };
-
-  const markFieldsEdited = () => {
-    setHasEditedEmail(true);
-    setHasEditedPassword(true);
+    isAutoLoginController.field.onChange(event.target.checked);
   };
 
   return {
-    email,
+    email: emailController.field.value,
     emailStatusProps,
     handleEmailChange,
     handleKeepSignedInChange,
     handlePasswordChange,
-    isValid,
-    keepSignedIn,
-    markFieldsEdited,
-    password,
+    handleSubmit: form.handleSubmit,
+    isValid: form.formState.isValid,
+    keepSignedIn: isAutoLoginController.field.value,
+    password: passwordController.field.value,
     passwordStatusProps,
   };
 };

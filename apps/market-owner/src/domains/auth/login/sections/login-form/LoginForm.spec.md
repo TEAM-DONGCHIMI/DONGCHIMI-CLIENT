@@ -16,11 +16,15 @@
 
 ## Composition
 
+- Implementation note: `login/hooks/use-login-fields.ts` now uses React Hook Form controllers for email, password, and auto-login fields.
+- Validation note: `login/schemas/login-schema.ts` owns zod rules, default values, inferred form type, and the RHF resolver.
+
 - components: 디자인 시스템 `TextInput`, `Button`, `Toast`, `IcCheckboxSizeSmall`, `IcCheckboxActionSizeSmall`
 - hook: `login/hooks/use-login-form.ts`가 field hook과 submit hook을 조합합니다.
-- field hook: `login/hooks/use-login-fields.ts`가 이메일/비밀번호 입력 상태, 수정 여부, 로그인 상태 유지 선택, error 표시 props를 관리합니다.
+- field hook: `login/hooks/use-login-fields.ts`가 React Hook Form controller로 이메일/비밀번호 입력 상태, 로그인 상태 유지 선택, error 표시 props를 관리합니다.
 - submit hook: `login/hooks/use-login-submit.ts`가 submit loading, redirect, error toast message 상태를 관리합니다.
-- utils: `login/utils/email-validation.ts`, `login/utils/password-validation.ts`가 필드별 순수 검증 규칙을 제공합니다.
+- schema: `login/schemas/login-schema.ts`가 zod 기반 필드 검증 규칙, 기본값, RHF resolver를 제공합니다.
+- utils: `login/utils/email-validation.ts`, `login/utils/password-validation.ts`가 validation message와 입력 제한 helper를 제공합니다.
 - data: 없음. auth API 연동은 후속 이슈 범위입니다.
 - states: default(초기 빈 폼), email/password editing, field validation error를 다룹니다. loading/server error는 이번 범위에서 다루지 않습니다.
 
