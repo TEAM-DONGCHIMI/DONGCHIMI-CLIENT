@@ -49,18 +49,17 @@ const getNextFormValue = (name: string, value: string) => {
 
 export const MarketInformationRegistrationPage = () => {
   const {
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     register,
     setValue,
     watch,
   } = useForm<MarketInformationFormTypes>({
     defaultValues: marketInformationRegistrationFixture.initialForm,
-    mode: 'onTouched',
+    mode: 'onChange',
     resolver: zodResolver(marketInformationRegistrationSchema),
   });
   const form = watch();
-  const canSubmit = marketInformationRegistrationSchema.safeParse(form).success;
 
   const setFormValue = (name: FieldPath<MarketInformationFormTypes>, value: string) => {
     setValue(name, value, {
@@ -182,7 +181,7 @@ export const MarketInformationRegistrationPage = () => {
             <Flex className={S.submitAreaClassName} justify='center'>
               <Button
                 className={S.submitButtonClassName}
-                disabled={!canSubmit}
+                disabled={!isValid}
                 size='medium'
                 type='submit'
               >
