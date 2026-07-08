@@ -1,15 +1,18 @@
-import type { TodaySpecialProductForm } from './product-form.types';
+import type { TodaySpecialProductFormTypes } from './product-form.types';
 
-// 이미지 업로드 조건
-export const todaySpecialImageFileTypes = ['image/jpeg', 'image/png'];
-export const todaySpecialMaxImageFileSize = 10 * 1024 * 1024;
+export {
+  imageUploadErrorMessages as todaySpecialImageUploadErrorMessages,
+  imageUploadInputAccept as todaySpecialImageInputAccept,
+  isValidImageUploadFile as isValidTodaySpecialImageFile,
+  revokeImagePreviewUrl as revokePreviewUrl,
+} from '@/shared/utils/image-upload.utils';
 
 // 입력 글자 수 제한
 export const todaySpecialProductNameMaxLength = 15;
 export const todaySpecialProductDescriptionMaxLength = 25;
 
 // 빈 form 생성
-export const createEmptyTodaySpecialProductForm = (): TodaySpecialProductForm => ({
+export const createEmptyTodaySpecialProductForm = (): TodaySpecialProductFormTypes => ({
   category: '',
   description: '',
   endDate: '',
@@ -60,18 +63,4 @@ export const parsePriceInput = (value: string) => {
 // 시작일 변경 시 종료일이 시작일보다 이전이면 종료일 초기화
 export const resolveEndDateAfterStartDateChange = (startDate: string, endDate: string) => {
   return endDate && endDate < startDate ? '' : endDate;
-};
-
-// 이미지 형식, 용량 검증
-export const isValidTodaySpecialImageFile = (file: File) => {
-  return (
-    todaySpecialImageFileTypes.includes(file.type) && file.size <= todaySpecialMaxImageFileSize
-  );
-};
-
-// object URL 정리
-export const revokePreviewUrl = (previewUrl: string | null) => {
-  if (previewUrl) {
-    URL.revokeObjectURL(previewUrl);
-  }
 };

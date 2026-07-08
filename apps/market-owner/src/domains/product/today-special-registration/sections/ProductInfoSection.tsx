@@ -1,31 +1,42 @@
-import { useEffect, useId, useRef, type ChangeEventHandler, type FocusEventHandler } from 'react';
+import type { ChangeEventHandler, FocusEventHandler, MouseEventHandler } from 'react';
 
 import { Dropdown, InlineField } from '@dongchimi/design-system/components';
 import { cn } from '@dongchimi/design-system/styles';
-import { IcCamera, IcChevronDown, IcChevronUp, IcPlus } from '@dongchimi/design-system/icons';
+import {
+  IcCamera,
+  IcChevronDown,
+  IcChevronUp,
+  IcCircleExclamationSizeSmallColorNegative,
+  IcPlus,
+} from '@dongchimi/design-system/icons';
 
+import {
+  todaySpecialImageInputAccept,
+  type TodaySpecialProductErrorMessageTypes,
+  type TodaySpecialProductFormTypes,
+} from '../model';
 import { todaySpecialCategoryOptions } from '../fixtures';
-import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductForm } from '../model';
-import { FieldErrorMessage } from '../components/FieldErrorMessage';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface ProductInfoSectionProps {
+  categoryDropdownId: string;
   isCategoryOpen: boolean;
-  onCategoryOpenChange: (isOpen: boolean) => void;
   onCategorySelect: (category: string) => void;
+  onCategoryTriggerClick: MouseEventHandler<HTMLButtonElement>;
   onDescriptionBlur: FocusEventHandler<HTMLInputElement>;
   onDescriptionChange: ChangeEventHandler<HTMLInputElement>;
   onImageChange: ChangeEventHandler<HTMLInputElement>;
   onNameBlur: FocusEventHandler<HTMLInputElement>;
   onNameChange: ChangeEventHandler<HTMLInputElement>;
-  product: TodaySpecialProductForm;
+  product: TodaySpecialProductFormTypes;
   productErrorMessages: TodaySpecialProductErrorMessageTypes;
 }
 
 export const ProductInfoSection = ({
+  categoryDropdownId,
   isCategoryOpen,
-  onCategoryOpenChange,
   onCategorySelect,
+  onCategoryTriggerClick,
   onDescriptionBlur,
   onDescriptionChange,
   onImageChange,
@@ -34,35 +45,7 @@ export const ProductInfoSection = ({
   product,
   productErrorMessages,
 }: ProductInfoSectionProps) => {
-  const categoryWrapperRef = useRef<HTMLDivElement>(null);
-  const categoryDropdownId = useId();
   const categoryErrorId = 'today-special-product-category-error';
-
-  useEffect(() => {
-    if (!isCategoryOpen) {
-      return;
-    }
-
-    const closeCategoryDropdownOnOutsidePointerDown = (event: PointerEvent) => {
-      if (!categoryWrapperRef.current?.contains(event.target as Node)) {
-        onCategoryOpenChange(false);
-      }
-    };
-
-    const closeCategoryDropdownOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onCategoryOpenChange(false);
-      }
-    };
-
-    document.addEventListener('pointerdown', closeCategoryDropdownOnOutsidePointerDown);
-    document.addEventListener('keydown', closeCategoryDropdownOnEscape);
-
-    return () => {
-      document.removeEventListener('pointerdown', closeCategoryDropdownOnOutsidePointerDown);
-      document.removeEventListener('keydown', closeCategoryDropdownOnEscape);
-    };
-  }, [isCategoryOpen, onCategoryOpenChange]);
 
   return (
     <section className={S.fieldSectionClassName} aria-labelledby='product-info-title'>
@@ -113,7 +96,7 @@ export const ProductInfoSection = ({
             )}
           </label>
           <input
-            accept='.jpg,.jpeg,.png,image/jpeg,image/png'
+            accept={todaySpecialImageInputAccept}
             className={S.fileInputClassName}
             id='today-special-product-image'
             onChange={onImageChange}
@@ -140,7 +123,7 @@ export const ProductInfoSection = ({
 
           <div className={S.fieldGroupClassName}>
             <span className={S.fieldLabelClassName}>상품 구분</span>
-            <div className={S.categoryWrapperClassName} ref={categoryWrapperRef}>
+            <div className={S.categoryWrapperClassName}>
               <button
                 aria-describedby={productErrorMessages.category ? categoryErrorId : undefined}
                 aria-controls={isCategoryOpen ? categoryDropdownId : undefined}
@@ -149,7 +132,8 @@ export const ProductInfoSection = ({
                   S.categoryTriggerClassName,
                   productErrorMessages.category && S.categoryTriggerErrorClassName,
                 )}
-                onClick={() => onCategoryOpenChange(!isCategoryOpen)}
+                data-today-special-category-trigger
+                onClick={onCategoryTriggerClick}
                 type='button'
               >
                 <span className={!product.category ? S.categoryPlaceholderClassName : undefined}>
@@ -161,25 +145,33 @@ export const ProductInfoSection = ({
                   <IcChevronDown aria-hidden='true' />
                 )}
               </button>
-
               {isCategoryOpen && (
-                <Dropdown className={S.categoryDropdownClassName} id={categoryDropdownId}>
-                  {todaySpecialCategoryOptions.map((category) => (
-                    <Dropdown.Item
-                      className={S.categoryDropdownItemClassName}
-                      color='primary'
-                      key={category}
-                      onClick={() => onCategorySelect(category)}
-                      selected={category === product.category}
-                    >
-                      {category}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown>
+                <div data-today-special-category-overlay>
+                  <Dropdown className={S.categoryDropdownClassName} id={categoryDropdownId}>
+                    {todaySpecialCategoryOptions.map((category) => (
+                      <Dropdown.Item
+                        checkbox={false}
+                        className={S.categoryDropdownItemClassName}
+                        color='primary'
+                        key={category}
+                        onClick={() => onCategorySelect(category)}
+                        selected={category === product.category}
+                      >
+                        {category}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown>
+                </div>
               )}
             </div>
             {productErrorMessages.category && (
-              <FieldErrorMessage id={categoryErrorId} message={productErrorMessages.category} />
+              <p className={S.fieldErrorMessageClassName} id={categoryErrorId}>
+                <IcCircleExclamationSizeSmallColorNegative
+                  className={S.fieldErrorIconClassName}
+                  aria-hidden='true'
+                />
+                <span>{productErrorMessages.category}</span>
+              </p>
             )}
           </div>
         </div>

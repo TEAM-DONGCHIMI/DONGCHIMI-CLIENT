@@ -68,11 +68,13 @@ export const titleNavigationButtonClassName = style({
   width: '4rem',
   height: '4rem',
   padding: '0.8rem',
+  color: atomic.neutral[90],
   fontSize: '2.4rem',
 });
 
 export const titleRemoveButtonClassName = style({
   borderColor: atomic.neutral[20],
+  color: atomic.neutral[90],
 });
 
 export const fieldSectionsClassName = style({
@@ -300,10 +302,11 @@ export const categoryTriggerErrorClassName = style({
 
 export const categoryDropdownClassName = style({
   position: 'absolute',
-  zIndex: 1,
   top: '4.9rem',
   left: 0,
+  zIndex: 1,
   width: '20.6rem',
+  border: 0,
 });
 
 export const categoryDropdownItemClassName = style({

@@ -2,7 +2,7 @@ import type { ChangeEventHandler, FocusEventHandler } from 'react';
 
 import { InlineField } from '@dongchimi/design-system/components';
 
-import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductForm } from '../model';
+import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductFormTypes } from '../model';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface ProductPriceSectionProps {
@@ -10,7 +10,7 @@ interface ProductPriceSectionProps {
   onSalePriceChange: ChangeEventHandler<HTMLInputElement>;
   onSpecialPriceBlur: FocusEventHandler<HTMLInputElement>;
   onSpecialPriceChange: ChangeEventHandler<HTMLInputElement>;
-  product: TodaySpecialProductForm;
+  product: TodaySpecialProductFormTypes;
   productErrorMessages: TodaySpecialProductErrorMessageTypes;
 }
 

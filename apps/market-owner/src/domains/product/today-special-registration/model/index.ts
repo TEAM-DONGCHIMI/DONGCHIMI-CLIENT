@@ -9,11 +9,13 @@ export {
   revokePreviewUrl,
   sanitizeProductDescription,
   sanitizeProductName,
+  todaySpecialImageInputAccept,
+  todaySpecialImageUploadErrorMessages,
 } from './product-form.utils';
 export { todaySpecialRegistrationFormSchema } from './product-form.schema';
 export type {
   TodaySpecialProductErrorMessageTypes,
-  TodaySpecialProductForm,
+  TodaySpecialProductFormTypes,
   TodaySpecialProductTextFieldTypes,
-  TodaySpecialRegistrationForm,
+  TodaySpecialRegistrationFormTypes,
 } from './product-form.types';
