@@ -1,9 +1,11 @@
 import {
+  useEffect,
   useRef,
   type ChangeEventHandler,
   type ComponentPropsWithoutRef,
   type MouseEventHandler,
   type ReactNode,
+  type SyntheticEvent,
 } from 'react';
 
 import { Button, Dialog } from '@dongchimi/design-system/components';
@@ -25,6 +27,7 @@ export interface UploadModalProps extends NativeDialogContentProps {
   description?: string;
   fileSelectIcon?: ReactNode;
   fileSelectLabel?: string;
+  fileSelectTooltipLabel?: string;
   heading: string;
   label: string;
   open: boolean;
@@ -60,6 +63,7 @@ export const UploadModal = ({
   description,
   fileSelectIcon = DEFAULT_FILE_SELECT_ICON,
   fileSelectLabel = DEFAULT_FILE_SELECT_LABEL,
+  fileSelectTooltipLabel,
   heading,
   label,
   open,
@@ -74,85 +78,147 @@ export const UploadModal = ({
   ...contentProps
 }: UploadModalProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const hasExplicitCloseIntentRef = useRef(false);
   const isUploadState = state === 'upload';
   const isUploadDisabled = uploadButtonDisabled ?? !isUploadState;
   const mainText = isUploadState && selectedFileText != null ? selectedFileText : label;
   const hasFileSelectIcon = hasRenderableIcon(fileSelectIcon);
   const fileSelectButtonProps = fileSelectButtonPropsByState[state];
-  const handleFileSelectClick = () => {
+
+  const resetFileInputValue = () => {
     if (fileInputRef.current != null) {
       fileInputRef.current.value = '';
-      fileInputRef.current.click();
     }
+  };
+  const handleFileSelectClick = () => {
+    resetFileInputValue();
+    fileInputRef.current?.click();
+  };
+  const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    onFileChange?.(event);
+  };
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      return;
+    }
+
+    onOpenChange(open);
+  };
+  const handleImplicitDialogClose = (event: SyntheticEvent<HTMLDialogElement>) => {
+    if (hasExplicitCloseIntentRef.current) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const dialogElement = event.currentTarget;
+
+    window.requestAnimationFrame(() => {
+      if (!open || !dialogElement.isConnected || dialogElement.open) {
+        return;
+      }
+
+      if (typeof dialogElement.showModal === 'function') {
+        dialogElement.showModal();
+        return;
+      }
+
+      dialogElement.setAttribute('open', '');
+    });
   };
   const handleCancel: MouseEventHandler<HTMLButtonElement> = (event) => {
     onCancel?.(event);
 
     if (!event.defaultPrevented) {
+      hasExplicitCloseIntentRef.current = true;
       onOpenChange(false);
     }
   };
+  const handleUpload: MouseEventHandler<HTMLButtonElement> = (event) => {
+    hasExplicitCloseIntentRef.current = true;
+    onUpload?.(event);
+  };
+
+  useEffect(() => {
+    if (open) {
+      hasExplicitCloseIntentRef.current = false;
+    }
+  }, [open]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content {...contentProps} className={cn(S.contentClassName, className)}>
-        <div className={S.containerClassName}>
-          <div className={S.mainClassName}>
-            <Dialog.Title className={S.titleClassName}>{heading}</Dialog.Title>
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <Dialog.Content
+          {...contentProps}
+          className={cn(S.contentClassName, className)}
+          onCancel={handleImplicitDialogClose}
+          onClose={handleImplicitDialogClose}
+        >
+          <div className={S.containerClassName}>
+            <div className={S.mainClassName}>
+              <Dialog.Title className={S.titleClassName}>{heading}</Dialog.Title>
 
-            <div className={S.bodyRecipe({ state })}>
-              <div className={S.textGroupClassName}>
-                {isUploadState && description != null && (
-                  <p className={S.descriptionClassName}>{description}</p>
-                )}
-                <Dialog.Description className={S.labelRecipe({ state })}>
-                  {mainText}
-                </Dialog.Description>
+              <div className={S.bodyRecipe({ state })}>
+                <div className={S.textGroupClassName}>
+                  {isUploadState && description != null && (
+                    <p className={S.descriptionClassName}>{description}</p>
+                  )}
+                  <Dialog.Description className={S.labelRecipe({ state })}>
+                    {mainText}
+                  </Dialog.Description>
+                </div>
+
+                <div className={S.fileSelectControlClassName}>
+                  <Button
+                    className={S.fileSelectButtonClassName}
+                    leftIcon={hasFileSelectIcon ? fileSelectIcon : undefined}
+                    onClick={handleFileSelectClick}
+                    size='small'
+                    {...fileSelectButtonProps}
+                  >
+                    {fileSelectLabel}
+                  </Button>
+                  {fileSelectTooltipLabel != null && (
+                    <span className={S.fileSelectTooltipClassName}>{fileSelectTooltipLabel}</span>
+                  )}
+                </div>
               </div>
+            </div>
 
+            <div className={S.footerClassName}>
               <Button
-                className={S.fileSelectButtonClassName}
-                leftIcon={hasFileSelectIcon ? fileSelectIcon : undefined}
-                onClick={handleFileSelectClick}
-                size='small'
-                {...fileSelectButtonProps}
+                className={S.footerButtonClassName}
+                color='assistive'
+                onClick={handleCancel}
+                size='large'
+                variant='outlined'
               >
-                {fileSelectLabel}
+                {cancelLabel}
               </Button>
-              <input
-                aria-label={fileSelectLabel}
-                accept={accept}
-                className={S.fileInputClassName}
-                onChange={onFileChange}
-                ref={fileInputRef}
-                tabIndex={-1}
-                type='file'
-              />
+              <Button
+                className={S.footerButtonClassName}
+                disabled={isUploadDisabled}
+                onClick={handleUpload}
+                size='large'
+                variant='solid'
+              >
+                {uploadButtonLabel}
+              </Button>
             </div>
           </div>
-
-          <div className={S.footerClassName}>
-            <Button
-              className={S.footerButtonClassName}
-              color='assistive'
-              onClick={handleCancel}
-              size='large'
-              variant='outlined'
-            >
-              {cancelLabel}
-            </Button>
-            <Button
-              className={S.footerButtonClassName}
-              disabled={isUploadDisabled}
-              onClick={onUpload}
-              size='large'
-              variant='solid'
-            >
-              {uploadButtonLabel}
-            </Button>
-          </div>
-        </div>
-      </Dialog.Content>
-    </Dialog>
+        </Dialog.Content>
+      </Dialog>
+      {open && (
+        <input
+          aria-label={fileSelectLabel}
+          accept={accept}
+          className={S.fileInputClassName}
+          onChange={handleFileInputChange}
+          ref={fileInputRef}
+          tabIndex={-1}
+          type='file'
+        />
+      )}
+    </>
   );
 };
