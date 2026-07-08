@@ -94,3 +94,15 @@ export const marketListSectionClassName = style({
   gap: '2rem',
   padding: '1.6rem 0',
 });
+
+export const marketListStatusClassName = style({
+  ...typography['caption-1-medium'],
+  padding: '2rem',
+  color: atomic.neutral[60],
+  textAlign: 'center',
+});
+
+export const marketListSentinelClassName = style({
+  width: '100%',
+  height: '1px',
+});
