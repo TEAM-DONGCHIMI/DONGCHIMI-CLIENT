@@ -28,13 +28,7 @@ export const MarketImageUploadSection = ({ onImageSelect }: MarketImageUploadSec
       const nextPreviewImageUrl = URL.createObjectURL(selectedFile);
 
       onImageSelect(selectedFile);
-      setPreviewImageUrl((currentPreviewImageUrl) => {
-        if (currentPreviewImageUrl) {
-          URL.revokeObjectURL(currentPreviewImageUrl);
-        }
-
-        return nextPreviewImageUrl;
-      });
+      setPreviewImageUrl(nextPreviewImageUrl);
       event.currentTarget.value = '';
     }
   };
