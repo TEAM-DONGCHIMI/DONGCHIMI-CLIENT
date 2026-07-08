@@ -6,7 +6,7 @@ export const cardClassName = style({
   boxSizing: 'border-box',
   width: 'min(78.5rem, calc(100vw - min(3.2rem, 10vw)))',
   maxWidth: '100%',
-  minHeight: 'min(60.3rem, calc(100vh - min(3.2rem, 10vh)))',
+  minHeight: 'min(60.3rem, calc(100vh - 8rem))',
   minWidth: 0,
   gap: '3rem',
   paddingBlock: 'clamp(2rem, 5vw, 4rem)',
