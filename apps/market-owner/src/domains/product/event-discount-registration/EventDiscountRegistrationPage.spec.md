@@ -31,6 +31,13 @@
 - Design-system `Flex` is reused for internal layout and `Button` is reused for actions.
 - Analysis item chips are page-local static labels until repeated reuse is confirmed in DCMSM-19/20.
 
+## Layout
+
+- Page root owns background and vertical flow only. It does not apply global inline padding.
+- `DesktopHeader` owns its Figma header spacing, including 64px height and 40px inline padding.
+- `FileAnalysisConfirmSection` is rendered directly under the page root and keeps its card width,
+  internal padding, and vertical centering responsibility.
+
 ## UI States
 
 - loading: 이번 범위에서 다루지 않습니다.
