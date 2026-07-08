@@ -16,7 +16,7 @@ export type TodaySpecialProductErrorMessageTypes = Partial<
 // input으로 직접 변경하는 text field
 export type TodaySpecialProductTextFieldTypes = keyof Pick<
   TodaySpecialProductFormTypes,
-  'description' | 'endDate' | 'name' | 'salePrice' | 'specialPrice' | 'startDate'
+  'description' | 'name' | 'salePrice' | 'specialPrice' | 'startDate'
 >;
 
 // 오늘의 특가 상품 등록 전체 form 값

@@ -11,7 +11,6 @@ import {
   isValidTodaySpecialImageFile,
   limitProductDescriptionInput,
   limitProductNameInput,
-  resolveEndDateAfterStartDateChange,
   revokePreviewUrl,
   sanitizeProductDescription,
   sanitizeProductName,
@@ -108,7 +107,6 @@ export const useTodaySpecialRegistrationForm = ({
   const currentProductErrorMessages: TodaySpecialProductErrorMessageTypes = {
     category: getCurrentProductErrorMessage('category'),
     description: getCurrentProductErrorMessage('description'),
-    endDate: getCurrentProductErrorMessage('endDate'),
     name: getCurrentProductErrorMessage('name'),
     salePrice: getCurrentProductErrorMessage('salePrice'),
     specialPrice: getCurrentProductErrorMessage('specialPrice'),
@@ -245,24 +243,6 @@ export const useTodaySpecialRegistrationForm = ({
     closeCategoryDropdown(false);
   };
 
-  // 시작일 변경 시 시작일보다 이전인 종료일은 초기화
-  const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const startDate = event.target.value;
-
-    setValue(`products.${currentIndex}.startDate`, startDate, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-    setValue(
-      `products.${currentIndex}.endDate`,
-      resolveEndDateAfterStartDateChange(startDate, currentProduct.endDate),
-      {
-        shouldDirty: true,
-        shouldValidate: true,
-      },
-    );
-  };
-
   // 이미지 파일을 검증하고 미리보기 object URL을 생성
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -339,10 +319,8 @@ export const useTodaySpecialRegistrationForm = ({
       productErrorMessages: currentProductErrorMessages,
     },
     productPeriodSectionProps: {
-      onEndDateBlur: handleFieldBlur('endDate'),
-      onEndDateChange: handleFieldChange('endDate'),
       onStartDateBlur: handleFieldBlur('startDate'),
-      onStartDateChange: handleStartDateChange,
+      onStartDateChange: handleFieldChange('startDate'),
       product: currentProduct,
       productErrorMessages: currentProductErrorMessages,
     },

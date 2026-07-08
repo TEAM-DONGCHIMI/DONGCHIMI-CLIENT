@@ -313,19 +313,8 @@ export const categoryDropdownItemClassName = style({
   width: '16.6rem',
 });
 
-export const dateRowClassName = style({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1.6rem 1fr',
-  gap: '1.4rem',
-  alignItems: 'start',
-  width: '100%',
-});
-
-export const dateFieldGroupClassName = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.8rem',
-  minWidth: 0,
+export const dateSingleFieldClassName = style({
+  width: 'calc((100% - 4.4rem) / 2)',
 });
 
 export const dateFieldRootClassName = style({
@@ -389,12 +378,6 @@ export const dateNativeInputClassName = style({
   height: '100%',
   opacity: 0,
   cursor: 'pointer',
-});
-
-export const dateSeparatorClassName = style({
-  ...typography['heading-1-semibold'],
-  color: atomic.neutral[40],
-  textAlign: 'center',
 });
 
 export const actionSectionClassName = style({

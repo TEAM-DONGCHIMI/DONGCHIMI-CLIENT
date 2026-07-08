@@ -15,7 +15,6 @@ export const todaySpecialProductDescriptionMaxLength = 25;
 export const createEmptyTodaySpecialProductForm = (): TodaySpecialProductFormTypes => ({
   category: '',
   description: '',
-  endDate: '',
   imageFile: null,
   imagePreviewUrl: null,
   name: '',
@@ -58,9 +57,4 @@ export const formatPriceInput = (value: string) => {
 // 콤마 제거 후 숫자로 변환
 export const parsePriceInput = (value: string) => {
   return Number(value.replace(/,/g, ''));
-};
-
-// 시작일 변경 시 종료일이 시작일보다 이전이면 종료일 초기화
-export const resolveEndDateAfterStartDateChange = (startDate: string, endDate: string) => {
-  return endDate && endDate < startDate ? '' : endDate;
 };

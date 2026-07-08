@@ -45,7 +45,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `sections/ProductPriceSection.tsx`
   - 오늘의 특가, 판매가 input을 렌더링합니다.
 - `sections/ProductPeriodSection.tsx`
-  - 행사 시작일/종료일 field를 배치합니다.
+  - 행사 시작일 field를 배치합니다.
 - `components/DateField.tsx`
   - visible `YYYY-MM-DD` field와 투명 native `type=date` input overlay를 결합합니다.
   - native date icon/text는 숨기고, `showPicker()`로 date picker를 엽니다.
@@ -105,11 +105,9 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 1원 이상이고 오늘의 특가 이상이어야 submit 가능 상태가 됩니다.
   - 우측 `원` unit은 `InlineField` unit으로 표시합니다.
 - 행사 기간
-  - 시작일/종료일은 date picker로 선택합니다.
-  - 시작일/종료일은 모두 필수 입력입니다.
+  - 시작일은 date picker로 선택합니다.
+  - 시작일은 필수 입력입니다.
   - visible text는 `YYYY-MM-DD` 형식입니다.
-  - 종료일 field는 시작일을 `min`으로 받습니다.
-  - 시작일 변경 시 기존 종료일이 시작일보다 이전이면 종료일을 초기화합니다.
 
 ## Field Error Messages
 
@@ -131,9 +129,6 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 오늘의 특가보다 낮은 경우: `판매가는 오늘의 특가 이상으로 입력해주세요.`
 - 행사 시작일
   - 미선택한 경우: `행사 시작일을 선택해주세요.`
-- 행사 종료일
-  - 미선택한 경우: `행사 종료일을 선택해주세요.`
-  - 시작일보다 이전인 경우: `행사 종료일은 시작일 이후로 선택해주세요.`
 
 ## Behavior
 

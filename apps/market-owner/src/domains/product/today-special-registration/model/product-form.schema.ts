@@ -37,7 +37,6 @@ export const todaySpecialProductFormSchema = z
   .object({
     category: requiredTextSchema('카테고리를 선택해주세요.'),
     description: productDescriptionSchema,
-    endDate: z.iso.date('행사 종료일을 선택해주세요.'),
     imageFile: z.file().nullable(),
     imagePreviewUrl: z.string().nullable(),
     name: productNameSchema,
@@ -54,14 +53,6 @@ export const todaySpecialProductFormSchema = z
         code: 'custom',
         message: '판매가는 오늘의 특가 이상으로 입력해주세요.',
         path: ['salePrice'],
-      });
-    }
-
-    if (product.startDate && product.endDate && product.endDate < product.startDate) {
-      context.addIssue({
-        code: 'custom',
-        message: '행사 종료일은 시작일 이후로 선택해주세요.',
-        path: ['endDate'],
       });
     }
   });

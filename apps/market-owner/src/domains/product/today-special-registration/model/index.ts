@@ -5,7 +5,6 @@ export {
   isValidTodaySpecialImageFile,
   limitProductDescriptionInput,
   limitProductNameInput,
-  resolveEndDateAfterStartDateChange,
   revokePreviewUrl,
   sanitizeProductDescription,
   sanitizeProductName,
