@@ -1,13 +1,19 @@
+import { useNavigate } from 'react-router';
+
 import { Button, Flex, TextInput, Toast } from '@dongchimi/design-system/components';
 import { IcCircleCheckFill } from '@dongchimi/design-system/icons';
+
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 import { useSignupForm } from './hooks/use-signup-form';
 import * as S from './SignupPage.css';
 
 export const SignupPage = () => {
+  const navigate = useNavigate();
   const signupForm = useSignupForm();
   const handleSignupSubmit = signupForm.handleSubmit(() => {
     signupForm.clearSubmitErrorMessage();
+    navigate(MARKET_OWNER_ROUTES.login);
   });
 
   return (

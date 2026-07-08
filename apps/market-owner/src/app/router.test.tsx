@@ -129,6 +129,29 @@ describe('marketOwnerRoutes', () => {
     await waitFor(() => expect(submitButton).toBeEnabled());
   });
 
+  it('redirects to login page after valid signup submit', async () => {
+    const user = userEvent.setup();
+
+    const { container } = renderRoute('/signup');
+
+    const emailInput = container.querySelector<HTMLInputElement>('input[name="email"]');
+    const passwordInput = container.querySelector<HTMLInputElement>('input[name="password"]');
+    const passwordConfirmInput = container.querySelector<HTMLInputElement>(
+      'input[name="passwordConfirm"]',
+    );
+
+    if (emailInput === null || passwordInput === null || passwordConfirmInput === null) {
+      throw new Error('Expected signup inputs to be rendered.');
+    }
+
+    await user.type(emailInput, 'new@example.com');
+    await user.type(passwordInput, 'abc123');
+    await user.type(passwordConfirmInput, 'abc123');
+    await user.click(await screen.findByRole('button', { name: '가입 완료' }));
+
+    expect(await screen.findByRole('heading', { name: '로그인' })).toBeInTheDocument();
+  });
+
   it('renders protected work routes with the sidebar layout', async () => {
     renderRoute('/');
 

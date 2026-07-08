@@ -14,7 +14,7 @@
 ## Purpose
 
 사장님웹 회원가입 화면의 초기 form UI와 이메일, 비밀번호, 비밀번호 확인 입력 검증을 public auth layout 안에서 렌더링합니다.
-이번 범위는 client-side validation까지이며 실제 회원가입 API, 서버 중복 확인, submit 동작은 후속 auth 작업에서 연결합니다.
+이번 범위는 client-side validation과 유효 submit 이후 로그인 페이지 이동까지이며 실제 회원가입 API, 서버 중복 확인은 후속 auth 작업에서 연결합니다.
 
 ## Ownership
 
@@ -36,7 +36,7 @@
 - disabled: full validation 전까지 `가입 완료` CTA는 disabled 상태입니다.
 - loading: 이번 범위에서 다루지 않습니다.
 - error: field validation error는 각 `TextInput` 아래에 표시하고, 네트워크 또는 가입 실패 같은 submit error는 field group 아래 toast로 표시합니다.
-- success: 이번 범위에서 다루지 않습니다.
+- success: 유효한 form submit 이후 `/login`으로 이동합니다.
 
 ## Data
 
@@ -57,6 +57,7 @@
 - 비밀번호 확인 입력은 비밀번호와 동일한 값을 입력해야 유효합니다.
 - 비밀번호 확인 입력값이 유효하면 입력창 우측에 `IcCircleCheckFill` trailing icon을 표시합니다.
 - submit CTA는 전체 입력값이 유효할 때 활성화됩니다.
+- 유효한 form submit 이후 로그인 페이지로 이동합니다.
 - 네트워크 오류 또는 가입 실패 오류는 field error message가 아니라 form-level toast로 표시합니다.
 
 ## Accessibility
@@ -84,4 +85,5 @@
 - [ ] valid password confirmation renders a right-side check icon
 - [ ] submit button renders as disabled before valid input
 - [ ] submit button is enabled when email, password, and password confirmation are valid
+- [ ] valid signup submit redirects to `/login`
 - [ ] submit failure renders as an error toast instead of a field error
