@@ -3,6 +3,7 @@ import type { FormEventHandler } from 'react';
 import { Button, Flex, TextInput } from '@dongchimi/design-system/components';
 
 import { useSignupEmailField } from './hooks/use-signup-email-field';
+import { useSignupPasswordConfirmField } from './hooks/use-signup-password-confirm-field';
 import { useSignupPasswordField } from './hooks/use-signup-password-field';
 import * as S from './SignupPage.css';
 
@@ -13,6 +14,7 @@ const preventSignupSubmit: FormEventHandler<HTMLFormElement> = (event) => {
 export const SignupPage = () => {
   const emailField = useSignupEmailField();
   const passwordField = useSignupPasswordField();
+  const passwordConfirmField = useSignupPasswordConfirmField(passwordField.password);
 
   return (
     <main className={S.pageClassName}>
@@ -54,8 +56,11 @@ export const SignupPage = () => {
             autoComplete='new-password'
             label='비밀번호 확인'
             name='passwordConfirm'
+            onChange={passwordConfirmField.handlePasswordConfirmChange}
             placeholder='비밀번호 확인'
             type='password'
+            value={passwordConfirmField.passwordConfirm}
+            {...passwordConfirmField.textInputStatusProps}
           />
         </Flex>
 
