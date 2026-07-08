@@ -92,6 +92,10 @@ export const MarketInformationRegistrationPage = () => {
     setFormValue('holiday', holiday);
   };
 
+  const handleAddressSearch = () => {
+    setFormValue('address', marketInformationRegistrationFixture.selectedAddress);
+  };
+
   const handleMarketInformationSubmit = handleSubmit(() => undefined);
 
   return (
@@ -127,7 +131,7 @@ export const MarketInformationRegistrationPage = () => {
                   addressDetailErrorMessage={errors.addressDetail?.message}
                   addressDetailField={register('addressDetail')}
                   addressField={register('address')}
-                  onAddressSearch={() => undefined}
+                  onAddressSearch={handleAddressSearch}
                 />
                 <div className={S.fieldPairGridClassName}>
                   <BusinessOperationSection
