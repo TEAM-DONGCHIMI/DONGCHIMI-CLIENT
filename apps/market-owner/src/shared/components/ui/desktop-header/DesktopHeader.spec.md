@@ -29,13 +29,14 @@
 
 - `variant`: `default`, `onlyHome`입니다. 기본값은 `default`입니다.
 - `logo`: `default` 모드에서 좌측 92px x 32px 영역에 렌더링할 로고 슬롯입니다. 실제 이미지 선택은 호출부가 책임집니다.
-- `showSearchBar`: SearchBar 표시 여부입니다. 기본값은 `true`입니다.
+- `showSearchBar`: 검색 영역 표시 여부입니다. 기본값은 `true`입니다. `false`이면 검색 관련 props를 함께 전달하지 않습니다.
 - `parentLabel`: `default` 모드에서 상위 페이지 이름을 표시합니다. `default` 모드에서는 필수입니다.
 - `currentLabel`: `default` 모드에서 현재 페이지 이름을 표시합니다. `default` 모드에서는 필수입니다.
 - `homeLabel`: `onlyHome` 모드에서 표시할 홈 label입니다. 기본값은 `동치미 작업 홈`입니다.
-- `searchValue`, `onSearchValueChange`, `onSearch`: 내부 SearchBar로 전달하는 검색 관련 props입니다. Header에서는 페이지 검색 상태와 맞추기 위해 controlled 검색값만 전달합니다.
+- `searchValue`, `onSearchValueChange`, `onSearch`: 기본 SearchBar로 전달하는 검색 관련 props입니다. `searchSlot`과 함께 전달하지 않습니다.
 - `searchSlot`: 기본 SearchBar 대신 렌더링할 custom 검색 영역입니다. 상품 검색 dropdown처럼 SearchBar
-  바깥의 결과 패널과 선택 flow가 필요한 경우 사용합니다.
+  바깥의 결과 패널과 선택 flow가 필요한 경우 사용합니다. `searchValue`, `onSearchValueChange`, `onSearch`와
+  함께 전달하지 않습니다.
 - `className`: 호출부에서 header wrapper className을 추가로 전달할 때 사용합니다.
 
 ## States

@@ -7,17 +7,39 @@ import { cn } from '@dongchimi/design-system/styles';
 import { SearchBar, type SearchBarProps } from '../search-bar';
 import * as S from './DesktopHeader.css';
 
-interface DesktopHeaderSearchProps {
+interface DesktopHeaderSearchBarProps {
   searchValue?: string;
   onSearch?: SearchBarProps['onSearch'];
   onSearchValueChange?: SearchBarProps['onValueChange'];
 }
 
-interface DesktopHeaderBaseProps extends DesktopHeaderSearchProps {
-  className?: string;
+type DesktopHeaderSearchProps =
+  | (DesktopHeaderSearchBarProps & {
+      searchSlot?: never;
+      showSearchBar?: true;
+    })
+  | {
+      searchSlot: ReactNode;
+      searchValue?: never;
+      onSearch?: never;
+      onSearchValueChange?: never;
+      showSearchBar?: true;
+    }
+  | {
+      searchSlot?: never;
+      searchValue?: never;
+      onSearch?: never;
+      onSearchValueChange?: never;
+      showSearchBar: false;
+    };
+
+type DesktopHeaderSearchRenderProps = DesktopHeaderSearchBarProps & {
   searchSlot?: ReactNode;
-  showSearchBar?: boolean;
-}
+};
+
+type DesktopHeaderBaseProps = DesktopHeaderSearchProps & {
+  className?: string;
+};
 
 interface DesktopHeaderDefaultProps {
   currentLabel: string;
@@ -40,7 +62,7 @@ const renderSearchBar = ({
   searchValue,
   onSearch,
   onSearchValueChange,
-}: DesktopHeaderSearchProps) => (
+}: DesktopHeaderSearchBarProps) => (
   <SearchBar
     aria-label='상품 검색'
     icon={searchIcon}
@@ -56,7 +78,7 @@ const renderSearchArea = ({
   searchValue,
   onSearch,
   onSearchValueChange,
-}: DesktopHeaderSearchProps & { searchSlot?: ReactNode }) => {
+}: DesktopHeaderSearchRenderProps) => {
   return searchSlot ?? renderSearchBar({ searchValue, onSearch, onSearchValueChange });
 };
 
