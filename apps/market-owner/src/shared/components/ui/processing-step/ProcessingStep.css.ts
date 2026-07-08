@@ -9,6 +9,8 @@ export const listClassName = style({
   minWidth: 0,
   flexDirection: 'column',
   gap: '1.6rem',
+  margin: 0,
+  padding: 0,
   color: atomic.neutral[90],
   listStyle: 'none',
 });
@@ -32,7 +34,7 @@ export const itemStatusClassNames = styleVariants({
     backgroundColor: atomic.neutral[10],
   },
   processing: {
-    border: `1px solid ${atomic.neutral[20]}`,
+    border: `1px solid ${atomic.neutral[30]}`,
     backgroundColor: atomic.common[0],
   },
   pending: {
@@ -51,23 +53,9 @@ export const iconWrapperClassName = style({
 });
 
 export const iconClassName = style({
-  display: 'inline-block',
+  display: 'block',
   width: '2.4rem',
   height: '2.4rem',
-  border: '2px dashed currentColor',
-  borderRadius: 6,
-});
-
-export const iconStatusClassNames = styleVariants({
-  completed: {
-    color: atomic.common[100],
-  },
-  processing: {
-    color: atomic.common[100],
-  },
-  pending: {
-    color: atomic.common[100],
-  },
 });
 
 export const titleClassName = style({
