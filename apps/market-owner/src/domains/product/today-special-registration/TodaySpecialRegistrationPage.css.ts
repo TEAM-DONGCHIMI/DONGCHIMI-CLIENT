@@ -8,7 +8,6 @@ export const pageRootClassName = style({
   width: '100%',
   minWidth: 'max-content',
   minHeight: '100vh',
-  backgroundColor: atomic.neutral[5],
 });
 
 export const formContentClassName = style({
