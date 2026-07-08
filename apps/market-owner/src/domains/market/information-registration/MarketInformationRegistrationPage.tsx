@@ -147,14 +147,14 @@ export const MarketInformationRegistrationPage = () => {
                   <BusinessOperationSection
                     additionalBusinessDay={form.additionalBusinessDay}
                     additionalBusinessTime={form.additionalBusinessTime}
-                    additionalBusinessTimeErrorMessage={
+                    additionalBusinessOperationErrorMessage={
                       errors.additionalBusinessTime?.message ??
                       errors.additionalBusinessDay?.message
                     }
                     additionalBusinessTimeField={register('additionalBusinessTime')}
                     businessDay={form.businessDay}
                     businessTime={form.businessTime}
-                    businessTimeErrorMessage={
+                    businessOperationErrorMessage={
                       errors.businessTime?.message ?? errors.businessDay?.message
                     }
                     businessTimeField={register('businessTime')}

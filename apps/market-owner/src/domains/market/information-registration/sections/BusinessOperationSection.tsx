@@ -30,11 +30,11 @@ const getBusinessDaysDisplayLabel = (businessDays: string[]) => {
 export interface BusinessOperationSectionProps {
   additionalBusinessDay: string;
   additionalBusinessTime: string;
-  additionalBusinessTimeErrorMessage?: string;
+  additionalBusinessOperationErrorMessage?: string;
   additionalBusinessTimeField: UseFormRegisterReturn<'additionalBusinessTime'>;
   businessDay: string;
   businessTime: string;
-  businessTimeErrorMessage?: string;
+  businessOperationErrorMessage?: string;
   businessTimeField: UseFormRegisterReturn<'businessTime'>;
   holiday: string;
   onAdditionalBusinessDayChange: (businessDay: string) => void;
@@ -62,11 +62,11 @@ const BusinessTimeErrorMessage = ({ message }: BusinessTimeErrorMessageProps) =>
 export const BusinessOperationSection = ({
   additionalBusinessDay,
   additionalBusinessTime,
-  additionalBusinessTimeErrorMessage,
+  additionalBusinessOperationErrorMessage,
   additionalBusinessTimeField,
   businessDay,
   businessTime,
-  businessTimeErrorMessage: mainBusinessTimeErrorMessage,
+  businessOperationErrorMessage,
   businessTimeField,
   holiday,
   onAdditionalBusinessDayChange,
@@ -186,8 +186,8 @@ export const BusinessOperationSection = ({
               onTrailingAction={() => setIsAdditionalBusinessTimeVisible(true)}
             />
           </div>
-          {mainBusinessTimeErrorMessage && (
-            <BusinessTimeErrorMessage message={mainBusinessTimeErrorMessage} />
+          {businessOperationErrorMessage && (
+            <BusinessTimeErrorMessage message={businessOperationErrorMessage} />
           )}
           {shouldShowAdditionalBusinessTime && (
             <>
@@ -248,8 +248,8 @@ export const BusinessOperationSection = ({
                   onTrailingAction={handleRemoveAdditionalBusinessTime}
                 />
               </div>
-              {additionalBusinessTimeErrorMessage && (
-                <BusinessTimeErrorMessage message={additionalBusinessTimeErrorMessage} />
+              {additionalBusinessOperationErrorMessage && (
+                <BusinessTimeErrorMessage message={additionalBusinessOperationErrorMessage} />
               )}
             </>
           )}
