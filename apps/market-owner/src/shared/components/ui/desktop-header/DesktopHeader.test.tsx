@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { render, screen, userEvent } from '../../../../test';
+import { render, screen, userEvent } from '@/test';
 import { DesktopHeader } from './DesktopHeader';
 
 describe('DesktopHeader', () => {

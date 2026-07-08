@@ -79,7 +79,11 @@ export const linkCopyButtonClassName = style({
   backgroundColor: 'transparent',
   color: atomic.neutral[60],
   cursor: 'pointer',
+  transition: 'background-color 130ms ease',
   selectors: {
+    '&:hover': {
+      backgroundColor: atomic.neutral[20],
+    },
     '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
       outlineOffset: 2,
@@ -110,7 +114,11 @@ export const actionButtonClassName = style({
   color: atomic.neutral[80],
   cursor: 'pointer',
   textAlign: 'left',
+  transition: 'background-color 130ms ease',
   selectors: {
+    '&:hover': {
+      backgroundColor: atomic.neutral[10],
+    },
     '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
       outlineOffset: 2,

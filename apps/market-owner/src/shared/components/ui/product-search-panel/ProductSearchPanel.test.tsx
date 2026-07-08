@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { render, screen, userEvent, within } from '../../../../test';
+import { render, screen, userEvent, within } from '@/test';
 import {
   ProductSearchPanel,
   type ProductSearchPanelItemTypes,

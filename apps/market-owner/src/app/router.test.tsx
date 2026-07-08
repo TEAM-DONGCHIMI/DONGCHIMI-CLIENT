@@ -2,7 +2,7 @@ import { RouterProvider, createMemoryRouter } from 'react-router';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { render, screen } from '../test';
+import { render, screen } from '@/test';
 import { marketOwnerRoutes } from './router';
 
 const renderRoute = (path: string) => {

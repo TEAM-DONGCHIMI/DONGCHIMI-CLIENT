@@ -108,6 +108,93 @@ const getSearchResults = (items: ProductSearchPanelItemTypes[], query: string) =
     .map(({ item }) => item);
 };
 
+interface ProductSearchResultListProps {
+  onResultFocus: (event: FocusEvent<HTMLButtonElement>) => void;
+  onResultMouseEnter: (event: MouseEvent<HTMLButtonElement>) => void;
+  onResultSelect: (item: ProductSearchPanelItemTypes) => void;
+  results: ProductSearchPanelItemTypes[];
+}
+
+const ProductSearchResultList = ({
+  onResultFocus,
+  onResultMouseEnter,
+  onResultSelect,
+  results,
+}: ProductSearchResultListProps) => {
+  return (
+    <ul
+      aria-label='상품 검색 결과'
+      className={S.resultListClassName}
+      data-scrollable={results.length > DEFAULT_VISIBLE_RESULT_COUNT || undefined}
+    >
+      {results.map((item) => (
+        <li className={S.resultItemClassName} key={item.id}>
+          <button
+            className={S.resultButtonClassName}
+            onClick={() => onResultSelect(item)}
+            onFocus={onResultFocus}
+            onMouseEnter={onResultMouseEnter}
+            type='button'
+          >
+            <Chip
+              className={S.resultLabelChipClassName}
+              color='primary'
+              size='desktop'
+              variant='soft'
+            >
+              {item.label}
+            </Chip>
+            <span className={S.resultNameClassName}>{item.name}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+interface ProductSearchDropdownContentProps extends ProductSearchResultListProps {
+  emptyMessage: string;
+  errorMessage: string;
+  isError: boolean;
+}
+
+const ProductSearchDropdownContent = ({
+  emptyMessage,
+  errorMessage,
+  isError,
+  onResultFocus,
+  onResultMouseEnter,
+  onResultSelect,
+  results,
+}: ProductSearchDropdownContentProps) => {
+  if (isError) {
+    return (
+      <Toast className={S.errorToastClassName} status='error'>
+        {errorMessage}
+      </Toast>
+    );
+  }
+
+  if (results.length === 0) {
+    return (
+      <div className={S.emptyStateClassName} role='status'>
+        <Chip className={S.emptyMessageChipClassName} color='primary' size='desktop' variant='soft'>
+          {emptyMessage}
+        </Chip>
+      </div>
+    );
+  }
+
+  return (
+    <ProductSearchResultList
+      onResultFocus={onResultFocus}
+      onResultMouseEnter={onResultMouseEnter}
+      onResultSelect={onResultSelect}
+      results={results}
+    />
+  );
+};
+
 export const ProductSearchPanel = ({
   className,
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
@@ -169,6 +256,11 @@ export const ProductSearchPanel = ({
     event.currentTarget.scrollIntoView?.({ block: 'nearest' });
   };
 
+  const handleResultSelect = (item: ProductSearchPanelItemTypes) => {
+    setIsDropdownOpen(false);
+    onSelectProduct(item);
+  };
+
   return (
     <div ref={rootRef} className={cn(S.rootClassName, className)} {...props}>
       <SearchBar
@@ -183,53 +275,15 @@ export const ProductSearchPanel = ({
 
       {shouldRenderPanel && (
         <div className={S.dropdownClassName}>
-          {isError ? (
-            <Toast className={S.errorToastClassName} status='error'>
-              {errorMessage}
-            </Toast>
-          ) : results.length > 0 ? (
-            <ul
-              aria-label='상품 검색 결과'
-              className={S.resultListClassName}
-              data-scrollable={results.length > DEFAULT_VISIBLE_RESULT_COUNT || undefined}
-            >
-              {results.map((item) => (
-                <li className={S.resultItemClassName} key={item.id}>
-                  <button
-                    className={S.resultButtonClassName}
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      onSelectProduct(item);
-                    }}
-                    onFocus={handleResultFocus}
-                    onMouseEnter={handleResultMouseEnter}
-                    type='button'
-                  >
-                    <Chip
-                      className={S.resultLabelChipClassName}
-                      color='primary'
-                      size='desktop'
-                      variant='soft'
-                    >
-                      {item.label}
-                    </Chip>
-                    <span className={S.resultNameClassName}>{item.name}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className={S.emptyStateClassName} role='status'>
-              <Chip
-                className={S.emptyMessageChipClassName}
-                color='primary'
-                size='desktop'
-                variant='soft'
-              >
-                {emptyMessage}
-              </Chip>
-            </div>
-          )}
+          <ProductSearchDropdownContent
+            emptyMessage={emptyMessage}
+            errorMessage={errorMessage}
+            isError={isError}
+            onResultFocus={handleResultFocus}
+            onResultMouseEnter={handleResultMouseEnter}
+            onResultSelect={handleResultSelect}
+            results={results}
+          />
         </div>
       )}
     </div>
