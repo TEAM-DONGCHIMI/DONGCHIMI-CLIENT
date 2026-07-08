@@ -27,7 +27,7 @@
   "dependencies": {
     "@dongchimi/design-system": "workspace:*",
     "@vanilla-extract/css": "catalog:",
-    "zod": "^4.4.3"
+    "zod": "catalog:"
   },
   "peerDependencies": {
     "react": "catalog:",
