@@ -80,7 +80,8 @@ HomePage(main)
     HomeProductSummarySection
       ProductCard(today)
       ProductCard(period)
-    LeafletShareCard
+    HomeShareSection
+      LeafletShareCard
 ```
 
 - `DesktopHeader`: app-shared header를 `onlyHome` 모드로 소비하고 상품 검색 slot에 `ProductSearchPanel`을
@@ -88,12 +89,15 @@ HomePage(main)
   page heading은 시각적으로 숨긴 `h1`으로 유지합니다.
 - `ProductSearchPanel`: 한 글자 이상 입력 시 검색 dropdown을 열고, 결과 item 선택 시 상품 수정 route로
   이동할 수 있도록 page handler를 호출합니다.
+- `HomeSearchPanel`: `DesktopHeader.searchSlot`에 주입되는 page-local component입니다. 검색 결과 선택 후
+  이동과 상품 정보 load 실패 toast를 홈 flow에 연결합니다.
 - `HomeHeroSection`: radius 20px checkerboard hero surface와 quick action 카드를 담당합니다.
   - quick action의 오른쪽 mint 영역은 icon/PNG asset 확정 전 placeholder slot으로 유지합니다.
 - `HomeQuickButton`: Figma `button_home quick` node `2403:69244` 기준의 312x74 quick button입니다.
 - `HomeDashboardSection`: 2개 상품 카드와 공유 카드를 같은 responsive grid에 배치합니다.
 - `HomeProductSummarySection`: shared `ProductCard` 오늘의 특가 상품 카드와 행사 할인 상품 카드를
   배치합니다.
+- `HomeShareSection`: 전단 공유 링크 복사 결과와 QR 준비중 feedback을 홈 toast flow에 연결합니다.
 - `LeafletShareCard`: 전단 공유 카드 heading, description, link field, action buttons를 담당합니다.
 
 ## Design System And Component Boundary
@@ -110,10 +114,13 @@ HomePage(main)
 - package shared components:
   - `ProductCard`
 - page-local components:
-  - `HomeHeroSection`
+  - `HomeSearchPanel`
   - `HomeQuickButton`
+- page-local sections:
+  - `HomeHeroSection`
   - `HomeDashboardSection`
   - `HomeProductSummarySection`
+  - `HomeShareSection`
 - not promoted:
   - `DesktopHeader`는 기존 `onlyHome`/`showSearchBar` 동작을 유지하고, 상품 검색 flow가 필요한 홈에서는
     `searchSlot`으로 `ProductSearchPanel`을 주입합니다.
