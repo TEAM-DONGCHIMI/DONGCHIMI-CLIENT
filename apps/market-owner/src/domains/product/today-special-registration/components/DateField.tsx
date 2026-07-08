@@ -1,17 +1,19 @@
-import type {
-  ChangeEventHandler,
-  FocusEventHandler,
-  KeyboardEventHandler,
-  MouseEventHandler,
+import {
+  type ChangeEventHandler,
+  type FocusEventHandler,
+  type KeyboardEventHandler,
+  type MouseEventHandler,
+  useId,
 } from 'react';
 
+import { IcCircleExclamationSizeSmallColorNegative } from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface DateFieldProps {
   ariaLabel: string;
-  describedBy?: string;
+  errorMessage?: string;
   hasError?: boolean;
   min?: string;
   onBlur: FocusEventHandler<HTMLInputElement>;
@@ -21,13 +23,16 @@ interface DateFieldProps {
 
 export const DateField = ({
   ariaLabel,
-  describedBy,
+  errorMessage,
   hasError = false,
   min,
   onBlur,
   onChange,
   value,
 }: DateFieldProps) => {
+  const errorMessageId = useId();
+  const hasErrorMessage = hasError && Boolean(errorMessage);
+
   const preventManualDateInput: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -47,24 +52,37 @@ export const DateField = ({
   };
 
   return (
-    <label className={cn(S.datePickerFieldClassName, hasError && S.datePickerFieldErrorClassName)}>
-      <span className={value ? S.dateValueClassName : S.datePlaceholderClassName}>
-        {value || 'YYYY-MM-DD'}
-      </span>
-      <input
-        aria-describedby={describedBy}
-        aria-invalid={hasError ? true : undefined}
-        aria-label={ariaLabel}
-        className={S.dateNativeInputClassName}
-        min={min}
-        onBlur={onBlur}
-        onChange={onChange}
-        onClick={openDatePicker}
-        onKeyDown={preventManualDateInput}
-        onPaste={(event) => event.preventDefault()}
-        type='date'
-        value={value}
-      />
-    </label>
+    <div className={S.dateFieldRootClassName}>
+      <label
+        className={cn(S.datePickerFieldClassName, hasError && S.datePickerFieldErrorClassName)}
+      >
+        <span className={value ? S.dateValueClassName : S.datePlaceholderClassName}>
+          {value || 'YYYY-MM-DD'}
+        </span>
+        <input
+          aria-describedby={hasErrorMessage ? errorMessageId : undefined}
+          aria-invalid={hasError ? true : undefined}
+          aria-label={ariaLabel}
+          className={S.dateNativeInputClassName}
+          min={min}
+          onBlur={onBlur}
+          onChange={onChange}
+          onClick={openDatePicker}
+          onKeyDown={preventManualDateInput}
+          onPaste={(event) => event.preventDefault()}
+          type='date'
+          value={value}
+        />
+      </label>
+      {hasErrorMessage && (
+        <p className={S.fieldErrorMessageClassName} id={errorMessageId}>
+          <IcCircleExclamationSizeSmallColorNegative
+            className={S.fieldErrorIconClassName}
+            aria-hidden='true'
+          />
+          <span>{errorMessage}</span>
+        </p>
+      )}
+    </div>
   );
 };

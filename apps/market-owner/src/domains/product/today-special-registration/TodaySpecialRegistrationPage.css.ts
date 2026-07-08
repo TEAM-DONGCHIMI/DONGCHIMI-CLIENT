@@ -325,6 +325,13 @@ export const dateFieldGroupClassName = style({
   minWidth: 0,
 });
 
+export const dateFieldRootClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.8rem',
+  minWidth: 0,
+});
+
 export const datePickerFieldClassName = style({
   ...typography['body-3-medium'],
   position: 'relative',
