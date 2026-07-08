@@ -3,7 +3,7 @@ import type { FieldError } from 'react-hook-form';
 interface GetVisibleFieldErrorMessageParams {
   error?: FieldError;
   isSubmitted: boolean;
-  isTouched?: unknown;
+  isTouched?: boolean;
 }
 
 export const getVisibleFieldErrorMessage = ({
@@ -11,5 +11,5 @@ export const getVisibleFieldErrorMessage = ({
   isSubmitted,
   isTouched,
 }: GetVisibleFieldErrorMessageParams) => {
-  return isSubmitted || Boolean(isTouched) ? error?.message : undefined;
+  return isSubmitted || isTouched ? error?.message : undefined;
 };
