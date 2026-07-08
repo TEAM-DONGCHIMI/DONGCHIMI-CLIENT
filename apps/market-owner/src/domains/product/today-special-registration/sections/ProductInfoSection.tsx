@@ -6,6 +6,7 @@ import { IcCamera, IcChevronDown, IcChevronUp, IcPlus } from '@dongchimi/design-
 
 import { todaySpecialCategoryOptions } from '../fixtures';
 import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductForm } from '../model';
+import { FieldErrorMessage } from '../components/FieldErrorMessage';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface ProductInfoSectionProps {
@@ -35,9 +36,7 @@ export const ProductInfoSection = ({
 }: ProductInfoSectionProps) => {
   const categoryWrapperRef = useRef<HTMLDivElement>(null);
   const categoryDropdownId = useId();
-  const nameErrorId = 'today-special-product-name-error';
   const categoryErrorId = 'today-special-product-category-error';
-  const descriptionErrorId = 'today-special-product-description-error';
 
   useEffect(() => {
     if (!isCategoryOpen) {
@@ -129,7 +128,7 @@ export const ProductInfoSection = ({
             </label>
             <InlineField
               aria-label='상품명'
-              aria-describedby={productErrorMessages.name ? nameErrorId : undefined}
+              errorMessage={productErrorMessages.name}
               id='today-special-product-name'
               onBlur={onNameBlur}
               onChange={onNameChange}
@@ -137,11 +136,6 @@ export const ProductInfoSection = ({
               status={productErrorMessages.name ? 'error' : 'default'}
               value={product.name}
             />
-            {productErrorMessages.name && (
-              <p className={S.fieldErrorMessageClassName} id={nameErrorId}>
-                {productErrorMessages.name}
-              </p>
-            )}
           </div>
 
           <div className={S.fieldGroupClassName}>
@@ -185,9 +179,7 @@ export const ProductInfoSection = ({
               )}
             </div>
             {productErrorMessages.category && (
-              <p className={S.fieldErrorMessageClassName} id={categoryErrorId}>
-                {productErrorMessages.category}
-              </p>
+              <FieldErrorMessage id={categoryErrorId} message={productErrorMessages.category} />
             )}
           </div>
         </div>
@@ -198,7 +190,7 @@ export const ProductInfoSection = ({
           </label>
           <InlineField
             aria-label='상품 한줄 홍보문구'
-            aria-describedby={productErrorMessages.description ? descriptionErrorId : undefined}
+            errorMessage={productErrorMessages.description}
             id='today-special-product-description'
             onBlur={onDescriptionBlur}
             onChange={onDescriptionChange}
@@ -206,11 +198,6 @@ export const ProductInfoSection = ({
             status={productErrorMessages.description ? 'error' : 'default'}
             value={product.description}
           />
-          {productErrorMessages.description && (
-            <p className={S.fieldErrorMessageClassName} id={descriptionErrorId}>
-              {productErrorMessages.description}
-            </p>
-          )}
         </div>
       </div>
     </section>

@@ -230,8 +230,17 @@ export const fieldGroupClassName = style({
 
 export const fieldErrorMessageClassName = style({
   ...typography['caption-1-medium'],
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.4rem',
   margin: 0,
   color: semantic.status.negative,
+});
+
+export const fieldErrorIconClassName = style({
+  flexShrink: 0,
+  width: '1.6rem',
+  height: '1.6rem',
 });
 
 export const categoryWrapperClassName = style({

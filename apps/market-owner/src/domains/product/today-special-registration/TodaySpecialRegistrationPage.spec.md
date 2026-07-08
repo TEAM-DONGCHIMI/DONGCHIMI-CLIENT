@@ -59,7 +59,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - category open: dropdown을 trigger 하단에 표시하고 현재 선택된 item을 selected 상태로 표시합니다.
 - multi product: 상품이 2개 이상이면 title에 `(현재/전체)`, 이전/다음 button, 삭제 button을 표시합니다.
 - disabled submit: 필수값이 비어 있거나 form completion 조건을 만족하지 않으면 `등록 완료`를 disabled 처리합니다.
-- field error: blur 또는 submit validation 이후 필드 아래에 error message를 표시합니다.
+- field error: blur 또는 submit validation 이후 필드 아래에 icon과 error message를 표시합니다.
 - server error: API 연결 시 추가합니다.
 - loading: 이번 범위에서 다루지 않습니다.
 
@@ -160,7 +160,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 ## Design / Component Notes
 
 - Design system components: `Button`, `IconButton`, `InlineField`, `Dropdown`, generated icon components.
-- Page-local components: `DateField`.
+- Page-local components: `DateField`, `FieldErrorMessage` for non-`InlineField` controls.
 - Page-local sections: title, product info, price, period.
 - Title count는 title text 바로 뒤에 표시하고, count와 chevron group 사이 간격은 `0.8rem`입니다.
 - `DateField`는 native date input의 브라우저 기본 icon/text를 노출하지 않기 위해 visible field와 transparent native input overlay를 사용합니다.
@@ -190,7 +190,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - [ ] category dropdown closes on outside click and Escape
 - [ ] product name trims edge spaces and limits input to 15 characters
 - [ ] product description trims edge spaces, remains optional, and limits input to 25 characters
-- [ ] invalid fields render error messages below each field after validation
+- [ ] invalid fields render icon and error messages below each field after validation
 - [ ] price fields accept digits only and display comma-formatted values with `원` unit
 - [ ] submit stays disabled when sale price is lower than today special price
 - [ ] DateField displays `YYYY-MM-DD` placeholder without browser date icon text

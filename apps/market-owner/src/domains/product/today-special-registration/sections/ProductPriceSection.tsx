@@ -22,9 +22,6 @@ export const ProductPriceSection = ({
   product,
   productErrorMessages,
 }: ProductPriceSectionProps) => {
-  const specialPriceErrorId = 'today-special-special-price-error';
-  const salePriceErrorId = 'today-special-sale-price-error';
-
   return (
     <section className={S.fieldSectionClassName} aria-labelledby='product-price-title'>
       <h2 className={S.sectionTitleClassName} id='product-price-title'>
@@ -39,7 +36,7 @@ export const ProductPriceSection = ({
             </label>
             <InlineField
               aria-label='오늘의 특가'
-              aria-describedby={productErrorMessages.specialPrice ? specialPriceErrorId : undefined}
+              errorMessage={productErrorMessages.specialPrice}
               id='today-special-special-price'
               inputMode='numeric'
               onBlur={onSpecialPriceBlur}
@@ -49,11 +46,6 @@ export const ProductPriceSection = ({
               unit='원'
               value={product.specialPrice}
             />
-            {productErrorMessages.specialPrice && (
-              <p className={S.fieldErrorMessageClassName} id={specialPriceErrorId}>
-                {productErrorMessages.specialPrice}
-              </p>
-            )}
           </div>
 
           <div className={S.fieldGroupClassName}>
@@ -62,7 +54,7 @@ export const ProductPriceSection = ({
             </label>
             <InlineField
               aria-label='판매가'
-              aria-describedby={productErrorMessages.salePrice ? salePriceErrorId : undefined}
+              errorMessage={productErrorMessages.salePrice}
               id='today-special-sale-price'
               inputMode='numeric'
               onBlur={onSalePriceBlur}
@@ -72,11 +64,6 @@ export const ProductPriceSection = ({
               unit='원'
               value={product.salePrice}
             />
-            {productErrorMessages.salePrice && (
-              <p className={S.fieldErrorMessageClassName} id={salePriceErrorId}>
-                {productErrorMessages.salePrice}
-              </p>
-            )}
           </div>
         </div>
       </div>

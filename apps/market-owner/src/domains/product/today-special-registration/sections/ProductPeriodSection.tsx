@@ -1,6 +1,7 @@
 import type { ChangeEventHandler, FocusEventHandler } from 'react';
 
 import { DateField } from '../components/DateField';
+import { FieldErrorMessage } from '../components/FieldErrorMessage';
 import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductForm } from '../model';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
@@ -44,9 +45,7 @@ export const ProductPeriodSection = ({
                 value={product.startDate}
               />
               {productErrorMessages.startDate && (
-                <p className={S.fieldErrorMessageClassName} id={startDateErrorId}>
-                  {productErrorMessages.startDate}
-                </p>
+                <FieldErrorMessage id={startDateErrorId} message={productErrorMessages.startDate} />
               )}
             </div>
             <span className={S.dateSeparatorClassName} aria-hidden='true'>
@@ -63,9 +62,7 @@ export const ProductPeriodSection = ({
                 value={product.endDate}
               />
               {productErrorMessages.endDate && (
-                <p className={S.fieldErrorMessageClassName} id={endDateErrorId}>
-                  {productErrorMessages.endDate}
-                </p>
+                <FieldErrorMessage id={endDateErrorId} message={productErrorMessages.endDate} />
               )}
             </div>
           </div>
