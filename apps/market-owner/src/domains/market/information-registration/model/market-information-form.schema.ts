@@ -29,28 +29,55 @@ const ownerPhoneErrorMessages = {
 const requiredString = (message: string) =>
   z.string().refine((value) => value.trim().length > 0, { message });
 
-export const marketInformationRegistrationSchema = z.object({
-  address: requiredString(addressErrorMessage),
-  addressDetail: requiredString(addressDetailErrorMessage).max(20, addressDetailErrorMessage),
-  businessDay: z.string().refine(isValidBusinessDay, {
-    message: businessOperationErrorMessage,
-  }),
-  businessRegistrationNumber: z.string().refine(isValidBusinessRegistrationNumber, {
-    message: businessRegistrationNumberErrorMessage,
-  }),
-  businessTime: z.string().refine(isValidBusinessTime, {
-    message: businessOperationErrorMessage,
-  }),
-  holiday: z.string(),
-  marketName: requiredString(marketNameErrorMessages.empty)
-    .max(15)
-    .refine((marketName) => !marketName.startsWith(' '), {
-      message: marketNameErrorMessages.startsWithSpace,
+export const marketInformationRegistrationSchema = z
+  .object({
+    additionalBusinessDay: z.string(),
+    additionalBusinessTime: z.string(),
+    address: requiredString(addressErrorMessage),
+    addressDetail: requiredString(addressDetailErrorMessage).max(20, addressDetailErrorMessage),
+    businessDay: z.string().refine(isValidBusinessDay, {
+      message: businessOperationErrorMessage,
     }),
-  marketPhone: requiredString(marketPhoneErrorMessages.empty).refine(isValidMarketPhone, {
-    message: marketPhoneErrorMessages.invalid,
-  }),
-  ownerPhone: requiredString(ownerPhoneErrorMessages.empty).refine(isValidOwnerPhone, {
-    message: ownerPhoneErrorMessages.invalid,
-  }),
-});
+    businessRegistrationNumber: z.string().refine(isValidBusinessRegistrationNumber, {
+      message: businessRegistrationNumberErrorMessage,
+    }),
+    businessTime: z.string().refine(isValidBusinessTime, {
+      message: businessOperationErrorMessage,
+    }),
+    holiday: z.string(),
+    marketName: requiredString(marketNameErrorMessages.empty)
+      .max(15)
+      .refine((marketName) => !marketName.startsWith(' '), {
+        message: marketNameErrorMessages.startsWithSpace,
+      }),
+    marketPhone: requiredString(marketPhoneErrorMessages.empty).refine(isValidMarketPhone, {
+      message: marketPhoneErrorMessages.invalid,
+    }),
+    ownerPhone: requiredString(ownerPhoneErrorMessages.empty).refine(isValidOwnerPhone, {
+      message: ownerPhoneErrorMessages.invalid,
+    }),
+  })
+  .superRefine(({ additionalBusinessDay, additionalBusinessTime }, context) => {
+    const hasAdditionalBusinessDay = additionalBusinessDay.trim().length > 0;
+    const hasAdditionalBusinessTime = additionalBusinessTime.trim().length > 0;
+
+    if (!hasAdditionalBusinessDay && !hasAdditionalBusinessTime) {
+      return;
+    }
+
+    if (!hasAdditionalBusinessDay || !isValidBusinessDay(additionalBusinessDay)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: businessOperationErrorMessage,
+        path: ['additionalBusinessDay'],
+      });
+    }
+
+    if (!hasAdditionalBusinessTime || !isValidBusinessTime(additionalBusinessTime)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: businessOperationErrorMessage,
+        path: ['additionalBusinessTime'],
+      });
+    }
+  });

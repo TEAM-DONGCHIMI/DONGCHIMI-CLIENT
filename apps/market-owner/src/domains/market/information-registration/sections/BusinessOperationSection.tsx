@@ -14,12 +14,10 @@ import {
 
 import { RequiredMark } from '../components/RequiredMark';
 import { holidayOptions, marketInformationRegistrationFixture } from '../fixtures';
-import { formatBusinessTime, isValidBusinessTime } from '../model';
 import * as S from './BusinessOperationSection.css';
 
 const businessDayOptions = marketInformationRegistrationFixture.businessDays;
 const maxSelectedBusinessDayCount = 2;
-const businessTimeErrorMessage = '올바른 형식으로 입력 해주세요.';
 
 const getBusinessDayDisplayLabel = (businessDay: string) => {
   return businessDay.replace('요일', '');
@@ -30,11 +28,18 @@ const getBusinessDaysDisplayLabel = (businessDays: string[]) => {
 };
 
 export interface BusinessOperationSectionProps {
+  additionalBusinessDay: string;
+  additionalBusinessTime: string;
+  additionalBusinessTimeErrorMessage?: string;
+  additionalBusinessTimeField: UseFormRegisterReturn<'additionalBusinessTime'>;
   businessDay: string;
   businessTime: string;
   businessTimeErrorMessage?: string;
   businessTimeField: UseFormRegisterReturn<'businessTime'>;
   holiday: string;
+  onAdditionalBusinessDayChange: (businessDay: string) => void;
+  onAdditionalBusinessTimeChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onAdditionalBusinessTimeRemove: () => void;
   onBusinessDayChange: (businessDay: string) => void;
   onHolidayChange: (holiday: string) => void;
   onBusinessTimeChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -55,11 +60,18 @@ const BusinessTimeErrorMessage = ({ message }: BusinessTimeErrorMessageProps) =>
 );
 
 export const BusinessOperationSection = ({
+  additionalBusinessDay,
+  additionalBusinessTime,
+  additionalBusinessTimeErrorMessage,
+  additionalBusinessTimeField,
   businessDay,
   businessTime,
   businessTimeErrorMessage: mainBusinessTimeErrorMessage,
   businessTimeField,
   holiday,
+  onAdditionalBusinessDayChange,
+  onAdditionalBusinessTimeChange,
+  onAdditionalBusinessTimeRemove,
   onBusinessDayChange,
   onHolidayChange,
   onBusinessTimeChange,
@@ -68,21 +80,19 @@ export const BusinessOperationSection = ({
   const [isHolidayDropdownOpen, setIsHolidayDropdownOpen] = useState(false);
   const [isAdditionalBusinessTimeVisible, setIsAdditionalBusinessTimeVisible] = useState(false);
   const [isAdditionalBusinessDayMenuOpen, setIsAdditionalBusinessDayMenuOpen] = useState(false);
-  const [additionalBusinessDay, setAdditionalBusinessDay] = useState('');
-  const [additionalBusinessTime, setAdditionalBusinessTime] = useState('');
   const businessDayMenuId = useId();
   const additionalBusinessDayMenuId = useId();
   const holidayDropdownId = useId();
+  const shouldShowAdditionalBusinessTime =
+    isAdditionalBusinessTimeVisible ||
+    additionalBusinessDay.length > 0 ||
+    additionalBusinessTime.length > 0;
   const selectedBusinessDays = businessDay.length > 0 ? businessDay.split(', ') : [];
   const businessDayTriggerLabel =
     selectedBusinessDays.length > 0 ? getBusinessDaysDisplayLabel(selectedBusinessDays) : '요일';
   const additionalBusinessDayTriggerLabel = additionalBusinessDay
     ? getBusinessDayDisplayLabel(additionalBusinessDay)
     : '요일';
-  const additionalBusinessTimeErrorMessage =
-    additionalBusinessTime.length > 0 && !isValidBusinessTime(additionalBusinessTime)
-      ? businessTimeErrorMessage
-      : undefined;
 
   const handleBusinessDayOptionClick = (businessDay: string) => {
     if (selectedBusinessDays.includes(businessDay)) {
@@ -109,18 +119,13 @@ export const BusinessOperationSection = ({
   };
 
   const handleAdditionalBusinessDayOptionClick = (businessDay: string) => {
-    setAdditionalBusinessDay(businessDay);
+    onAdditionalBusinessDayChange(businessDay);
     setIsAdditionalBusinessDayMenuOpen(false);
-  };
-
-  const handleAdditionalBusinessTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setAdditionalBusinessTime(formatBusinessTime(event.currentTarget.value));
   };
 
   const handleRemoveAdditionalBusinessTime = () => {
     setIsAdditionalBusinessTimeVisible(false);
-    setAdditionalBusinessDay('');
-    setAdditionalBusinessTime('');
+    onAdditionalBusinessTimeRemove();
     setIsAdditionalBusinessDayMenuOpen(false);
   };
 
@@ -184,7 +189,7 @@ export const BusinessOperationSection = ({
           {mainBusinessTimeErrorMessage && (
             <BusinessTimeErrorMessage message={mainBusinessTimeErrorMessage} />
           )}
-          {isAdditionalBusinessTimeVisible && (
+          {shouldShowAdditionalBusinessTime && (
             <>
               <div className={S.businessHourControlClassName}>
                 <div className={S.dropdownFieldClassName}>
@@ -233,13 +238,13 @@ export const BusinessOperationSection = ({
                   aria-label='추가 영업 시간'
                   inputMode='numeric'
                   leadingIcon={<IcClockSizeSmallColor60 />}
-                  name='additionalBusinessTime'
                   placeholder='00:00 - 00:00'
                   type='tel'
                   trailingActionLabel='추가 영업 시간 제거'
                   trailingIcon={<IcLineHorizontalSizeSmall />}
+                  {...additionalBusinessTimeField}
                   value={additionalBusinessTime}
-                  onChange={handleAdditionalBusinessTimeChange}
+                  onChange={onAdditionalBusinessTimeChange}
                   onTrailingAction={handleRemoveAdditionalBusinessTime}
                 />
               </div>

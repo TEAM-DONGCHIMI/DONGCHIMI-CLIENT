@@ -32,7 +32,7 @@ const getNextFormValue = (name: string, value: string) => {
     return formatBusinessRegistrationNumber(value);
   }
 
-  if (name === 'businessTime') {
+  if (name === 'businessTime' || name === 'additionalBusinessTime') {
     return formatBusinessTime(value);
   }
 
@@ -77,6 +77,7 @@ export const MarketInformationRegistrationPage = () => {
     if (
       name === 'businessRegistrationNumber' ||
       name === 'businessTime' ||
+      name === 'additionalBusinessTime' ||
       name === 'marketPhone' ||
       name === 'ownerPhone'
     ) {
@@ -86,6 +87,15 @@ export const MarketInformationRegistrationPage = () => {
 
   const handleBusinessDayChange = (businessDay: string) => {
     setFormValue('businessDay', businessDay);
+  };
+
+  const handleAdditionalBusinessDayChange = (businessDay: string) => {
+    setFormValue('additionalBusinessDay', businessDay);
+  };
+
+  const handleAdditionalBusinessTimeRemove = () => {
+    setFormValue('additionalBusinessDay', '');
+    setFormValue('additionalBusinessTime', '');
   };
 
   const handleHolidayChange = (holiday: string) => {
@@ -135,6 +145,13 @@ export const MarketInformationRegistrationPage = () => {
                 />
                 <div className={S.fieldPairGridClassName}>
                   <BusinessOperationSection
+                    additionalBusinessDay={form.additionalBusinessDay}
+                    additionalBusinessTime={form.additionalBusinessTime}
+                    additionalBusinessTimeErrorMessage={
+                      errors.additionalBusinessTime?.message ??
+                      errors.additionalBusinessDay?.message
+                    }
+                    additionalBusinessTimeField={register('additionalBusinessTime')}
                     businessDay={form.businessDay}
                     businessTime={form.businessTime}
                     businessTimeErrorMessage={
@@ -142,6 +159,9 @@ export const MarketInformationRegistrationPage = () => {
                     }
                     businessTimeField={register('businessTime')}
                     holiday={form.holiday}
+                    onAdditionalBusinessDayChange={handleAdditionalBusinessDayChange}
+                    onAdditionalBusinessTimeChange={handleFormattedInputChange}
+                    onAdditionalBusinessTimeRemove={handleAdditionalBusinessTimeRemove}
                     onBusinessDayChange={handleBusinessDayChange}
                     onHolidayChange={handleHolidayChange}
                     onBusinessTimeChange={handleFormattedInputChange}

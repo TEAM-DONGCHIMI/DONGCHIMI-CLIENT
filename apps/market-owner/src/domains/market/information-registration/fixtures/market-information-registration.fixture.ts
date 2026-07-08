@@ -8,6 +8,8 @@ export const marketInformationRegistrationFixture = {
     addressDetail: '',
     businessDay: '',
     businessTime: '',
+    additionalBusinessDay: '',
+    additionalBusinessTime: '',
     holiday: '',
     marketPhone: '',
     ownerPhone: '',
