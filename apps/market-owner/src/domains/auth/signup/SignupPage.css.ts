@@ -11,8 +11,8 @@ export const pageClassName = style({
   gap: '3.4rem',
   width: '71.5rem',
   maxWidth: '100%',
-  minHeight: '60.3rem',
-  padding: '4rem 2rem',
+  minHeight: '60.2rem',
+  padding: '4rem',
   backgroundColor: atomic.common[0],
 });
 
