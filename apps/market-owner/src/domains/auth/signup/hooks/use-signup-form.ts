@@ -68,6 +68,10 @@ export const useSignupForm = () => {
     setSubmitErrorMessage(undefined);
   };
 
+  const isPasswordConfirmValid =
+    passwordConfirmController.field.value.length > 0 &&
+    passwordConfirmController.fieldState.error === undefined;
+
   return {
     clearSubmitErrorMessage,
     email: emailController.field.value,
@@ -76,6 +80,7 @@ export const useSignupForm = () => {
     handlePasswordChange,
     handlePasswordConfirmChange,
     handleSubmit: form.handleSubmit,
+    isPasswordConfirmValid,
     isValid: form.formState.isValid,
     password: passwordController.field.value,
     passwordConfirm: passwordConfirmController.field.value,

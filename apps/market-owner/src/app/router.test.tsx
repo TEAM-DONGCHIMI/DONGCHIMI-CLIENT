@@ -88,10 +88,12 @@ describe('marketOwnerRoutes', () => {
 
     const passwordInput = await screen.findByLabelText('비밀번호');
     const passwordConfirmInput = screen.getByLabelText('비밀번호 확인');
+    const passwordConfirmInputContainer = passwordConfirmInput.parentElement;
 
     await user.type(passwordInput, 'abc123');
     await user.type(passwordConfirmInput, 'abc124');
     expect(screen.getByText('비밀번호가 일치하지 않습니다.')).toBeInTheDocument();
+    expect(passwordConfirmInputContainer?.querySelector('svg')).not.toBeInTheDocument();
 
     await user.clear(passwordConfirmInput);
     expect(screen.getByText('비밀번호를 다시 입력해주세요.')).toBeInTheDocument();
@@ -99,6 +101,9 @@ describe('marketOwnerRoutes', () => {
     await user.type(passwordConfirmInput, 'abc123');
     expect(screen.queryByText('비밀번호가 일치하지 않습니다.')).not.toBeInTheDocument();
     expect(screen.queryByText('비밀번호를 다시 입력해주세요.')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(passwordConfirmInputContainer?.querySelector('svg')).toBeInTheDocument(),
+    );
   });
 
   it('enables signup submit button when all signup fields are valid', async () => {

@@ -1,4 +1,5 @@
 import { Button, Flex, TextInput, Toast } from '@dongchimi/design-system/components';
+import { IcCircleCheckFill } from '@dongchimi/design-system/icons';
 
 import { useSignupForm } from './hooks/use-signup-form';
 import * as S from './SignupPage.css';
@@ -51,6 +52,7 @@ export const SignupPage = () => {
             name='passwordConfirm'
             onChange={signupForm.handlePasswordConfirmChange}
             placeholder='비밀번호 확인'
+            trailingIcon={signupForm.isPasswordConfirmValid ? <IcCircleCheckFill /> : undefined}
             type='password'
             value={signupForm.passwordConfirm}
             {...signupForm.passwordConfirmStatusProps}

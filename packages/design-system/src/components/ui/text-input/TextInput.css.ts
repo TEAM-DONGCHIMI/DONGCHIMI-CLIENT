@@ -118,6 +118,7 @@ const trailingElement = style({
   justifyContent: 'center',
   width: 24,
   height: 24,
+  fontSize: 24,
   lineHeight: 0,
   transform: 'translateY(-50%)',
 });
