@@ -2,16 +2,10 @@ import type { FormEventHandler } from 'react';
 
 import { Button, Flex, TextInput } from '@dongchimi/design-system/components';
 
+import { useSignupEmailField } from './hooks/use-signup-email-field';
 import * as S from './SignupPage.css';
 
-const signupFields = [
-  {
-    autoComplete: 'email',
-    label: '이메일',
-    name: 'email',
-    placeholder: 'example@email.com',
-    type: 'email',
-  },
+const passwordSignupFields = [
   {
     autoComplete: 'new-password',
     label: '비밀번호',
@@ -33,6 +27,8 @@ const preventSignupSubmit: FormEventHandler<HTMLFormElement> = (event) => {
 };
 
 export const SignupPage = () => {
+  const emailField = useSignupEmailField();
+
   return (
     <main className={S.pageClassName}>
       <Flex align='center' as='header' className={S.headerClassName} direction='column'>
@@ -47,7 +43,31 @@ export const SignupPage = () => {
 
       <form className={S.formClassName} onSubmit={preventSignupSubmit}>
         <Flex className={S.fieldGroupClassName} direction='column'>
-          {signupFields.map((field) => (
+          {emailField.hasError ? (
+            <TextInput
+              autoComplete='email'
+              errorMessage={emailField.errorMessage}
+              label='이메일'
+              name='email'
+              onChange={emailField.handleEmailChange}
+              placeholder='example@email.com'
+              status='error'
+              type='email'
+              value={emailField.email}
+            />
+          ) : (
+            <TextInput
+              autoComplete='email'
+              label='이메일'
+              name='email'
+              onChange={emailField.handleEmailChange}
+              placeholder='example@email.com'
+              type='email'
+              value={emailField.email}
+            />
+          )}
+
+          {passwordSignupFields.map((field) => (
             <TextInput
               key={field.name}
               autoComplete={field.autoComplete}
