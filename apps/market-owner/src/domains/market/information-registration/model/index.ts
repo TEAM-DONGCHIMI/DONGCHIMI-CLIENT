@@ -1,5 +1,5 @@
 export { marketInformationRegistrationSchema } from './market-information-form.schema';
-export type { MarketInformationFormState } from './market-information-form.types';
+export type { MarketInformationFormTypes } from './market-information-form.types';
 export {
   formatBusinessRegistrationNumber,
   formatBusinessTime,

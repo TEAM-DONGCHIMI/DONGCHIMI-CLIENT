@@ -11,13 +11,13 @@ import {
 
 import { RequiredMark } from '../components/RequiredMark';
 import { marketInformationRegistrationFixture } from '../fixtures';
-import { type MarketInformationFormState } from '../model';
+import { type MarketInformationFormTypes } from '../model';
 import * as S from './BusinessContactRowSection.css';
 
 const businessDayOptions = ['전체', ...marketInformationRegistrationFixture.businessDays];
 
 export interface BusinessContactRowSectionProps {
-  form: MarketInformationFormState;
+  form: MarketInformationFormTypes;
   onAddBusinessTime: () => void;
   onAddMarketPhone: () => void;
   onBusinessDayChange: (businessDay: string) => void;

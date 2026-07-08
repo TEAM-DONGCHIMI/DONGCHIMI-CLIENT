@@ -15,7 +15,7 @@ import {
   formatMarketPhoneNumber,
   formatMobilePhoneNumber,
   marketInformationRegistrationSchema,
-  type MarketInformationFormState,
+  type MarketInformationFormTypes,
 } from './model';
 import {
   AddressSection,
@@ -25,7 +25,7 @@ import {
   MarketImageUploadSection,
 } from './sections';
 
-export type { MarketInformationFormState } from './model';
+export type { MarketInformationFormTypes } from './model';
 
 const getNextFormValue = (name: string, value: string) => {
   if (name === 'businessRegistrationNumber') {
@@ -54,7 +54,7 @@ export const MarketInformationRegistrationPage = () => {
     register,
     setValue,
     watch,
-  } = useForm<MarketInformationFormState>({
+  } = useForm<MarketInformationFormTypes>({
     defaultValues: marketInformationRegistrationFixture.initialForm,
     mode: 'onTouched',
     resolver: zodResolver(marketInformationRegistrationSchema),
@@ -62,7 +62,7 @@ export const MarketInformationRegistrationPage = () => {
   const form = watch();
   const canSubmit = marketInformationRegistrationSchema.safeParse(form).success;
 
-  const setFormValue = (name: FieldPath<MarketInformationFormState>, value: string) => {
+  const setFormValue = (name: FieldPath<MarketInformationFormTypes>, value: string) => {
     setValue(name, value, {
       shouldDirty: true,
       shouldTouch: true,
