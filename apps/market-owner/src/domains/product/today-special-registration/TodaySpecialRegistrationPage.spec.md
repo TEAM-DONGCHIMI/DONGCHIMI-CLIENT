@@ -17,6 +17,7 @@ Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, drop
 및 화면설계서의 입력/노출 규칙을 기준으로 구현합니다.
 
 실제 등록 API, presigned image upload API, server validation error 표시는 후속 API 연동 범위입니다.
+Client-side field validation error는 필드 아래 메시지로 표시합니다.
 
 ## Ownership
 
@@ -46,7 +47,7 @@ Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, drop
 - `model/product-form.types.ts`
   - form value와 text field 타입을 정의합니다.
 - `model/product-form.schema.ts`
-  - `zod` schema로 submit 가능 여부를 검증합니다.
+  - `zod` schema로 submit 가능 여부와 field error message를 검증합니다.
 - `model/product-form.utils.ts`
   - 빈 form 생성, 입력값 정제, 가격 포맷, image file 검증, 날짜 보정, preview URL 정리를 담당합니다.
 
@@ -58,12 +59,14 @@ Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, drop
 - category open: dropdown을 trigger 하단에 표시하고 현재 선택된 item을 selected 상태로 표시합니다.
 - multi product: 상품이 2개 이상이면 title에 `(현재/전체)`, 이전/다음 button, 삭제 button을 표시합니다.
 - disabled submit: 필수값이 비어 있거나 form completion 조건을 만족하지 않으면 `등록 완료`를 disabled 처리합니다.
-- error: client/server error message UI는 이번 범위에서 표시하지 않고 API 연결 시 추가합니다.
+- field error: blur 또는 submit validation 이후 필드 아래에 error message를 표시합니다.
+- server error: API 연결 시 추가합니다.
 - loading: 이번 범위에서 다루지 않습니다.
 
 ## Form Rules
 
 - 이미지
+  - 선택 등록입니다.
   - 등록하지 않으면 후속 submit에서 기본 이미지를 사용합니다.
   - `.jpg`, `.jpeg`, `.png`만 선택할 수 있게 file accept를 제한합니다.
   - 실제 검사 기준은 MIME type `image/jpeg`, `image/png`입니다.
@@ -71,7 +74,8 @@ Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, drop
   - 1장만 등록합니다.
 - 상품명
   - 필수 입력입니다.
-  - 앞뒤 공백을 제거합니다.
+  - 입력 중에는 최대 길이만 제한하고, blur 또는 submit payload 생성 시점에 앞뒤 공백을 제거합니다.
+  - 공백만 입력할 수 없습니다.
   - 공백 포함 최대 15자까지만 저장합니다.
 - 상품 구분
   - 필수 선택입니다.
@@ -79,7 +83,8 @@ Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, drop
   - 선택 즉시 dropdown을 닫고 선택값을 trigger에 표시합니다.
 - 상품 한줄 홍보문구
   - 선택 입력입니다.
-  - 앞뒤 공백을 제거합니다.
+  - 입력 중에는 최대 길이만 제한하고, blur 또는 submit payload 생성 시점에 앞뒤 공백을 제거합니다.
+  - 공백만 입력한 경우 빈 값으로 처리합니다.
   - 공백 포함 최대 25자까지만 저장합니다.
 - 오늘의 특가
   - 필수 입력입니다.
@@ -93,9 +98,34 @@ Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, drop
   - 우측 `원` unit은 `InlineField` unit으로 표시합니다.
 - 행사 기간
   - 시작일/종료일은 date picker로 선택합니다.
+  - 시작일/종료일은 모두 필수 입력입니다.
   - visible text는 `YYYY-MM-DD` 형식입니다.
   - 종료일 field는 시작일을 `min`으로 받습니다.
   - 시작일 변경 시 기존 종료일이 시작일보다 이전이면 종료일을 초기화합니다.
+
+## Field Error Messages
+
+- 상품명
+  - 미입력 또는 공백만 입력한 경우: `상품명을 입력해주세요.`
+  - 최대 글자 수를 초과한 경우: `상품명은 공백 포함 15자 이하로 입력해주세요.`
+- 상품 구분
+  - 미선택한 경우: `카테고리를 선택해주세요.`
+- 상품 한줄 홍보문구
+  - 최대 글자 수를 초과한 경우: `홍보문구는 공백 포함 25자 이하로 입력해주세요.`
+- 오늘의 특가
+  - 미입력한 경우: `오늘의 특가를 입력해주세요.`
+  - 숫자가 아닌 문자를 입력한 경우: `숫자만 입력할 수 있습니다.`
+  - 0원 이하인 경우: `1원 이상 입력해주세요.`
+- 판매가
+  - 미입력한 경우: `판매가를 입력해주세요.`
+  - 숫자가 아닌 문자를 입력한 경우: `숫자만 입력할 수 있습니다.`
+  - 0원 이하인 경우: `1원 이상 입력해주세요.`
+  - 오늘의 특가보다 낮은 경우: `판매가는 오늘의 특가 이상으로 입력해주세요.`
+- 행사 시작일
+  - 미선택한 경우: `행사 시작일을 선택해주세요.`
+- 행사 종료일
+  - 미선택한 경우: `행사 종료일을 선택해주세요.`
+  - 시작일보다 이전인 경우: `행사 종료일은 시작일 이후로 선택해주세요.`
 
 ## Behavior
 
@@ -139,7 +169,6 @@ Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, drop
 ## Non-Goals / Follow-Ups
 
 - Server validation error 표시
-- Field별 error message 노출 시점
 - Loading/submitting state
 - 실제 presigned image upload
 - 실제 상품 등록 mutation
@@ -161,6 +190,7 @@ Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, drop
 - [ ] category dropdown closes on outside click and Escape
 - [ ] product name trims edge spaces and limits input to 15 characters
 - [ ] product description trims edge spaces, remains optional, and limits input to 25 characters
+- [ ] invalid fields render error messages below each field after validation
 - [ ] price fields accept digits only and display comma-formatted values with `원` unit
 - [ ] submit stays disabled when sale price is lower than today special price
 - [ ] DateField displays `YYYY-MM-DD` placeholder without browser date icon text
