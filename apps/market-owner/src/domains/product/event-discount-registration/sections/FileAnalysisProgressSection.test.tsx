@@ -69,4 +69,27 @@ describe('FileAnalysisProgressSection', () => {
     expect(screen.getByText('100%')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '취소' })).toBeDisabled();
   });
+
+  it('keeps cancel available when only the displayed progress rounds to 100', () => {
+    renderFileAnalysisProgressSection({
+      progressPercentage: 99.5,
+      steps: fileAnalysisProgressFixtures.processing.steps,
+    });
+
+    expect(screen.getByText('100%')).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: 'AI 분석 진행률' })).toHaveAttribute(
+      'aria-valuenow',
+      '100',
+    );
+    expect(screen.getByRole('button', { name: '취소' })).toBeEnabled();
+  });
+
+  it('disables cancel when all analysis steps are completed', () => {
+    renderFileAnalysisProgressSection({
+      progressPercentage: 99.5,
+      steps: fileAnalysisProgressFixtures.completed.steps,
+    });
+
+    expect(screen.getByRole('button', { name: '취소' })).toBeDisabled();
+  });
 });

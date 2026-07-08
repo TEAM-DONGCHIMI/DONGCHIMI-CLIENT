@@ -1,3 +1,4 @@
+import { cn } from '@dongchimi/design-system/styles';
 import { Button, Flex } from '@dongchimi/design-system/components';
 
 import { ProcessingStep, type ProcessingStepProps } from '@/shared/components';
@@ -12,9 +13,44 @@ export interface FileAnalysisProgressSectionProps {
 
 const fileAnalysisProgressTitleId = 'file-analysis-progress-title';
 const progressLabel = 'AI 분석 진행률';
+const MIN_PROGRESS_PERCENTAGE = 0;
+const MAX_PROGRESS_PERCENTAGE = 100;
 
 const clampProgressPercentage = (progressPercentage: number) => {
-  return Math.min(Math.max(Math.round(progressPercentage), 0), 100);
+  return Math.min(
+    Math.max(Math.round(progressPercentage), MIN_PROGRESS_PERCENTAGE),
+    MAX_PROGRESS_PERCENTAGE,
+  );
+};
+
+const hasStartedAnalysis = ({
+  progressPercentage,
+  steps,
+}: Pick<FileAnalysisProgressSectionProps, 'progressPercentage' | 'steps'>) => {
+  return (
+    progressPercentage > MIN_PROGRESS_PERCENTAGE || steps.some((step) => step.status !== 'pending')
+  );
+};
+
+const hasCompletedAnalysis = ({
+  progressPercentage,
+  steps,
+}: Pick<FileAnalysisProgressSectionProps, 'progressPercentage' | 'steps'>) => {
+  return (
+    progressPercentage >= MAX_PROGRESS_PERCENTAGE ||
+    (steps.length > 0 && steps.every((step) => step.status === 'completed'))
+  );
+};
+
+const getCardShadowVariant = ({
+  progressPercentage,
+  steps,
+}: Pick<FileAnalysisProgressSectionProps, 'progressPercentage' | 'steps'>) => {
+  if (hasStartedAnalysis({ progressPercentage, steps })) {
+    return 'active';
+  }
+
+  return 'pending';
 };
 
 export const FileAnalysisProgressSection = ({
@@ -23,13 +59,14 @@ export const FileAnalysisProgressSection = ({
   steps,
 }: FileAnalysisProgressSectionProps) => {
   const normalizedProgressPercentage = clampProgressPercentage(progressPercentage);
-  const isAnalysisComplete = normalizedProgressPercentage >= 100;
+  const isAnalysisComplete = hasCompletedAnalysis({ progressPercentage, steps });
+  const cardShadowVariant = getCardShadowVariant({ progressPercentage, steps });
 
   return (
     <Flex
       as='section'
       aria-labelledby={fileAnalysisProgressTitleId}
-      className={S.cardClassName}
+      className={cn(S.cardClassName, S.cardShadowClassNames[cardShadowVariant])}
       direction='column'
     >
       <Flex align='center' as='header' className={S.headerClassName} direction='column'>
