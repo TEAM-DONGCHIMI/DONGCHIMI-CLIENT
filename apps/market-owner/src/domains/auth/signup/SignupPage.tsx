@@ -3,24 +3,8 @@ import type { FormEventHandler } from 'react';
 import { Button, Flex, TextInput } from '@dongchimi/design-system/components';
 
 import { useSignupEmailField } from './hooks/use-signup-email-field';
+import { useSignupPasswordField } from './hooks/use-signup-password-field';
 import * as S from './SignupPage.css';
-
-const passwordSignupFields = [
-  {
-    autoComplete: 'new-password',
-    label: '비밀번호',
-    name: 'password',
-    placeholder: '비밀번호 입력',
-    type: 'password',
-  },
-  {
-    autoComplete: 'new-password',
-    label: '비밀번호 확인',
-    name: 'passwordConfirm',
-    placeholder: '비밀번호 확인',
-    type: 'password',
-  },
-] as const;
 
 const preventSignupSubmit: FormEventHandler<HTMLFormElement> = (event) => {
   event.preventDefault();
@@ -28,6 +12,7 @@ const preventSignupSubmit: FormEventHandler<HTMLFormElement> = (event) => {
 
 export const SignupPage = () => {
   const emailField = useSignupEmailField();
+  const passwordField = useSignupPasswordField();
 
   return (
     <main className={S.pageClassName}>
@@ -67,16 +52,37 @@ export const SignupPage = () => {
             />
           )}
 
-          {passwordSignupFields.map((field) => (
+          {passwordField.hasError ? (
             <TextInput
-              key={field.name}
-              autoComplete={field.autoComplete}
-              label={field.label}
-              name={field.name}
-              placeholder={field.placeholder}
-              type={field.type}
+              autoComplete='new-password'
+              errorMessage={passwordField.errorMessage}
+              label='비밀번호'
+              name='password'
+              onChange={passwordField.handlePasswordChange}
+              placeholder='비밀번호 입력'
+              status='error'
+              type='password'
+              value={passwordField.password}
             />
-          ))}
+          ) : (
+            <TextInput
+              autoComplete='new-password'
+              label='비밀번호'
+              name='password'
+              onChange={passwordField.handlePasswordChange}
+              placeholder='비밀번호 입력'
+              type='password'
+              value={passwordField.password}
+            />
+          )}
+
+          <TextInput
+            autoComplete='new-password'
+            label='비밀번호 확인'
+            name='passwordConfirm'
+            placeholder='비밀번호 확인'
+            type='password'
+          />
         </Flex>
 
         <Button className={S.submitButtonClassName} disabled size='large' type='submit'>
