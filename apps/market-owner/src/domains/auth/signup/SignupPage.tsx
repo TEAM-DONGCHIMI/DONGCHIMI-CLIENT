@@ -37,9 +37,7 @@ export const SignupPage = () => {
     <main className={S.pageClassName}>
       <Flex align='center' as='header' className={S.headerClassName} direction='column'>
         <Flex align='center' className={S.titleGroupClassName} direction='column'>
-          <span aria-hidden='true' className={S.logoSlotClassName}>
-            <img alt='' className={S.logoImageClassName} src='/favicon.svg' />
-          </span>
+          <span aria-hidden='true' className={S.logoSlotClassName} />
           <h1 className={S.titleClassName}>회원가입</h1>
         </Flex>
         <p className={S.descriptionClassName}>

@@ -35,13 +35,13 @@ export const logoSlotClassName = style({
   width: '15.7rem',
   height: '6rem',
   borderRadius: '0.6rem',
-  backgroundColor: atomic.neutral[10],
-});
-
-export const logoImageClassName = style({
-  display: 'block',
-  width: '4.8rem',
-  height: '4.8rem',
+  backgroundColor: atomic.common[0],
+  backgroundImage: `linear-gradient(45deg, ${atomic.neutral[10]} 25%, transparent 25%),
+    linear-gradient(-45deg, ${atomic.neutral[10]} 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, ${atomic.neutral[10]} 75%),
+    linear-gradient(-45deg, transparent 75%, ${atomic.neutral[10]} 75%)`,
+  backgroundPosition: '0 0, 0 0.6rem, 0.6rem -0.6rem, -0.6rem 0',
+  backgroundSize: '1.2rem 1.2rem',
 });
 
 export const titleClassName = style({
