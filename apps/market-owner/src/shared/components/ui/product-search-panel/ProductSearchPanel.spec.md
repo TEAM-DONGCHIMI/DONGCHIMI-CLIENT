@@ -48,6 +48,8 @@ ProductSearchPanel(root)
   - `placeholder`: 검색 입력 placeholder입니다. 기본값은 `상품 검색...`입니다.
   - `emptyMessage`: 결과 없음 문구입니다. 기본값은 `검색 결과가 없어요. 상품을 등록해보세요.`입니다.
   - `errorMessage`: 검색/상품 정보 error feedback 문구입니다. 기본값은 `상품 정보를 불러오지 못했어요.`입니다.
+  - `isPending`: 호출부가 debounce/API 요청 등으로 결과 갱신 대기 중임을 알려줍니다. 기본값은 `false`입니다.
+  - `pendingMessage`: 결과 갱신 대기 중 문구입니다. 기본값은 `검색 중...`입니다.
   - `status`: `default` 또는 `error`입니다. `error`면 error feedback을 표시하고 검색 입력에 error 상태를 적용합니다.
   - `onSelectProduct`: 검색 결과 상품을 선택하면 호출합니다.
   - `onQueryChange`: 입력값이 바뀌면 호출합니다.
@@ -60,6 +62,7 @@ ProductSearchPanel(root)
   - 상품 선택 후 route 이동 또는 modal open을 처리합니다.
   - 실제 API query/loading/error 상태를 `items`와 `status`로 변환합니다.
   - 검색 결과 필터링, 일치도 계산, 최신 등록순 정렬은 서버/API 또는 호출부에서 처리합니다.
+  - 검색 API 요청 빈도 제어가 필요하면 `useDebouncedValue` 같은 호출부 hook에서 처리합니다.
   - 상품 정보 fetch 실패 toast가 page-level 위치에 떠야 하면 호출부에서 별도로 렌더링합니다.
 - non-owned behavior:
   - URL query sync, API 호출, cache, route, analytics, mutation은 소유하지 않습니다.
@@ -70,9 +73,10 @@ ProductSearchPanel(root)
 - open: 한 글자 이상 입력하면 검색 결과 dropdown을 엽니다.
 - result: 전달받은 `items` 순서를 유지해 결과를 표시합니다.
 - overflow: 결과는 기본 4개 높이로 보이고, 4개 초과 시 4개 row 높이의 scroll 영역으로 전환합니다. 최대 10개까지만 렌더링합니다.
+- pending: `isPending`이고 전달받은 결과가 없으면 pending message를 표시합니다. 이미 전달받은 결과가 있으면 결과 리스트를 유지합니다.
 - empty: 검색 결과가 없으면 결과 label과 같은 primary soft Chip으로 message를 표시합니다.
 - error: `status='error'`이면 error feedback을 표시합니다.
-- disabled/loading: 이번 컴포넌트 public API에는 포함하지 않습니다. API 연동 시 별도 상태가 필요하면 props를 확장합니다.
+- disabled/full loading: 이번 컴포넌트 public API에는 포함하지 않습니다. `isPending`은 입력값과 전달받은 결과 사이의 갱신 대기 feedback만 담당합니다.
 
 ## Behavior
 

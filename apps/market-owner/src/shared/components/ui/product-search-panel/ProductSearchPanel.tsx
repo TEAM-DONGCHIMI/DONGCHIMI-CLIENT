@@ -21,15 +21,18 @@ type ProductSearchPanelStatusTypes = 'default' | 'error';
 export interface ProductSearchPanelProps extends NativeDivProps {
   emptyMessage?: string;
   errorMessage?: string;
+  isPending?: boolean;
   items: ProductSearchPanelItemTypes[];
   onQueryChange?: SearchBarProps['onValueChange'];
   onSelectProduct: (item: ProductSearchPanelItemTypes) => void;
+  pendingMessage?: string;
   placeholder?: string;
   status?: ProductSearchPanelStatusTypes;
 }
 
 const DEFAULT_EMPTY_MESSAGE = '검색 결과가 없어요. 상품을 등록해보세요.';
 const DEFAULT_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요.';
+const DEFAULT_PENDING_MESSAGE = '검색 중...';
 const DEFAULT_PLACEHOLDER = '상품 검색...';
 const DEFAULT_VISIBLE_RESULT_COUNT = 4;
 
@@ -83,15 +86,19 @@ interface ProductSearchDropdownContentProps extends ProductSearchResultListProps
   emptyMessage: string;
   errorMessage: string;
   isError: boolean;
+  isPending: boolean;
+  pendingMessage: string;
 }
 
 const ProductSearchDropdownContent = ({
   emptyMessage,
   errorMessage,
   isError,
+  isPending,
   onResultFocus,
   onResultMouseEnter,
   onResultSelect,
+  pendingMessage,
   results,
 }: ProductSearchDropdownContentProps) => {
   if (isError) {
@@ -102,23 +109,33 @@ const ProductSearchDropdownContent = ({
     );
   }
 
-  if (results.length === 0) {
+  if (results.length > 0) {
+    return (
+      <ProductSearchResultList
+        onResultFocus={onResultFocus}
+        onResultMouseEnter={onResultMouseEnter}
+        onResultSelect={onResultSelect}
+        results={results}
+      />
+    );
+  }
+
+  if (isPending) {
     return (
       <div className={S.emptyStateClassName} role='status'>
         <Chip className={S.emptyMessageChipClassName} color='primary' size='desktop' variant='soft'>
-          {emptyMessage}
+          {pendingMessage}
         </Chip>
       </div>
     );
   }
 
   return (
-    <ProductSearchResultList
-      onResultFocus={onResultFocus}
-      onResultMouseEnter={onResultMouseEnter}
-      onResultSelect={onResultSelect}
-      results={results}
-    />
+    <div className={S.emptyStateClassName} role='status'>
+      <Chip className={S.emptyMessageChipClassName} color='primary' size='desktop' variant='soft'>
+        {emptyMessage}
+      </Chip>
+    </div>
   );
 };
 
@@ -126,9 +143,11 @@ export const ProductSearchPanel = ({
   className,
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
   errorMessage = DEFAULT_ERROR_MESSAGE,
+  isPending = false,
   items,
   onQueryChange,
   onSelectProduct,
+  pendingMessage = DEFAULT_PENDING_MESSAGE,
   placeholder = DEFAULT_PLACEHOLDER,
   status = 'default',
   ...props
@@ -167,9 +186,11 @@ export const ProductSearchPanel = ({
             emptyMessage={emptyMessage}
             errorMessage={errorMessage}
             isError={status === 'error'}
+            isPending={isPending}
             onResultFocus={handleResultFocus}
             onResultMouseEnter={handleResultMouseEnter}
             onResultSelect={handleResultSelect}
+            pendingMessage={pendingMessage}
             results={results}
           />
         </div>

@@ -116,6 +116,28 @@ describe('ProductSearchPanel', () => {
     );
   });
 
+  it('renders pending feedback instead of empty feedback while results are pending', async () => {
+    const user = userEvent.setup();
+
+    renderPanel({ isPending: true, items: [] });
+
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '풀');
+
+    expect(screen.getByRole('status')).toHaveTextContent('검색 중...');
+    expect(screen.queryByText('검색 결과가 없어요. 상품을 등록해보세요.')).not.toBeInTheDocument();
+  });
+
+  it('keeps rendering provided results while results are pending', async () => {
+    const user = userEvent.setup();
+
+    renderPanel({ isPending: true });
+
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '풀');
+
+    expect(screen.getByRole('list', { name: '상품 검색 결과' })).toBeInTheDocument();
+    expect(screen.queryByText('검색 중...')).not.toBeInTheDocument();
+  });
+
   it('renders error feedback when status is error', async () => {
     const user = userEvent.setup();
 
