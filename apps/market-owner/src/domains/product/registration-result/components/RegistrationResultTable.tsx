@@ -8,7 +8,7 @@ import {
 } from '@dongchimi/design-system/icons';
 
 import type { RegistrationResultProduct } from '../fixtures';
-import * as S from './RegistrationResultSection.css';
+import * as S from './RegistrationResult.css';
 
 export interface ImagePreview {
   alt: string;

@@ -2,7 +2,7 @@ import { type ReactNode } from 'react';
 
 import { IcCircleExclamationFillSizeXsmallColorNegative } from '@dongchimi/design-system/icons';
 
-import * as S from './RegistrationResultSection.css';
+import * as S from './RegistrationResult.css';
 
 interface RegistrationResultSectionLayoutProps {
   children: ReactNode;

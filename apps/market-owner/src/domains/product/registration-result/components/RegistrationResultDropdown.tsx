@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Dropdown } from '@dongchimi/design-system/components';
 
-import * as S from './RegistrationResultSection.css';
+import * as S from './RegistrationResult.css';
 
 const ALL_CATEGORY_OPTION = '전체';
 const CATEGORY_OPTIONS = [

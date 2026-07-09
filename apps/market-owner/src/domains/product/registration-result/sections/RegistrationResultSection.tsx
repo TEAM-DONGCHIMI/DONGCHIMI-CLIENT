@@ -16,9 +16,9 @@ import {
   getAnchorRect,
   getProductMatchesCategoryFilter,
   type CategoryOptionTypes,
-} from './RegistrationResultDropdown';
-import { RegistrationResultSectionLayout } from './RegistrationResultSectionLayout';
-import { RegistrationResultTable, type ImagePreview } from './RegistrationResultTable';
+} from '../components/RegistrationResultDropdown';
+import { RegistrationResultSectionLayout } from '../components/RegistrationResultSectionLayout';
+import { RegistrationResultTable, type ImagePreview } from '../components/RegistrationResultTable';
 
 interface RegistrationResultSummary {
   completedCount: number;
