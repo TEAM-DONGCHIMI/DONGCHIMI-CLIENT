@@ -15,6 +15,7 @@
 - 사장님 사이트 desktop 화면 상단에서 현재 위치와 상품 검색 UI를 함께 보여주는 앱 내부 shared header입니다.
 - `default` 모드는 상위 페이지와 현재 페이지 breadcrumb를 표시합니다.
 - `onlyHome` 모드는 상위 페이지가 없는 홈 화면에서 단일 home label을 표시합니다.
+- `logoOnly` 모드는 온보딩처럼 좌측 로고만 필요한 화면에서 header shell과 로고 슬롯만 표시합니다.
 - 상품 검색 UI는 `SearchBar` 컴포넌트를 재사용하고, 실제 검색 결과 이동/포커싱은 호출부가 처리합니다.
 - 상품 검색 UI의 leading icon은 design-system `IcSearchSizeSmall`을 사용합니다.
 - 로고가 필요한 화면은 `logo` 슬롯을 전달해 좌측 로고 영역을 표시합니다. 기존 default 사용법은 바꾸지 않습니다.
@@ -27,8 +28,8 @@
 
 ## Props
 
-- `variant`: `default`, `onlyHome`입니다. 기본값은 `default`입니다.
-- `logo`: `default` 모드에서 좌측 92px x 32px 영역에 렌더링할 로고 슬롯입니다. 실제 이미지 선택은 호출부가 책임집니다.
+- `variant`: `default`, `onlyHome`, `logoOnly`입니다. 기본값은 `default`입니다.
+- `logo`: `default`와 `logoOnly` 모드에서 좌측 92px x 32px 영역에 렌더링할 로고 슬롯입니다. 실제 이미지 선택은 호출부가 책임집니다.
 - `showSearchBar`: 검색 영역 표시 여부입니다. 기본값은 `true`입니다. `false`이면 검색 관련 props를 함께 전달하지 않습니다.
 - `parentLabel`: `default` 모드에서 상위 페이지 이름을 표시합니다. `default` 모드에서는 필수입니다.
 - `currentLabel`: `default` 모드에서 현재 페이지 이름을 표시합니다. `default` 모드에서는 필수입니다.
@@ -44,6 +45,7 @@
 - default: 상위 페이지, `/`, 현재 페이지, SearchBar를 표시합니다.
 - onlyHome: `homeLabel`과 SearchBar를 표시합니다.
 - logo: `logo`가 있으면 좌측 로고 슬롯, 상위 페이지, `/`, 현재 페이지를 표시합니다.
+- logoOnly: 좌측 로고 슬롯만 표시하고 breadcrumb와 SearchBar는 렌더링하지 않습니다.
 - no search: `showSearchBar`가 `false`면 SearchBar를 렌더링하지 않습니다.
 - custom search: `searchSlot`이 있으면 기본 SearchBar 대신 해당 slot을 렌더링합니다.
 - search focus/hover/error/filled: 내부 SearchBar 상태 정책을 따릅니다.
@@ -54,6 +56,7 @@
 - Header wrapper는 semantic `header` element를 사용합니다.
 - `default` 모드 breadcrumb는 `nav aria-label="현재 위치"`로 노출합니다.
 - 로고 슬롯이 있는 breadcrumb도 `nav aria-label="현재 위치"`로 노출합니다.
+- `logoOnly` 모드는 breadcrumb를 렌더링하지 않습니다.
 - 현재 페이지 label에는 `aria-current="page"`를 적용합니다.
 - 검색 입력의 접근성 이름과 keyboard submit은 SearchBar를 따릅니다.
 - 검색 아이콘은 decorative icon으로 노출하고 접근성 이름은 검색 입력이 제공합니다.

@@ -53,8 +53,13 @@ interface DesktopHeaderOnlyHomeProps {
   variant: 'onlyHome';
 }
 
+interface DesktopHeaderLogoOnlyProps {
+  logo: ReactNode;
+  variant: 'logoOnly';
+}
+
 export type DesktopHeaderProps = DesktopHeaderBaseProps &
-  (DesktopHeaderDefaultProps | DesktopHeaderOnlyHomeProps);
+  (DesktopHeaderDefaultProps | DesktopHeaderOnlyHomeProps | DesktopHeaderLogoOnlyProps);
 
 const searchIcon = <IcSearchSizeSmall aria-hidden='true' className={S.searchIconClassName} />;
 
@@ -91,6 +96,14 @@ export const DesktopHeader = ({
   onSearchValueChange,
   ...props
 }: DesktopHeaderProps) => {
+  if (props.variant === 'logoOnly') {
+    return (
+      <Flex align='center' as='header' className={cn(S.logoHeaderClassName, className)}>
+        <span className={S.logoSlotClassName}>{props.logo}</span>
+      </Flex>
+    );
+  }
+
   const hasLogo = props.variant !== 'onlyHome' && props.logo != null;
 
   if (hasLogo) {

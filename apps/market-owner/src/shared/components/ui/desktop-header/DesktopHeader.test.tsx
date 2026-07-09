@@ -20,6 +20,14 @@ describe('DesktopHeader', () => {
     expect(screen.queryByRole('navigation', { name: '현재 위치' })).not.toBeInTheDocument();
   });
 
+  it('renders only logo in logo only mode', () => {
+    render(<DesktopHeader logo={<span>DC</span>} variant='logoOnly' />);
+
+    expect(screen.getByText('DC')).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: '현재 위치' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('searchbox', { name: '상품 검색' })).not.toBeInTheDocument();
+  });
+
   it('renders SearchBar and submits the search value', async () => {
     const handleSearch = vi.fn();
     const user = userEvent.setup();
