@@ -12,6 +12,9 @@ export const semantic = createGlobalTheme(':root', {
     cautionary: '#FF9200',
     negative: '#FF4242',
     negativeLight: '#FF6362',
+    dimmer: {
+      hover: 'rgba(51, 61, 75, 0.25)',
+    },
   },
   overlay: {
     dimmer: 'rgba(25, 31, 40, 0.55)',
