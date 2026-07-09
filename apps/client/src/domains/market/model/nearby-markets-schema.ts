@@ -46,3 +46,21 @@ export const resolveNearbyMarketsResponse = (
 ): NearbyMarketsResponseDataTypes => {
   return nearbyMarketsSuccessResponseSchema.parse(rawResponse).data;
 };
+
+export const nearbyMarketsListParamsSchema = z.object({
+  keyword: z.string().trim().optional(),
+  pageSize: z.number().int().positive().optional(),
+});
+
+export type NearbyMarketsListParamsTypes = z.infer<typeof nearbyMarketsListParamsSchema>;
+
+export const nearbyMarketsParamsSchema = nearbyMarketsListParamsSchema.extend({
+  cursor: z.number().int().nonnegative().optional(),
+});
+
+export type NearbyMarketsParamsTypes = z.infer<typeof nearbyMarketsParamsSchema>;
+
+// Validates raw request params (e.g. user-provided keyword) before querying the data source.
+export const resolveNearbyMarketsParams = (rawParams: unknown): NearbyMarketsParamsTypes => {
+  return nearbyMarketsParamsSchema.parse(rawParams);
+};

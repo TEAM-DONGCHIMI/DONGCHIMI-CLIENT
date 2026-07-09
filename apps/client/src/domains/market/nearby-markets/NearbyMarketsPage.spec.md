@@ -58,7 +58,7 @@
 - map center: `useGeolocation`(`navigator.geolocation.getCurrentPosition`)으로 현재 위치를 조회하여 지도 중심으로 사용하며, 조회 전/실패 시에는 기본 위치(서울시청, `{ lat: 37.5665, lng: 126.978 }`)를 사용합니다.
 - market list: `useIntersectionObserver`로 목록 하단 sentinel을 감지해 다음 페이지를 자동으로 불러옵니다(무한스크롤).
 - navigation: 마트 카드 클릭 시 `router.push`로 `/markets/[marketId]`로 이동합니다.
-- form / validation: API 응답은 zod 스키마(`nearby-markets-schema`)로 검증한 뒤 view model로 매핑합니다.
+- form / validation: 요청 파라미터(`keyword`/`cursor`/`pageSize`)와 API 응답 모두 zod 스키마(`nearby-markets-schema`)로 검증합니다. 응답은 검증 후 view model로 매핑합니다.
 - API: `useNearbyMarketsInfiniteQuery` → `getNearbyMarkets`(현재 mock)로 주변 마트 목록을 조회합니다. `keyword` 파라미터를 전달하면 mock 목록을 마트 이름/주소 기준(대소문자 무시)으로 필터링합니다.
 
 ## Accessibility

@@ -1,21 +1,15 @@
 import { paginateByCursor, wait } from '@/shared/utils';
 
 import {
+  resolveNearbyMarketsParams,
   resolveNearbyMarketsResponse,
   type NearbyMarketDtoTypes,
+  type NearbyMarketsListParamsTypes,
+  type NearbyMarketsParamsTypes,
   type NearbyMarketsResponseDataTypes,
 } from '../model/nearby-markets-schema';
 
-export type NearbyMarketsListParamsTypes = Readonly<{
-  keyword?: string;
-  pageSize?: number;
-}>;
-
-export type NearbyMarketsParamsTypes = Readonly<
-  NearbyMarketsListParamsTypes & {
-    cursor?: number;
-  }
->;
+export type { NearbyMarketsListParamsTypes, NearbyMarketsParamsTypes };
 
 const DEFAULT_PAGE_SIZE = 5;
 const MOCK_NETWORK_DELAY_MS = 400;
@@ -206,11 +200,11 @@ const filterMarketsByKeyword = (
 };
 
 // TODO: 백엔드 주변 마트 목록 endpoint가 나오면 httpClient.get 호출로 교체합니다.
-export const getNearbyMarkets = async ({
-  cursor,
-  keyword,
-  pageSize = DEFAULT_PAGE_SIZE,
-}: NearbyMarketsParamsTypes): Promise<NearbyMarketsResponseDataTypes> => {
+export const getNearbyMarkets = async (
+  rawParams: NearbyMarketsParamsTypes,
+): Promise<NearbyMarketsResponseDataTypes> => {
+  const { cursor, keyword, pageSize = DEFAULT_PAGE_SIZE } = resolveNearbyMarketsParams(rawParams);
+
   await wait(MOCK_NETWORK_DELAY_MS);
 
   const filteredMarkets = filterMarketsByKeyword(MOCK_NEARBY_MARKETS, keyword);
