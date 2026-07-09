@@ -9,6 +9,14 @@ export const sectionClassName = style({
   alignItems: 'center',
   justifyContent: 'center',
   gap: '6.8rem',
+  '@media': {
+    'screen and (max-width: 1280px)': {
+      gap: '4rem',
+    },
+    'screen and (max-width: 768px)': {
+      gap: '3.2rem',
+    },
+  },
 });
 
 export const headerClassName = style({
@@ -34,19 +42,34 @@ export const descriptionClassName = style({
 export const contentClassName = style({
   width: '100%',
   minWidth: 0,
-  gap: '5.2rem',
+  columnGap: '5.2rem',
+  rowGap: '2.4rem',
+  '@media': {
+    'screen and (max-width: 1280px)': {
+      flexDirection: 'column',
+      gap: '2.4rem',
+    },
+  },
 });
 
 export const methodCardClassName = style({
   position: 'relative',
   boxSizing: 'border-box',
-  width: '36rem',
-  minHeight: '45rem',
+  width: 'min(35.6rem, 100%)',
+  maxWidth: '35.6rem',
+  minHeight: '43.6rem',
+  flex: '0 1 35.6rem',
   alignItems: 'center',
-  padding: '4rem 4rem 3.6rem',
+  padding: '3.6rem',
   borderRadius: '2.4rem',
   backgroundColor: atomic.common[0],
   boxShadow: shadow.normal.medium,
+  '@media': {
+    'screen and (max-width: 768px)': {
+      minHeight: 'auto',
+      padding: '3.2rem 2rem',
+    },
+  },
 });
 
 export const imagePlaceholderClassName = style({
@@ -63,9 +86,8 @@ export const imagePlaceholderClassName = style({
 export const cardTextGroupClassName = style({
   width: '100%',
   minWidth: 0,
-  minHeight: '7.6rem',
-  gap: '1rem',
-  marginTop: '2.2rem',
+  gap: '0.6rem',
+  marginTop: '1.2rem',
 });
 
 export const cardTitleClassName = style({
@@ -91,7 +113,7 @@ export const descriptionLineClassName = style({
 
 export const actionSlotClassName = style({
   width: '100%',
-  height: '12.4rem',
+  minHeight: '12.4rem',
   alignItems: 'stretch',
   marginTop: '2.4rem',
 });
@@ -118,17 +140,20 @@ export const secondaryActionButtonClassName = style({
 export const guideLineButtonClassName = style({
   ...typography['caption-1-medium'],
   alignSelf: 'center',
-  marginTop: '0.4rem',
+  maxWidth: '100%',
   color: atomic.neutral[60],
   letterSpacing: 0,
+  overflowWrap: 'anywhere',
+  textAlign: 'center',
   textDecoration: 'underline',
   textUnderlineOffset: '0.2rem',
+  whiteSpace: 'normal',
 });
 
 export const supportGroupClassName = style({
   minHeight: '3.4rem',
   gap: '0.6rem',
-  marginTop: '2.8rem',
+  marginTop: '2.4rem',
 });
 
 export const supportTextClassName = style({

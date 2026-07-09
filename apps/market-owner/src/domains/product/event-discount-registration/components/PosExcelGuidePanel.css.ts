@@ -13,9 +13,8 @@ export const overlayClassName = style({
 
 export const panelClassName = style({
   boxSizing: 'border-box',
-  width: '42rem',
-  maxWidth: 'calc(100vw - 3.2rem)',
-  height: '100vh',
+  width: 'min(42rem, 100vw)',
+  height: '100dvh',
   overflowY: 'auto',
   backgroundColor: atomic.common[0],
   boxShadow: shadow.normal.medium,
@@ -49,6 +48,11 @@ export const contentClassName = style({
   flexDirection: 'column',
   gap: '2.4rem',
   padding: '1.2rem 3.2rem 4rem',
+  '@media': {
+    'screen and (max-width: 480px)': {
+      padding: '1.2rem 2rem 3.2rem',
+    },
+  },
 });
 
 export const titleClassName = style({

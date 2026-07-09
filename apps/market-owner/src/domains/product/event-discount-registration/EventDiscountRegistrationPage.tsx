@@ -162,6 +162,7 @@ export const EventDiscountRegistrationPage = () => {
 
       <UploadModal
         accept={EXCEL_UPLOAD_ACCEPT}
+        className={S.excelUploadModalClassName}
         description={
           excelUploadState === 'upload'
             ? registrationMethodFixture.excelUploadModal.description

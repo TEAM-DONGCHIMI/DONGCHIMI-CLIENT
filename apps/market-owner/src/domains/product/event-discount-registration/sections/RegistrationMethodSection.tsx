@@ -49,7 +49,7 @@ export const RegistrationMethodSection = ({
         <p className={S.descriptionClassName}>상품을 등록할 방식을 선택해주세요.</p>
       </Flex>
 
-      <Flex align='center' className={S.contentClassName} justify='center'>
+      <Flex align='center' className={S.contentClassName} justify='center' wrap='wrap'>
         <Flex
           as='article'
           aria-labelledby='registration-method-excel-title'
