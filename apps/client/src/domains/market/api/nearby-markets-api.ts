@@ -7,6 +7,7 @@ import {
 } from '../model/nearby-markets-schema';
 
 export type NearbyMarketsListParamsTypes = Readonly<{
+  keyword?: string;
   pageSize?: number;
 }>;
 
@@ -187,14 +188,33 @@ const buildMockNearbyMarkets = (): NearbyMarketDtoTypes[] => {
 
 const MOCK_NEARBY_MARKETS = buildMockNearbyMarkets();
 
+const filterMarketsByKeyword = (
+  markets: readonly NearbyMarketDtoTypes[],
+  keyword?: string,
+): NearbyMarketDtoTypes[] => {
+  const normalizedKeyword = keyword?.trim().toLowerCase();
+
+  if (!normalizedKeyword) {
+    return [...markets];
+  }
+
+  return markets.filter(
+    (market) =>
+      market.name.toLowerCase().includes(normalizedKeyword) ||
+      market.address.toLowerCase().includes(normalizedKeyword),
+  );
+};
+
 // TODO: 백엔드 주변 마트 목록 endpoint가 나오면 httpClient.get 호출로 교체합니다.
 export const getNearbyMarkets = async ({
   cursor,
+  keyword,
   pageSize = DEFAULT_PAGE_SIZE,
 }: NearbyMarketsParamsTypes): Promise<NearbyMarketsResponseDataTypes> => {
   await wait(MOCK_NETWORK_DELAY_MS);
 
-  const page = paginateByCursor(MOCK_NEARBY_MARKETS, { cursor, pageSize });
+  const filteredMarkets = filterMarketsByKeyword(MOCK_NEARBY_MARKETS, keyword);
+  const page = paginateByCursor(filteredMarkets, { cursor, pageSize });
 
   return resolveNearbyMarketsResponse({
     code: MOCK_SUCCESS_CODE,
@@ -202,7 +222,7 @@ export const getNearbyMarkets = async ({
       hasNext: page.nextCursor !== null,
       markets: page.items,
       nextCursor: page.nextCursor,
-      totalCount: MOCK_NEARBY_MARKETS.length,
+      totalCount: filteredMarkets.length,
     },
     message: MOCK_SUCCESS_MESSAGE,
     success: true,

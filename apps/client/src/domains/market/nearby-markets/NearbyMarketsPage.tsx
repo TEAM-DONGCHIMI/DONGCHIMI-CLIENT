@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+
 import { MobileHeader } from '@/shared/components';
+import { useDebouncedValue } from '@/shared/hooks';
 
 import * as S from './NearbyMarketsPage.css';
 import {
@@ -10,6 +13,9 @@ import {
 } from './sections';
 
 export const NearbyMarketsPage = () => {
+  const [keyword, setKeyword] = useState('');
+  const debouncedKeyword = useDebouncedValue(keyword);
+
   return (
     <main className={S.pageClassName}>
       <MobileHeader aria-label='앱 헤더'>
@@ -17,8 +23,8 @@ export const NearbyMarketsPage = () => {
       </MobileHeader>
 
       <NearbyMarketsMapSection />
-      <NearbyMarketsSearchSection />
-      <NearbyMarketsMarketListSection />
+      <NearbyMarketsSearchSection keyword={keyword} onKeywordChange={setKeyword} />
+      <NearbyMarketsMarketListSection keyword={debouncedKeyword} />
     </main>
   );
 };

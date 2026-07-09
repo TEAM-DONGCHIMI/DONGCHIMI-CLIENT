@@ -10,11 +10,17 @@ import { useNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-in
 import * as S from '../NearbyMarketsPage.css';
 import { flattenNearbyMarketsPages } from '../utils/flatten-nearby-markets-pages';
 
-export const NearbyMarketsMarketListSection = () => {
+export interface NearbyMarketsMarketListSectionProps {
+  keyword?: string;
+}
+
+export const NearbyMarketsMarketListSection = ({
+  keyword,
+}: NearbyMarketsMarketListSectionProps) => {
   const router = useRouter();
 
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isError, isPending } =
-    useNearbyMarketsInfiniteQuery();
+    useNearbyMarketsInfiniteQuery({ keyword });
 
   const sentinelRef = useIntersectionObserver<HTMLDivElement>({
     enabled: Boolean(hasNextPage) && !isFetchingNextPage,
@@ -46,7 +52,9 @@ export const NearbyMarketsMarketListSection = () => {
   if (markets.length === 0) {
     return (
       <section aria-label='주변 마트 목록' className={S.marketListSectionClassName}>
-        <p className={S.marketListStatusClassName}>주변에 등록된 마트가 없어요.</p>
+        <p className={S.marketListStatusClassName}>
+          {keyword ? `'${keyword}'에 대한 검색 결과가 없어요.` : '주변에 등록된 마트가 없어요.'}
+        </p>
       </section>
     );
   }
