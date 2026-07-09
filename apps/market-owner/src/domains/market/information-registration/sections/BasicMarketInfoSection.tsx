@@ -53,7 +53,7 @@ export const BasicMarketInfoSection = ({
         inputMode='numeric'
         label='사업자 등록 번호'
         pattern='(?:[0-9]|-)*'
-        placeholder='사업자 등록 번호를 입력하세요.'
+        placeholder='사업자 등록 번호를 입력해주세요.'
         type='tel'
         {...brnField}
         value={brn}
