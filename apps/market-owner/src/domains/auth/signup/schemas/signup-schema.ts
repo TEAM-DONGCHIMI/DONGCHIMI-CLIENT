@@ -1,39 +1,25 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-export const SIGNUP_EMAIL_ERROR_MESSAGES = {
-  duplicated: '이미 사용 중인 이메일입니다.',
-  format: '올바른 이메일 형식이 아닙니다.',
-  required: '이메일을 입력해주세요.',
-} as const;
-
-export const SIGNUP_PASSWORD_ERROR_MESSAGES = {
-  format: '6-20자로 입력해주세요.',
-  required: '비밀번호를 입력해주세요.',
-} as const;
-
-export const SIGNUP_PASSWORD_CONFIRM_ERROR_MESSAGES = {
-  mismatch: '비밀번호가 일치하지 않습니다.',
-  required: '비밀번호를 다시 입력해주세요.',
-} as const;
+import {
+  isUsedSignupEmail,
+  SIGNUP_EMAIL_ALLOWED_CHARACTERS_PATTERN,
+  SIGNUP_EMAIL_ERROR_MESSAGES,
+  SIGNUP_EMAIL_PATTERN,
+} from '../utils/email-validation';
+import {
+  MAX_SIGNUP_PASSWORD_LENGTH,
+  MIN_SIGNUP_PASSWORD_LENGTH,
+  SIGNUP_PASSWORD_CONFIRM_ERROR_MESSAGES,
+  SIGNUP_PASSWORD_ERROR_MESSAGES,
+} from '../utils/password-validation';
+import { KOREAN_CHARACTERS_PATTERN, WHITESPACE_PATTERN } from '../utils/text-pattern';
 
 export const SIGNUP_FORM_DEFAULT_VALUES = {
   email: '',
   password: '',
   passwordConfirm: '',
 } as const;
-
-export const SIGNUP_EMAIL_PATTERN = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.(?:com|co\.kr)$/;
-export const SIGNUP_EMAIL_ALLOWED_CHARACTERS_PATTERN = /^[A-Za-z0-9@._-]*$/;
-const KOREAN_CHARACTERS_PATTERN = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
-const WHITESPACE_PATTERN = /\s/;
-const MIN_SIGNUP_PASSWORD_LENGTH = 6;
-const MAX_SIGNUP_PASSWORD_LENGTH = 20;
-const USED_SIGNUP_EMAILS = new Set(['used@example.com', 'owner@email.co.kr']);
-
-const isUsedSignupEmail = (email: string) => {
-  return USED_SIGNUP_EMAILS.has(email.toLowerCase());
-};
 
 export const signupSchema = z
   .object({

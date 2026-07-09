@@ -1,33 +1,12 @@
 import { type ChangeEvent, useState } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
+import { getTextInputStatusProps } from '../../hooks/get-text-input-status-props';
 import {
   SIGNUP_FORM_DEFAULT_VALUES,
   signupFormResolver,
   type SignupFormTypes,
 } from '../schemas/signup-schema';
-
-type TextInputStatusPropsTypes =
-  | {
-      errorMessage: string;
-      status: 'error';
-    }
-  | {
-      status: 'default';
-    };
-
-const getTextInputStatusProps = (errorMessage: string | undefined): TextInputStatusPropsTypes => {
-  if (errorMessage !== undefined) {
-    return {
-      errorMessage,
-      status: 'error',
-    };
-  }
-
-  return {
-    status: 'default',
-  };
-};
 
 export const useSignupForm = () => {
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string>();
@@ -73,21 +52,25 @@ export const useSignupForm = () => {
     passwordConfirmController.fieldState.error === undefined;
 
   return {
-    clearSubmitErrorMessage,
-    email: emailController.field.value,
-    emailStatusProps: getTextInputStatusProps(emailController.fieldState.error?.message),
-    handleEmailChange,
-    handlePasswordChange,
-    handlePasswordConfirmChange,
-    handleSubmit: form.handleSubmit,
-    isPasswordConfirmValid,
-    isValid: form.formState.isValid,
-    password: passwordController.field.value,
-    passwordConfirm: passwordConfirmController.field.value,
-    passwordConfirmStatusProps: getTextInputStatusProps(
-      passwordConfirmController.fieldState.error?.message,
-    ),
-    passwordStatusProps: getTextInputStatusProps(passwordController.fieldState.error?.message),
-    submitErrorMessage,
+    action: {
+      clearSubmitErrorMessage,
+      handleEmailChange,
+      handlePasswordChange,
+      handlePasswordConfirmChange,
+      handleSubmit: form.handleSubmit,
+    },
+    state: {
+      email: emailController.field.value,
+      emailStatusProps: getTextInputStatusProps(emailController.fieldState.error?.message),
+      isPasswordConfirmValid,
+      isValid: form.formState.isValid,
+      password: passwordController.field.value,
+      passwordConfirm: passwordConfirmController.field.value,
+      passwordConfirmStatusProps: getTextInputStatusProps(
+        passwordConfirmController.fieldState.error?.message,
+      ),
+      passwordStatusProps: getTextInputStatusProps(passwordController.fieldState.error?.message),
+      submitErrorMessage,
+    },
   };
 };

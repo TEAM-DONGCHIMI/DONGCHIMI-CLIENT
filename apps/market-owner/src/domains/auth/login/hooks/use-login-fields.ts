@@ -1,6 +1,7 @@
 import { type ChangeEvent } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
+import { getTextInputStatusProps } from '../../hooks/get-text-input-status-props';
 import {
   LOGIN_FORM_DEFAULT_VALUES,
   loginFormResolver,
@@ -31,16 +32,8 @@ export const useLoginFields = ({ onFieldChange }: UseLoginFieldsOptions = {}) =>
     name: 'isAutoLogin',
   });
 
-  const emailErrorMessage = emailController.fieldState.error?.message;
-  const emailStatusProps =
-    emailErrorMessage !== undefined
-      ? { errorMessage: emailErrorMessage, status: 'error' as const }
-      : { status: 'default' as const };
-  const passwordErrorMessage = passwordController.fieldState.error?.message;
-  const passwordStatusProps =
-    passwordErrorMessage !== undefined
-      ? { errorMessage: passwordErrorMessage, status: 'error' as const }
-      : { status: 'default' as const };
+  const emailStatusProps = getTextInputStatusProps(emailController.fieldState.error?.message);
+  const passwordStatusProps = getTextInputStatusProps(passwordController.fieldState.error?.message);
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextEmail = event.target.value;

@@ -21,6 +21,8 @@ auth 작업에서 연결합니다.
 - Route-independent page composition lives in this domain page.
 - React Router route object imports this page from `src/app/router.tsx`.
 - Page-local components, sections, hooks, fixtures, and utils stay under this page folder.
+- `TextInput` error/status prop derivation is shared with `signup` via `domains/auth/hooks/get-text-input-status-props.ts`.
+- Email-required/format and password-required copy is shared with `signup` via `domains/auth/constants/auth-messages.ts`.
 - Public auth layout responsibility stays in `src/app/layouts/AuthLayout.tsx`.
 - Login card shell is composed directly in `LoginPage` with the design-system layout primitive.
 - Login card content is composed directly in this page from two independent screen sections: `sections/login-form` (`LoginForm`) and `sections/signup-prompt` (`SignupPrompt`), laid out with the page-local `contentClassName` in `LoginPage.css.ts`.

@@ -22,8 +22,11 @@
 - React Router route object imports this page from `src/app/router.tsx`.
 - Public auth layout responsibility stays in `src/app/layouts/AuthLayout.tsx`.
 - Page-local spacing and signup-specific presentation stay in `SignupPage.css.ts`.
-- Signup form state, field handlers, submit error state, and `TextInput` status props stay in `hooks/use-signup-form.ts`.
-- Zod validation schema, resolver, default values, API request/response types, and temporary duplicate email list stay in `schemas/signup-schema.ts`.
+- Signup form state, field handlers, and submit error state stay in `hooks/use-signup-form.ts`.
+- `TextInput` error/status prop derivation is shared with `login` via `domains/auth/hooks/get-text-input-status-props.ts`.
+- Email-required/format and password-required copy is shared with `login` via `domains/auth/constants/auth-messages.ts`.
+- Zod validation schema, resolver, default values, and API request/response types stay in `schemas/signup-schema.ts`.
+- Email error messages, format/allowed-character patterns, and the temporary duplicate email list stay in `utils/email-validation.ts`; password error messages and length bounds stay in `utils/password-validation.ts`; shared whitespace/Korean-character patterns stay in `utils/text-pattern.ts`.
 - Form primitives use design-system `Flex`, `TextInput`, and `Button`.
 
 ## UI States
@@ -42,7 +45,7 @@
 
 - query: none
 - mutation: none
-- fixture: temporary duplicate email list in `signup-schema.ts`
+- fixture: temporary duplicate email list in `utils/email-validation.ts`
 - model: signup owner register request/response types in `signup-schema.ts`
 
 ## Behavior

@@ -10,9 +10,28 @@ import * as S from './SignupPage.css';
 
 export const SignupPage = () => {
   const navigate = useNavigate();
-  const signupForm = useSignupForm();
-  const handleSignupSubmit = signupForm.handleSubmit(() => {
-    signupForm.clearSubmitErrorMessage();
+  const {
+    action: {
+      clearSubmitErrorMessage,
+      handleEmailChange,
+      handlePasswordChange,
+      handlePasswordConfirmChange,
+      handleSubmit,
+    },
+    state: {
+      email,
+      emailStatusProps,
+      isPasswordConfirmValid,
+      isValid,
+      password,
+      passwordConfirm,
+      passwordConfirmStatusProps,
+      passwordStatusProps,
+      submitErrorMessage,
+    },
+  } = useSignupForm();
+  const handleSignupSubmit = handleSubmit(() => {
+    clearSubmitErrorMessage();
     navigate(MARKET_OWNER_ROUTES.login);
   });
 
@@ -34,49 +53,44 @@ export const SignupPage = () => {
             autoComplete='email'
             label='이메일'
             name='email'
-            onChange={signupForm.handleEmailChange}
+            onChange={handleEmailChange}
             placeholder='example@email.com'
             type='email'
-            value={signupForm.email}
-            {...signupForm.emailStatusProps}
+            value={email}
+            {...emailStatusProps}
           />
 
           <TextInput
             autoComplete='new-password'
             label='비밀번호'
             name='password'
-            onChange={signupForm.handlePasswordChange}
+            onChange={handlePasswordChange}
             placeholder='비밀번호를 입력해주세요.'
             type='password'
-            value={signupForm.password}
-            {...signupForm.passwordStatusProps}
+            value={password}
+            {...passwordStatusProps}
           />
 
           <TextInput
             autoComplete='new-password'
             label='비밀번호 확인'
             name='passwordConfirm'
-            onChange={signupForm.handlePasswordConfirmChange}
+            onChange={handlePasswordConfirmChange}
             placeholder='비밀번호를 확인해주세요.'
-            trailingIcon={signupForm.isPasswordConfirmValid ? <IcCircleCheckFill /> : undefined}
+            trailingIcon={isPasswordConfirmValid ? <IcCircleCheckFill /> : undefined}
             type='password'
-            value={signupForm.passwordConfirm}
-            {...signupForm.passwordConfirmStatusProps}
+            value={passwordConfirm}
+            {...passwordConfirmStatusProps}
           />
         </Flex>
 
-        {signupForm.submitErrorMessage !== undefined && (
+        {submitErrorMessage !== undefined && (
           <div className={S.submitToastClassName}>
-            <Toast status='error'>{signupForm.submitErrorMessage}</Toast>
+            <Toast status='error'>{submitErrorMessage}</Toast>
           </div>
         )}
 
-        <Button
-          className={S.submitButtonClassName}
-          disabled={!signupForm.isValid}
-          size='large'
-          type='submit'
-        >
+        <Button className={S.submitButtonClassName} disabled={!isValid} size='large' type='submit'>
           가입 완료
         </Button>
       </form>
