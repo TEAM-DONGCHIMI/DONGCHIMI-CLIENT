@@ -9,7 +9,7 @@ import {
   IcPlus,
 } from '@dongchimi/design-system/icons';
 
-import { FieldGroup, InlineFieldGroup } from '../components/FieldGroup';
+import { FieldGroup } from '../components/FieldGroup';
 import {
   todaySpecialImageInputAccept,
   type TodaySpecialProductErrorMessageTypes,
@@ -104,7 +104,7 @@ export const ProductInfoSection = ({
         </div>
 
         <div className={S.twoColumnRowClassName}>
-          <InlineFieldGroup
+          <FieldGroup
             errorMessage={productErrorMessages.name}
             id='today-special-product-name'
             label='상품명'
@@ -152,7 +152,7 @@ export const ProductInfoSection = ({
           </FieldGroup>
         </div>
 
-        <InlineFieldGroup
+        <FieldGroup
           errorMessage={productErrorMessages.description}
           id='today-special-product-description'
           label='상품 한줄 홍보문구'

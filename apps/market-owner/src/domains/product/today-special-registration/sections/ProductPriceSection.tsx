@@ -1,6 +1,6 @@
 import type { ChangeEventHandler, FocusEventHandler } from 'react';
 
-import { InlineFieldGroup } from '../components/FieldGroup';
+import { FieldGroup } from '../components/FieldGroup';
 import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductFormTypes } from '../model';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
@@ -29,7 +29,7 @@ export const ProductPriceSection = ({
 
       <div className={S.sectionBodyClassName}>
         <div className={S.twoColumnRowClassName}>
-          <InlineFieldGroup
+          <FieldGroup
             errorMessage={productErrorMessages.specialPrice}
             id='today-special-special-price'
             inputMode='numeric'
@@ -42,7 +42,7 @@ export const ProductPriceSection = ({
             value={product.specialPrice}
           />
 
-          <InlineFieldGroup
+          <FieldGroup
             errorMessage={productErrorMessages.salePrice}
             id='today-special-sale-price'
             inputMode='numeric'
