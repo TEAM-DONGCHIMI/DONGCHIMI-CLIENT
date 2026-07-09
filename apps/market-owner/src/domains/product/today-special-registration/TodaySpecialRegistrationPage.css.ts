@@ -192,16 +192,20 @@ export const imagePreviewClassName = style({
 
 export const cameraBadgeClassName = style({
   position: 'absolute',
-  top: '0.8rem',
-  right: '0.8rem',
+  top: '0.7rem',
+  right: '0.7rem',
   zIndex: 1,
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '2.4rem',
-  height: '2.4rem',
+  boxSizing: 'border-box',
+  width: '4rem',
+  height: '4rem',
+  border: `1px solid ${atomic.neutral[40]}`,
+  borderRadius: '10rem',
+  backgroundColor: atomic.common[0],
   color: atomic.common[100],
-  fontSize: '2.4rem',
+  fontSize: '2rem',
 });
 
 export const fileInputClassName = style({
