@@ -19,6 +19,19 @@ const renderRoute = (path: string) => {
   );
 };
 
+const fillSignupForm = async (
+  user: ReturnType<typeof userEvent.setup>,
+  {
+    email,
+    password,
+    passwordConfirm,
+  }: { email: string; password: string; passwordConfirm: string },
+) => {
+  await user.type(await screen.findByLabelText('이메일'), email);
+  await user.type(screen.getByLabelText('비밀번호'), password);
+  await user.type(screen.getByLabelText('비밀번호 확인'), passwordConfirm);
+};
+
 const mockClipboardWriteText = (writeText: (text: string) => Promise<void>) => {
   Object.defineProperty(navigator, 'clipboard', {
     configurable: true,
@@ -123,22 +136,15 @@ describe('marketOwnerRoutes', () => {
   it('enables signup submit button when all signup fields are valid', async () => {
     const user = userEvent.setup();
 
-    const { container } = renderRoute('/signup');
+    renderRoute('/signup');
 
     const submitButton = await screen.findByRole('button', { name: '가입 완료' });
-    const emailInput = container.querySelector<HTMLInputElement>('input[name="email"]');
-    const passwordInput = container.querySelector<HTMLInputElement>('input[name="password"]');
-    const passwordConfirmInput = container.querySelector<HTMLInputElement>(
-      'input[name="passwordConfirm"]',
-    );
 
-    if (emailInput === null || passwordInput === null || passwordConfirmInput === null) {
-      throw new Error('Expected signup inputs to be rendered.');
-    }
-
-    await user.type(emailInput, 'new@example.com');
-    await user.type(passwordInput, 'abc123');
-    await user.type(passwordConfirmInput, 'abc123');
+    await fillSignupForm(user, {
+      email: 'new@example.com',
+      password: 'abc123',
+      passwordConfirm: 'abc123',
+    });
 
     await waitFor(() => expect(submitButton).toBeEnabled());
   });
@@ -146,21 +152,13 @@ describe('marketOwnerRoutes', () => {
   it('redirects to login page after valid signup submit', async () => {
     const user = userEvent.setup();
 
-    const { container } = renderRoute('/signup');
+    renderRoute('/signup');
 
-    const emailInput = container.querySelector<HTMLInputElement>('input[name="email"]');
-    const passwordInput = container.querySelector<HTMLInputElement>('input[name="password"]');
-    const passwordConfirmInput = container.querySelector<HTMLInputElement>(
-      'input[name="passwordConfirm"]',
-    );
-
-    if (emailInput === null || passwordInput === null || passwordConfirmInput === null) {
-      throw new Error('Expected signup inputs to be rendered.');
-    }
-
-    await user.type(emailInput, 'new@example.com');
-    await user.type(passwordInput, 'abc123');
-    await user.type(passwordConfirmInput, 'abc123');
+    await fillSignupForm(user, {
+      email: 'new@example.com',
+      password: 'abc123',
+      passwordConfirm: 'abc123',
+    });
     await user.click(await screen.findByRole('button', { name: '가입 완료' }));
 
     expect(await screen.findByRole('heading', { name: '마트 관리자 로그인' })).toBeInTheDocument();
