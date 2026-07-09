@@ -46,9 +46,10 @@
 - success: `completed`는 `status='completed'`로 DS `Toast`를 렌더링합니다.
 - error: `error`는 `status='error'`로 DS `Toast`를 렌더링합니다.
 - queue: 여러 toast가 호출되면 `maxVisibleCount`만큼 viewport에 노출합니다.
+- state limit: `maxVisibleCount`를 초과한 오래된 toast는 state에서도 제거해 숨겨진 toast가 누적되지 않게 합니다.
 - auto dismiss: `durationMs`가 number이면 해당 시간이 지난 뒤 제거합니다.
 - persistent: `durationMs`가 `null`이면 자동 제거하지 않습니다.
-- manual dismiss: 반환된 id를 `dismiss(id)`에 전달해 제거합니다.
+- manual dismiss: 반환된 id를 `dismiss(id)`에 전달하면 위로 이동하며 fade-out 된 뒤 제거합니다.
 - side effects: toast 호출은 사용자 이벤트, mutation callback, 명시적 effect 같은 렌더 외부 시점에서만 수행합니다.
 
 ## API Contract
@@ -67,6 +68,7 @@
 - concurrency: 같은 id로 다시 show하면 기존 toast를 교체합니다.
 - cancellation: provider unmount 또는 toast dismiss 시 timer를 정리합니다.
 - accessibility impact: DS `Toast`의 `role`과 `aria-live` 기본값을 유지합니다.
+- viewport accessibility: viewport는 `role='region'`과 `aria-label`로 영역 이름을 제공합니다.
 - app wiring: 이번 구현은 `apps/market-owner`에만 연결하고 `apps/client`는 후속 작업으로 둡니다.
 
 ## Verification

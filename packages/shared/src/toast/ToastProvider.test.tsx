@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ToastProvider, useToast, type ToastIdTypes } from './ToastProvider';
+import { toastExitAnimationDurationMs } from './ToastViewport.css';
 
 const CompletedToastLauncher = () => {
   const toast = useToast();
@@ -57,6 +58,26 @@ const MultipleToastLauncher = () => {
   );
 };
 
+const TrimmedToastLauncher = () => {
+  const toast = useToast();
+
+  const openToasts = () => {
+    toast.completed('첫 번째 토스트', { durationMs: null, id: 'first-toast' });
+    toast.completed('두 번째 토스트', { durationMs: null, id: 'second-toast' });
+  };
+
+  return (
+    <>
+      <button onClick={openToasts} type='button'>
+        제한 토스트 열기
+      </button>
+      <button onClick={() => toast.dismiss('second-toast')} type='button'>
+        두 번째 토스트 닫기
+      </button>
+    </>
+  );
+};
+
 afterEach(() => {
   vi.useRealTimers();
 });
@@ -73,6 +94,7 @@ describe('ToastProvider', () => {
 
     const toast = screen.getByRole('status');
 
+    expect(screen.getByRole('region', { name: '토스트 알림' })).toBeInTheDocument();
     expect(toast).toHaveAttribute('aria-live', 'polite');
     expect(toast).toHaveTextContent('저장되었어요');
   });
@@ -94,10 +116,18 @@ describe('ToastProvider', () => {
       vi.advanceTimersByTime(3000);
     });
 
+    expect(screen.getByText('저장되었어요')).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(toastExitAnimationDurationMs);
+    });
+
     expect(screen.queryByText('저장되었어요')).not.toBeInTheDocument();
   });
 
   it('dismisses toast by id', () => {
+    vi.useFakeTimers();
+
     render(
       <ToastProvider>
         <ManualDismissToastLauncher />
@@ -113,6 +143,12 @@ describe('ToastProvider', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '에러 토스트 닫기' }));
 
+    expect(screen.getByText('저장에 실패했어요')).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(toastExitAnimationDurationMs);
+    });
+
     expect(screen.queryByText('저장에 실패했어요')).not.toBeInTheDocument();
   });
 
@@ -127,5 +163,29 @@ describe('ToastProvider', () => {
 
     expect(screen.queryByText('첫 번째 토스트')).not.toBeInTheDocument();
     expect(screen.getByText('두 번째 토스트')).toBeInTheDocument();
+  });
+
+  it('removes excess toast from state when visible count is exceeded', () => {
+    vi.useFakeTimers();
+
+    render(
+      <ToastProvider maxVisibleCount={1}>
+        <TrimmedToastLauncher />
+      </ToastProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '제한 토스트 열기' }));
+
+    expect(screen.queryByText('첫 번째 토스트')).not.toBeInTheDocument();
+    expect(screen.getByText('두 번째 토스트')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '두 번째 토스트 닫기' }));
+
+    act(() => {
+      vi.advanceTimersByTime(toastExitAnimationDurationMs);
+    });
+
+    expect(screen.queryByText('첫 번째 토스트')).not.toBeInTheDocument();
+    expect(screen.queryByText('두 번째 토스트')).not.toBeInTheDocument();
   });
 });

@@ -58,18 +58,26 @@ interface ToastEntry {
   icon?: ReactNode;
   id: ToastIdTypes;
   message: ReactNode;
+  phase: ToastPhaseTypes;
   revision: number;
   status: ToastStatusTypes;
 }
 
+type ToastPhaseTypes = 'dismissing' | 'visible';
+
 type ToastActionTypes =
   | Readonly<{
+      maxVisibleCount: number;
       toast: ToastEntry;
       type: 'add';
     }>
   | Readonly<{
       id: ToastIdTypes;
       type: 'dismiss';
+    }>
+  | Readonly<{
+      id: ToastIdTypes;
+      type: 'remove';
     }>
   | Readonly<{
       type: 'clear';
@@ -85,36 +93,55 @@ const TOAST_DEFAULT_MAX_VISIBLE_COUNT = 3;
 
 const ToastContext = createContext<ToastActions | null>(null);
 
-const addToast = (toasts: ToastEntry[], toast: ToastEntry) => {
+const getVisibleToasts = (toasts: ToastEntry[], maxVisibleCount: number) => {
+  return toasts.slice(-maxVisibleCount);
+};
+
+const addToast = (toasts: ToastEntry[], toast: ToastEntry, maxVisibleCount: number) => {
   const hasSameToast = toasts.some(({ id }) => id === toast.id);
 
   if (!hasSameToast) {
-    return [...toasts, toast];
+    return getVisibleToasts([...toasts, toast], maxVisibleCount);
   }
 
-  return toasts.map((currentToast) => {
+  const nextToasts = toasts.map((currentToast) => {
     if (currentToast.id !== toast.id) {
       return currentToast;
     }
 
     return toast;
   });
+
+  return getVisibleToasts(nextToasts, maxVisibleCount);
+};
+
+const dismissToast = (toasts: ToastEntry[], id: ToastIdTypes) => {
+  return toasts.map((toast) => {
+    if (toast.id !== id || toast.phase === 'dismissing') {
+      return toast;
+    }
+
+    return {
+      ...toast,
+      phase: 'dismissing' as const,
+    };
+  });
 };
 
 const toastReducer = (toasts: ToastEntry[], action: ToastActionTypes) => {
   if (action.type === 'add') {
-    return addToast(toasts, action.toast);
+    return addToast(toasts, action.toast, action.maxVisibleCount);
   }
 
   if (action.type === 'dismiss') {
+    return dismissToast(toasts, action.id);
+  }
+
+  if (action.type === 'remove') {
     return toasts.filter(({ id }) => id !== action.id);
   }
 
   return [];
-};
-
-const getVisibleToasts = (toasts: ToastEntry[], maxVisibleCount: number) => {
-  return toasts.slice(-maxVisibleCount);
 };
 
 const getSafeMaxVisibleCount = (maxVisibleCount: number) => {
@@ -173,12 +200,13 @@ const getPortalContainer = () => {
 
 interface ToastViewportItemProps {
   onDismiss: (id: ToastIdTypes) => void;
+  onRemove: (id: ToastIdTypes) => void;
   toast: ToastEntry;
 }
 
-const ToastViewportItem = ({ onDismiss, toast }: ToastViewportItemProps) => {
+const ToastViewportItem = ({ onDismiss, onRemove, toast }: ToastViewportItemProps) => {
   useEffect(() => {
-    if (toast.durationMs === null) {
+    if (toast.durationMs === null || toast.phase === 'dismissing') {
       return;
     }
 
@@ -189,10 +217,24 @@ const ToastViewportItem = ({ onDismiss, toast }: ToastViewportItemProps) => {
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [onDismiss, toast.durationMs, toast.id, toast.revision]);
+  }, [onDismiss, toast.durationMs, toast.id, toast.phase, toast.revision]);
+
+  useEffect(() => {
+    if (toast.phase !== 'dismissing') {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      onRemove(toast.id);
+    }, S.toastExitAnimationDurationMs);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [onRemove, toast.id, toast.phase]);
 
   return (
-    <div className={S.toastViewportItemClassName} data-toast-id={toast.id}>
+    <div className={S.toastViewportItemPhaseClassNameMap[toast.phase]} data-toast-id={toast.id}>
       <Toast icon={toast.icon} status={toast.status}>
         {toast.message}
       </Toast>
@@ -216,6 +258,10 @@ export const ToastProvider = ({
     dispatch({ id, type: 'dismiss' });
   }, []);
 
+  const remove = useCallback((id: ToastIdTypes) => {
+    dispatch({ id, type: 'remove' });
+  }, []);
+
   const clear = useCallback(() => {
     dispatch({ type: 'clear' });
   }, []);
@@ -233,15 +279,17 @@ export const ToastProvider = ({
           icon,
           id: toastId,
           message,
+          phase: 'visible',
           revision: nextToastRevisionRef.current,
           status,
         },
+        maxVisibleCount: getSafeMaxVisibleCount(maxVisibleCount),
         type: 'add',
       });
 
       return toastId;
     },
-    [defaultDurationMs],
+    [defaultDurationMs, maxVisibleCount],
   );
 
   const completed = useCallback(
@@ -280,9 +328,19 @@ export const ToastProvider = ({
       {portalContainer !== null &&
         visibleToasts.length > 0 &&
         createPortal(
-          <div aria-label='토스트 알림' className={viewportClassName} style={viewportStyle}>
+          <div
+            aria-label='토스트 알림'
+            className={viewportClassName}
+            role='region'
+            style={viewportStyle}
+          >
             {visibleToasts.map((toast) => (
-              <ToastViewportItem key={toast.id} onDismiss={dismiss} toast={toast} />
+              <ToastViewportItem
+                key={toast.id}
+                onDismiss={dismiss}
+                onRemove={remove}
+                toast={toast}
+              />
             ))}
           </div>,
           portalContainer,

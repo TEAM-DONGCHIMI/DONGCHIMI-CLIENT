@@ -1,7 +1,32 @@
-import { style } from '@vanilla-extract/css';
+import { keyframes, style, styleVariants } from '@vanilla-extract/css';
 
 const viewportOffsetXVar = 'var(--toast-viewport-offset-x, 1.6rem)';
 const viewportOffsetYVar = 'var(--toast-viewport-offset-y, 1.6rem)';
+const toastEnterAnimationDurationMs = 160;
+
+export const toastExitAnimationDurationMs = 180;
+
+const toastEnter = keyframes({
+  from: {
+    opacity: 0,
+    transform: 'translateY(-0.8rem)',
+  },
+  to: {
+    opacity: 1,
+    transform: 'translateY(0)',
+  },
+});
+
+const toastExit = keyframes({
+  from: {
+    opacity: 1,
+    transform: 'translateY(0)',
+  },
+  to: {
+    opacity: 0,
+    transform: 'translateY(-0.8rem)',
+  },
+});
 
 const toastViewportBaseClassName = style({
   position: 'fixed',
@@ -10,7 +35,7 @@ const toastViewportBaseClassName = style({
   flexDirection: 'column',
   gap: '0.8rem',
   width: 'fit-content',
-  maxWidth: 'calc(100vw - 3.2rem)',
+  maxWidth: `calc(100vw - ${viewportOffsetXVar} - ${viewportOffsetXVar})`,
   pointerEvents: 'none',
 });
 
@@ -53,4 +78,19 @@ export const toastViewportPlacementClassNameMap = {
 
 export const toastViewportItemClassName = style({
   pointerEvents: 'auto',
+});
+
+export const toastViewportItemPhaseClassNameMap = styleVariants({
+  dismissing: [
+    toastViewportItemClassName,
+    {
+      animation: `${toastExit} ${toastExitAnimationDurationMs}ms ease-in forwards`,
+    },
+  ],
+  visible: [
+    toastViewportItemClassName,
+    {
+      animation: `${toastEnter} ${toastEnterAnimationDurationMs}ms ease-out`,
+    },
+  ],
 });
