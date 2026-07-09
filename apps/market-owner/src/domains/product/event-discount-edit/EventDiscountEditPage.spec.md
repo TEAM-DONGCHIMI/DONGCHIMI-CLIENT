@@ -26,7 +26,7 @@
 ## UI States
 
 - loading: 이번 범위에서 다루지 않습니다.
-- empty: 이번 범위에서 다루지 않습니다. 행사 할인 탭은 레이아웃 확인용 샘플 카드 목록을 표시합니다.
+- empty: 등록된 상품이 없으면 `ProductEditProductList`가 empty image, 안내 문구, `/products/event-discount/new` 등록 link를 표시합니다.
 - error: 알 수 없는 route는 router fallback에서 처리합니다.
 - success: `/products/event-discount/edit` route가 `행사 할인 상품을 수정하세요` heading과 행사 할인 상품 수정 카드 section을 렌더링합니다.
 
@@ -42,6 +42,7 @@
 - `행사 할인` tab은 selected/current 상태입니다.
 - `오늘의 특가` tab은 `/products/today-special/edit`으로 route 이동합니다.
 - page content는 선택된 filter에 따라 행사 할인 샘플 상품 수정 카드를 카테고리별, 등록일별, 조회수순으로 표시합니다.
+- 표시할 상품이 없으면 `상품 등록하러 가기` link로 행사 할인 상품 등록 화면에 이동합니다.
 - `카테고리별` filter는 shared shell에서 dropdown으로 열립니다.
 - `카테고리별` trigger 클릭만으로는 목록 grouping이 바뀌지 않고, dropdown option 선택 후 카테고리별 섹션을 표시합니다.
 - `상품 등록 순` filter는 등록일별 섹션을 표시합니다.
@@ -64,3 +65,4 @@
 - [ ] `행사 할인` tab link has `aria-current="page"`
 - [ ] `오늘의 특가` tab navigates to `/products/today-special/edit`
 - [ ] category filter opens overlay dropdown
+- [x] empty product list renders registration link to `/products/event-discount/new`

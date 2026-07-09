@@ -1,22 +1,27 @@
-import { type ComponentProps } from 'react';
-
 import { ProductEditCardDesktop } from '@/shared/components';
 
 import * as S from './ProductEditProductList.css';
-
-type ProductEditCardProps = ComponentProps<typeof ProductEditCardDesktop>;
-
-export interface ProductEditProductGroup {
-  products: ProductEditCardProps[];
-  title: string;
-}
+import { type ProductEditProductGroup } from './display-groups';
+import { ProductEditEmptyView } from './product-edit-empty-view';
 
 interface ProductEditProductListProps {
   ariaLabel: string;
   groups: ProductEditProductGroup[];
+  registrationHref: string;
 }
 
-export const ProductEditProductList = ({ ariaLabel, groups }: ProductEditProductListProps) => {
+const hasProducts = (groups: ProductEditProductGroup[]) =>
+  groups.some(({ products }) => products.length > 0);
+
+export const ProductEditProductList = ({
+  ariaLabel,
+  groups,
+  registrationHref,
+}: ProductEditProductListProps) => {
+  if (!hasProducts(groups)) {
+    return <ProductEditEmptyView ariaLabel={ariaLabel} registrationHref={registrationHref} />;
+  }
+
   return (
     <section aria-label={ariaLabel} className={S.sectionListClassName}>
       {groups.map(({ products, title }) => (
@@ -28,7 +33,7 @@ export const ProductEditProductList = ({ ariaLabel, groups }: ProductEditProduct
               <ProductEditCardDesktop
                 key={`${title}-${product.productName}`}
                 {...product}
-                aria-label={`${product.productName} 상품 수정 카드`}
+                aria-label={product['aria-label'] ?? `${product.productName} 상품 수정 카드`}
               />
             ))}
           </div>

@@ -2,6 +2,8 @@ import { style } from '@vanilla-extract/css';
 
 import { atomic, typography } from '@dongchimi/design-system/tokens';
 
+const productEditCardWidth = '25.2rem';
+
 export const sectionListClassName = style({
   display: 'flex',
   flexDirection: 'column',
@@ -22,6 +24,6 @@ export const categoryTitleClassName = style({
 
 export const productGridClassName = style({
   display: 'grid',
-  gridTemplateColumns: 'repeat(4, minmax(0, 25.2rem))',
+  gridTemplateColumns: `repeat(4, minmax(0, ${productEditCardWidth}))`,
   gap: '1.6rem 2rem',
 });

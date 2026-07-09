@@ -26,7 +26,7 @@
 ## UI States
 
 - loading: 이번 범위에서 다루지 않습니다.
-- empty: 이번 범위에서 다루지 않습니다. 레이아웃 확인용 샘플 카드 목록을 표시합니다.
+- empty: 등록된 상품이 없으면 `ProductEditProductList`가 empty image, 안내 문구, `/products/today-special/new` 등록 link를 표시합니다.
 - error: 알 수 없는 route는 router fallback에서 처리합니다.
 - success: `/products/today-special/edit` route가 `오늘의 특가 상품을 수정하세요` heading과 오늘의 특가 상품 수정 카드 section을 렌더링합니다.
 
@@ -42,6 +42,7 @@
 - `오늘의 특가` tab은 selected/current 상태입니다.
 - `행사 할인` tab은 `/products/event-discount/edit`으로 이동합니다.
 - page content는 선택된 filter에 따라 오늘의 특가 샘플 상품 수정 카드를 등록일별, 조회수순으로 표시합니다.
+- 표시할 상품이 없으면 `상품 등록하러 가기` link로 오늘의 특가 상품 등록 화면에 이동합니다.
 - 오늘의 특가 수정 페이지에는 카테고리 filter를 노출하지 않습니다.
 - `상품 등록 순` filter는 등록일별 섹션을 표시합니다.
 - `조회수 순` filter는 조회수 높은 순 단일 섹션을 표시합니다.
@@ -62,3 +63,4 @@
 - [ ] `오늘의 특가` tab link has `aria-current="page"`
 - [ ] `행사 할인` tab navigates to `/products/event-discount/edit`
 - [ ] category filter is not rendered
+- [x] empty product list renders registration link to `/products/today-special/new`
