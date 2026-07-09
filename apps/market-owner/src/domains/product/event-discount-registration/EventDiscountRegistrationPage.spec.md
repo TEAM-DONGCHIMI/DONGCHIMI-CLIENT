@@ -39,6 +39,13 @@
 - Design-system `Flex` and `Button` are reused for internal layout and actions.
 - No new shared/design-system component is introduced in this issue.
 
+## Layout
+
+- Page root owns background and vertical flow only. It does not apply global inline padding.
+- `DesktopHeader` owns its Figma header spacing, including 64px height and 40px inline padding.
+- `FileAnalysisConfirmSection` is rendered directly under the page root and keeps its card width,
+  internal padding, and vertical centering responsibility.
+
 ## UI States
 
 - initial/method: `/products/event-discount/new` first renders the registration method home with excel and leaflet upload cards.

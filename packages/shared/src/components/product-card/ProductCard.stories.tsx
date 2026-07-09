@@ -73,7 +73,7 @@ export const TodayDesktopWithAction: StoryTypes = {
           {...args}
           actionSlot={
             <button className={S.toggleButtonClassName} onClick={handleActionClick} type='button'>
-              더 많은 상품 보러가기
+              등록한 상품 전체보기
             </button>
           }
         />
