@@ -5,7 +5,7 @@ import { IcCirclePlusSizeSmall } from '@dongchimi/design-system/icons';
 
 import { DesktopHeader } from '@/shared/components/ui/desktop-header/DesktopHeader';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
-import { useImagePreview } from '@/shared/hooks/useImagePreview';
+import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
 
 import { useCategoryDropdown } from './hooks/useCategoryDropdown';
 import { useCurrentProductField } from './hooks/useCurrentProductField';
@@ -28,37 +28,40 @@ export const TodaySpecialRegistrationPage = () => {
       navigate(MARKET_OWNER_ROUTES.home);
     },
   });
+  const { currentIndex, currentProduct, products, setValue } = form;
+  const productCount = products.length;
   const currentProductField = useCurrentProductField({
-    currentIndex: form.currentIndex,
+    currentIndex,
     currentProductErrors: form.currentProductErrors,
     currentProductTouchedFields: form.currentProductTouchedFields,
     isSubmitted: form.isSubmitted,
-    setValue: form.setValue,
+    setValue,
   });
   const categoryDropdown = useCategoryDropdown({
-    currentIndex: form.currentIndex,
-    selectedCategory: form.currentProduct.category,
-    setValue: form.setValue,
+    currentIndex,
+    selectedCategory: currentProduct.category,
+    setValue,
   });
+  const handleImagePreviewChange = ({ file, previewUrl }: ImagePreviewChangePayload) => {
+    setValue(`products.${currentIndex}.imageFile`, file, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    setValue(`products.${currentIndex}.imagePreviewUrl`, previewUrl, {
+      shouldDirty: true,
+    });
+  };
   const imagePreview = useImagePreview({
-    currentPreviewUrl: form.currentProduct.imagePreviewUrl,
+    currentPreviewUrl: currentProduct.imagePreviewUrl,
     isValidFile: isValidTodaySpecialImageFile,
-    onPreviewChange: ({ file, previewUrl }) => {
-      form.setValue(`products.${form.currentIndex}.imageFile`, file, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-      form.setValue(`products.${form.currentIndex}.imagePreviewUrl`, previewUrl, {
-        shouldDirty: true,
-      });
-    },
-    previewUrls: form.products.map((product) => product.imagePreviewUrl),
+    onPreviewChange: handleImagePreviewChange,
+    previewUrls: products.map((product) => product.imagePreviewUrl),
   });
   const draftNavigation = useProductDraftNavigation({
     appendProduct: form.appendProduct,
     closeCategoryDropdown: categoryDropdown.closeCategoryDropdown,
-    currentIndex: form.currentIndex,
-    productCount: form.products.length,
+    currentIndex,
+    productCount,
     removeProduct: form.removeProduct,
     revokeCurrentImagePreviewUrl: imagePreview.revokeCurrentPreviewUrl,
     setCurrentIndex: form.setCurrentIndex,
@@ -67,15 +70,15 @@ export const TodaySpecialRegistrationPage = () => {
     ...categoryDropdown.productCategoryProps,
     ...currentProductField.productInfoFieldProps,
     onImageChange: imagePreview.imageInputProps.onChange,
-    product: form.currentProduct,
+    product: currentProduct,
   };
   const productPriceSectionProps = {
     ...currentProductField.productPriceFieldProps,
-    product: form.currentProduct,
+    product: currentProduct,
   };
   const productPeriodSectionProps = {
     ...currentProductField.productPeriodFieldProps,
-    product: form.currentProduct,
+    product: currentProduct,
   };
 
   return (

@@ -2,10 +2,15 @@ import { type ChangeEventHandler, useEffect, useRef } from 'react';
 
 import { revokeImagePreviewUrl } from '@/shared/utils/image-upload.utils';
 
+export interface ImagePreviewChangePayload {
+  file: File;
+  previewUrl: string;
+}
+
 interface UseImagePreviewParams {
   currentPreviewUrl: string | null;
   isValidFile: (file: File) => boolean;
-  onPreviewChange: (payload: { file: File; previewUrl: string }) => void;
+  onPreviewChange: (payload: ImagePreviewChangePayload) => void;
   previewUrls: (string | null)[];
 }
 
