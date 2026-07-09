@@ -46,7 +46,7 @@ export const SignupPage = () => {
             label='비밀번호'
             name='password'
             onChange={signupForm.handlePasswordChange}
-            placeholder='비밀번호 입력'
+            placeholder='비밀번호를 입력해주세요.'
             type='password'
             value={signupForm.password}
             {...signupForm.passwordStatusProps}
@@ -57,7 +57,7 @@ export const SignupPage = () => {
             label='비밀번호 확인'
             name='passwordConfirm'
             onChange={signupForm.handlePasswordConfirmChange}
-            placeholder='비밀번호 확인'
+            placeholder='비밀번호를 확인해주세요.'
             trailingIcon={signupForm.isPasswordConfirmValid ? <IcCircleCheckFill /> : undefined}
             type='password'
             value={signupForm.passwordConfirm}
