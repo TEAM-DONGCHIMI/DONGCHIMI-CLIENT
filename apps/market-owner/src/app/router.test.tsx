@@ -163,7 +163,7 @@ describe('marketOwnerRoutes', () => {
     await user.type(passwordConfirmInput, 'abc123');
     await user.click(await screen.findByRole('button', { name: '가입 완료' }));
 
-    expect(await screen.findByRole('heading', { name: '로그인' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '마트 관리자 로그인' })).toBeInTheDocument();
   });
 
   it('renders protected work routes with the sidebar layout', async () => {
