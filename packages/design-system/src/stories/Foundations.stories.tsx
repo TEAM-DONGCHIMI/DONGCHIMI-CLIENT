@@ -13,6 +13,7 @@ const semanticColors = [
   ['status/cautionary', semantic.status.cautionary],
   ['status/negative', semantic.status.negative],
   ['status/negativeLight', semantic.status.negativeLight],
+  ['status/dimmer/hover', semantic.status.dimmer.hover],
   ['overlay/dimmer', semantic.overlay.dimmer],
 ] as const;
 
