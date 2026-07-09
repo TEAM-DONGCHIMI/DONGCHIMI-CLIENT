@@ -5,6 +5,8 @@ Use this when adding or changing a route page.
 Quality rule:
 
 - `docs/code-quality/frontend-fundamentals.md`
+- `docs/code-quality/frontend-readability.md`, `docs/code-quality/frontend-predictability.md`, `docs/code-quality/frontend-cohesion.md`, `docs/code-quality/frontend-coupling.md`
+- `docs/code-quality/frontend-logic-composition.md`
 
 ## Steps
 
@@ -35,7 +37,7 @@ Quality rule:
 13. loading, error, empty, disabled, success 상태를 처리합니다.
 14. responsive behavior와 accessibility를 확인합니다.
 15. browser에서 route와 viewport를 확인하고 screenshot, preview URL, Figma mismatch를 PR evidence에 남깁니다.
-16. Frontend Fundamentals 기준으로 page composition, hook 추출, 조건 분기, 응집도/결합도를 self-check합니다.
+16. Frontend Fundamentals 허브, 개별 기준 문서, logic composition 기준으로 page composition, hook 추출, 조건 분기, 응집도/결합도를 self-check합니다.
 17. 검증 명령과 남은 리스크를 요약합니다.
 
 ## Publishing Checklist

@@ -5,6 +5,8 @@ Use this when adding a route-local, app-shared, or design-system component.
 Quality rule:
 
 - `docs/code-quality/frontend-fundamentals.md`
+- `docs/code-quality/frontend-readability.md`, `docs/code-quality/frontend-predictability.md`, `docs/code-quality/frontend-cohesion.md`, `docs/code-quality/frontend-coupling.md`
+- `docs/code-quality/frontend-logic-composition.md`
 
 ## Steps
 
@@ -26,7 +28,7 @@ Quality rule:
 6. 최소 컴포넌트 API를 구현합니다.
 7. 현재 styling/token convention을 사용합니다.
 8. text overflow, focus-visible, disabled, hover, responsive behavior를 확인합니다.
-9. Frontend Fundamentals 기준으로 public API 예측 가능성, 조건 분기, DOM 의미, 응집도/결합도를 self-check합니다.
+9. Frontend Fundamentals 허브, 개별 기준 문서, logic composition 기준으로 public API 예측 가능성, 조건 분기, DOM 의미, 응집도/결합도를 self-check합니다.
 10. 프로젝트 convention이 요구하는 범위까지만 export합니다.
 
 ## Placement
