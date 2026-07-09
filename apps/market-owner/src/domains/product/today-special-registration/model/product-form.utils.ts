@@ -4,7 +4,6 @@ export {
   imageUploadErrorMessages as todaySpecialImageUploadErrorMessages,
   imageUploadInputAccept as todaySpecialImageInputAccept,
   isValidImageUploadFile as isValidTodaySpecialImageFile,
-  revokeImagePreviewUrl as revokePreviewUrl,
 } from '@/shared/utils/image-upload.utils';
 
 // 입력 글자 수 제한

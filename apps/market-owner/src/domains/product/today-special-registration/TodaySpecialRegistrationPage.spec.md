@@ -32,12 +32,15 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 
 - `TodaySpecialRegistrationPage.tsx`
   - 페이지 shell, section 조합, submit 성공 후 route 이동을 담당합니다.
-- `hooks/useTodaySpecialRegistrationForm.tsx`
-  - RHF form 상태, 여러 상품 draft 배열, 현재 draft index, category dropdown open 상태를 조율합니다.
-  - form submit, 상품 추가/이전/다음/삭제, field change handler를 소유합니다.
-  - category dropdown은 `overlay.open(({ close, unmount }) => <Dropdown />)` 형태로 OverlayKit에 렌더링합니다.
-  - trigger 위치를 기준으로 overlay dropdown 좌표를 계산합니다.
-  - 외부 click과 Escape close 동작을 담당합니다.
+- `hooks/useTodaySpecialForm.ts`
+  - RHF form 생성, field array, 현재 상품 index, submit disabled 상태를 소유합니다.
+- `hooks/useCurrentProductField.ts`
+  - 현재 상품의 text/date/price field change, blur, formatting, error message 계산을 담당합니다.
+- `hooks/useCategoryDropdown.tsx`
+  - category dropdown을 `overlay.open(({ close, unmount }) => <CategoryDropdownOverlay />)` 형태로 엽니다.
+  - trigger 위치를 기준으로 overlay dropdown 좌표를 계산하고, 외부 click과 Escape close 동작을 담당합니다.
+- `hooks/useProductDraftNavigation.ts`
+  - 상품 draft 추가, 삭제, 이전, 다음 이동을 담당합니다.
 - `sections/RegistrationTitleSection.tsx`
   - title, `(현재/전체)` count, 이전/다음/삭제 icon button을 렌더링합니다.
 - `sections/ProductInfoSection.tsx`
@@ -49,6 +52,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `components/DateField.tsx`
   - visible `YYYY-MM-DD` field와 투명 native `type=date` input overlay를 결합합니다.
   - native date icon/text는 숨기고, `showPicker()`로 date picker를 엽니다.
+- `components/CategoryDropdownOverlay.tsx`
+  - OverlayKit 내부에서 실제 `Dropdown`, `Dropdown.Item` UI를 렌더링합니다.
 - `model/product-form.types.ts`
   - schema inference 기반 form value와 text field 타입을 정의합니다.
 - `model/product-form.schema.ts`
@@ -57,6 +62,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 빈 form 생성, 입력값 정제, 가격 포맷, image file 검증, 날짜 보정, preview URL 정리를 담당합니다.
 - `shared/utils/form-error.utils.ts`
   - touched/submitted 기준으로 visible error message를 계산합니다.
+- `shared/hooks/useImagePreview.ts`
+  - image object URL 생성, 교체, unmount cleanup을 담당합니다.
 
 ## UI States
 
@@ -163,10 +170,11 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 ## Design / Component Notes
 
 - Design system components: `Button`, `IconButton`, `InlineField`, `Dropdown`, generated icon components.
-- Page-local components: `DateField`.
-- Page-local hooks: `useTodaySpecialRegistrationForm`.
+- Page-local components: `DateField`, `CategoryDropdownOverlay`.
+- Page-local hooks: `useTodaySpecialForm`, `useCurrentProductField`, `useCategoryDropdown`, `useProductDraftNavigation`.
 - Page-local sections: title, product info, price, period.
 - App shared form util: touched/submitted 기준으로 visible error message를 계산합니다.
+- App shared image preview hook: object URL lifecycle을 관리합니다.
 - OverlayKit: category dropdown open/close controller로 사용합니다.
 - Title count는 title text 바로 뒤에 표시하고, count와 chevron group 사이 간격은 `0.8rem`입니다.
 - `DateField`는 native date input의 브라우저 기본 icon/text를 노출하지 않기 위해 visible field와 transparent native input overlay를 사용합니다.

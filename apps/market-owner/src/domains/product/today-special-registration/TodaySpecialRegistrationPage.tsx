@@ -5,8 +5,13 @@ import { IcCirclePlusSizeSmall } from '@dongchimi/design-system/icons';
 
 import { DesktopHeader } from '@/shared/components/ui/desktop-header/DesktopHeader';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useImagePreview } from '@/shared/hooks/useImagePreview';
 
-import { useTodaySpecialRegistrationForm } from './hooks/useTodaySpecialRegistrationForm';
+import { useCategoryDropdown } from './hooks/useCategoryDropdown';
+import { useCurrentProductField } from './hooks/useCurrentProductField';
+import { useProductDraftNavigation } from './hooks/useProductDraftNavigation';
+import { useTodaySpecialForm } from './hooks/useTodaySpecialForm';
+import { isValidTodaySpecialImageFile } from './model';
 import {
   ProductInfoSection,
   ProductPeriodSection,
@@ -17,30 +22,72 @@ import * as S from './TodaySpecialRegistrationPage.css';
 
 export const TodaySpecialRegistrationPage = () => {
   const navigate = useNavigate();
-  const {
-    actionSectionProps,
-    handleFormSubmit,
-    productInfoSectionProps,
-    productPeriodSectionProps,
-    productPriceSectionProps,
-    titleSectionProps,
-  } = useTodaySpecialRegistrationForm({
+  const form = useTodaySpecialForm({
     onSubmit: () => {
       // TODO: presigned URL 발급, storage PUT, 상품 payload submit 순서로 API 연동.
       navigate(MARKET_OWNER_ROUTES.home);
     },
   });
+  const currentProductField = useCurrentProductField({
+    currentIndex: form.currentIndex,
+    currentProductErrors: form.currentProductErrors,
+    currentProductTouchedFields: form.currentProductTouchedFields,
+    isSubmitted: form.isSubmitted,
+    setValue: form.setValue,
+  });
+  const categoryDropdown = useCategoryDropdown({
+    currentIndex: form.currentIndex,
+    selectedCategory: form.currentProduct.category,
+    setValue: form.setValue,
+  });
+  const imagePreview = useImagePreview({
+    currentPreviewUrl: form.currentProduct.imagePreviewUrl,
+    isValidFile: isValidTodaySpecialImageFile,
+    onPreviewChange: ({ file, previewUrl }) => {
+      form.setValue(`products.${form.currentIndex}.imageFile`, file, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+      form.setValue(`products.${form.currentIndex}.imagePreviewUrl`, previewUrl, {
+        shouldDirty: true,
+      });
+    },
+    previewUrls: form.products.map((product) => product.imagePreviewUrl),
+  });
+  const draftNavigation = useProductDraftNavigation({
+    appendProduct: form.appendProduct,
+    closeCategoryDropdown: categoryDropdown.closeCategoryDropdown,
+    currentIndex: form.currentIndex,
+    productCount: form.products.length,
+    removeProduct: form.removeProduct,
+    revokeCurrentImagePreviewUrl: imagePreview.revokeCurrentPreviewUrl,
+    setCurrentIndex: form.setCurrentIndex,
+  });
+  const productInfoSectionProps = {
+    ...categoryDropdown.productCategoryProps,
+    ...currentProductField.productInfoFieldProps,
+    onImageChange: imagePreview.imageInputProps.onChange,
+    product: form.currentProduct,
+  };
+  const productPriceSectionProps = {
+    ...currentProductField.productPriceFieldProps,
+    product: form.currentProduct,
+  };
+  const productPeriodSectionProps = {
+    ...currentProductField.productPeriodFieldProps,
+    product: form.currentProduct,
+  };
 
   return (
     <main className={S.pageRootClassName}>
       <DesktopHeader currentLabel='오늘의 특가 상품 등록' parentLabel='홈' showSearchBar={false} />
 
-      <form onSubmit={handleFormSubmit}>
+      <form onSubmit={form.handleFormSubmit}>
         <section
           className={S.formContentClassName}
           aria-labelledby='today-special-registration-title'
         >
-          <RegistrationTitleSection {...titleSectionProps} />
+          <RegistrationTitleSection {...draftNavigation.titleSectionProps} />
 
           <div className={S.fieldSectionsClassName}>
             <ProductInfoSection {...productInfoSectionProps} />
@@ -53,7 +100,7 @@ export const TodaySpecialRegistrationPage = () => {
               className={S.actionButtonClassName}
               color='assistive'
               leftIcon={<IcCirclePlusSizeSmall />}
-              onClick={actionSectionProps.onAddProduct}
+              onClick={draftNavigation.actionSectionProps.onAddProduct}
               size='small'
               variant='outlined'
             >
@@ -61,7 +108,7 @@ export const TodaySpecialRegistrationPage = () => {
             </Button>
             <Button
               className={S.actionButtonClassName}
-              disabled={actionSectionProps.isSubmitDisabled}
+              disabled={form.isSubmitDisabled}
               size='small'
               type='submit'
             >

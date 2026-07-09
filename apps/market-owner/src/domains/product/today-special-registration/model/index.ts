@@ -5,7 +5,6 @@ export {
   isValidTodaySpecialImageFile,
   limitProductDescriptionInput,
   limitProductNameInput,
-  revokePreviewUrl,
   sanitizeProductDescription,
   sanitizeProductName,
   todaySpecialImageInputAccept,
