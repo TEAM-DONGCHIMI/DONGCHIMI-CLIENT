@@ -2,6 +2,7 @@ import { keyframes, style, styleVariants } from '@vanilla-extract/css';
 
 const viewportOffsetXVar = 'var(--toast-viewport-offset-x, 1.6rem)';
 const viewportOffsetYVar = 'var(--toast-viewport-offset-y, 1.6rem)';
+const viewportCenterOffsetXVar = 'var(--toast-viewport-center-offset-x, 0px)';
 const toastEnterAnimationDurationMs = 160;
 
 export const toastExitAnimationDurationMs = 180;
@@ -68,7 +69,7 @@ export const toastViewportPlacementClassNameMap = {
       top: `calc(env(safe-area-inset-top, 0px) + ${viewportOffsetYVar})`,
       left: '50%',
       alignItems: 'center',
-      transform: 'translateX(-50%)',
+      transform: `translateX(calc(-50% + ${viewportCenterOffsetXVar}))`,
     },
   ]),
   'top-right': style([
@@ -85,7 +86,7 @@ export const toastViewportPlacementClassNameMap = {
       bottom: `calc(env(safe-area-inset-bottom, 0px) + ${viewportOffsetYVar})`,
       left: '50%',
       alignItems: 'center',
-      transform: 'translateX(-50%)',
+      transform: `translateX(calc(-50% + ${viewportCenterOffsetXVar}))`,
     },
   ]),
   'bottom-right': style([
