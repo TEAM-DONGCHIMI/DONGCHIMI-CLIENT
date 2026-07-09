@@ -41,6 +41,7 @@
 
 - `행사 할인` tab은 selected/current 상태입니다.
 - `오늘의 특가` tab은 `/products/today-special/edit`으로 route 이동합니다.
+- 행사 할인 수정 페이지의 기본 filter는 `카테고리별`입니다.
 - page content는 선택된 filter에 따라 행사 할인 샘플 상품 수정 카드를 카테고리별, 등록일별, 조회수순으로 표시합니다.
 - 표시할 상품이 없으면 `상품 등록하러 가기` link로 행사 할인 상품 등록 화면에 이동합니다.
 - `카테고리별` filter는 shared shell에서 dropdown으로 열립니다.

@@ -18,6 +18,7 @@
 - `ariaLabel`: 목록 또는 empty section의 accessible name입니다.
 - `groups`: 렌더링할 상품 그룹입니다. 모든 그룹의 `products`가 비어 있으면 empty 상태를 표시합니다.
 - `registrationHref`: empty CTA가 이동할 상품 등록 route입니다.
+- category filter: 카테고리를 선택하기 전에는 상품을 카테고리 옵션 순서대로 그룹화해 표시하고, 카테고리를 선택한 뒤에는 해당 카테고리 상품만 표시합니다.
 
 ## UI States
 
@@ -29,6 +30,7 @@
 ## Behavior
 
 - 상품 존재 여부는 `groups.some(({ products }) => products.length > 0)`로 판단합니다.
+- 상품 등록 순과 조회수 순 정렬은 `display-groups/create-product-edit-display-groups.ts`에서 공통으로 처리합니다.
 - empty CTA는 native link로 렌더링해 오늘의 특가/행사 할인 등록 route로 이동합니다.
 - 상품이 있는 그룹은 전달받은 순서를 유지하며, 카드의 accessible name은 주입된 `aria-label`을 우선 사용합니다.
 

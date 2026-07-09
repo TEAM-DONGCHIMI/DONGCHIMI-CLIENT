@@ -30,9 +30,10 @@
 - category dropdown이 열려 있으면 trigger icon은 chevron up, 닫혀 있으면 chevron down을 표시합니다.
 - dropdown open/close는 `overlay.open`, `overlay.close`, `overlay.unmount`로 처리하고, 바깥 클릭 또는 Escape 입력 시 닫습니다.
 - 카테고리 trigger를 클릭하는 것만으로는 상품 목록 grouping을 바꾸지 않고, dropdown option을 선택한 뒤 `카테고리별` selected 상태와 카테고리별 목록을 표시합니다.
+- 카테고리 trigger label은 카테고리 선택 전에는 `카테고리별`, 선택 후에는 선택된 카테고리 이름을 표시합니다.
 - 행사 할인 filter pill button은 `카테고리별`, `상품 등록 순`, `조회수 순` 중 하나만 selected 상태로 표시합니다.
 - 오늘의 특가 filter pill button은 `상품 등록 순`, `조회수 순` 중 하나만 selected 상태로 표시합니다.
-- 기본 selected 상태는 `상품 등록 순`이며, 사용자가 선택한 항목을 filled 상태와 `aria-pressed`로 표시합니다.
+- 기본 selected 상태는 행사 할인 수정 페이지에서는 `카테고리별`, 오늘의 특가 수정 페이지에서는 `상품 등록 순`이며, 사용자가 선택한 항목을 filled 상태와 `aria-pressed`로 표시합니다.
 - breadcrumb header와 상단 control 영역은 scroll container 안에서 함께 고정되어 상품 목록 스크롤 중에도 유지됩니다.
 - 일괄 기간 수정, 일괄 삭제, 초기화는 이번 범위에서 레이아웃 button만 제공합니다.
 
