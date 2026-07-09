@@ -41,6 +41,8 @@ description: apps/client, apps/market-owner, apps/design-system-web, 선택적 a
 - 항상 읽기:
   - `recipes/add-app-shared-component.md`
   - `docs/code-quality/frontend-fundamentals.md`
+  - 필요 시 `docs/code-quality/frontend-readability.md`, `docs/code-quality/frontend-predictability.md`, `docs/code-quality/frontend-cohesion.md`, `docs/code-quality/frontend-coupling.md`
+  - 필요 시 `docs/code-quality/frontend-logic-composition.md`
 - 조건부 읽기:
   - `docs/workflows/spec-writing.md`: 새 spec 작성 또는 갱신이 필요할 때
   - `docs/architecture/app-structure.md`: app shared 위치나 승격 경계가 애매할 때
@@ -54,7 +56,7 @@ description: apps/client, apps/market-owner, apps/design-system-web, 선택적 a
 4. 스펙에 맞춰 `ComponentName.tsx`를 구현합니다.
 5. 앱 내부 export가 필요한 범위에만 연결됐는지 확인합니다.
 6. text overflow, focus-visible, disabled, hover, responsive constraints를 확인합니다.
-7. Frontend Fundamentals 기준으로 public API 예측 가능성, 조건 분기, DOM 의미, 응집도/결합도를 self-check합니다.
+7. Frontend Fundamentals 허브, 개별 기준 문서, 필요 시 logic composition 기준으로 public API 예측 가능성, 조건 분기, DOM 의미, 응집도/결합도를 self-check합니다.
 
 ## 완료 기준
 

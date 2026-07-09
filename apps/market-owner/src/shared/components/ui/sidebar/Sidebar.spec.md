@@ -73,9 +73,10 @@ Sidebar
 
 ## Styling
 
-- design reference: APPJAM `SNB` node `1553:112510`의 desktop sidebar 수치를 기준으로 합니다.
+- design reference: APPJAM `snb` node `230:988`의 desktop sidebar 수치를 기준으로 합니다.
 - layout: 290px side panel, vertical flex layout, footer 하단 배치를 사용합니다.
-- spacing: brand 96px, profile 85px, nav/footer 16px inset, 258px content width, 48px item height, 12px item radius를 사용합니다.
+- overflow: 호출부가 sidebar panel 높이를 제한하면 sidebar panel이 내부 스크롤을 소유해 footer/help 영역이 잘리지 않고 접근 가능해야 합니다.
+- spacing: brand 32px 24px padding, profile 85px, nav/footer 16px inset, footer 12px top/26px bottom padding, 258px content width, 48px item height, 12px item radius를 사용합니다.
 - text: Pretendard-first font stack과 label/profile text ellipsis를 적용합니다.
 - states: hover, active, disabled, focus-visible 상태를 정의합니다.
 - token usage: `atomic`, `semantic` color token을 우선 사용합니다.

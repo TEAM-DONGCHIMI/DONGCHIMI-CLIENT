@@ -5,6 +5,8 @@ Use this when adding a form, validation flow, multi-step input flow, or submit i
 Quality rule:
 
 - `docs/code-quality/frontend-fundamentals.md`
+- `docs/code-quality/frontend-readability.md`, `docs/code-quality/frontend-predictability.md`, `docs/code-quality/frontend-cohesion.md`, `docs/code-quality/frontend-coupling.md`
+- `docs/code-quality/frontend-logic-composition.md`
 
 ## Steps
 
@@ -31,7 +33,7 @@ Quality rule:
    - navigation or toast side effects
 7. validation message로 layout shift가 생기지 않게 합니다.
 8. keyboard interaction, labels, focus-visible, disabled states를 확인합니다.
-9. Frontend Fundamentals 기준으로 field/form 응집도, side effect 위치, hook return shape, 예측 가능성을 self-check합니다.
+9. Frontend Fundamentals 허브, 개별 기준 문서, logic composition 기준으로 field/form 응집도, side effect 위치, hook return shape, 예측 가능성을 self-check합니다.
 10. 검증을 실행합니다.
 
 ## State Boundary
