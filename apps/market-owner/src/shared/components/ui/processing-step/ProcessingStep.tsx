@@ -1,4 +1,5 @@
 import { cn } from '@dongchimi/design-system/styles';
+import { IcCircleCheckFill, IcProgress } from '@dongchimi/design-system/icons';
 import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import * as S from './ProcessingStep.css';
@@ -25,6 +26,14 @@ const statusLabels = {
   pending: '대기',
 } satisfies Record<ProcessingStepStatusTypes, string>;
 
+const renderStatusIcon = (status: ProcessingStepStatusTypes) => {
+  if (status === 'completed') {
+    return <IcCircleCheckFill aria-hidden='true' className={S.iconClassName} />;
+  }
+
+  return <IcProgress aria-hidden='true' className={S.iconClassName} />;
+};
+
 export const ProcessingStep = ({
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
@@ -44,12 +53,7 @@ export const ProcessingStep = ({
     >
       {steps.map((step, index) => {
         const statusLabel = step.statusLabel ?? statusLabels[step.status];
-        const icon = iconSlot?.(step, index) ?? (
-          <span
-            aria-hidden='true'
-            className={cn(S.iconClassName, S.iconStatusClassNames[step.status])}
-          />
-        );
+        const icon = iconSlot?.(step, index) ?? renderStatusIcon(step.status);
 
         return (
           <li

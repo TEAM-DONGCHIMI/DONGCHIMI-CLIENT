@@ -48,6 +48,25 @@ apps/{app}/src/domains/{domain}/query-keys.ts
 - endpoint helper는 `httpClient`를 호출하고, hook은 endpoint helper를 query/mutation function으로 사용합니다.
 - 여러 도메인 또는 여러 앱에서 실제로 재사용될 때만 앱 `src/shared` 또는 `packages/shared` 승격을 검토합니다.
 
+## API Contract Helpers
+
+OpenAPI generated type, endpoint path 상수, zod 응답 검증 helper는 `@dongchimi/shared/api`에서 제공합니다.
+이 helper들은 API contract를 표현할 뿐, 앱별 transport 정책을 소유하지 않습니다.
+
+- endpoint path: `API_ENDPOINTS`
+- query string 조립: `buildApiPath`
+- response validation: `validateApiResponse`, `createApiResponseValidator`
+- validation error guard: `isApiResponseValidationError`
+
+앱의 domain API helper는 아래 순서를 따릅니다.
+
+1. `API_ENDPOINTS`로 path를 만든다.
+2. 앱의 `httpClient`로 `unknown` 응답을 받는다.
+3. API boundary 가까이에 둔 zod schema로 `validateApiResponse`를 실행한다.
+4. hook은 검증된 반환 타입만 사용한다.
+
+generated API client 함수와 generated React Query hook은 현재 경계에서 사용하지 않습니다.
+
 ## Promotion Rule
 
 API 보조 코드가 여러 앱에서 동일하게 필요해질 때만 `packages/shared`로 이동합니다.

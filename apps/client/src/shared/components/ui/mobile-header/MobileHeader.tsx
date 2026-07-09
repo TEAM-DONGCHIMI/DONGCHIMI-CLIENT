@@ -1,23 +1,11 @@
 import { forwardRef, type ComponentPropsWithoutRef, type ElementType, type ReactNode } from 'react';
 
 import { cn } from '@dongchimi/design-system/styles';
-import { IconButton, type IconButtonProps } from '@dongchimi/design-system';
 
-import {
-  backButtonClassName,
-  logoClassName,
-  mobileHeaderClassName,
-  titleClassName,
-} from './MobileHeader.css';
+import { logoClassName, mobileHeaderClassName, titleClassName } from './MobileHeader.css';
+import { MobileHeaderBackButton, type MobileHeaderBackButtonProps } from './MobileHeaderBackButton';
 
 export type MobileHeaderProps = ComponentPropsWithoutRef<'header'>;
-
-type MobileHeaderBackButtonProps = Omit<
-  IconButtonProps,
-  'aria-label' | 'aria-labelledby' | 'children' | 'color' | 'variant' | 'size' | 'rounded'
-> & {
-  'aria-label': string;
-};
 
 type MobileHeaderTitleProps<TElement extends ElementType = 'h1'> = {
   as?: TElement;
@@ -41,24 +29,6 @@ const MobileHeaderRoot = forwardRef<HTMLElement, MobileHeaderProps>(
     );
   },
 );
-
-const MobileHeaderBackButton = ({
-  'aria-label': ariaLabel,
-  className,
-  type = 'button',
-  ...props
-}: MobileHeaderBackButtonProps) => {
-  return (
-    <IconButton
-      aria-label={ariaLabel}
-      color='assistive'
-      className={cn(backButtonClassName, className)}
-      type={type}
-      variant='ghost'
-      {...props}
-    />
-  );
-};
 
 const MobileHeaderTitle = <TElement extends ElementType = 'h1'>({
   as,
@@ -84,7 +54,6 @@ const MobileHeaderLogo = ({ children, className, ...props }: MobileHeaderLogoPro
 };
 
 MobileHeaderRoot.displayName = 'MobileHeader';
-MobileHeaderBackButton.displayName = 'MobileHeader.BackButton';
 MobileHeaderLogo.displayName = 'MobileHeader.Logo';
 MobileHeaderTitle.displayName = 'MobileHeader.Title';
 
