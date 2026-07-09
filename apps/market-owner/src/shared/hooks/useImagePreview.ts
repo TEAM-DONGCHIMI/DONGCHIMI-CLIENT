@@ -52,6 +52,7 @@ export const useImagePreview = ({
     const previewUrl = createPreviewUrl(file, currentPreviewUrl);
 
     onPreviewChange({ file, previewUrl });
+    event.target.value = '';
   };
 
   const revokeCurrentPreviewUrl = () => {
@@ -59,11 +60,9 @@ export const useImagePreview = ({
   };
 
   return {
-    createPreviewUrl,
     imageInputProps: {
       onChange: handleImageChange,
     },
     revokeCurrentPreviewUrl,
-    revokePreviewUrl: revokeImagePreviewUrl,
   };
 };
