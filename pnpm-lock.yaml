@@ -115,11 +115,7 @@ catalogs:
       specifier: ^19.2.0
       version: 19.2.7
     react-hook-form:
-<<<<<<< HEAD
-      specifier: ^7.66.0
-=======
       specifier: ^7.81.0
->>>>>>> 15b899cec8e6f6d0c53c74c5fe6d2b8dce6e512d
       version: 7.81.0
     react-router:
       specifier: ^7.18.0
