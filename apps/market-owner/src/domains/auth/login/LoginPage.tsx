@@ -1,18 +1,32 @@
-import { Link } from 'react-router';
+import { Flex } from '@dongchimi/design-system/components';
 
-import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { LoginForm, SignupPrompt } from './sections';
+import * as S from './LoginPage.css';
+
+const TITLE_ID = 'market-owner-login-title';
 
 export const LoginPage = () => {
   return (
     <main>
-      <p>Public Auth</p>
-      <h1>로그인</h1>
-      <p>
-        로그인 화면은 public auth layout에서 sidebar 없이 렌더링됩니다. 실제 로그인 API 연동은 후속
-        이슈에서 연결합니다.
-      </p>
-      <p>DCMSM-15에서는 route와 layout boundary만 고정합니다.</p>
-      <Link to={MARKET_OWNER_ROUTES.signup}>회원가입으로 이동</Link>
+      <Flex
+        aria-labelledby={TITLE_ID}
+        as='section'
+        align='center'
+        className={S.cardClassName}
+        direction='column'
+        justify='start'
+      >
+        <Flex align='center' className={S.headerClassName} direction='column'>
+          <div aria-hidden='true' className={S.logoSlotClassName} />
+          <h1 className={S.titleClassName} id={TITLE_ID}>
+            마트 관리자 로그인
+          </h1>
+        </Flex>
+        <Flex className={S.contentClassName} direction='column'>
+          <LoginForm />
+          <SignupPrompt />
+        </Flex>
+      </Flex>
     </main>
   );
 };

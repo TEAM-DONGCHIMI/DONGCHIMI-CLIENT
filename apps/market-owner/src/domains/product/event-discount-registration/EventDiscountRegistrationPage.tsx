@@ -16,7 +16,6 @@ export const EventDiscountRegistrationPage = () => {
   return (
     <main className={S.pageRootClassName}>
       <DesktopHeader
-        className={S.pageHeaderClassName}
         currentLabel='등록 파일 분석'
         parentLabel='행사 할인 상품 등록'
         showSearchBar={false}
