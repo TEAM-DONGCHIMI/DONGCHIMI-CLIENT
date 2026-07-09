@@ -9,6 +9,9 @@ catalogs:
     '@eslint/js':
       specifier: ^9.34.0
       version: 9.39.4
+    '@hookform/resolvers':
+      specifier: ^5.4.0
+      version: 5.4.0
     '@lhci/cli':
       specifier: ^0.15.1
       version: 0.15.1
@@ -111,6 +114,9 @@ catalogs:
     react-dom:
       specifier: ^19.2.0
       version: 19.2.7
+    react-hook-form:
+      specifier: ^7.81.0
+      version: 7.81.0
     react-router:
       specifier: ^7.18.0
       version: 7.18.0
@@ -277,7 +283,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/design-system
       '@hookform/resolvers':
-        specifier: ^5.4.0
+        specifier: 'catalog:'
         version: 5.4.0(react-hook-form@7.81.0(react@19.2.7))
       '@dongchimi/shared':
         specifier: workspace:*
@@ -310,13 +316,13 @@ importers:
         specifier: ^6.1.2
         version: 6.1.2(react@19.2.7)
       react-hook-form:
-        specifier: ^7.81.0
+        specifier: 'catalog:'
         version: 7.81.0(react@19.2.7)
       react-router:
         specifier: 'catalog:'
         version: 7.18.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       zod:
-        specifier: ^4.4.3
+        specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
       '@dongchimi/eslint-config':
