@@ -95,6 +95,22 @@ export const mapStatusClassName = style({
   textAlign: 'center',
 });
 
+export const currentLocationMarkerClassName = style({
+  width: '1.2rem',
+  height: '1.2rem',
+  borderRadius: '50%',
+  backgroundColor: atomic.neutral[90],
+  border: `0.2rem solid ${atomic.common[0]}`,
+  boxShadow: `0 0 0 0.1rem ${atomic.neutral[40]}`,
+});
+
+export const marketInfoWindowClassName = style({
+  ...typography['caption-1-medium'],
+  padding: '0.6rem 1rem',
+  color: atomic.neutral[90],
+  whiteSpace: 'nowrap',
+});
+
 export const marketListSectionClassName = style({
   display: 'flex',
   flexDirection: 'column',

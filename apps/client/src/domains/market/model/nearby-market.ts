@@ -6,6 +6,8 @@ export type NearbyMarketTypes = Readonly<
     'discountCount' | 'isOpen' | 'martName' | 'profileImageAlt' | 'profileImageSrc'
   > & {
     id: string;
+    latitude: number;
+    longitude: number;
     products: MartSummaryCardProps['products'];
   }
 >;

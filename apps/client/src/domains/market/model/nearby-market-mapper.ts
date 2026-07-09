@@ -8,6 +8,8 @@ export const mapNearbyMarketDtoToViewTypes = (dto: NearbyMarketDtoTypes): Nearby
     id: String(dto.marketId),
     discountCount: dto.productCount,
     isOpen: dto.isOpen,
+    latitude: dto.latitude,
+    longitude: dto.longitude,
     martName: dto.name,
     products: dto.previewProducts.map((product) => {
       const isDiscounted = product.discountRate > 0;

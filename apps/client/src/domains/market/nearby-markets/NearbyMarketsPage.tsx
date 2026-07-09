@@ -22,7 +22,7 @@ export const NearbyMarketsPage = () => {
         <MobileHeader.Logo>모바일 홈 헤더</MobileHeader.Logo>
       </MobileHeader>
 
-      <NearbyMarketsMapSection />
+      <NearbyMarketsMapSection keyword={debouncedKeyword} />
       <NearbyMarketsSearchSection keyword={keyword} onKeywordChange={setKeyword} />
       <NearbyMarketsMarketListSection keyword={debouncedKeyword} />
     </main>
