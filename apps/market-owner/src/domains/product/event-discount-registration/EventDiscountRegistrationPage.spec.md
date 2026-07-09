@@ -30,7 +30,7 @@
 - Toast viewport placement is owned by the nearest `ToastProvider`; sidebar protected routes use `SidebarLayout` to center toast feedback over the content area.
 - `RegistrationMethodSection` is page-local because upload method copy, CTA behavior, POS guide entry, and toast feedback are tied to this registration flow.
 - `PosExcelGuidePanel` is page-local because its title and image-only placeholder surfaces are specific to the event discount registration upload guide.
-- `useModalDialogBehavior` stays page-local because the POS guide needs drawer positioning while sharing one modal behavior contract for Escape, backdrop, focus, and scroll lock.
+- `usePosGuideModalBehavior` stays page-local because the POS guide is an event discount registration specific modal with its own drawer positioning and modal behavior contract.
 - App-shared `UploadModal` is reused for the excel upload modal default/upload states.
 - Shared `ToastProvider`/`useToast` runtime is reused for action feedback while design-system `Toast` remains the rendered UI.
 - `FileAnalysisConfirmSection` and `FileAnalysisProgressSection` remain page-local flow steps for the uploaded file confirmation and AI analysis progress.
@@ -82,7 +82,7 @@
 - `전단지 업로드` shows the Figma toast feedback. Actual leaflet image upload/API is out of scope.
 - Toast feedback uses the shared toast runtime. The page passes the Figma status icon through the toast `icon` slot and uses a stable toast id for registration action feedback so triggering a new toast replaces the visible toast and resets the runtime timer.
 - The page does not own toast viewport positioning or sidebar-width correction.
-- The POS guide panel behaves as a modal dialog through `useModalDialogBehavior`: Escape and backdrop click close it, focus moves to the close button on open and returns to the previously focused trigger on close, Tab focus is kept inside the panel, and body scroll is locked while open.
+- The POS guide panel behaves as a modal dialog through `usePosGuideModalBehavior`: Escape and backdrop click close it, focus moves to the close button on open and returns to the previously focused trigger on close, Tab focus is kept inside the panel, and body scroll is locked while open.
 - POS guide image areas are 36rem-wide placeholder surfaces until real guide image assets are provided; the fixed heights are 27.4rem, 24.1rem, and 17.5rem, and step copy stays in accessible image labels instead of visible text.
 - Analysis items are read-only static labels until repeated reuse or API mapping is confirmed.
 - Analysis progress value is clamped and rounded for display while completion checks use original progress or step status.

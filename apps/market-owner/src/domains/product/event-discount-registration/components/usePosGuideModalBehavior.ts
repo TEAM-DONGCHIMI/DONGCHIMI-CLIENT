@@ -9,7 +9,7 @@ const FOCUSABLE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
-interface UseModalDialogBehaviorParams {
+interface UsePosGuideModalBehaviorParams {
   open: boolean;
   onClose: () => void;
 }
@@ -24,7 +24,7 @@ const getFocusableElements = (element: HTMLElement) => {
   );
 };
 
-export const useModalDialogBehavior = ({ open, onClose }: UseModalDialogBehaviorParams) => {
+export const usePosGuideModalBehavior = ({ open, onClose }: UsePosGuideModalBehaviorParams) => {
   const dialogRef = useRef<HTMLDivElement>(null);
   const initialFocusRef = useRef<HTMLButtonElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);

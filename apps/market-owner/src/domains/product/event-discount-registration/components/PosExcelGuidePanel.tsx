@@ -2,7 +2,7 @@ import { IcClose } from '@dongchimi/design-system/icons';
 
 import type { registrationMethodFixture } from '../fixtures';
 import * as S from './PosExcelGuidePanel.css';
-import { useModalDialogBehavior } from './useModalDialogBehavior';
+import { usePosGuideModalBehavior } from './usePosGuideModalBehavior';
 
 type PosGuideFixtureTypes = typeof registrationMethodFixture.posGuide;
 
@@ -16,7 +16,7 @@ const PANEL_LABEL = 'POS 엑셀 다운로드 안내';
 const GUIDE_IMAGE_SIZE_KEYS = ['large', 'medium', 'small'] as const;
 
 export const PosExcelGuidePanel = ({ open, posGuide, onClose }: PosExcelGuidePanelProps) => {
-  const { dialogRef, initialFocusRef, overlayRef } = useModalDialogBehavior({ open, onClose });
+  const { dialogRef, initialFocusRef, overlayRef } = usePosGuideModalBehavior({ open, onClose });
 
   if (!open) {
     return null;
