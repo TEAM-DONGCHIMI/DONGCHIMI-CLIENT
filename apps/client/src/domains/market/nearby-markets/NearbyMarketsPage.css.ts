@@ -8,6 +8,16 @@ export const pageClassName = style({
   color: atomic.neutral[90],
 });
 
+const checkerboardColor = 'rgba(229, 232, 235, 0.68)';
+
+export const logoPlaceholderClassName = style({
+  width: '100%',
+  height: '100%',
+  backgroundImage: `repeating-conic-gradient(from 90deg, ${checkerboardColor} 0 25%, transparent 0 50%)`,
+  backgroundPosition: 'center top',
+  backgroundSize: '0.8rem 0.8rem',
+});
+
 export const searchSectionClassName = style({
   display: 'flex',
   flexDirection: 'column',

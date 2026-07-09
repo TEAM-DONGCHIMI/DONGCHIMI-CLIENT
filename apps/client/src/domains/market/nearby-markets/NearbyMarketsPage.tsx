@@ -27,7 +27,9 @@ export const NearbyMarketsPage = () => {
   return (
     <main className={S.pageClassName}>
       <MobileHeader aria-label='앱 헤더'>
-        <MobileHeader.Logo>모바일 홈 헤더</MobileHeader.Logo>
+        <MobileHeader.Logo>
+          <div aria-label='로고' className={S.logoPlaceholderClassName} role='img' />
+        </MobileHeader.Logo>
       </MobileHeader>
 
       <NearbyMarketsMapSection
