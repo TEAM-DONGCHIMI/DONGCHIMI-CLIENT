@@ -125,7 +125,7 @@ describe('UploadModal', () => {
     expect(fileInput.value).toBe('');
   });
 
-  it('keeps the dialog open when Dialog requests a close implicitly', async () => {
+  it('prevents native cancel requests without closing the controlled dialog', async () => {
     const handleOpenChange = vi.fn();
     const handleFileChange = vi.fn();
     const file = new File(['name,price'], 'products.xlsx', {
@@ -137,10 +137,12 @@ describe('UploadModal', () => {
       onOpenChange: handleOpenChange,
     });
 
-    fireEvent.keyDown(screen.getByRole('dialog', { name: dialogName }), { key: 'Escape' });
-    fireEvent(screen.getByRole('dialog', { name: dialogName }), new Event('close'));
+    const cancelEvent = new Event('cancel', { cancelable: true });
+
+    fireEvent(screen.getByRole('dialog', { name: dialogName }), cancelEvent);
     await userEvent.upload(screen.getByLabelText(fileSelectLabel), file);
 
+    expect(cancelEvent.defaultPrevented).toBe(true);
     expect(handleOpenChange).not.toHaveBeenCalledWith(false);
     expect(handleFileChange).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('dialog', { name: dialogName })).toBeInTheDocument();

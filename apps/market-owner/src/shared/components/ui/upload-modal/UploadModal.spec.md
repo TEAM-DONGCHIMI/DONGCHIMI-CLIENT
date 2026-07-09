@@ -124,12 +124,12 @@ UploadModal
 - hidden file input은 native `<dialog>`의 close/remount 흐름에 영향을 받지 않도록 `Dialog` root 밖 sibling으로 렌더링합니다.
 - file input은 실제 file picker와 `onFileChange` 연결을 담당하며 `tabIndex={-1}`로 일반 탭 순서에 포함하지 않습니다.
 - file input은 같은 파일을 다시 선택해도 change 흐름이 막히지 않도록 file picker를 열기 전에 value를 초기화합니다.
-- native dialog cancel/close 요청(ESC, backdrop, OS 파일 선택창 종료 중 발생하는 transient close)은 `preventDefault`로 막아 열린 상태를 유지합니다.
+- native dialog cancel 요청은 `preventDefault`로 막고, Dialog의 `onOpenChange(false)` 닫힘 요청은 호출부로 전달하지 않아 열린 상태를 유지합니다.
 - modal close는 명시적 취소 버튼 또는 호출부의 업로드 완료 close로만 수행합니다.
 - 파일 선택 icon은 장식 요소로 DS Button의 `leftIcon` slot에 전달되어 `aria-hidden` 처리됩니다.
 - 취소 버튼은 design-system `Button`을 사용하며, 클릭 시 `onCancel` 실행 후 `onOpenChange(false)`로 Dialog open state를 닫습니다.
 - `onCancel`에서 `event.preventDefault()`를 호출하면 닫힘을 막을 수 있습니다.
-- focus trap, ESC close, backdrop close는 Dialog primitive가 담당합니다.
+- focus trap, body scroll lock, focus restoration은 Dialog primitive가 담당합니다. ESC/backdrop dismiss는 이 modal 계약에서 비활성화합니다.
 
 ## Styling Constraints
 

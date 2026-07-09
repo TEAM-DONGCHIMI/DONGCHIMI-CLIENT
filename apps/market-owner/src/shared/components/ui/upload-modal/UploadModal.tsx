@@ -1,11 +1,9 @@
 import {
-  useEffect,
   useRef,
   type ChangeEventHandler,
   type ComponentPropsWithoutRef,
   type MouseEventHandler,
   type ReactNode,
-  type SyntheticEvent,
 } from 'react';
 
 import { Button, Dialog } from '@dongchimi/design-system/components';
@@ -78,7 +76,6 @@ export const UploadModal = ({
   ...contentProps
 }: UploadModalProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const hasExplicitCloseIntentRef = useRef(false);
   const isUploadState = state === 'upload';
   const isUploadDisabled = uploadButtonDisabled ?? !isUploadState;
   const mainText = isUploadState && selectedFileText != null ? selectedFileText : label;
@@ -104,46 +101,16 @@ export const UploadModal = ({
 
     onOpenChange(open);
   };
-  const handleImplicitDialogClose = (event: SyntheticEvent<HTMLDialogElement>) => {
-    if (hasExplicitCloseIntentRef.current) {
-      return;
-    }
-
+  const handleDialogCancel: ComponentPropsWithoutRef<'dialog'>['onCancel'] = (event) => {
     event.preventDefault();
-
-    const dialogElement = event.currentTarget;
-
-    window.requestAnimationFrame(() => {
-      if (!open || !dialogElement.isConnected || dialogElement.open) {
-        return;
-      }
-
-      if (typeof dialogElement.showModal === 'function') {
-        dialogElement.showModal();
-        return;
-      }
-
-      dialogElement.setAttribute('open', '');
-    });
   };
   const handleCancel: MouseEventHandler<HTMLButtonElement> = (event) => {
     onCancel?.(event);
 
     if (!event.defaultPrevented) {
-      hasExplicitCloseIntentRef.current = true;
       onOpenChange(false);
     }
   };
-  const handleUpload: MouseEventHandler<HTMLButtonElement> = (event) => {
-    hasExplicitCloseIntentRef.current = true;
-    onUpload?.(event);
-  };
-
-  useEffect(() => {
-    if (open) {
-      hasExplicitCloseIntentRef.current = false;
-    }
-  }, [open]);
 
   return (
     <>
@@ -151,8 +118,7 @@ export const UploadModal = ({
         <Dialog.Content
           {...contentProps}
           className={cn(S.contentClassName, className)}
-          onCancel={handleImplicitDialogClose}
-          onClose={handleImplicitDialogClose}
+          onCancel={handleDialogCancel}
         >
           <div className={S.containerClassName}>
             <div className={S.mainClassName}>
@@ -198,7 +164,7 @@ export const UploadModal = ({
               <Button
                 className={S.footerButtonClassName}
                 disabled={isUploadDisabled}
-                onClick={handleUpload}
+                onClick={onUpload}
                 size='large'
                 variant='solid'
               >
@@ -208,6 +174,7 @@ export const UploadModal = ({
           </div>
         </Dialog.Content>
       </Dialog>
+      {/* Keep the native file input outside dialog content so file picker changes do not remount with dialog top-layer state. */}
       {open && (
         <input
           aria-label={fileSelectLabel}
