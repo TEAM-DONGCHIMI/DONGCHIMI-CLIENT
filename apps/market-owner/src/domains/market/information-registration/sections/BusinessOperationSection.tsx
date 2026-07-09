@@ -27,6 +27,16 @@ const getBusinessDaysDisplayLabel = (businessDays: string[]) => {
   return businessDays.map(getBusinessDayDisplayLabel).join(', ');
 };
 
+const useDisclosure = (initialOpen = false) => {
+  const [isOpen, setIsOpen] = useState(initialOpen);
+
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+  const toggle = () => setIsOpen((currentIsOpen) => !currentIsOpen);
+
+  return { close, isOpen, open, toggle };
+};
+
 interface BusinessHoursProps<TFieldName extends 'businessTime' | 'additionalBusinessTime'> {
   day: string;
   time: string;
@@ -88,15 +98,15 @@ export const BusinessOperationSection = ({
     timeField: additionalBusinessTimeField,
   } = additionalBusinessHours;
   const { onChange: onHolidayChange, value: holiday } = holidaySelection;
-  const [isBusinessDayMenuOpen, setIsBusinessDayMenuOpen] = useState(false);
-  const [isHolidayDropdownOpen, setIsHolidayDropdownOpen] = useState(false);
-  const [isAdditionalBusinessTimeVisible, setIsAdditionalBusinessTimeVisible] = useState(false);
-  const [isAdditionalBusinessDayMenuOpen, setIsAdditionalBusinessDayMenuOpen] = useState(false);
+  const businessDayMenu = useDisclosure();
+  const holidayDropdown = useDisclosure();
+  const additionalBusinessTimeDisclosure = useDisclosure();
+  const additionalBusinessDayMenu = useDisclosure();
   const businessDayMenuId = useId();
   const additionalBusinessDayMenuId = useId();
   const holidayDropdownId = useId();
   const shouldShowAdditionalBusinessTime =
-    isAdditionalBusinessTimeVisible ||
+    additionalBusinessTimeDisclosure.isOpen ||
     additionalBusinessDay.length > 0 ||
     additionalBusinessTime.length > 0;
   const selectedBusinessDays = businessDay.length > 0 ? businessDay.split(', ') : [];
@@ -127,18 +137,18 @@ export const BusinessOperationSection = ({
 
   const handleHolidayOptionClick = (holiday: string) => {
     onHolidayChange(holiday);
-    setIsHolidayDropdownOpen(false);
+    holidayDropdown.close();
   };
 
   const handleAdditionalBusinessDayOptionClick = (businessDay: string) => {
     onAdditionalBusinessDayChange(businessDay);
-    setIsAdditionalBusinessDayMenuOpen(false);
+    additionalBusinessDayMenu.close();
   };
 
   const handleRemoveAdditionalBusinessTime = () => {
-    setIsAdditionalBusinessTimeVisible(false);
+    additionalBusinessTimeDisclosure.close();
     onAdditionalBusinessTimeRemove();
-    setIsAdditionalBusinessDayMenuOpen(false);
+    additionalBusinessDayMenu.close();
   };
 
   return (
@@ -153,21 +163,21 @@ export const BusinessOperationSection = ({
           <div className={S.businessHourControlClassName}>
             <div className={S.dropdownFieldClassName}>
               <button
-                aria-controls={isBusinessDayMenuOpen ? businessDayMenuId : undefined}
-                aria-expanded={isBusinessDayMenuOpen}
+                aria-controls={businessDayMenu.isOpen ? businessDayMenuId : undefined}
+                aria-expanded={businessDayMenu.isOpen}
                 aria-haspopup='true'
                 className={S.dropdownTriggerClassName}
                 type='button'
-                onClick={() => setIsBusinessDayMenuOpen((isOpen) => !isOpen)}
+                onClick={businessDayMenu.toggle}
               >
                 {businessDayTriggerLabel}
-                {isBusinessDayMenuOpen ? (
+                {businessDayMenu.isOpen ? (
                   <IcChevronUp aria-hidden='true' className={S.dropdownTriggerIconClassName} />
                 ) : (
                   <IcChevronDown aria-hidden='true' className={S.dropdownTriggerIconClassName} />
                 )}
               </button>
-              {isBusinessDayMenuOpen && (
+              {businessDayMenu.isOpen && (
                 <div className={S.dropdownPopoverClassName}>
                   <Dropdown aria-label='영업 요일' id={businessDayMenuId} role='group'>
                     {businessDayOptions.map((businessDay) => (
@@ -196,7 +206,7 @@ export const BusinessOperationSection = ({
               {...businessTimeField}
               value={businessTime}
               onChange={onBusinessTimeChange}
-              onTrailingAction={() => setIsAdditionalBusinessTimeVisible(true)}
+              onTrailingAction={additionalBusinessTimeDisclosure.open}
             />
           </div>
           {businessOperationErrorMessage && (
@@ -209,16 +219,16 @@ export const BusinessOperationSection = ({
                 <div className={S.dropdownFieldClassName}>
                   <button
                     aria-controls={
-                      isAdditionalBusinessDayMenuOpen ? additionalBusinessDayMenuId : undefined
+                      additionalBusinessDayMenu.isOpen ? additionalBusinessDayMenuId : undefined
                     }
-                    aria-expanded={isAdditionalBusinessDayMenuOpen}
+                    aria-expanded={additionalBusinessDayMenu.isOpen}
                     aria-haspopup='true'
                     className={S.dropdownTriggerClassName}
                     type='button'
-                    onClick={() => setIsAdditionalBusinessDayMenuOpen((isOpen) => !isOpen)}
+                    onClick={additionalBusinessDayMenu.toggle}
                   >
                     {additionalBusinessDayTriggerLabel}
-                    {isAdditionalBusinessDayMenuOpen ? (
+                    {additionalBusinessDayMenu.isOpen ? (
                       <IcChevronUp aria-hidden='true' className={S.dropdownTriggerIconClassName} />
                     ) : (
                       <IcChevronDown
@@ -227,7 +237,7 @@ export const BusinessOperationSection = ({
                       />
                     )}
                   </button>
-                  {isAdditionalBusinessDayMenuOpen && (
+                  {additionalBusinessDayMenu.isOpen && (
                     <div className={S.dropdownPopoverClassName}>
                       <Dropdown
                         aria-label='추가 영업 요일'
@@ -275,24 +285,24 @@ export const BusinessOperationSection = ({
         <span className={S.inlineLabelClassName}>휴무일</span>
         <div className={S.dropdownFieldClassName}>
           <button
-            aria-controls={isHolidayDropdownOpen ? holidayDropdownId : undefined}
-            aria-expanded={isHolidayDropdownOpen}
+            aria-controls={holidayDropdown.isOpen ? holidayDropdownId : undefined}
+            aria-expanded={holidayDropdown.isOpen}
             aria-haspopup='true'
             className={S.dropdownTriggerClassName}
             type='button'
-            onClick={() => setIsHolidayDropdownOpen((isOpen) => !isOpen)}
+            onClick={holidayDropdown.toggle}
           >
             <span className={S.dropdownTriggerContentClassName}>
               <IcClockSizeSmallColor60 aria-hidden='true' />
               {holiday || '휴무일을 선택해주세요.'}
             </span>
-            {isHolidayDropdownOpen ? (
+            {holidayDropdown.isOpen ? (
               <IcChevronUp aria-hidden='true' className={S.dropdownTriggerIconClassName} />
             ) : (
               <IcChevronDown aria-hidden='true' className={S.dropdownTriggerIconClassName} />
             )}
           </button>
-          {isHolidayDropdownOpen && (
+          {holidayDropdown.isOpen && (
             <div className={S.dropdownPopoverClassName}>
               <Dropdown aria-label='휴무일' id={holidayDropdownId} role='group'>
                 {holidayOptions.map((holidayOption) => (
