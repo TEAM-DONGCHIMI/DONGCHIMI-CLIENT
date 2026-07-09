@@ -21,7 +21,6 @@ export const buttonClassName = style({
   padding: '1.4rem 2.2rem',
   backgroundColor: atomic.common[0],
   color: atomic.neutral[90],
-  cursor: 'pointer',
   textAlign: 'left',
   selectors: {
     '&::after': {
