@@ -9,7 +9,7 @@ import {
 interface CreateProductEditDisplayGroupsParams<ProductTypes extends ProductEditGroupableProduct> {
   createCardProps: (product: ProductTypes) => ProductEditCardProps;
   products: readonly ProductTypes[];
-  selectedCategory: ProductCategoryTypes | null;
+  selectedCategory?: ProductCategoryTypes | null;
   selectedFilter: ProductEditGroupFilterTypes;
   supportsCategoryFilter: boolean;
 }
@@ -99,7 +99,7 @@ const createCategoryGroup = <ProductTypes extends ProductEditGroupableProduct>(
 export const createProductEditDisplayGroups = <ProductTypes extends ProductEditGroupableProduct>({
   createCardProps,
   products,
-  selectedCategory,
+  selectedCategory = null,
   selectedFilter,
   supportsCategoryFilter,
 }: CreateProductEditDisplayGroupsParams<ProductTypes>): ProductEditProductGroup[] => {
