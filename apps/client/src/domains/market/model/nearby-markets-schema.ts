@@ -1,15 +1,5 @@
 import { z } from 'zod';
 
-export const nearbyMarketsRequestQuerySchema = z.object({
-  lat: z.number().min(-90).max(90),
-  lng: z.number().min(-180).max(180),
-  radius: z.number().positive().optional(),
-  cursor: z.number().int().optional(),
-  size: z.number().int().positive().optional(),
-});
-
-export type NearbyMarketsRequestQueryTypes = z.infer<typeof nearbyMarketsRequestQuerySchema>;
-
 export const nearbyMarketPreviewProductSchema = z.object({
   productId: z.number(),
   name: z.string(),
@@ -18,8 +8,6 @@ export const nearbyMarketPreviewProductSchema = z.object({
   discountedPrice: z.number(),
   discountRate: z.number(),
 });
-
-export type NearbyMarketPreviewProductTypes = z.infer<typeof nearbyMarketPreviewProductSchema>;
 
 export const nearbyMarketDtoSchema = z.object({
   marketId: z.number(),
@@ -51,16 +39,6 @@ export const nearbyMarketsSuccessResponseSchema = z.object({
   message: z.string(),
   data: nearbyMarketsResponseDataSchema,
 });
-
-export type NearbyMarketsSuccessResponseTypes = z.infer<typeof nearbyMarketsSuccessResponseSchema>;
-
-export const nearbyMarketsErrorResponseSchema = z.object({
-  success: z.literal(false),
-  code: z.string(),
-  message: z.string(),
-});
-
-export type NearbyMarketsErrorResponseTypes = z.infer<typeof nearbyMarketsErrorResponseSchema>;
 
 // Validates a raw success response body and resolves it to the typed `data` payload.
 export const resolveNearbyMarketsResponse = (
