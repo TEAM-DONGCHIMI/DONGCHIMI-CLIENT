@@ -1,0 +1,6 @@
+interface:
+  display_name: '프론트엔드 예측 가능성 점검'
+  short_description: '이름, 반환 타입, side effect, semantics 점검'
+  default_prompt: '$frontend-predictability-check로 현재 프론트엔드 diff의 예측 가능성을 점검해줘.'
+policy:
+  allow_implicit_invocation: true

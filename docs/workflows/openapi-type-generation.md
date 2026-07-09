@@ -39,6 +39,43 @@ packages/shared/src/api/__generated__/owner/data-contracts.ts
 - TanStack Query key, cache 동작, invalidation, retry, loading/error 처리는 app/domain 코드에서 관리합니다.
 - 이 단계에서는 generated API client 함수와 generated React Query hook을 사용하지 않습니다.
 
+## Endpoint 상수와 응답 검증
+
+API path는 `@dongchimi/shared/api`의 `API_ENDPOINTS`에서 가져옵니다. endpoint 상수는 base URL을 포함하지 않고
+path와 query string만 표현합니다. base URL, 인증 header, timeout, retry 같은 transport 정책은 계속 각 앱의
+`shared/api/http-client.ts`가 소유합니다.
+
+```ts
+import { API_ENDPOINTS } from '@dongchimi/shared/api';
+
+await httpClient.get<unknown>(API_ENDPOINTS.owner.products.detail(marketId, productId));
+```
+
+응답 유효성 검증은 `validateApiResponse` 또는 `createApiResponseValidator`를 사용합니다. schema는 실제 API 명세와
+OpenAPI generated type을 기준으로 API boundary 가까이에 둡니다. 서버 명세가 이미지나 표 수준이라 response shape가
+확정되지 않은 endpoint는 임의로 강한 schema를 만들지 않습니다.
+
+```ts
+import { API_ENDPOINTS, validateApiResponse, z } from '@dongchimi/shared/api';
+
+const responseSchema = z.object({
+  success: z.boolean(),
+  code: z.string(),
+  message: z.string(),
+  data: z.unknown().nullable().optional(),
+});
+
+const response = await httpClient.get<unknown>(API_ENDPOINTS.owner.home);
+
+return validateApiResponse(responseSchema, response, {
+  endpoint: API_ENDPOINTS.owner.home,
+});
+```
+
+검증 실패 시 `ApiResponseValidationError`가 발생합니다. 이 error는 `type: 'validation'`, `endpoint`, zod `issues`,
+원본 `response`를 포함하므로 app의 query/error boundary에서 서버 contract drift와 네트워크 오류를 분리해 다룰 수
+있습니다.
+
 ## API Client를 생성하지 않는 이유
 
 현재 저장소에는 app-local Ky client, `ApiError` 정규화, QueryClient 기본 정책이 이미 있습니다. 생성된 request 함수를 그대로 사용하면 이 경계를 우회하거나, 별도 custom template 유지보수가 필요할 수 있습니다. 따라서 이번 단계에서는 `swagger-typescript-api`의 client 생성을 비활성화하고 contract 타입 생성에만 사용합니다.
