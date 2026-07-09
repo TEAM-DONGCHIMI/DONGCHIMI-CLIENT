@@ -1,4 +1,4 @@
-import { type ReactNode, useRef, useState } from 'react';
+import { type ReactNode } from 'react';
 import { Link } from 'react-router';
 
 import { Button, PillButton, TabNav } from '@dongchimi/design-system/components';
@@ -15,49 +15,31 @@ import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 import {
   editPageCopyByType,
-  type ProductEditCategoryTypes,
   productEditSortOptions,
   type ProductEditFilterTypes,
   type ProductEditTypeTypes,
 } from './ProductEditPageShell.constants';
 import * as S from './ProductEditPageShell.css';
 import { ProductEditCategoryDropdown } from './ProductEditCategoryDropdown';
-import { useProductEditCategoryDropdown } from './useProductEditCategoryDropdown';
+import { useProductEditFilter } from './hooks';
 
 export interface ProductEditPageShellProps {
   activeType: ProductEditTypeTypes;
   children: ReactNode | ((selectedFilter: ProductEditFilterTypes) => ReactNode);
 }
-
 export const ProductEditPageShell = ({ activeType, children }: ProductEditPageShellProps) => {
   const pageCopy = editPageCopyByType[activeType];
-  const [selectedFilter, setSelectedFilter] = useState<ProductEditFilterTypes>('registered');
-  const categoryFilterRef = useRef<HTMLDivElement>(null);
-  const showCategoryFilter = activeType === 'eventDiscount';
   const {
-    closeCategoryDropdown,
+    categoryFilterRef,
     isCategoryDropdownOpen,
-    selectCategory,
+    isCategorySelected,
     selectedCategory,
-    toggleCategoryDropdown,
-  } = useProductEditCategoryDropdown(categoryFilterRef);
-  const visibleSelectedFilter =
-    !showCategoryFilter && selectedFilter === 'category' ? 'registered' : selectedFilter;
-  const isCategorySelected = visibleSelectedFilter === 'category';
-
-  const handleCategoryFilterClick = () => {
-    toggleCategoryDropdown();
-  };
-
-  const handleCategorySelect = (category: ProductEditCategoryTypes) => {
-    selectCategory(category);
-    setSelectedFilter('category');
-  };
-
-  const handleSortFilterClick = (value: ProductEditFilterTypes) => {
-    setSelectedFilter(value);
-    closeCategoryDropdown();
-  };
+    selectedFilter,
+    showCategoryFilter,
+    openCategoryDropdown,
+    selectCategoryFilter,
+    selectSortFilter,
+  } = useProductEditFilter({ activeType });
 
   return (
     <main className={S.pageClassName}>
@@ -136,7 +118,7 @@ export const ProductEditPageShell = ({ activeType, children }: ProductEditPageSh
                   }
                   platform='desktop'
                   variant={isCategorySelected ? 'filled' : 'outlined-light'}
-                  onClick={handleCategoryFilterClick}
+                  onClick={openCategoryDropdown}
                 >
                   카테고리별
                 </PillButton>
@@ -144,13 +126,13 @@ export const ProductEditPageShell = ({ activeType, children }: ProductEditPageSh
                 {isCategoryDropdownOpen && (
                   <ProductEditCategoryDropdown
                     selectedCategory={selectedCategory}
-                    onSelect={handleCategorySelect}
+                    onSelect={selectCategoryFilter}
                   />
                 )}
               </div>
             )}
             {productEditSortOptions.map(({ label, value }) => {
-              const isSelected = visibleSelectedFilter === value;
+              const isSelected = selectedFilter === value;
 
               return (
                 <PillButton
@@ -158,7 +140,7 @@ export const ProductEditPageShell = ({ activeType, children }: ProductEditPageSh
                   aria-pressed={isSelected}
                   platform='desktop'
                   variant={isSelected ? 'filled' : 'outlined-light'}
-                  onClick={() => handleSortFilterClick(value)}
+                  onClick={() => selectSortFilter(value)}
                 >
                   {label}
                 </PillButton>
@@ -169,7 +151,7 @@ export const ProductEditPageShell = ({ activeType, children }: ProductEditPageSh
       </div>
 
       <div className={S.contentClassName}>
-        {typeof children === 'function' ? children(visibleSelectedFilter) : children}
+        {typeof children === 'function' ? children(selectedFilter) : children}
       </div>
     </main>
   );
