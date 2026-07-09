@@ -69,9 +69,13 @@ export const useLoginSubmit = ({
   };
 
   return {
-    clearLoginErrorMessage,
-    isSubmitting,
-    loginErrorMessage,
-    submit,
+    action: {
+      clearLoginErrorMessage,
+      submit,
+    },
+    state: {
+      isSubmitting,
+      loginErrorMessage,
+    },
   };
 };

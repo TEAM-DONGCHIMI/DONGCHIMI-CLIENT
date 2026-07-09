@@ -6,13 +6,14 @@ export interface UseLoginFormOptions {
 }
 
 export const useLoginForm = ({ submitLogin }: UseLoginFormOptions = {}) => {
-  const { clearLoginErrorMessage, isSubmitting, loginErrorMessage, submit } = useLoginSubmit({
-    submitLogin,
-  });
+  const {
+    action: { clearLoginErrorMessage, submit },
+    state: { isSubmitting, loginErrorMessage },
+  } = useLoginSubmit({ submitLogin });
   const fields = useLoginFields({ onFieldChange: clearLoginErrorMessage });
-  const isSubmitDisabled = isSubmitting || !fields.isValid;
+  const isSubmitDisabled = isSubmitting || !fields.state.isValid;
 
-  const handleSubmit = fields.handleSubmit(async (values) => {
+  const handleSubmit = fields.action.handleSubmit(async (values) => {
     if (isSubmitting) {
       return;
     }
@@ -25,17 +26,21 @@ export const useLoginForm = ({ submitLogin }: UseLoginFormOptions = {}) => {
   });
 
   return {
-    email: fields.email,
-    emailStatusProps: fields.emailStatusProps,
-    handleEmailChange: fields.handleEmailChange,
-    handleKeepSignedInChange: fields.handleKeepSignedInChange,
-    handlePasswordChange: fields.handlePasswordChange,
-    handleSubmit,
-    isSubmitting,
-    isSubmitDisabled,
-    keepSignedIn: fields.keepSignedIn,
-    loginErrorMessage,
-    password: fields.password,
-    passwordStatusProps: fields.passwordStatusProps,
+    action: {
+      handleEmailChange: fields.action.handleEmailChange,
+      handleKeepSignedInChange: fields.action.handleKeepSignedInChange,
+      handlePasswordChange: fields.action.handlePasswordChange,
+      handleSubmit,
+    },
+    state: {
+      email: fields.state.email,
+      emailStatusProps: fields.state.emailStatusProps,
+      isSubmitDisabled,
+      isSubmitting,
+      keepSignedIn: fields.state.keepSignedIn,
+      loginErrorMessage,
+      password: fields.state.password,
+      passwordStatusProps: fields.state.passwordStatusProps,
+    },
   };
 };

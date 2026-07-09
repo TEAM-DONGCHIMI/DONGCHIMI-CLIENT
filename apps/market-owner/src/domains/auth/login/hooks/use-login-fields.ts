@@ -62,15 +62,19 @@ export const useLoginFields = ({ onFieldChange }: UseLoginFieldsOptions = {}) =>
   };
 
   return {
-    email: emailController.field.value,
-    emailStatusProps,
-    handleEmailChange,
-    handleKeepSignedInChange,
-    handlePasswordChange,
-    handleSubmit: form.handleSubmit,
-    isValid: form.formState.isValid,
-    keepSignedIn: isAutoLoginController.field.value,
-    password: passwordController.field.value,
-    passwordStatusProps,
+    action: {
+      handleEmailChange,
+      handleKeepSignedInChange,
+      handlePasswordChange,
+      handleSubmit: form.handleSubmit,
+    },
+    state: {
+      email: emailController.field.value,
+      emailStatusProps,
+      isValid: form.formState.isValid,
+      keepSignedIn: isAutoLoginController.field.value,
+      password: passwordController.field.value,
+      passwordStatusProps,
+    },
   };
 };

@@ -11,17 +11,16 @@ export interface LoginFormProps {
 
 export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
   const {
-    email,
-    emailStatusProps,
-    handleEmailChange,
-    handleKeepSignedInChange,
-    handlePasswordChange,
-    handleSubmit,
-    isSubmitDisabled,
-    keepSignedIn,
-    loginErrorMessage,
-    password,
-    passwordStatusProps,
+    action: { handleEmailChange, handleKeepSignedInChange, handlePasswordChange, handleSubmit },
+    state: {
+      email,
+      emailStatusProps,
+      isSubmitDisabled,
+      keepSignedIn,
+      loginErrorMessage,
+      password,
+      passwordStatusProps,
+    },
   } = useLoginForm({ submitLogin });
 
   return (
