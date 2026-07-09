@@ -159,7 +159,7 @@ export const imageUploadBoxPreviewClassName = style({
       position: 'absolute',
       inset: 0,
       content: '',
-      background: 'linear-gradient(0deg, rgba(0, 0, 0, 0.20) 0%, rgba(0, 0, 0, 0.20) 100%)',
+      background: `linear-gradient(0deg, ${semantic.status.dimmer.hover} 0%, ${semantic.status.dimmer.hover} 100%)`,
     },
   },
 });

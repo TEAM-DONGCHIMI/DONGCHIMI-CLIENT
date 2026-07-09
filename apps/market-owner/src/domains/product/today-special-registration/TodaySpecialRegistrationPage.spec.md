@@ -68,7 +68,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 ## UI States
 
 - empty image: dashed upload box와 `상품 이미지를 추가하세요` copy를 표시합니다.
-- selected image: object URL preview 위에 20% black overlay와 camera icon을 표시합니다.
+- selected image: object URL preview 위에 `status-dimmer-hover` overlay와 camera icon을 표시합니다.
 - category empty: trigger에 `카테고리` placeholder를 표시합니다.
 - category open: dropdown을 trigger 하단에 표시하고 현재 선택된 item을 selected 상태로 표시합니다.
 - category overlay: trigger 위치 기준으로 dropdown을 표시하고, 외부 click 또는 Escape로 닫습니다.
@@ -195,7 +195,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - [ ] route renders inside protected sidebar layout
 - [ ] sidebar `오늘의 특가 상품 등록` link has `aria-current="page"`
 - [ ] image empty state renders dashed upload box
-- [ ] image upload preview renders uploaded image, 20% overlay, and camera icon
+- [ ] image upload preview renders uploaded image, `status-dimmer-hover` overlay, and camera icon
 - [ ] image input accepts `.jpg`, `.jpeg`, `.png`
 - [ ] unsupported image file type or file over 10MB is ignored
 - [ ] category trigger shows `카테고리` placeholder before selection
