@@ -1,4 +1,4 @@
-import { useId, type ChangeEvent } from 'react';
+import { useCallback, useEffect, useId, useRef, type ChangeEvent } from 'react';
 
 import { overlay, useOverlayData } from 'overlay-kit';
 import { type UseFormRegisterReturn } from 'react-hook-form';
@@ -89,6 +89,9 @@ export const BusinessOperationSection = ({
     timeField: additionalBusinessTimeField,
   } = additionalBusinessHours;
   const { onChange: onHolidayChange, value: holiday } = holidaySelection;
+  const businessDayDropdownRef = useRef<HTMLDivElement>(null);
+  const additionalBusinessDayDropdownRef = useRef<HTMLDivElement>(null);
+  const holidayDropdownRef = useRef<HTMLDivElement>(null);
   const businessDayMenuId = useId();
   const additionalBusinessDayMenuId = useId();
   const holidayDropdownId = useId();
@@ -109,24 +112,83 @@ export const BusinessOperationSection = ({
     ? getBusinessDayDisplayLabel(additionalBusinessDay)
     : '요일';
 
-  const openOverlay = (overlayId: string) => {
+  const openOverlay = useCallback((overlayId: string) => {
     overlay.open(() => null, { overlayId });
-  };
+  }, []);
 
-  const closeOverlay = (overlayId: string) => {
+  const closeOverlay = useCallback((overlayId: string) => {
     overlay.close(overlayId);
     overlay.unmount(overlayId);
-  };
+  }, []);
 
-  const toggleOverlay = (overlayId: string, isOpen: boolean) => {
-    if (isOpen) {
-      closeOverlay(overlayId);
+  const closeAllDropdownOverlays = useCallback(() => {
+    closeOverlay(businessDayMenuId);
+    closeOverlay(additionalBusinessDayMenuId);
+    closeOverlay(holidayDropdownId);
+  }, [additionalBusinessDayMenuId, businessDayMenuId, closeOverlay, holidayDropdownId]);
 
+  const toggleOverlay = useCallback(
+    (overlayId: string, isOpen: boolean) => {
+      if (isOpen) {
+        closeOverlay(overlayId);
+
+        return;
+      }
+
+      openOverlay(overlayId);
+    },
+    [closeOverlay, openOverlay],
+  );
+
+  useEffect(() => {
+    const hasOpenDropdown =
+      isBusinessDayMenuOpen || isAdditionalBusinessDayMenuOpen || isHolidayDropdownOpen;
+
+    if (!hasOpenDropdown) {
       return;
     }
 
-    openOverlay(overlayId);
-  };
+    const dropdownRefs = [
+      businessDayDropdownRef,
+      additionalBusinessDayDropdownRef,
+      holidayDropdownRef,
+    ];
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+
+      if (!(target instanceof Node)) {
+        return;
+      }
+
+      const isInsideDropdown = dropdownRefs.some((dropdownRef) =>
+        dropdownRef.current?.contains(target),
+      );
+
+      if (!isInsideDropdown) {
+        closeAllDropdownOverlays();
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeAllDropdownOverlays();
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [
+    closeAllDropdownOverlays,
+    isAdditionalBusinessDayMenuOpen,
+    isBusinessDayMenuOpen,
+    isHolidayDropdownOpen,
+  ]);
 
   const handleBusinessDayOptionClick = (businessDay: string) => {
     if (selectedBusinessDays.includes(businessDay)) {
@@ -173,7 +235,7 @@ export const BusinessOperationSection = ({
         <div className={S.businessHourRowsClassName}>
           {/* 기본 영업 시간 */}
           <div className={S.businessHourControlClassName}>
-            <div className={S.dropdownFieldClassName}>
+            <div ref={businessDayDropdownRef} className={S.dropdownFieldClassName}>
               <button
                 aria-controls={isBusinessDayMenuOpen ? businessDayMenuId : undefined}
                 aria-expanded={isBusinessDayMenuOpen}
@@ -228,7 +290,7 @@ export const BusinessOperationSection = ({
             <>
               {/* 추가 영업 시간 */}
               <div className={S.businessHourControlClassName}>
-                <div className={S.dropdownFieldClassName}>
+                <div ref={additionalBusinessDayDropdownRef} className={S.dropdownFieldClassName}>
                   <button
                     aria-controls={
                       isAdditionalBusinessDayMenuOpen ? additionalBusinessDayMenuId : undefined
@@ -297,7 +359,7 @@ export const BusinessOperationSection = ({
       {/* 휴무일 선택 */}
       <div className={S.inlineFieldClassName}>
         <span className={S.inlineLabelClassName}>휴무일</span>
-        <div className={S.dropdownFieldClassName}>
+        <div ref={holidayDropdownRef} className={S.dropdownFieldClassName}>
           <button
             aria-controls={isHolidayDropdownOpen ? holidayDropdownId : undefined}
             aria-expanded={isHolidayDropdownOpen}
