@@ -34,28 +34,33 @@ export const marketInformationRegistrationSchema = z
     additionalBusinessDay: z.string(),
     additionalBusinessTime: z.string(),
     address: requiredString(addressErrorMessage),
-    addressDetail: requiredString(addressDetailErrorMessage).max(20, addressDetailErrorMessage),
+    brn: z.string().refine(isValidBusinessRegistrationNumber, {
+      message: businessRegistrationNumberErrorMessage,
+    }),
     businessDay: z.string().refine(isValidBusinessDay, {
       message: businessOperationErrorMessage,
-    }),
-    businessRegistrationNumber: z.string().refine(isValidBusinessRegistrationNumber, {
-      message: businessRegistrationNumberErrorMessage,
     }),
     businessTime: z.string().refine(isValidBusinessTime, {
       message: businessOperationErrorMessage,
     }),
+    detailAddress: requiredString(addressDetailErrorMessage).max(20, addressDetailErrorMessage),
     holiday: z.string(),
-    marketName: requiredString(marketNameErrorMessages.empty)
-      .max(15)
-      .refine((marketName) => !marketName.startsWith(' '), {
-        message: marketNameErrorMessages.startsWithSpace,
-      }),
-    marketPhone: requiredString(marketPhoneErrorMessages.empty).refine(isValidMarketPhone, {
+    latitude: z.number(),
+    longitude: z.number(),
+    marketPhone1: requiredString(marketPhoneErrorMessages.empty).refine(isValidMarketPhone, {
       message: marketPhoneErrorMessages.invalid,
     }),
+    marketPhone2: z.string().nullable(),
+    marketPhonePrimary: z.literal(1).or(z.literal(2)),
+    name: requiredString(marketNameErrorMessages.empty)
+      .max(15)
+      .refine((name) => !name.startsWith(' '), {
+        message: marketNameErrorMessages.startsWithSpace,
+      }),
     ownerPhone: requiredString(ownerPhoneErrorMessages.empty).refine(isValidOwnerPhone, {
       message: ownerPhoneErrorMessages.invalid,
     }),
+    thumbnailUrl: z.string().nullable(),
   })
   .superRefine(({ additionalBusinessDay, additionalBusinessTime }, context) => {
     const hasAdditionalBusinessDay = additionalBusinessDay.trim().length > 0;

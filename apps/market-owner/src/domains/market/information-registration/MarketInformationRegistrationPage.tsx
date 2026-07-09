@@ -1,7 +1,7 @@
 import { type ChangeEvent } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, type FieldPath } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { Button, Flex, Stack } from '@dongchimi/design-system/components';
 
@@ -10,6 +10,7 @@ import { DesktopHeader } from '@/shared/components';
 import { marketInformationRegistrationFixture } from './fixtures';
 import * as S from './MarketInformationRegistrationPage.css';
 import {
+  createMarketInformationRegistrationRequest,
   formatBusinessRegistrationNumber,
   formatBusinessTime,
   formatMarketPhoneNumber,
@@ -27,8 +28,14 @@ import {
 
 export type { MarketInformationFormTypes } from './model';
 
+type StringMarketInformationFormFieldTypes = {
+  [Field in keyof MarketInformationFormTypes]: MarketInformationFormTypes[Field] extends string
+    ? Field
+    : never;
+}[keyof MarketInformationFormTypes];
+
 const getNextFormValue = (name: string, value: string) => {
-  if (name === 'businessRegistrationNumber') {
+  if (name === 'brn') {
     return formatBusinessRegistrationNumber(value);
   }
 
@@ -40,7 +47,7 @@ const getNextFormValue = (name: string, value: string) => {
     return formatMobilePhoneNumber(value);
   }
 
-  if (name === 'marketPhone') {
+  if (name === 'marketPhone1') {
     return formatMarketPhoneNumber(value);
   }
 
@@ -61,7 +68,7 @@ export const MarketInformationRegistrationPage = () => {
   });
   const form = watch();
 
-  const setFormValue = (name: FieldPath<MarketInformationFormTypes>, value: string) => {
+  const setFormValue = (name: StringMarketInformationFormFieldTypes, value: string) => {
     setValue(name, value, {
       shouldDirty: true,
       shouldTouch: true,
@@ -74,10 +81,10 @@ export const MarketInformationRegistrationPage = () => {
     const nextValue = getNextFormValue(name, value);
 
     if (
-      name === 'businessRegistrationNumber' ||
+      name === 'brn' ||
       name === 'businessTime' ||
       name === 'additionalBusinessTime' ||
-      name === 'marketPhone' ||
+      name === 'marketPhone1' ||
       name === 'ownerPhone'
     ) {
       setFormValue(name, nextValue);
@@ -105,7 +112,9 @@ export const MarketInformationRegistrationPage = () => {
     setFormValue('address', marketInformationRegistrationFixture.selectedAddress);
   };
 
-  const handleMarketInformationSubmit = handleSubmit(() => undefined);
+  const handleMarketInformationSubmit = handleSubmit((form: MarketInformationFormTypes) => {
+    createMarketInformationRegistrationRequest(form);
+  });
 
   return (
     <div className={S.pageRootClassName}>
@@ -124,22 +133,20 @@ export const MarketInformationRegistrationPage = () => {
 
               <Stack className={S.fieldsClassName} gap='2xl'>
                 <BasicMarketInfoSection
-                  businessRegistrationNumber={form.businessRegistrationNumber}
-                  businessRegistrationNumberErrorMessage={
-                    errors.businessRegistrationNumber?.message
-                  }
-                  businessRegistrationNumberField={register('businessRegistrationNumber')}
-                  marketName={form.marketName}
-                  marketNameErrorMessage={errors.marketName?.message}
-                  marketNameField={register('marketName')}
-                  onBusinessRegistrationNumberChange={handleFormattedInputChange}
+                  brn={form.brn}
+                  brnErrorMessage={errors.brn?.message}
+                  brnField={register('brn')}
+                  name={form.name}
+                  nameErrorMessage={errors.name?.message}
+                  nameField={register('name')}
+                  onBrnChange={handleFormattedInputChange}
                 />
                 <AddressSection
                   address={form.address}
-                  addressDetail={form.addressDetail}
-                  addressDetailErrorMessage={errors.addressDetail?.message}
-                  addressDetailField={register('addressDetail')}
                   addressField={register('address')}
+                  detailAddress={form.detailAddress}
+                  detailAddressErrorMessage={errors.detailAddress?.message}
+                  detailAddressField={register('detailAddress')}
                   onAddressSearch={handleAddressSearch}
                 />
                 <div className={S.fieldPairGridClassName}>
@@ -169,9 +176,9 @@ export const MarketInformationRegistrationPage = () => {
                     }}
                   />
                   <ContactSection
-                    marketPhone={form.marketPhone}
-                    marketPhoneErrorMessage={errors.marketPhone?.message}
-                    marketPhoneField={register('marketPhone')}
+                    marketPhone1={form.marketPhone1}
+                    marketPhone1ErrorMessage={errors.marketPhone1?.message}
+                    marketPhone1Field={register('marketPhone1')}
                     ownerPhone={form.ownerPhone}
                     ownerPhoneErrorMessage={errors.ownerPhone?.message}
                     ownerPhoneField={register('ownerPhone')}

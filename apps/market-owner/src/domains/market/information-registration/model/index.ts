@@ -1,6 +1,13 @@
 export { marketInformationRegistrationSchema } from './market-information-form.schema';
-export type { MarketInformationFormTypes } from './market-information-form.types';
+export type {
+  BusinessHourDayTypes,
+  BusinessHoursTypes,
+  BusinessHourValueTypes,
+  MarketInformationFormTypes,
+  MarketInformationRegistrationRequest,
+} from './market-information-form.types';
 export {
+  createMarketInformationRegistrationRequest,
   formatBusinessRegistrationNumber,
   formatBusinessTime,
   formatMarketPhoneNumber,

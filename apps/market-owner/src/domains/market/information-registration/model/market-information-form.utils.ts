@@ -1,7 +1,24 @@
+import {
+  type BusinessHourDayTypes,
+  type BusinessHoursTypes,
+  type MarketInformationFormTypes,
+  type MarketInformationRegistrationRequest,
+} from './market-information-form.types';
+
 const businessRegistrationNumberDigitPattern = /\D/g;
 const businessTimeDigitPattern = /\D/g;
 const phoneDigitPattern = /\D/g;
 const maxSelectedBusinessDayCount = 2;
+const businessHourDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
+const businessDayToApiDayMap: Record<string, BusinessHourDayTypes> = {
+  월요일: 'mon',
+  화요일: 'tue',
+  수요일: 'wed',
+  목요일: 'thu',
+  금요일: 'fri',
+  토요일: 'sat',
+  일요일: 'sun',
+};
 
 export const formatBusinessRegistrationNumber = (value: string) => {
   const digits = value.replace(businessRegistrationNumberDigitPattern, '').slice(0, 10);
@@ -145,4 +162,76 @@ export const isValidMarketPhone = (marketPhone: string) => {
     /^01[016789]\d{7,8}$/.test(digits) ||
     /^070\d{8}$/.test(digits)
   );
+};
+
+const createEmptyBusinessHours = (): BusinessHoursTypes => {
+  return businessHourDays.reduce(
+    (businessHours, day) => ({
+      ...businessHours,
+      [day]: null,
+    }),
+    {} as BusinessHoursTypes,
+  );
+};
+
+const parseBusinessTime = (businessTime: string) => {
+  const [open, close] = businessTime.split(' - ');
+
+  return { close, open };
+};
+
+const applyBusinessHours = ({
+  businessDay,
+  businessHours,
+  businessTime,
+}: {
+  businessDay: string;
+  businessHours: BusinessHoursTypes;
+  businessTime: string;
+}) => {
+  if (businessDay.length === 0 || businessTime.length === 0) {
+    return;
+  }
+
+  const businessTimeValue = parseBusinessTime(businessTime);
+
+  businessDay.split(', ').forEach((dayLabel) => {
+    const day = businessDayToApiDayMap[dayLabel];
+
+    if (day) {
+      businessHours[day] = businessTimeValue;
+    }
+  });
+};
+
+export const createMarketInformationRegistrationRequest = (
+  form: MarketInformationFormTypes,
+): MarketInformationRegistrationRequest => {
+  const businessHours = createEmptyBusinessHours();
+
+  applyBusinessHours({
+    businessDay: form.businessDay,
+    businessHours,
+    businessTime: form.businessTime,
+  });
+  applyBusinessHours({
+    businessDay: form.additionalBusinessDay,
+    businessHours,
+    businessTime: form.additionalBusinessTime,
+  });
+
+  return {
+    address: form.address,
+    brn: form.brn || null,
+    businessHours,
+    detailAddress: form.detailAddress || null,
+    latitude: form.latitude,
+    longitude: form.longitude,
+    marketPhone1: form.marketPhone1,
+    marketPhone2: form.marketPhone2,
+    marketPhonePrimary: form.marketPhonePrimary,
+    name: form.name,
+    ownerPhone: form.ownerPhone,
+    thumbnailUrl: form.thumbnailUrl,
+  };
 };

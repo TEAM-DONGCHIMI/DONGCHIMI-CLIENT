@@ -6,24 +6,24 @@ import * as S from './AddressSection.css';
 
 export interface AddressSectionProps {
   address: string;
-  addressDetail: string;
-  addressDetailErrorMessage?: string;
-  addressDetailField: UseFormRegisterReturn<'addressDetail'>;
   addressField: UseFormRegisterReturn<'address'>;
+  detailAddress: string;
+  detailAddressErrorMessage?: string;
+  detailAddressField: UseFormRegisterReturn<'detailAddress'>;
   onAddressSearch: () => void;
 }
 
 export const AddressSection = ({
   address,
-  addressDetail,
-  addressDetailErrorMessage,
-  addressDetailField,
   addressField,
+  detailAddress,
+  detailAddressErrorMessage,
+  detailAddressField,
   onAddressSearch,
 }: AddressSectionProps) => {
-  const addressDetailStatusProps = addressDetailErrorMessage
+  const detailAddressStatusProps = detailAddressErrorMessage
     ? ({
-        errorMessage: addressDetailErrorMessage,
+        errorMessage: detailAddressErrorMessage,
         status: 'error',
       } as const)
     : {};
@@ -56,9 +56,9 @@ export const AddressSection = ({
         maxLength={20}
         placeholder='상세주소를 입력해주세요.'
         required
-        {...addressDetailField}
-        value={addressDetail}
-        {...addressDetailStatusProps}
+        {...detailAddressField}
+        value={detailAddress}
+        {...detailAddressStatusProps}
       />
     </Stack>
   );

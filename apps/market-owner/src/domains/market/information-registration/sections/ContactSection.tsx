@@ -23,9 +23,9 @@ const additionalMarketPhoneErrorMessage = '올바른 전화번호를 입력해�
 const additionalOwnerPhoneErrorMessage = '올바른 휴대전화 번호를 입력해주세요.';
 
 export interface ContactSectionProps {
-  marketPhone: string;
-  marketPhoneErrorMessage?: string;
-  marketPhoneField: UseFormRegisterReturn<'marketPhone'>;
+  marketPhone1: string;
+  marketPhone1ErrorMessage?: string;
+  marketPhone1Field: UseFormRegisterReturn<'marketPhone1'>;
   onInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
   ownerPhone: string;
   ownerPhoneErrorMessage?: string;
@@ -33,9 +33,9 @@ export interface ContactSectionProps {
 }
 
 export const ContactSection = ({
-  marketPhone,
-  marketPhoneErrorMessage,
-  marketPhoneField,
+  marketPhone1,
+  marketPhone1ErrorMessage,
+  marketPhone1Field,
   onInputChange,
   ownerPhone,
   ownerPhoneErrorMessage,
@@ -80,10 +80,10 @@ export const ContactSection = ({
           status: 'error',
         } as const)
       : {};
-  const marketPhoneStatusProps = marketPhoneErrorMessage
+  const marketPhone1StatusProps = marketPhone1ErrorMessage
     ? ({
         errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
-        errorMessage: marketPhoneErrorMessage,
+        errorMessage: marketPhone1ErrorMessage,
         status: 'error',
       } as const)
     : {};
@@ -119,11 +119,11 @@ export const ContactSection = ({
             trailingActionLabel='마트 번호 추가'
             trailingIcon={<IcPlusSizeSmallColor60 />}
             type='tel'
-            {...marketPhoneField}
-            value={marketPhone}
+            {...marketPhone1Field}
+            value={marketPhone1}
             onChange={onInputChange}
             onTrailingAction={() => setIsAdditionalMarketPhoneVisible(true)}
-            {...marketPhoneStatusProps}
+            {...marketPhone1StatusProps}
           />
           {isAdditionalMarketPhoneVisible && (
             <AddableField

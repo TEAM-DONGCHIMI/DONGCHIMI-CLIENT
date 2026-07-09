@@ -7,33 +7,33 @@ import { Grid, TextInput } from '@dongchimi/design-system/components';
 import * as S from './BasicMarketInfoSection.css';
 
 export interface BasicMarketInfoSectionProps {
-  businessRegistrationNumber: string;
-  businessRegistrationNumberErrorMessage?: string;
-  businessRegistrationNumberField: UseFormRegisterReturn<'businessRegistrationNumber'>;
-  marketName: string;
-  marketNameErrorMessage?: string;
-  marketNameField: UseFormRegisterReturn<'marketName'>;
-  onBusinessRegistrationNumberChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  brn: string;
+  brnErrorMessage?: string;
+  brnField: UseFormRegisterReturn<'brn'>;
+  name: string;
+  nameErrorMessage?: string;
+  nameField: UseFormRegisterReturn<'name'>;
+  onBrnChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const BasicMarketInfoSection = ({
-  businessRegistrationNumber,
-  businessRegistrationNumberErrorMessage,
-  businessRegistrationNumberField,
-  marketName,
-  marketNameErrorMessage,
-  marketNameField,
-  onBusinessRegistrationNumberChange,
+  brn,
+  brnErrorMessage,
+  brnField,
+  name,
+  nameErrorMessage,
+  nameField,
+  onBrnChange,
 }: BasicMarketInfoSectionProps) => {
-  const marketNameStatusProps = marketNameErrorMessage
+  const nameStatusProps = nameErrorMessage
     ? ({
-        errorMessage: marketNameErrorMessage,
+        errorMessage: nameErrorMessage,
         status: 'error',
       } as const)
     : {};
-  const businessRegistrationNumberStatusProps = businessRegistrationNumberErrorMessage
+  const brnStatusProps = brnErrorMessage
     ? ({
-        errorMessage: businessRegistrationNumberErrorMessage,
+        errorMessage: brnErrorMessage,
         status: 'error',
       } as const)
     : {};
@@ -45,9 +45,9 @@ export const BasicMarketInfoSection = ({
         maxLength={15}
         placeholder='마트명을 입력해주세요.'
         required
-        {...marketNameField}
-        value={marketName}
-        {...marketNameStatusProps}
+        {...nameField}
+        value={name}
+        {...nameStatusProps}
       />
       <TextInput
         inputMode='numeric'
@@ -55,10 +55,10 @@ export const BasicMarketInfoSection = ({
         pattern='(?:[0-9]|-)*'
         placeholder='사업자 등록 번호를 입력하세요.'
         type='tel'
-        {...businessRegistrationNumberField}
-        value={businessRegistrationNumber}
-        onChange={onBusinessRegistrationNumberChange}
-        {...businessRegistrationNumberStatusProps}
+        {...brnField}
+        value={brn}
+        onChange={onBrnChange}
+        {...brnStatusProps}
       />
     </Grid>
   );
