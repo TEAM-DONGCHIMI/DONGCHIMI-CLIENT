@@ -36,7 +36,7 @@
 - Page-local components, sections, hooks, fixtures, and utils stay under this page folder.
 - Sidebar/protected layout responsibility stays in `src/app/layouts/SidebarLayout.tsx` and
   `src/app/routes/ProtectedRoute.tsx`.
-- Today-special and event-discount product summary cards use `packages/shared` `ProductCard`.
+- Daily and periodic product summary cards use `packages/shared` `ProductCard`.
 - Home-only hero/checkerboard stays page-local until reuse and final desktop design are confirmed.
 - Home header uses the `market-owner` app-shared `DesktopHeader` with `variant="onlyHome"` and
   `showSearchBar={true}`.
@@ -165,7 +165,7 @@ HomePage(main)
 - QR 보기 클릭은 QR 표시 API/flow가 확정되기 전까지 `QR코드 보기 기능은 준비 중입니다.` completed toast를 표시합니다.
 - toast는 홈 본문 스크롤 위치와 무관하게 viewport 상단 20px 아래에 표시합니다.
 - 상품 검색은 한 글자 이상 입력 시 dropdown을 열고, 검색창과 dropdown 사이 gap은 4px입니다.
-- 검색 결과는 일치도 높은 순으로 표시하고, 동일한 일치도는 최신 등록순으로 표시합니다.
+- 검색 결과의 필터링/정렬은 API 응답 순서를 따르고, `ProductSearchPanel`은 전달받은 순서를 유지합니다.
 - 검색 dropdown은 4개 기본 노출, 4개 초과 시 scroll 영역으로 전환하며 최대 10개까지만 렌더링합니다.
 - 검색 dropdown 외부 영역을 클릭하면 dropdown을 닫습니다.
 - 검색 결과 item을 클릭하면 상품 정보 load 가능 여부를 확인합니다.
@@ -221,7 +221,7 @@ HomePage(main)
 - [x] route renders sidebar complementary landmark
 - [x] sidebar `홈` link has `aria-current="page"`
 - [x] hero quick action buttons render from fixture data
-- [x] today-special and event-discount `ProductCard` sections render from fixture data
+- [x] daily and periodic `ProductCard` sections render from fixture data
 - [x] product row click navigates to each edit page
 - [x] product summary action buttons navigate to each edit page
 - [x] share card renders share URL, copy action, and QR action
