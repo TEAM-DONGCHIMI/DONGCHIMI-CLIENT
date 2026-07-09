@@ -28,20 +28,17 @@ export const useSignupForm = () => {
     name: 'passwordConfirm',
   });
 
-  const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSubmitErrorMessage(undefined);
-    emailController.field.onChange(event.target.value);
-  };
+  const createFieldChangeHandler =
+    (onFieldChange: (value: string) => void) => (event: ChangeEvent<HTMLInputElement>) => {
+      setSubmitErrorMessage(undefined);
+      onFieldChange(event.target.value);
+    };
 
-  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSubmitErrorMessage(undefined);
-    passwordController.field.onChange(event.target.value);
-  };
-
-  const handlePasswordConfirmChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSubmitErrorMessage(undefined);
-    passwordConfirmController.field.onChange(event.target.value);
-  };
+  const handleEmailChange = createFieldChangeHandler(emailController.field.onChange);
+  const handlePasswordChange = createFieldChangeHandler(passwordController.field.onChange);
+  const handlePasswordConfirmChange = createFieldChangeHandler(
+    passwordConfirmController.field.onChange,
+  );
 
   const clearSubmitErrorMessage = () => {
     setSubmitErrorMessage(undefined);
