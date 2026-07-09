@@ -24,7 +24,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - Route object는 `src/app/router.tsx`가 소유하고, 이 page는 route-independent 화면 composition만 담당합니다.
 - Sidebar/protected layout은 `src/app/layouts/SidebarLayout.tsx`, `src/app/routes/ProtectedRoute.tsx` 책임입니다.
 - Page-local UI는 `sections/*`와 `components/*`에 둡니다.
-- Page-local form type, sanitizer, validation helper, object URL cleanup은 `model/*`에 둡니다.
+- Page-local form type, sanitizer, validation helper, image validation alias는 `model/*`에 둡니다.
 - Category options는 `fixtures/*`에 둡니다.
 - 이 작업에서는 sidebar layout 파일을 수정하지 않습니다.
 
@@ -59,7 +59,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `model/product-form.schema.ts`
   - `zod` schema로 submit 가능 여부와 field error message를 검증합니다.
 - `model/product-form.utils.ts`
-  - 빈 form 생성, 입력값 정제, 가격 포맷, image file 검증, 날짜 보정, preview URL 정리를 담당합니다.
+  - 빈 form 생성, 입력값 정제, 가격 포맷, image file 검증 alias를 담당합니다.
 - `shared/utils/form-error.utils.ts`
   - touched/submitted 기준으로 visible error message를 계산합니다.
 - `shared/hooks/useImagePreview.ts`
@@ -210,8 +210,6 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - [ ] DateField displays `YYYY-MM-DD` placeholder without browser date icon text
 - [ ] clicking DateField opens native date picker
 - [ ] pressing Enter or Space on DateField opens native date picker
-- [ ] end date cannot be earlier than start date
-- [ ] changing start date clears an already-selected earlier end date
 - [ ] `상품 계속 등록` stays enabled and opens a fresh product draft
 - [ ] title count and previous/next/delete controls render when there are multiple drafts
 - [ ] valid `등록 완료` submit navigates to home before API integration is wired
