@@ -8,7 +8,6 @@ export const headerClassName = style({
   height: '6.4rem',
   boxSizing: 'border-box',
   padding: '0 4rem',
-  backgroundColor: 'transparent',
 });
 
 export const breadcrumbClassName = style({
