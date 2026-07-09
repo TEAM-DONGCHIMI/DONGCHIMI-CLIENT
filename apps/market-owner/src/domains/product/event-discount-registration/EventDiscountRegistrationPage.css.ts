@@ -43,21 +43,6 @@ export const pageHeaderClassName = style({
   backgroundColor: 'transparent',
 });
 
-export const toastSlotClassName = style({
-  position: 'fixed',
-  top: '3.2rem',
-  left: 'calc(29rem + (100vw - 29rem) / 2)',
-  zIndex: 30,
-  maxWidth: 'calc(100vw - 3.2rem)',
-  transform: 'translateX(-50%)',
-  '@media': {
-    'screen and (max-width: 900px)': {
-      top: '2rem',
-      left: '50%',
-    },
-  },
-});
-
 export const excelUploadModalClassName = style({
   '@media': {
     'screen and (max-width: 480px)': {

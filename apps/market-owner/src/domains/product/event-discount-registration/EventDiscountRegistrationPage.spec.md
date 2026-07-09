@@ -27,10 +27,12 @@
 - React Router route object imports this page from `src/app/router.tsx`.
 - Page-local components, sections, hooks, fixtures, and utils stay under this page folder.
 - Sidebar/protected layout responsibility stays in `src/app/layouts/SidebarLayout.tsx` and `src/app/routes/ProtectedRoute.tsx`.
+- Toast viewport placement is owned by the nearest `ToastProvider`; sidebar protected routes use `SidebarLayout` to center toast feedback over the content area.
 - `RegistrationMethodSection` is page-local because upload method copy, CTA behavior, POS guide entry, and toast feedback are tied to this registration flow.
 - `PosExcelGuidePanel` is page-local because its title and image-only placeholder surfaces are specific to the event discount registration upload guide.
+- `useModalDialogBehavior` stays page-local because the POS guide needs drawer positioning while sharing one modal behavior contract for Escape, backdrop, focus, and scroll lock.
 - App-shared `UploadModal` is reused for the excel upload modal default/upload states.
-- Design-system `Toast` is reused as a presentational toast while page state owns when each toast is rendered.
+- Shared `ToastProvider`/`useToast` runtime is reused for action feedback while design-system `Toast` remains the rendered UI.
 - `FileAnalysisConfirmSection` and `FileAnalysisProgressSection` remain page-local flow steps for the uploaded file confirmation and AI analysis progress.
 - `ProcessingStep` is reused from market-owner shared UI for the ordered analysis step list.
 - App-shared `DesktopHeader` is reused for the breadcrumb header.
@@ -46,8 +48,8 @@
 - success/confirm: clicking the enabled upload button closes the modal and renders `FileAnalysisConfirmSection` with the selected file name.
 - loading/progress: `분석 시작` renders `FileAnalysisProgressSection` with step statuses and progressbar.
 - completed: original analysis progress at 100% or all completed steps disable the progress cancel action.
-- toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback.
-- toast/error: the page can render error toast feedback; `전단지 업로드` currently shows Figma error-style feedback because the actual upload API is out of scope.
+- toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback with the completed status icon.
+- toast/error: the page can render error toast feedback with the error status icon; `전단지 업로드` currently shows Figma error-style feedback because the actual upload API is out of scope.
 - panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel with the two-line title (`POS에서 엑셀 파일을` / `이렇게 다운 받으시면 돼요.`) and three stacked guide image placeholders; Escape, backdrop click, or the close button hides it and restores focus.
 - route error: unknown route is handled by the existing router fallback.
 
@@ -78,8 +80,9 @@
 - Progress `취소` returns to confirmation view.
 - `엑셀 양식 다운로드` shows the success toast. Actual file download/API failure mapping is out of scope.
 - `전단지 업로드` shows the Figma toast feedback. Actual leaflet image upload/API is out of scope.
-- Toast feedback auto-dismisses after a short delay; triggering a new toast resets the timer and replaces the visible toast.
-- The POS guide panel behaves as a modal dialog: Escape and backdrop click close it, focus moves to the close button on open and returns to the previously focused trigger on close, Tab focus is kept inside the panel, and body scroll is locked while open.
+- Toast feedback uses the shared toast runtime. The page passes the Figma status icon through the toast `icon` slot and uses a stable toast id for registration action feedback so triggering a new toast replaces the visible toast and resets the runtime timer.
+- The page does not own toast viewport positioning or sidebar-width correction.
+- The POS guide panel behaves as a modal dialog through `useModalDialogBehavior`: Escape and backdrop click close it, focus moves to the close button on open and returns to the previously focused trigger on close, Tab focus is kept inside the panel, and body scroll is locked while open.
 - POS guide image areas are 36rem-wide placeholder surfaces until real guide image assets are provided; the fixed heights are 27.4rem, 24.1rem, and 17.5rem, and step copy stays in accessible image labels instead of visible text.
 - Analysis items are read-only static labels until repeated reuse or API mapping is confirmed.
 - Analysis progress value is clamped and rounded for display while completion checks use original progress or step status.
@@ -92,7 +95,7 @@
 - current state: sidebar item has `aria-current="page"` for the current route.
 - breadcrumb: current location nav and current page use `aria-current="page"`.
 - modal: `UploadModal` provides dialog title/description through the shared component.
-- toast: design-system `Toast` supplies status/alert roles and live region defaults.
+- toast: shared toast runtime renders design-system `Toast`, which supplies status/alert roles and live region defaults; page-supplied icons are decorative.
 - POS guide: the right panel is a labelled modal dialog (`role="dialog"`, `aria-modal="true"`) with Escape/backdrop close, focus move-to/return, Tab containment, and body scroll lock.
 - analysis items: `AI 분석 항목` label and list semantics are preserved.
 - analysis progress: `AI 분석 진행 현황` ordered list and `AI 분석 진행률` progressbar semantics are preserved.
@@ -108,8 +111,8 @@
 - [x] `분석 시작` switches to the AI analysis progress section
 - [x] AI analysis progress section renders step status labels and progressbar value
 - [x] completed AI analysis progress disables cancel action
-- [x] clicking `엑셀 양식 다운로드` renders toast feedback
+- [x] clicking `엑셀 양식 다운로드` renders toast feedback with icon
 - [x] clicking POS guide link opens the modal panel; close button, Escape, and backdrop click close it
-- [x] clicking `전단지 업로드` renders toast feedback
+- [x] clicking `전단지 업로드` renders toast feedback with icon
 - [x] route renders sidebar complementary landmark
 - [x] sidebar `행사 할인 상품 등록` link has `aria-current="page"`

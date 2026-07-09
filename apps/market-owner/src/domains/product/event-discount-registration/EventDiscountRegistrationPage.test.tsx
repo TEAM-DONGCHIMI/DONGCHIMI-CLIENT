@@ -1,8 +1,17 @@
 import { fireEvent, render, screen, userEvent } from '@/test';
+import { ToastProvider } from '@dongchimi/shared/toast';
 import { describe, expect, it } from 'vitest';
 
 import { EventDiscountRegistrationPage } from './EventDiscountRegistrationPage';
 import { registrationMethodFixture } from './fixtures';
+
+const renderEventDiscountRegistrationPage = () => {
+  return render(
+    <ToastProvider defaultDurationMs={null}>
+      <EventDiscountRegistrationPage />
+    </ToastProvider>,
+  );
+};
 
 describe('EventDiscountRegistrationPage', () => {
   it('switches from registration method to file confirmation and analysis progress', async () => {
@@ -11,7 +20,7 @@ describe('EventDiscountRegistrationPage', () => {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    render(<EventDiscountRegistrationPage />);
+    renderEventDiscountRegistrationPage();
 
     expect(screen.getByRole('heading', { name: '상품 등록' })).toBeInTheDocument();
 
@@ -55,7 +64,7 @@ describe('EventDiscountRegistrationPage', () => {
     const user = userEvent.setup();
     const file = new File(['image'], 'leaflet.png', { type: 'image/png' });
 
-    render(<EventDiscountRegistrationPage />);
+    renderEventDiscountRegistrationPage();
 
     await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
     fireEvent.change(screen.getByLabelText('파일 선택'), {
@@ -73,13 +82,14 @@ describe('EventDiscountRegistrationPage', () => {
   it('renders toast feedback and POS guide panel from method actions', async () => {
     const user = userEvent.setup();
 
-    render(<EventDiscountRegistrationPage />);
+    renderEventDiscountRegistrationPage();
 
     await user.click(screen.getByRole('button', { name: '엑셀 양식 다운로드' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent(
-      registrationMethodFixture.toast.downloadSuccess,
-    );
+    const successToast = screen.getByRole('status');
+
+    expect(successToast).toHaveTextContent(registrationMethodFixture.toast.downloadSuccess);
+    expect(successToast.querySelector('svg')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'POS에서 엑셀 파일 받는 방법 보기' }));
 
@@ -91,6 +101,9 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(screen.getByRole('button', { name: '전단지 업로드' }));
 
-    expect(screen.getByRole('alert')).toHaveTextContent('아직 준비중인 기능이에요.');
+    const errorToast = screen.getByRole('alert');
+
+    expect(errorToast).toHaveTextContent('아직 준비중인 기능이에요.');
+    expect(errorToast.querySelector('svg')).toBeInTheDocument();
   });
 });

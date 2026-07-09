@@ -1,6 +1,6 @@
-import { useEffect, useState, type ChangeEventHandler } from 'react';
-
-import { Toast } from '@dongchimi/design-system/components';
+import { useState, type ChangeEventHandler } from 'react';
+import { IcCircleCheckFill, IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
+import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader, UploadModal } from '@/shared/components';
 
@@ -19,26 +19,28 @@ import * as S from './EventDiscountRegistrationPage.css';
 
 type EventDiscountRegistrationViewTypes = 'method' | 'confirm' | 'progress';
 type ExcelUploadStateTypes = 'default' | 'upload';
-type ToastFeedbackTypes = {
-  message: string;
-  status: 'completed' | 'error';
-} | null;
 
 const EXCEL_UPLOAD_ACCEPT = '.xlsx,.csv';
-const TOAST_DURATION_MS = 3000;
+const ACTION_FEEDBACK_TOAST_ID = 'event-discount-registration-action-feedback';
+const TOAST_ICON_SIZE = '2.4rem';
+
+const toastIconProps = {
+  height: TOAST_ICON_SIZE,
+  width: TOAST_ICON_SIZE,
+} as const;
 
 export const EventDiscountRegistrationPage = () => {
+  const toast = useToast();
   const [registrationView, setRegistrationView] =
     useState<EventDiscountRegistrationViewTypes>('method');
   const [isExcelUploadModalOpen, setIsExcelUploadModalOpen] = useState(false);
   const [excelUploadState, setExcelUploadState] = useState<ExcelUploadStateTypes>('default');
   const [selectedExcelFileName, setSelectedExcelFileName] = useState<string>();
-  const [uploadedExcelFileName, setUploadedExcelFileName] = useState<string>(
-    fileAnalysisConfirmFixture.fileName,
-  );
+  const [uploadedExcelFileName, setUploadedExcelFileName] = useState<string>();
   const [isPosGuideOpen, setIsPosGuideOpen] = useState(false);
-  const [toastFeedback, setToastFeedback] = useState<ToastFeedbackTypes>(null);
-  const shouldShowMethod = registrationView === 'method';
+  const shouldShowMethod =
+    registrationView === 'method' ||
+    (registrationView === 'confirm' && uploadedExcelFileName == null);
   const shouldShowProgress = registrationView === 'progress';
   const headerLabels = shouldShowMethod
     ? {
@@ -49,16 +51,6 @@ export const EventDiscountRegistrationPage = () => {
         currentLabel: '등록 파일 분석',
         parentLabel: '행사 할인 상품 등록',
       };
-
-  useEffect(() => {
-    if (toastFeedback == null) {
-      return;
-    }
-
-    const toastDismissTimer = setTimeout(() => setToastFeedback(null), TOAST_DURATION_MS);
-
-    return () => clearTimeout(toastDismissTimer);
-  }, [toastFeedback]);
 
   const resetExcelUploadModal = () => {
     setExcelUploadState('default');
@@ -104,21 +96,17 @@ export const EventDiscountRegistrationPage = () => {
     setRegistrationView('confirm');
   };
 
-  const showToast = (toastFeedback: NonNullable<ToastFeedbackTypes>) => {
-    setToastFeedback(toastFeedback);
-  };
-
   const handleDownloadExcelTemplate = () => {
-    showToast({
-      message: registrationMethodFixture.toast.downloadSuccess,
-      status: 'completed',
+    toast.completed(registrationMethodFixture.toast.downloadSuccess, {
+      id: ACTION_FEEDBACK_TOAST_ID,
+      icon: <IcCircleCheckFill {...toastIconProps} />,
     });
   };
 
   const handleUploadLeaflet = () => {
-    showToast({
-      message: registrationMethodFixture.toast.leafletUnavailable,
-      status: 'error',
+    toast.error(registrationMethodFixture.toast.leafletUnavailable, {
+      id: ACTION_FEEDBACK_TOAST_ID,
+      icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
     });
   };
 
@@ -130,12 +118,6 @@ export const EventDiscountRegistrationPage = () => {
         parentLabel={headerLabels.parentLabel}
         showSearchBar={false}
       />
-
-      {toastFeedback != null && (
-        <div className={S.toastSlotClassName}>
-          <Toast status={toastFeedback.status}>{toastFeedback.message}</Toast>
-        </div>
-      )}
 
       {shouldShowMethod ? (
         <RegistrationMethodSection
@@ -151,14 +133,14 @@ export const EventDiscountRegistrationPage = () => {
           progressPercentage={fileAnalysisProgressFixtures.processing.progressPercentage}
           steps={fileAnalysisProgressFixtures.processing.steps}
         />
-      ) : (
+      ) : uploadedExcelFileName != null ? (
         <FileAnalysisConfirmSection
           analysisItems={fileAnalysisConfirmFixture.analysisItems}
           fileName={uploadedExcelFileName}
           onCancel={() => setRegistrationView('method')}
           onStartAnalysis={() => setRegistrationView('progress')}
         />
-      )}
+      ) : null}
 
       <UploadModal
         accept={EXCEL_UPLOAD_ACCEPT}

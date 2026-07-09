@@ -15,6 +15,8 @@ export interface RegistrationMethodSectionProps {
 }
 
 const registrationMethodTitleId = 'registration-method-title';
+const registrationMethodExcelTitleId = 'registration-method-excel-title';
+const registrationMethodLeafletTitleId = 'registration-method-leaflet-title';
 
 const DescriptionLines = ({ lines }: { lines: readonly string[] }) => (
   <>
@@ -52,13 +54,13 @@ export const RegistrationMethodSection = ({
       <Flex align='center' className={S.contentClassName} justify='center' wrap='wrap'>
         <Flex
           as='article'
-          aria-labelledby='registration-method-excel-title'
+          aria-labelledby={registrationMethodExcelTitleId}
           className={S.methodCardClassName}
           direction='column'
         >
           <span aria-hidden='true' className={S.imagePlaceholderClassName} />
           <Flex align='center' className={S.cardTextGroupClassName} direction='column'>
-            <h2 className={S.cardTitleClassName} id='registration-method-excel-title'>
+            <h2 className={S.cardTitleClassName} id={registrationMethodExcelTitleId}>
               {excel.title}
             </h2>
             <p className={S.cardDescriptionClassName}>
@@ -102,13 +104,13 @@ export const RegistrationMethodSection = ({
 
         <Flex
           as='article'
-          aria-labelledby='registration-method-leaflet-title'
+          aria-labelledby={registrationMethodLeafletTitleId}
           className={S.methodCardClassName}
           direction='column'
         >
           <span aria-hidden='true' className={S.imagePlaceholderClassName} />
           <Flex align='center' className={S.cardTextGroupClassName} direction='column'>
-            <h2 className={S.cardTitleClassName} id='registration-method-leaflet-title'>
+            <h2 className={S.cardTitleClassName} id={registrationMethodLeafletTitleId}>
               {leaflet.title}
             </h2>
             <p className={S.cardDescriptionClassName}>

@@ -49,6 +49,25 @@ describe('PosExcelGuidePanel', () => {
     expect(screen.getByRole('button', { name: 'POS 안내 닫기' })).toHaveFocus();
   });
 
+  it('restores focus to the previously focused element when closed', () => {
+    const trigger = document.createElement('button');
+    trigger.textContent = 'POS 안내 열기';
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    try {
+      const { rerender } = renderPosExcelGuidePanel();
+
+      expect(screen.getByRole('button', { name: 'POS 안내 닫기' })).toHaveFocus();
+
+      rerender(<PosExcelGuidePanel {...defaultProps} open={false} />);
+
+      expect(trigger).toHaveFocus();
+    } finally {
+      trigger.remove();
+    }
+  });
+
   it('calls close callback from the close button', async () => {
     const user = userEvent.setup();
     const handleClose = vi.fn();
