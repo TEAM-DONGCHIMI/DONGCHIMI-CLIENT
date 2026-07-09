@@ -38,9 +38,17 @@ export const pageRootClassName = style({
 });
 
 export const pageHeaderClassName = style({
+  width: '100%',
+  height: '2rem',
   minHeight: '2rem',
   padding: 0,
   backgroundColor: 'transparent',
+  selectors: {
+    '&&': {
+      height: '2rem',
+      padding: 0,
+    },
+  },
 });
 
 export const excelUploadModalClassName = style({
