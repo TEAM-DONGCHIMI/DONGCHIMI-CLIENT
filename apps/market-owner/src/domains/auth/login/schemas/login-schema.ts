@@ -1,28 +1,17 @@
 import { type Resolver } from 'react-hook-form';
 import { z } from 'zod';
 
-import {
-  EMAIL_ERROR_MESSAGES,
-  EMAIL_PATTERN,
-  isAllowedEmailInputValue,
-} from '../utils/email-validation';
+import { getEmailErrorMessage } from '../utils/email-validation';
 import { PASSWORD_ERROR_MESSAGES } from '../utils/password-validation';
 
 export const loginSchema = z.object({
   email: z.string().superRefine((email, context) => {
-    if (email.length === 0) {
+    const message = getEmailErrorMessage(email);
+
+    if (message) {
       context.addIssue({
         code: 'custom',
-        message: EMAIL_ERROR_MESSAGES.required,
-      });
-
-      return;
-    }
-
-    if (!isAllowedEmailInputValue(email) || !EMAIL_PATTERN.test(email)) {
-      context.addIssue({
-        code: 'custom',
-        message: EMAIL_ERROR_MESSAGES.invalidFormat,
+        message,
       });
     }
   }),
