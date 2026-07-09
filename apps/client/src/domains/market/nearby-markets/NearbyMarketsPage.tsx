@@ -5,15 +5,16 @@ import { useState } from 'react';
 import { MobileHeader } from '@/shared/components';
 import { useDebouncedValue, useGeolocation } from '@/shared/hooks';
 
+import {
+  DEFAULT_LOCATION_PLACEHOLDER,
+  LOCATION_PERMISSION_DENIED_PLACEHOLDER,
+} from './NearbyMarketsPage.constants';
 import * as S from './NearbyMarketsPage.css';
 import {
   NearbyMarketsMapSection,
   NearbyMarketsMarketListSection,
   NearbyMarketsSearchSection,
 } from './sections';
-
-const DEFAULT_LOCATION_PLACEHOLDER = '서울시 마포구 망원동';
-const LOCATION_PERMISSION_DENIED_PLACEHOLDER = '현재 위치를 검색해주세요';
 
 export const NearbyMarketsPage = () => {
   const [keyword, setKeyword] = useState('');
