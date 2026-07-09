@@ -25,8 +25,16 @@ export const pageRootClassName = style({
   minHeight: '100dvh',
   flexDirection: 'column',
   boxSizing: 'border-box',
-  padding: 0,
+  padding: '3.2rem 5.6rem 6rem',
   backgroundColor: atomic.neutral[10],
+  '@media': {
+    'screen and (max-width: 1280px)': {
+      padding: '2.8rem 3.2rem 4rem',
+    },
+    'screen and (max-width: 768px)': {
+      padding: '2rem 1.6rem 3.2rem',
+    },
+  },
 });
 
 export const pageHeaderClassName = style({
