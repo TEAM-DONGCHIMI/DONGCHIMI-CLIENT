@@ -34,6 +34,39 @@ describe('InlineField', () => {
     expect(screen.getByRole('textbox', { name: 'Price' })).toHaveAttribute('aria-invalid', 'true');
   });
 
+  it('renders an error message and describes the input in the error state', () => {
+    render(
+      <InlineField
+        aria-label='Product name'
+        errorMessage='상품명을 입력해주세요.'
+        status='error'
+      />,
+    );
+
+    const input = screen.getByRole('textbox', { name: 'Product name' });
+
+    expect(screen.getByText('상품명을 입력해주세요.')).toBeInTheDocument();
+    expect(input).toHaveAccessibleDescription('상품명을 입력해주세요.');
+  });
+
+  it('preserves existing aria-describedby when connecting the error message', () => {
+    render(
+      <>
+        <span id='product-helper'>최대 15자까지 입력할 수 있어요.</span>
+        <InlineField
+          aria-describedby='product-helper'
+          aria-label='Product name'
+          errorMessage='상품명을 입력해주세요.'
+          status='error'
+        />
+      </>,
+    );
+
+    expect(screen.getByRole('textbox', { name: 'Product name' })).toHaveAccessibleDescription(
+      '최대 15자까지 입력할 수 있어요. 상품명을 입력해주세요.',
+    );
+  });
+
   it('preserves native read-only semantics', () => {
     render(<InlineField aria-label='Price' readOnly value='10000' />);
 

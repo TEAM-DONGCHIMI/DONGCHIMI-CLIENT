@@ -6,6 +6,7 @@ import chipPointImageUrl from './assets/img-chip-point.webp';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 const PRODUCT_IMAGE_SIZE = '5.6rem';
+const PRODUCT_ITEM_HEIGHT = PRODUCT_IMAGE_SIZE;
 const PRODUCT_CONTENT_GAP = '1.7rem';
 const PRODUCT_BADGE_SIZE = '4.5rem';
 const PRODUCT_MEDIA_COLUMNS = `${PRODUCT_IMAGE_SIZE} minmax(0, 1fr)`;
@@ -34,6 +35,7 @@ export const cardSurfaceClassNames = styleVariants({
 
 export const contentClassName = style({
   display: 'flex',
+  flexGrow: 1,
   minWidth: 0,
   flexDirection: 'column',
   gap: '0.6rem',
@@ -41,6 +43,7 @@ export const contentClassName = style({
 
 export const bodyClassName = style({
   display: 'flex',
+  flexShrink: 0,
   minWidth: 0,
   flexDirection: 'column',
   gap: '1.8rem',
@@ -73,12 +76,14 @@ export const listClassName = style({
 });
 
 export const productItemClassName = style({
+  height: PRODUCT_ITEM_HEIGHT,
   minWidth: 0,
 });
 
 export const productItemLayoutClassName = style({
   boxSizing: 'border-box',
   display: 'grid',
+  height: '100%',
   width: '100%',
   minWidth: 0,
   gridTemplateColumns: 'minmax(0, 1fr) auto',
@@ -88,6 +93,7 @@ export const productItemLayoutClassName = style({
 
 export const productMainClassName = style({
   display: 'grid',
+  height: '100%',
   minWidth: 0,
   gridTemplateColumns: PRODUCT_MEDIA_COLUMNS,
   alignItems: 'center',
@@ -201,6 +207,7 @@ export const badgeClassName = style({
 });
 
 export const itemButtonClassName = style({
+  height: '100%',
   width: '100%',
   border: 0,
   padding: 0,
@@ -219,6 +226,7 @@ export const itemButtonClassName = style({
 
 export const footerClassName = style({
   display: 'flex',
+  flexGrow: 1,
   width: '100%',
   minHeight: '4.8rem',
   alignItems: 'center',

@@ -75,6 +75,14 @@ export const marketOwnerRoutes = [
         Component: NoSidebarLayout,
         children: [
           {
+            path: MARKET_OWNER_ROUTES.marketInformationRegistration,
+            ...createLazyRoute(
+              () =>
+                import('@/domains/market/information-registration/MarketInformationRegistrationPage'),
+              'MarketInformationRegistrationPage',
+            ),
+          },
+          {
             path: MARKET_OWNER_ROUTES.registrationResult,
             ...createLazyRoute(
               () => import('@/domains/product/registration-result/RegistrationResultPage'),

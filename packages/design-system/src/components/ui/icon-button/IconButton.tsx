@@ -20,8 +20,10 @@ type NativeButtonProps = Omit<
 >;
 
 type IconButtonVariantProps = RecipeVariantProps<typeof iconButton>;
+type IconButtonColorTypes = NonNullable<IconButtonVariantProps['color']>;
 
-export interface IconButtonOwnProps extends IconButtonVariantProps {
+export interface IconButtonOwnProps extends Omit<IconButtonVariantProps, 'color'> {
+  color?: Extract<IconButtonColorTypes, 'primary' | 'assistive' | 'negative'>;
   icon: ReactNode;
 }
 

@@ -5,6 +5,8 @@
 품질 기준:
 
 - `docs/code-quality/frontend-fundamentals.md`
+- `docs/code-quality/frontend-readability.md`, `docs/code-quality/frontend-predictability.md`, `docs/code-quality/frontend-cohesion.md`, `docs/code-quality/frontend-coupling.md`
+- `docs/code-quality/frontend-logic-composition.md`
 
 ## 흐름
 
@@ -25,7 +27,7 @@
 6. 스펙에 맞춰 가장 작은 public API를 구현합니다.
 7. 앱 내부 export와 public prop type을 확인합니다.
 8. 상태, 접근성, 긴 텍스트, 반응형 제약을 확인합니다.
-9. Frontend Fundamentals 기준으로 가독성, 예측 가능성, 응집도, 결합도를 self-check합니다.
+9. Frontend Fundamentals 허브, 개별 기준 문서, logic composition 기준으로 가독성, 예측 가능성, 응집도, 결합도를 self-check합니다.
 10. 검증을 실행합니다.
 
 ## Generator 사용법
@@ -66,4 +68,4 @@ apps/{app}/src/shared/components/{category}/{component-folder}/
 - [ ] spec을 구현 전에 작성했습니다.
 - [ ] public API가 `ComponentName`, `ComponentNameProps`로 제한됩니다.
 - [ ] 접근성, 상태, overflow, 반응형 제약을 확인했습니다.
-- [ ] Frontend Fundamentals 기준 self-check를 수행했습니다.
+- [ ] Frontend Fundamentals 허브와 필요한 개별 기준 문서로 self-check를 수행했습니다.

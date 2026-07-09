@@ -118,6 +118,7 @@ const trailingElement = style({
   justifyContent: 'center',
   width: 24,
   height: 24,
+  fontSize: 24,
   lineHeight: 0,
   transform: 'translateY(-50%)',
 });
@@ -141,9 +142,14 @@ export const messageRow = style({
 });
 
 export const errorIconSlot = style({
+  display: 'inline-flex',
   flexShrink: 0,
+  alignItems: 'center',
+  justifyContent: 'center',
   width: 16,
   height: 16,
+  fontSize: 16,
+  lineHeight: 0,
 });
 
 export const messageText = recipe({
