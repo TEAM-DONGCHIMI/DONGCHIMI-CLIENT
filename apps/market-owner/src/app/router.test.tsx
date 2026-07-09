@@ -1,4 +1,5 @@
 import { RouterProvider, createMemoryRouter } from 'react-router';
+import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -18,6 +19,19 @@ const renderRoute = (path: string) => {
   );
 };
 
+const fillSignupForm = async (
+  user: ReturnType<typeof userEvent.setup>,
+  {
+    email,
+    password,
+    passwordConfirm,
+  }: { email: string; password: string; passwordConfirm: string },
+) => {
+  await user.type(await screen.findByLabelText('이메일'), email);
+  await user.type(screen.getByLabelText('비밀번호'), password);
+  await user.type(screen.getByLabelText('비밀번호 확인'), passwordConfirm);
+};
+
 const mockClipboardWriteText = (writeText: (text: string) => Promise<void>) => {
   Object.defineProperty(navigator, 'clipboard', {
     configurable: true,
@@ -33,6 +47,121 @@ describe('marketOwnerRoutes', () => {
 
     expect(await screen.findByRole('heading', { name: '마트 관리자 로그인' })).toBeInTheDocument();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
+  });
+
+  it('renders the signup form inside the public auth layout', async () => {
+    renderRoute('/signup');
+
+    expect(await screen.findByRole('heading', { name: '회원가입' })).toBeInTheDocument();
+    expect(screen.getByLabelText('이메일')).toBeInTheDocument();
+    expect(screen.getByLabelText('비밀번호')).toHaveAttribute('type', 'password');
+    expect(screen.getByLabelText('비밀번호 확인')).toHaveAttribute('type', 'password');
+    expect(screen.getByRole('button', { name: '가입 완료' })).toBeDisabled();
+    expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
+  });
+
+  it('validates signup email input in real time', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/signup');
+
+    const emailInput = await screen.findByLabelText('이메일');
+
+    await user.type(emailInput, '한글');
+    expect(screen.getByText('올바른 이메일 형식이 아닙니다.')).toBeInTheDocument();
+
+    await user.clear(emailInput);
+    expect(screen.getByText('이메일을 입력해주세요.')).toBeInTheDocument();
+
+    await user.type(emailInput, 'used@example.com');
+    expect(screen.getByText('이미 사용 중인 이메일입니다.')).toBeInTheDocument();
+
+    await user.clear(emailInput);
+    await user.type(emailInput, 'new@example.com');
+    expect(screen.queryByText('올바른 이메일 형식이 아닙니다.')).not.toBeInTheDocument();
+    expect(screen.queryByText('이미 사용 중인 이메일입니다.')).not.toBeInTheDocument();
+  });
+
+  it('validates signup password input in real time', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/signup');
+
+    const passwordInput = await screen.findByLabelText('비밀번호');
+
+    await user.type(passwordInput, 'abc');
+    expect(screen.getByText('6-20자로 입력해주세요.')).toBeInTheDocument();
+
+    await user.clear(passwordInput);
+    expect(screen.getByText('비밀번호를 입력해주세요.')).toBeInTheDocument();
+
+    await user.type(passwordInput, 'abc 123');
+    expect(screen.getByText('6-20자로 입력해주세요.')).toBeInTheDocument();
+
+    await user.clear(passwordInput);
+    await user.type(passwordInput, '한글1234');
+    expect(screen.getByText('6-20자로 입력해주세요.')).toBeInTheDocument();
+
+    await user.clear(passwordInput);
+    await user.type(passwordInput, 'abc123');
+    expect(screen.queryByText('6-20자로 입력해주세요.')).not.toBeInTheDocument();
+    expect(screen.queryByText('비밀번호를 입력해주세요.')).not.toBeInTheDocument();
+  });
+
+  it('validates signup password confirmation in real time', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/signup');
+
+    const passwordInput = await screen.findByLabelText('비밀번호');
+    const passwordConfirmInput = screen.getByLabelText('비밀번호 확인');
+    const passwordConfirmInputContainer = passwordConfirmInput.parentElement;
+
+    await user.type(passwordInput, 'abc123');
+    await user.type(passwordConfirmInput, 'abc124');
+    expect(screen.getByText('비밀번호가 일치하지 않습니다.')).toBeInTheDocument();
+    expect(passwordConfirmInputContainer?.querySelector('svg')).not.toBeInTheDocument();
+
+    await user.clear(passwordConfirmInput);
+    expect(screen.getByText('비밀번호를 다시 입력해주세요.')).toBeInTheDocument();
+
+    await user.type(passwordConfirmInput, 'abc123');
+    expect(screen.queryByText('비밀번호가 일치하지 않습니다.')).not.toBeInTheDocument();
+    expect(screen.queryByText('비밀번호를 다시 입력해주세요.')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(passwordConfirmInputContainer?.querySelector('svg')).toBeInTheDocument(),
+    );
+  });
+
+  it('enables signup submit button when all signup fields are valid', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/signup');
+
+    const submitButton = await screen.findByRole('button', { name: '가입 완료' });
+
+    await fillSignupForm(user, {
+      email: 'new@example.com',
+      password: 'abc123',
+      passwordConfirm: 'abc123',
+    });
+
+    await waitFor(() => expect(submitButton).toBeEnabled());
+  });
+
+  it('redirects to login page after valid signup submit', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/signup');
+
+    await fillSignupForm(user, {
+      email: 'new@example.com',
+      password: 'abc123',
+      passwordConfirm: 'abc123',
+    });
+    await user.click(await screen.findByRole('button', { name: '가입 완료' }));
+
+    expect(await screen.findByRole('heading', { name: '마트 관리자 로그인' })).toBeInTheDocument();
   });
 
   it('renders protected work routes with the sidebar layout', async () => {
