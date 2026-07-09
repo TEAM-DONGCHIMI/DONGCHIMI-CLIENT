@@ -34,6 +34,11 @@ AGENTS.md
     frontend-task-orchestrator/SKILL.md
     frontend-quality-verification/SKILL.md
     frontend-fundamentals-review/SKILL.md
+    frontend-readability-check/SKILL.md
+    frontend-predictability-check/SKILL.md
+    frontend-cohesion-check/SKILL.md
+    frontend-coupling-check/SKILL.md
+    frontend-logic-composition-workflow/SKILL.md
     commit-planning-workflow/SKILL.md
     turbo-generator-workflow/SKILL.md
     design-system-component-workflow/SKILL.md
@@ -88,8 +93,11 @@ turbo/
 - 앱 내부 shared 컴포넌트 생성과 구현 순서는 `app-shared-component-workflow`에 둡니다.
 - Turbo generator script, template, sample 검증 순서는 `turbo-generator-workflow`에 둡니다.
 - 프론트엔드 workflow와 검증 범위 선택은 `frontend-*` 및 `*-workflow` skill에 둡니다.
-- Toss Frontend Fundamentals 기반 구현 self-check 기준은 `docs/code-quality/frontend-fundamentals.md`에 둡니다.
-- Toss Frontend Fundamentals 기반 diff 리뷰 절차는 `frontend-fundamentals-review`에 둡니다.
+- Toss Frontend Fundamentals 기반 구현 self-check 허브는 `docs/code-quality/frontend-fundamentals.md`에 둡니다.
+- Toss Frontend Fundamentals 개별 기준은 `docs/code-quality/frontend-readability.md`, `docs/code-quality/frontend-predictability.md`, `docs/code-quality/frontend-cohesion.md`, `docs/code-quality/frontend-coupling.md`에 둡니다.
+- Toss Frontend Fundamentals 기반 통합 diff 리뷰 절차는 `frontend-fundamentals-review`에 둡니다.
+- 구현 중 특정 기준만 점검하는 절차는 `frontend-readability-check`, `frontend-predictability-check`, `frontend-cohesion-check`, `frontend-coupling-check`에 둡니다.
+- 컴포넌트 내부 로직, custom hook 추출, orchestration hook, 공통 hook 승격 기준은 `frontend-logic-composition-workflow`에 둡니다.
 - 커밋 분해와 stage/commit 계획은 `commit-planning-workflow`에 둡니다.
 - 브라우저 PR 리뷰의 증거 구분은 `browser-pr-review-workflow`에 둡니다.
 - Jira/PR/Notion/check 상태 모니터링 기준은 `project-monitoring-workflow`에 둡니다.

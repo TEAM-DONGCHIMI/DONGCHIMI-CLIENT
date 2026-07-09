@@ -24,7 +24,7 @@ description: GitHub 브라우저 PR 리뷰에서 visible diff, review comment, c
 2. changed files에서 실제 리뷰 표면을 파일/라인 기준으로 모읍니다.
 3. unresolved review thread, CodeRabbit/Copilot/comment thread를 먼저 확인해 이미 제기된 finding을 표시합니다.
 4. visible check status와 CodeRabbit/Copilot/comment thread를 분리합니다.
-5. FE 코드 diff가 있으면 `frontend-fundamentals-review`와 `docs/code-quality/frontend-fundamentals.md`를 함께 적용합니다.
+5. FE 코드 diff가 있으면 `frontend-fundamentals-review`, `docs/code-quality/frontend-fundamentals.md`, 개별 기준 문서, 필요 시 `docs/code-quality/frontend-logic-composition.md`를 함께 적용합니다.
 6. 로컬 checkout을 쓰면 `git status --short --branch`와 현재 branch가 PR head와 같은지 확인합니다.
 7. repo 문서나 workflow 기준이 필요한 경우 `docs/index.md`에서 가장 가까운 source of truth를 찾습니다.
 

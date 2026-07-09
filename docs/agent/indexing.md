@@ -51,6 +51,11 @@ Repo-scoped Codex skill은 `.agents/skills` 아래에 둡니다.
   frontend-task-orchestrator/SKILL.md
   frontend-quality-verification/SKILL.md
   frontend-fundamentals-review/SKILL.md
+  frontend-readability-check/SKILL.md
+  frontend-predictability-check/SKILL.md
+  frontend-cohesion-check/SKILL.md
+  frontend-coupling-check/SKILL.md
+  frontend-logic-composition-workflow/SKILL.md
   commit-planning-workflow/SKILL.md
   turbo-generator-workflow/SKILL.md
   design-system-component-workflow/SKILL.md
