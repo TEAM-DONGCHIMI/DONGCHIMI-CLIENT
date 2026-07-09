@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { MobileHeader } from '@/shared/components';
-import { useDebouncedValue } from '@/shared/hooks';
+import { useDebouncedValue, useGeolocation } from '@/shared/hooks';
 
 import * as S from './NearbyMarketsPage.css';
 import {
@@ -12,9 +12,17 @@ import {
   NearbyMarketsSearchSection,
 } from './sections';
 
+const DEFAULT_LOCATION_PLACEHOLDER = '서울시 마포구 망원동';
+const LOCATION_PERMISSION_DENIED_PLACEHOLDER = '현재 위치를 검색해주세요';
+
 export const NearbyMarketsPage = () => {
   const [keyword, setKeyword] = useState('');
   const debouncedKeyword = useDebouncedValue(keyword);
+  const { coordinates, errorCode } = useGeolocation();
+
+  const locationPlaceholder = coordinates
+    ? DEFAULT_LOCATION_PLACEHOLDER
+    : LOCATION_PERMISSION_DENIED_PLACEHOLDER;
 
   return (
     <main className={S.pageClassName}>
@@ -22,8 +30,16 @@ export const NearbyMarketsPage = () => {
         <MobileHeader.Logo>모바일 홈 헤더</MobileHeader.Logo>
       </MobileHeader>
 
-      <NearbyMarketsMapSection keyword={debouncedKeyword} />
-      <NearbyMarketsSearchSection keyword={keyword} onKeywordChange={setKeyword} />
+      <NearbyMarketsMapSection
+        coordinates={coordinates}
+        errorCode={errorCode}
+        keyword={debouncedKeyword}
+      />
+      <NearbyMarketsSearchSection
+        keyword={keyword}
+        onKeywordChange={setKeyword}
+        placeholder={locationPlaceholder}
+      />
       <NearbyMarketsMarketListSection keyword={debouncedKeyword} />
     </main>
   );

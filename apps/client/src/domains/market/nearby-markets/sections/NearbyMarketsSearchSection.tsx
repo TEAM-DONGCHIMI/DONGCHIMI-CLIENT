@@ -4,11 +4,13 @@ import * as S from '../NearbyMarketsPage.css';
 export interface NearbyMarketsSearchSectionProps {
   keyword: string;
   onKeywordChange: (keyword: string) => void;
+  placeholder: string;
 }
 
 export const NearbyMarketsSearchSection = ({
   keyword,
   onKeywordChange,
+  placeholder,
 }: NearbyMarketsSearchSectionProps) => {
   return (
     <section aria-labelledby='nearby-markets-title' className={S.searchSectionClassName}>
@@ -18,7 +20,11 @@ export const NearbyMarketsSearchSection = ({
         가까운 마트를 보여드릴게요
       </h1>
 
-      <NearbyMarketsLocationSearchInput value={keyword} onValueChange={onKeywordChange} />
+      <NearbyMarketsLocationSearchInput
+        onValueChange={onKeywordChange}
+        placeholder={placeholder}
+        value={keyword}
+      />
     </section>
   );
 };

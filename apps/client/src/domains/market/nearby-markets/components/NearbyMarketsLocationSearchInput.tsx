@@ -6,11 +6,13 @@ import * as S from '../NearbyMarketsPage.css';
 
 export interface NearbyMarketsLocationSearchInputProps {
   onValueChange: (value: string) => void;
+  placeholder: string;
   value: string;
 }
 
 export const NearbyMarketsLocationSearchInput = ({
   onValueChange,
+  placeholder,
   value,
 }: NearbyMarketsLocationSearchInputProps) => {
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -23,7 +25,7 @@ export const NearbyMarketsLocationSearchInput = ({
       <IcLocationSizeSmallColor60 aria-hidden='true' className={S.locationIconClassName} />
       <input
         className={S.locationSearchInputClassName}
-        placeholder='서울시 마포구 망원동'
+        placeholder={placeholder}
         type='search'
         value={value}
         onChange={handleChange}

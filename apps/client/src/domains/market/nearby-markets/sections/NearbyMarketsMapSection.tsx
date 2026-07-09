@@ -10,7 +10,7 @@ import {
   useKakaoLoader,
 } from 'react-kakao-maps-sdk';
 
-import { useGeolocation } from '@/shared/hooks';
+import type { GeolocationErrorCodeTypes } from '@/shared/hooks';
 
 import { useNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-infinite-query';
 import * as S from '../NearbyMarketsPage.css';
@@ -21,15 +21,20 @@ const KAKAO_MAP_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY;
 const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
 
 export interface NearbyMarketsMapSectionProps {
+  coordinates: { lat: number; lng: number } | null;
+  errorCode: GeolocationErrorCodeTypes | null;
   keyword?: string;
 }
 
-export const NearbyMarketsMapSection = ({ keyword }: NearbyMarketsMapSectionProps) => {
+export const NearbyMarketsMapSection = ({
+  coordinates,
+  errorCode,
+  keyword,
+}: NearbyMarketsMapSectionProps) => {
   const [loading, error] = useKakaoLoader({
     appkey: KAKAO_MAP_APP_KEY ?? '',
   });
 
-  const { coordinates, errorCode } = useGeolocation();
   const { data, isError: isMarketsError } = useNearbyMarketsInfiniteQuery({ keyword });
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
 
