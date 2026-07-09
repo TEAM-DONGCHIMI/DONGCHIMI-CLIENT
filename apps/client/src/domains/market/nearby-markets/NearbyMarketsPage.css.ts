@@ -88,6 +88,13 @@ export const mapAreaClassName = style({
   backgroundColor: '#e8f0e4',
 });
 
+export const mapStatusClassName = style({
+  ...typography['caption-1-medium'],
+  padding: '0.8rem 2rem 0',
+  color: atomic.neutral[60],
+  textAlign: 'center',
+});
+
 export const marketListSectionClassName = style({
   display: 'flex',
   flexDirection: 'column',
