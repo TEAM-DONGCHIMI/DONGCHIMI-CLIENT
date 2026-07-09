@@ -1,0 +1,33 @@
+export const marketInformationRegistrationFixture = {
+  businessDays: ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'],
+  selectedAddress: '서울특별시 마포구 월드컵로 123',
+  initialForm: {
+    name: '',
+    thumbnailUrl: null,
+    address: '',
+    detailAddress: '',
+    latitude: 0,
+    longitude: 0,
+    businessDay: '',
+    businessTime: '',
+    additionalBusinessDay: '',
+    additionalBusinessTime: '',
+    holiday: '',
+    marketPhone1: '',
+    marketPhone2: null,
+    marketPhonePrimary: 1,
+    ownerPhone: '',
+    brn: '',
+  },
+  requiredFieldNames: [
+    'name',
+    'address',
+    'detailAddress',
+    'businessDay',
+    'businessTime',
+    'marketPhone1',
+    'ownerPhone',
+  ],
+} as const;
+
+export const holidayOptions = ['공휴일', ...marketInformationRegistrationFixture.businessDays];

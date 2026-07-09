@@ -39,7 +39,7 @@
 
 - loading/progress: `분석 시작` 후 `FileAnalysisProgressSection`을 렌더링하고, `대기`/`진행 중...`/`완료` step 상태와 progressbar를 표시합니다.
 - empty/disabled: 분석 가능한 파일명이 없으면 `분석할 파일이 없습니다.`를 표시하고 `분석 시작` 버튼을 비활성화합니다.
-- completed: 분석 진행률이 100%가 되면 모든 step을 `완료`로 표시하고 `취소` 버튼을 비활성화합니다.
+- completed: 원본 분석 진행률이 100% 이상이거나 모든 step이 `완료`면 `취소` 버튼을 비활성화합니다.
 - error: 일시적인 분석 오류 화면은 서버 SSE contract가 확정된 뒤 별도 상태로 연결합니다. 알 수 없는 route는 router fallback에서 처리합니다.
 - success: `/products/event-discount/new` route가 확인 화면과 분석 진행 화면을 같은 protected layout 안에서 렌더링합니다.
 
@@ -60,8 +60,9 @@
 - 분석 진행 단계는 `파일 업로드`, `상품명 등록`, `판매가격 등록`, `상품 이미지 연결`, `카테고리 분류` 순서로 표시합니다.
 - 진행 중 step은 `aria-current="step"`을 적용합니다.
 - 진행률은 서버 SSE 연결 전까지 fixture의 `progressPercentage`를 사용하며, 실제 SSE 연결 시 동일 props에 서버 값을 주입합니다.
+- 진행률 표시는 반올림한 0~100 값을 사용하되, 완료 판단은 표시값이 아니라 원본 진행률 또는 step 완료 상태를 기준으로 합니다.
 - 분석 완료 후 `/products/registration-result` 화면으로 자동 이동하는 동작은 SSE 완료 이벤트와 route handoff가 확정된 뒤 연결합니다.
-- 행사 할인 상품 등록 form, 업로드 API, SSE transport, 분석 결과 API/임시 저장, 최종 등록 완료 결과 UI는 이번 이슈 범위가 아닙니다.
+- 행사 할인 상품 등록 form, 업로드 API, SSE transport, 분석 결과 확인/임시 저장, 최종 등록 완료 결과 UI는 이번 이슈 범위가 아닙니다.
 
 ## Accessibility
 

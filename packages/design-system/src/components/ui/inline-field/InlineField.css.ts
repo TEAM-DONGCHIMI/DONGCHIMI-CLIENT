@@ -1,5 +1,15 @@
+import { style } from '@vanilla-extract/css';
+
 import { recipe } from '../../../styles/recipe';
 import { atomic, semantic, typography } from '../../../tokens';
+
+export const fieldRoot = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.2rem',
+  width: '100%',
+  minWidth: 0,
+});
 
 export const root = recipe({
   base: {
@@ -55,6 +65,21 @@ export const root = recipe({
     size: 'medium',
     status: 'default',
   },
+});
+
+export const errorMessage = style({
+  ...typography['caption-1-medium'],
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4,
+  margin: 0,
+  color: semantic.status.negative,
+});
+
+export const errorIcon = style({
+  flexShrink: 0,
+  width: 16,
+  height: 16,
 });
 
 export const input = recipe({

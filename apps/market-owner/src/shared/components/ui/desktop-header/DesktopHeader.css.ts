@@ -7,7 +7,6 @@ export const headerClassName = style({
   minWidth: 0,
   minHeight: '6.4rem',
   padding: '0 4rem',
-  backgroundColor: atomic.common[0],
 });
 
 export const breadcrumbClassName = style({

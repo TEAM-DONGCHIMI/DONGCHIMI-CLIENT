@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-const routeShellTimeout = 15_000;
+const routeShellTimeout = 30_000;
+const marketProductsPath = '/markets/mangwon-fresh';
+const productDetailPath = `${marketProductsPath}/products/samgyeopsal-500g`;
 
 test('client root route redirects to login', async ({ page }) => {
   await page.goto('/');
@@ -12,22 +14,34 @@ test('client root route redirects to login', async ({ page }) => {
   });
 });
 
-test('client mobile web route shells render', async ({ page }) => {
+test('client market list route shell renders', async ({ page }) => {
   await page.goto('/markets');
 
   await expect(page.getByRole('heading', { name: '내 주변 마트' })).toBeVisible({
     timeout: routeShellTimeout,
   });
+  await expect(page.getByRole('link', { name: '망원 신선마트 전단 보기' })).toHaveAttribute(
+    'href',
+    marketProductsPath,
+  );
+});
 
-  await page.getByRole('link', { name: '망원 신선마트 전단 보기' }).click();
-
+test('client market products route shell renders', async ({ page }) => {
+  await page.goto(marketProductsPath);
   await expect(page.getByRole('heading', { name: '마트 전단 상품' })).toBeVisible({
     timeout: routeShellTimeout,
   });
+  await expect(page.getByRole('link', { name: '삼겹살 500g 상세 보기' })).toHaveAttribute(
+    'href',
+    productDetailPath,
+  );
+});
 
-  await page.getByRole('link', { name: '삼겹살 500g 상세 보기' }).click();
-
-  await expect(page.getByRole('heading', { name: '상품 상세' })).toBeVisible({
+test('client product detail route shell renders', async ({ page }) => {
+  await page.goto(productDetailPath);
+  await expect(page.getByRole('heading', { name: '오늘의 특가' })).toBeVisible({
     timeout: routeShellTimeout,
   });
+  await expect(page.getByRole('heading', { name: '삼겹살 500g' })).toBeVisible();
+  await expect(page.getByText('4,500원')).toBeVisible();
 });

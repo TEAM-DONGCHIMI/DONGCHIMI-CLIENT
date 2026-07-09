@@ -20,7 +20,7 @@ export const FileAnalysisConfirmSection = ({
   onStartAnalysis,
 }: FileAnalysisConfirmSectionProps) => {
   const normalizedFileName = fileName?.trim();
-  const hasAnalysisFile = normalizedFileName != null && normalizedFileName.length > 0;
+  const isAnalysisFileAvailable = normalizedFileName != null && normalizedFileName.length > 0;
 
   return (
     <Flex
@@ -39,8 +39,10 @@ export const FileAnalysisConfirmSection = ({
       <Flex className={S.analysisInfoClassName} direction='column'>
         <Flex align='center' className={S.fileNameBoxClassName} justify='center'>
           <span className={S.visuallyHiddenClassName}>등록 파일명</span>
-          <span className={hasAnalysisFile ? S.fileNameClassName : S.fileNameEmptyClassName}>
-            {hasAnalysisFile ? normalizedFileName : emptyFileNameText}
+          <span
+            className={isAnalysisFileAvailable ? S.fileNameClassName : S.fileNameEmptyClassName}
+          >
+            {isAnalysisFileAvailable ? normalizedFileName : emptyFileNameText}
           </span>
         </Flex>
 
@@ -77,7 +79,7 @@ export const FileAnalysisConfirmSection = ({
         </Button>
         <Button
           className={S.actionButtonClassName}
-          disabled={!hasAnalysisFile}
+          disabled={!isAnalysisFileAvailable}
           onClick={onStartAnalysis}
           size='small'
         >
