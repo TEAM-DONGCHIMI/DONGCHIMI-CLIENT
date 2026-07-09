@@ -40,7 +40,6 @@ export const nearbyMarketsSuccessResponseSchema = z.object({
   data: nearbyMarketsResponseDataSchema,
 });
 
-// Validates a raw success response body and resolves it to the typed `data` payload.
 export const resolveNearbyMarketsResponse = (
   rawResponse: unknown,
 ): NearbyMarketsResponseDataTypes => {
@@ -60,7 +59,6 @@ export const nearbyMarketsParamsSchema = nearbyMarketsListParamsSchema.extend({
 
 export type NearbyMarketsParamsTypes = z.infer<typeof nearbyMarketsParamsSchema>;
 
-// Validates raw request params (e.g. user-provided keyword) before querying the data source.
 export const resolveNearbyMarketsParams = (rawParams: unknown): NearbyMarketsParamsTypes => {
   return nearbyMarketsParamsSchema.parse(rawParams);
 };
