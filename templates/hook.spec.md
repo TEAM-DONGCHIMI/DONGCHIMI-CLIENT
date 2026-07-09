@@ -61,6 +61,7 @@
 
 - [ ] `git diff --check`
 - [ ] Frontend Fundamentals self-check
+- [ ] Logic composition self-check
 - [ ] state transitions covered
 - [ ] API contract checked
 
