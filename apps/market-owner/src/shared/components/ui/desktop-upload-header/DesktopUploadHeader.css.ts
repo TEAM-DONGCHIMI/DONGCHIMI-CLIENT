@@ -122,15 +122,26 @@ export const deleteButtonRecipe = recipe({
   },
 });
 
-export const sortButtonClassName = style({
-  display: 'inline-flex',
-  height: '3.6rem',
-  alignItems: 'center',
-  gap: '0.1rem',
-  border: 0,
-  borderRadius: '2.8rem',
-  padding: '1rem 1.6rem 1rem 2rem',
-  backgroundColor: atomic.neutral[10],
+export const sortButtonRecipe = recipe({
+  base: {
+    display: 'inline-flex',
+    height: '3.6rem',
+    alignItems: 'center',
+    gap: '0.1rem',
+    border: 0,
+    borderRadius: '2.8rem',
+    padding: '1rem 1.6rem 1rem 2rem',
+    backgroundColor: atomic.neutral[10],
+  },
+  variants: {
+    open: {
+      false: {},
+      true: {
+        position: 'relative',
+        zIndex: 22,
+      },
+    },
+  },
 });
 
 export const sortButtonTextClassName = style({

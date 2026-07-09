@@ -20,6 +20,8 @@ export interface DesktopUploadHeaderProps {
   searchValue?: string;
   selectedCount?: number;
   selectedSegment: UploadSegmentTypes;
+  sortDropdownId?: string;
+  sortOpen?: boolean;
   totalCount: number;
   onDeleteSelected?: MouseEventHandler<HTMLButtonElement>;
   onSearch?: SearchBarProps['onSearch'];
@@ -37,6 +39,14 @@ const segmentLabels: Record<UploadSegmentTypes, string> = {
 const searchIcon = <IcSearchSizeSmall />;
 const sortLeadingIcon = <IcTuneSizeXsmallColor70 />;
 const sortTrailingIcon = <IcChevronDownSizeSmallColor70 />;
+
+const getSegmentAriaCurrent = (active: boolean) => {
+  if (!active) {
+    return undefined;
+  }
+
+  return 'page';
+};
 
 const SegmentNavigation = ({
   completedCount,
@@ -65,7 +75,7 @@ const SegmentNavigation = ({
         return (
           <button
             key={item.value}
-            aria-current={isActive ? 'page' : undefined}
+            aria-current={getSegmentAriaCurrent(isActive)}
             aria-label={`${item.label} ${item.count}`}
             className={S.segmentItemRecipe({ active: isActive })}
             onClick={() => onSegmentChange(item.value)}
@@ -104,9 +114,34 @@ const SelectedProductAction = ({
   );
 };
 
-const SortButton = ({ onSortClick }: { onSortClick?: MouseEventHandler<HTMLButtonElement> }) => {
+const SortButton = ({
+  controlsId,
+  open = false,
+  onSortClick,
+}: {
+  controlsId?: string;
+  open?: boolean;
+  onSortClick?: MouseEventHandler<HTMLButtonElement>;
+}) => {
+  const popupProps: {
+    'aria-controls'?: string;
+    'aria-expanded'?: boolean;
+    'aria-haspopup'?: 'menu';
+  } = {};
+
+  if (controlsId != null) {
+    popupProps['aria-controls'] = controlsId;
+    popupProps['aria-expanded'] = open;
+    popupProps['aria-haspopup'] = 'menu';
+  }
+
   return (
-    <button className={S.sortButtonClassName} onClick={onSortClick} type='button'>
+    <button
+      className={S.sortButtonRecipe({ open })}
+      onClick={onSortClick}
+      type='button'
+      {...popupProps}
+    >
       <span aria-hidden='true' className={S.iconClassName}>
         {sortLeadingIcon}
       </span>
@@ -125,6 +160,8 @@ export const DesktopUploadHeader = ({
   searchValue,
   selectedCount = 0,
   selectedSegment,
+  sortDropdownId,
+  sortOpen,
   totalCount,
   onDeleteSelected,
   onSearch,
@@ -144,7 +181,7 @@ export const DesktopUploadHeader = ({
 
       <Flex align='center' className={S.actionsClassName}>
         <SelectedProductAction selectedCount={selectedCount} onDeleteSelected={onDeleteSelected} />
-        <SortButton onSortClick={onSortClick} />
+        <SortButton controlsId={sortDropdownId} open={sortOpen} onSortClick={onSortClick} />
         <SearchBar
           aria-label='상품 검색'
           icon={searchIcon}

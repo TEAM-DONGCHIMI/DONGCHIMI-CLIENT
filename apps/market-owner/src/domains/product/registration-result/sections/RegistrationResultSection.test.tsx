@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
+import { OverlayProvider, overlay } from 'overlay-kit';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { render, screen, userEvent } from '@/test';
+import { render, screen, userEvent, within } from '@/test';
 import { registrationResultFixture } from '../fixtures';
 import { RegistrationResultSection } from './RegistrationResultSection';
 
@@ -9,17 +10,23 @@ const renderSection = () => {
   const handleRegister = vi.fn();
 
   render(
-    <RegistrationResultSection
-      pageSize={registrationResultFixture.pageSize}
-      products={registrationResultFixture.products}
-      summary={registrationResultFixture.summary}
-      onPrevious={handlePrevious}
-      onRegister={handleRegister}
-    />,
+    <OverlayProvider>
+      <RegistrationResultSection
+        pageSize={registrationResultFixture.pageSize}
+        products={registrationResultFixture.products}
+        summary={registrationResultFixture.summary}
+        onPrevious={handlePrevious}
+        onRegister={handleRegister}
+      />
+    </OverlayProvider>,
   );
 
   return { handlePrevious, handleRegister };
 };
+
+afterEach(() => {
+  overlay.unmountAll();
+});
 
 describe('RegistrationResultSection', () => {
   it('renders Figma result confirmation heading, filters, list, and disabled register action', () => {
@@ -53,6 +60,83 @@ describe('RegistrationResultSection', () => {
 
     expect(screen.getByText('선택된 상품 (0)')).toBeInTheDocument();
     expect(screen.getByText('확인이 필요한 상품이 있어요 (11)')).toBeInTheDocument();
+  });
+
+  it('shows mixed all-selection state and selects every visible row from the header checkbox', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    const [allCheckbox, firstProductCheckbox] = screen.getAllByRole('checkbox');
+
+    await user.click(firstProductCheckbox);
+
+    expect(allCheckbox).toHaveAttribute('aria-checked', 'mixed');
+
+    await user.click(allCheckbox);
+
+    expect(allCheckbox).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByText('선택된 상품 (10)')).toBeInTheDocument();
+  });
+
+  it('opens category filter dropdown from the sort action', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    const sortButton = screen.getByRole('button', { name: '정렬' });
+
+    await user.click(sortButton);
+
+    const dropdown = await screen.findByRole('group', { name: '카테고리 정렬' });
+
+    expect(sortButton).toHaveAttribute('aria-expanded', 'true');
+    expect(within(dropdown).getByRole('checkbox', { name: '전체' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+
+    await user.click(within(dropdown).getByRole('checkbox', { name: '정육･달걀' }));
+
+    expect(within(dropdown).getByRole('checkbox', { name: '정육･달걀' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+
+    await user.click(sortButton);
+
+    expect(sortButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('group', { name: '카테고리 정렬' })).not.toBeInTheDocument();
+  });
+
+  it('opens product category dropdown and updates the row category', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    const [categoryButton] = screen.getAllByRole('button', { name: '상품 카테고리 선택' });
+
+    await user.click(categoryButton);
+
+    const dropdown = await screen.findByRole('menu', { name: '상품 카테고리' });
+
+    await user.click(within(dropdown).getByRole('button', { name: '수산' }));
+
+    expect(categoryButton).toHaveTextContent('수산');
+  });
+
+  it('uploads a product image preview from the image field', async () => {
+    const user = userEvent.setup();
+    const imageFile = new File(['preview'], 'preview.png', { type: 'image/png' });
+
+    renderSection();
+
+    const [imageInput] = screen.getAllByLabelText('상품 이미지 파일 선택');
+
+    await user.upload(imageInput, imageFile);
+
+    expect(await screen.findByRole('img', { name: 'preview.png' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '상품 이미지 변경' })).toBeInTheDocument();
   });
 
   it('filters products by search value', async () => {

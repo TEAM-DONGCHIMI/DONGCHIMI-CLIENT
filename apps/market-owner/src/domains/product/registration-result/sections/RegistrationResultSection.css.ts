@@ -11,7 +11,7 @@ export const sectionClassName = style({
   width: '100%',
   minHeight: 'calc(100vh - 6.4rem)',
   flexDirection: 'column',
-  padding: '3.2rem 3.2rem 3rem',
+  padding: '3.2rem 3.2rem 0',
   backgroundColor: atomic.neutral[5],
 });
 
@@ -143,9 +143,9 @@ export const selectionBoxRecipe = recipe({
     backgroundColor: atomic.common[0],
   },
   variants: {
-    checked: {
-      false: {},
-      true: {
+    state: {
+      unchecked: {},
+      checked: {
         borderColor: semantic.primary.normal,
         backgroundColor: semantic.primary.normal,
         selectors: {
@@ -162,8 +162,19 @@ export const selectionBoxRecipe = recipe({
           },
         },
       },
+      mixed: {
+        borderColor: semantic.primary.normal,
+        backgroundColor: semantic.primary.normal,
+      },
     },
   },
+});
+
+export const selectionMixedMarkClassName = style({
+  width: '0.9rem',
+  height: '0.2rem',
+  borderRadius: '999px',
+  backgroundColor: atomic.common[0],
 });
 
 export const listClassName = style({
@@ -194,17 +205,53 @@ export const productPreviewClassName = style({
   color: semantic.primary.strong,
 });
 
+export const uploadedImageButtonClassName = style({
+  appearance: 'none',
+  display: 'block',
+  width: '100%',
+  height: '100%',
+  border: 0,
+  padding: 0,
+  overflow: 'hidden',
+  backgroundColor: 'transparent',
+  cursor: 'pointer',
+});
+
+export const uploadedProductImageClassName = style({
+  display: 'block',
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+});
+
+export const hiddenFileInputClassName = style({
+  display: 'none',
+});
+
+export const dropdownBackdropClassName = style({
+  position: 'fixed',
+  inset: 0,
+  zIndex: 20,
+  backgroundColor: 'transparent',
+});
+
+export const dropdownPanelClassName = style({
+  position: 'fixed',
+  zIndex: 21,
+});
+
 export const bottomBarClassName = style({
   position: 'sticky',
   bottom: 0,
   zIndex: 1,
+  boxSizing: 'border-box',
   display: 'flex',
   width: '100%',
   minWidth: 0,
   alignItems: 'center',
   justifyContent: 'space-between',
-  gap: '2rem',
-  marginTop: '3.2rem',
+  columnGap: '2rem',
+  padding: '3.2rem 0',
   backgroundColor: atomic.neutral[5],
 });
 
