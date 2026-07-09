@@ -1,14 +1,12 @@
 import { type RefObject, useCallback, useEffect, useState } from 'react';
 import { overlay, useOverlayData } from 'overlay-kit';
 
-import { type ProductCategoryTypes } from '../../../constants';
+import { type ProductCategoryTypes } from '../constants';
 
 const DEFAULT_CATEGORY = '정육·달걀' satisfies ProductCategoryTypes;
-const CATEGORY_DROPDOWN_OVERLAY_ID = 'product-edit-category-dropdown';
+const CATEGORY_DROPDOWN_OVERLAY_ID = 'product-category-dropdown';
 
-export const useProductEditCategoryDropdown = (
-  categoryFilterRef: RefObject<HTMLDivElement | null>,
-) => {
+export const useProductCategoryDropdown = (categoryFilterRef: RefObject<HTMLDivElement | null>) => {
   const overlayData = useOverlayData();
   const [selectedCategory, setSelectedCategory] = useState<ProductCategoryTypes>(DEFAULT_CATEGORY);
   const isCategoryDropdownOpen = Boolean(overlayData[CATEGORY_DROPDOWN_OVERLAY_ID]?.isOpen);

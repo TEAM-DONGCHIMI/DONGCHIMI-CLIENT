@@ -13,6 +13,7 @@
 - product domain route/copy에 묶인 컴포넌트이므로 `packages/design-system`이나 app shared component로 승격하지 않습니다.
 - route/copy/sort option 상수는 `ProductEditPageShell.constants.ts`가 소유합니다.
 - product category option 상수는 `domains/product/constants/product-category.ts`가 소유합니다.
+- product category dropdown hook은 등록/수정 화면에서 함께 쓸 수 있도록 `domains/product/hooks/use-product-category-dropdown.tsx`가 소유합니다.
 - category dropdown open/close 상태는 행사 할인 수정 페이지에서만 `overlay-kit`의 overlay data에서 파생합니다.
 - category dropdown UI는 design-system `Dropdown`과 `Dropdown.Item`을 사용하며 inline style을 사용하지 않습니다.
 

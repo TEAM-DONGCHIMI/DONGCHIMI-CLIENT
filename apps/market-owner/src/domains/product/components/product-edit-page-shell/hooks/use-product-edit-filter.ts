@@ -5,7 +5,7 @@ import {
   type ProductEditFilterTypes,
   type ProductEditTypeTypes,
 } from '../ProductEditPageShell.constants';
-import { useProductEditCategoryDropdown } from './use-product-edit-category-dropdown';
+import { useProductCategoryDropdown } from '../../../hooks';
 
 interface UseProductEditFilterParams {
   activeType: ProductEditTypeTypes;
@@ -21,7 +21,7 @@ export const useProductEditFilter = ({ activeType }: UseProductEditFilterParams)
     selectCategory,
     selectedCategory,
     toggleCategoryDropdown,
-  } = useProductEditCategoryDropdown(categoryFilterRef);
+  } = useProductCategoryDropdown(categoryFilterRef);
   const visibleSelectedFilter =
     !showCategoryFilter && selectedFilter === 'category' ? 'registered' : selectedFilter;
   const isCategorySelected = visibleSelectedFilter === 'category';
