@@ -1,6 +1,5 @@
 import type { ChangeEventHandler, FocusEventHandler, MouseEventHandler, RefObject } from 'react';
 
-import { InlineField } from '@dongchimi/design-system/components';
 import { cn } from '@dongchimi/design-system/styles';
 import {
   IcCamera,
@@ -10,7 +9,7 @@ import {
   IcPlus,
 } from '@dongchimi/design-system/icons';
 
-import { FieldGroup } from '../components/FieldGroup';
+import { FieldGroup, InlineFieldGroup } from '../components/FieldGroup';
 import {
   todaySpecialImageInputAccept,
   type TodaySpecialProductErrorMessageTypes,
@@ -105,18 +104,16 @@ export const ProductInfoSection = ({
         </div>
 
         <div className={S.twoColumnRowClassName}>
-          <FieldGroup htmlFor='today-special-product-name' label='상품명'>
-            <InlineField
-              aria-label='상품명'
-              errorMessage={productErrorMessages.name}
-              id='today-special-product-name'
-              onBlur={onNameBlur}
-              onChange={onNameChange}
-              placeholder='상품명을 입력하세요.'
-              status={productErrorMessages.name ? 'error' : 'default'}
-              value={product.name}
-            />
-          </FieldGroup>
+          <InlineFieldGroup
+            errorMessage={productErrorMessages.name}
+            id='today-special-product-name'
+            label='상품명'
+            onBlur={onNameBlur}
+            onChange={onNameChange}
+            placeholder='상품명을 입력하세요.'
+            status={productErrorMessages.name ? 'error' : 'default'}
+            value={product.name}
+          />
 
           <FieldGroup label='상품 구분'>
             <div className={S.categoryWrapperClassName}>
@@ -155,18 +152,16 @@ export const ProductInfoSection = ({
           </FieldGroup>
         </div>
 
-        <FieldGroup htmlFor='today-special-product-description' label='상품 한줄 홍보문구'>
-          <InlineField
-            aria-label='상품 한줄 홍보문구'
-            errorMessage={productErrorMessages.description}
-            id='today-special-product-description'
-            onBlur={onDescriptionBlur}
-            onChange={onDescriptionChange}
-            placeholder='홍보문구를 입력하세요.'
-            status={productErrorMessages.description ? 'error' : 'default'}
-            value={product.description}
-          />
-        </FieldGroup>
+        <InlineFieldGroup
+          errorMessage={productErrorMessages.description}
+          id='today-special-product-description'
+          label='상품 한줄 홍보문구'
+          onBlur={onDescriptionBlur}
+          onChange={onDescriptionChange}
+          placeholder='홍보문구를 입력하세요.'
+          status={productErrorMessages.description ? 'error' : 'default'}
+          value={product.description}
+        />
       </div>
     </section>
   );

@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 
+import { InlineField, type InlineFieldProps } from '@dongchimi/design-system/components';
+
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface FieldGroupProps {
@@ -20,5 +22,21 @@ export const FieldGroup = ({ children, htmlFor, label }: FieldGroupProps) => {
       )}
       {children}
     </div>
+  );
+};
+
+interface InlineFieldGroupProps extends Omit<
+  InlineFieldProps,
+  'aria-label' | 'aria-labelledby' | 'id' | 'readOnly'
+> {
+  id: string;
+  label: string;
+}
+
+export const InlineFieldGroup = ({ id, label, ...props }: InlineFieldGroupProps) => {
+  return (
+    <FieldGroup htmlFor={id} label={label}>
+      <InlineField aria-label={label} id={id} {...props} />
+    </FieldGroup>
   );
 };
