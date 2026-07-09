@@ -10,6 +10,7 @@ import {
   IcPlus,
 } from '@dongchimi/design-system/icons';
 
+import { FieldGroup } from '../components/FieldGroup';
 import {
   todaySpecialImageInputAccept,
   type TodaySpecialProductErrorMessageTypes,
@@ -104,10 +105,7 @@ export const ProductInfoSection = ({
         </div>
 
         <div className={S.twoColumnRowClassName}>
-          <div className={S.fieldGroupClassName}>
-            <label className={S.fieldLabelClassName} htmlFor='today-special-product-name'>
-              상품명
-            </label>
+          <FieldGroup htmlFor='today-special-product-name' label='상품명'>
             <InlineField
               aria-label='상품명'
               errorMessage={productErrorMessages.name}
@@ -118,10 +116,9 @@ export const ProductInfoSection = ({
               status={productErrorMessages.name ? 'error' : 'default'}
               value={product.name}
             />
-          </div>
+          </FieldGroup>
 
-          <div className={S.fieldGroupClassName}>
-            <span className={S.fieldLabelClassName}>상품 구분</span>
+          <FieldGroup label='상품 구분'>
             <div className={S.categoryWrapperClassName}>
               <button
                 aria-describedby={productErrorMessages.category ? categoryErrorId : undefined}
@@ -155,13 +152,10 @@ export const ProductInfoSection = ({
                 <span>{productErrorMessages.category}</span>
               </p>
             )}
-          </div>
+          </FieldGroup>
         </div>
 
-        <div className={S.fieldGroupClassName}>
-          <label className={S.fieldLabelClassName} htmlFor='today-special-product-description'>
-            상품 한줄 홍보문구
-          </label>
+        <FieldGroup htmlFor='today-special-product-description' label='상품 한줄 홍보문구'>
           <InlineField
             aria-label='상품 한줄 홍보문구'
             errorMessage={productErrorMessages.description}
@@ -172,7 +166,7 @@ export const ProductInfoSection = ({
             status={productErrorMessages.description ? 'error' : 'default'}
             value={product.description}
           />
-        </div>
+        </FieldGroup>
       </div>
     </section>
   );

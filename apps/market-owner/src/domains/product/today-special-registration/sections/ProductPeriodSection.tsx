@@ -1,6 +1,7 @@
 import type { ChangeEventHandler, FocusEventHandler } from 'react';
 
 import { DateField } from '../components/DateField';
+import { FieldGroup } from '../components/FieldGroup';
 import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductFormTypes } from '../model';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
@@ -23,8 +24,7 @@ export const ProductPeriodSection = ({
         기간 설정
       </h2>
 
-      <div className={S.fieldGroupClassName}>
-        <span className={S.fieldLabelClassName}>행사 기간</span>
+      <FieldGroup label='행사 기간'>
         <div className={S.dateSingleFieldClassName}>
           <DateField
             ariaLabel='행사 시작일'
@@ -35,7 +35,7 @@ export const ProductPeriodSection = ({
             value={product.startDate}
           />
         </div>
-      </div>
+      </FieldGroup>
     </section>
   );
 };

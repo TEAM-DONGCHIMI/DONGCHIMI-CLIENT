@@ -2,6 +2,7 @@ import type { ChangeEventHandler, FocusEventHandler } from 'react';
 
 import { InlineField } from '@dongchimi/design-system/components';
 
+import { FieldGroup } from '../components/FieldGroup';
 import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductFormTypes } from '../model';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
@@ -30,10 +31,7 @@ export const ProductPriceSection = ({
 
       <div className={S.sectionBodyClassName}>
         <div className={S.twoColumnRowClassName}>
-          <div className={S.fieldGroupClassName}>
-            <label className={S.fieldLabelClassName} htmlFor='today-special-special-price'>
-              오늘의 특가
-            </label>
+          <FieldGroup htmlFor='today-special-special-price' label='오늘의 특가'>
             <InlineField
               aria-label='오늘의 특가'
               errorMessage={productErrorMessages.specialPrice}
@@ -46,12 +44,9 @@ export const ProductPriceSection = ({
               unit='원'
               value={product.specialPrice}
             />
-          </div>
+          </FieldGroup>
 
-          <div className={S.fieldGroupClassName}>
-            <label className={S.fieldLabelClassName} htmlFor='today-special-sale-price'>
-              판매가
-            </label>
+          <FieldGroup htmlFor='today-special-sale-price' label='판매가'>
             <InlineField
               aria-label='판매가'
               errorMessage={productErrorMessages.salePrice}
@@ -64,7 +59,7 @@ export const ProductPriceSection = ({
               unit='원'
               value={product.salePrice}
             />
-          </div>
+          </FieldGroup>
         </div>
       </div>
     </section>
