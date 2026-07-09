@@ -28,7 +28,7 @@
 - Page-local components, sections, hooks, fixtures, and utils stay under this page folder.
 - Sidebar/protected layout responsibility stays in `src/app/layouts/SidebarLayout.tsx` and `src/app/routes/ProtectedRoute.tsx`.
 - `RegistrationMethodSection` is page-local because upload method copy, CTA behavior, POS guide entry, and toast feedback are tied to this registration flow.
-- `PosExcelGuidePanel` is page-local because its copy and image placeholders are specific to the event discount registration upload guide.
+- `PosExcelGuidePanel` is page-local because its title and image-only placeholder surfaces are specific to the event discount registration upload guide.
 - App-shared `UploadModal` is reused for the excel upload modal default/upload states.
 - Design-system `Toast` is reused as a presentational toast while page state owns when each toast is rendered.
 - `FileAnalysisConfirmSection` and `FileAnalysisProgressSection` remain page-local flow steps for the uploaded file confirmation and AI analysis progress.
@@ -48,7 +48,7 @@
 - completed: original analysis progress at 100% or all completed steps disable the progress cancel action.
 - toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback.
 - toast/error: the page can render error toast feedback; `전단지 업로드` currently shows Figma error-style feedback because the actual upload API is out of scope.
-- panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel; Escape, backdrop click, or the close button hides it and restores focus.
+- panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel with the two-line title (`POS에서 엑셀 파일을` / `이렇게 다운 받으시면 돼요.`) and three stacked guide image placeholders; Escape, backdrop click, or the close button hides it and restores focus.
 - route error: unknown route is handled by the existing router fallback.
 
 ## Data
@@ -80,7 +80,7 @@
 - `전단지 업로드` shows the Figma toast feedback. Actual leaflet image upload/API is out of scope.
 - Toast feedback auto-dismisses after a short delay; triggering a new toast resets the timer and replaces the visible toast.
 - The POS guide panel behaves as a modal dialog: Escape and backdrop click close it, focus moves to the close button on open and returns to the previously focused trigger on close, Tab focus is kept inside the panel, and body scroll is locked while open.
-- POS guide image areas are placeholder surfaces until real guide image assets are provided.
+- POS guide image areas are 36rem-wide placeholder surfaces until real guide image assets are provided; the fixed heights are 27.4rem, 24.1rem, and 17.5rem, and step copy stays in accessible image labels instead of visible text.
 - Analysis items are read-only static labels until repeated reuse or API mapping is confirmed.
 - Analysis progress value is clamped and rounded for display while completion checks use original progress or step status.
 

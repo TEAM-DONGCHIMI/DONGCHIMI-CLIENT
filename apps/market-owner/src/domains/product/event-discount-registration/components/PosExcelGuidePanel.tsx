@@ -16,6 +16,7 @@ export interface PosExcelGuidePanelProps {
 const PANEL_LABEL = 'POS 엑셀 다운로드 안내';
 const FOCUSABLE_SELECTOR =
   'a[href], button:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])';
+const GUIDE_IMAGE_SIZE_KEYS = ['large', 'medium', 'small'] as const;
 
 export const PosExcelGuidePanel = ({ open, posGuide, onClose }: PosExcelGuidePanelProps) => {
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -123,18 +124,23 @@ export const PosExcelGuidePanel = ({ open, posGuide, onClose }: PosExcelGuidePan
         <div className={S.contentClassName}>
           <h2 className={S.titleClassName}>{posGuide.title}</h2>
 
-          <ol className={S.stepListClassName}>
-            {posGuide.steps.map((step, index) => (
-              <li className={S.stepItemClassName} key={step.title}>
-                <span className={S.stepNumberClassName}>{index + 1}</span>
-                <div className={S.stepBodyClassName}>
-                  <h3 className={S.stepTitleClassName}>{step.title}</h3>
-                  <p className={S.stepDescriptionClassName}>{step.description}</p>
-                  <span aria-hidden='true' className={S.stepImagePlaceholderClassName} />
-                </div>
-              </li>
-            ))}
-          </ol>
+          <div className={S.imageListClassName}>
+            {posGuide.steps.map((step, index) => {
+              const imageSizeKey = GUIDE_IMAGE_SIZE_KEYS[index] ?? 'small';
+
+              return (
+                <span
+                  aria-label={`${step.title}: ${step.description}`}
+                  className={[
+                    S.guideImagePlaceholderClassName,
+                    S.guideImagePlaceholderHeightClassNames[imageSizeKey],
+                  ].join(' ')}
+                  key={step.title}
+                  role='img'
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

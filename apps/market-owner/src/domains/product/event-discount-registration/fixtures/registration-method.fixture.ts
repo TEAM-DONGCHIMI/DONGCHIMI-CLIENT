@@ -36,11 +36,11 @@ export const registrationMethodFixture = {
         title: '동치미에 파일 업로드',
       },
     ],
-    title: 'POS에서 엑셀 파일을 이렇게 다운 받으시면 돼요.',
+    title: 'POS에서 엑셀 파일을\n이렇게 다운 받으시면 돼요.',
   },
   toast: {
     downloadError: '엑셀 양식 다운로드를 실패했습니다.',
-    downloadSuccess: '엑셀 양식 다운로드를 완료',
+    downloadSuccess: '엑셀 양식 다운로드 완료',
     leafletUnavailable: '아직 준비중인 기능이에요.',
   },
 } as const;

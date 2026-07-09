@@ -2,6 +2,7 @@ import { fireEvent, render, screen, userEvent } from '@/test';
 import { describe, expect, it } from 'vitest';
 
 import { EventDiscountRegistrationPage } from './EventDiscountRegistrationPage';
+import { registrationMethodFixture } from './fixtures';
 
 describe('EventDiscountRegistrationPage', () => {
   it('switches from registration method to file confirmation and analysis progress', async () => {
@@ -76,7 +77,9 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(screen.getByRole('button', { name: '엑셀 양식 다운로드' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('엑셀 양식 다운로드를 완료');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      registrationMethodFixture.toast.downloadSuccess,
+    );
 
     await user.click(screen.getByRole('button', { name: 'POS에서 엑셀 파일 받는 방법 보기' }));
 

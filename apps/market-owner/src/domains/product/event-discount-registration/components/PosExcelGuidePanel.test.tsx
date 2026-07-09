@@ -23,22 +23,23 @@ describe('PosExcelGuidePanel', () => {
     expect(screen.queryByRole('dialog', { name: 'POS 엑셀 다운로드 안내' })).toBeNull();
   });
 
-  it('renders POS guide steps as a modal dialog when open', () => {
+  it('renders POS guide image placeholders as a modal dialog when open', () => {
     renderPosExcelGuidePanel();
 
     const panel = screen.getByRole('dialog', { name: 'POS 엑셀 다운로드 안내' });
 
     expect(panel).toHaveAttribute('aria-modal', 'true');
 
-    const steps = within(panel).getAllByRole('listitem');
-
-    expect(
-      within(panel).getByRole('heading', { name: registrationMethodFixture.posGuide.title }),
-    ).toBeInTheDocument();
-    expect(steps).toHaveLength(registrationMethodFixture.posGuide.steps.length);
+    expect(within(panel).getByRole('heading', { name: /POS에서 엑셀 파일을/ })).toHaveTextContent(
+      'POS에서 엑셀 파일을 이렇게 다운 받으시면 돼요.',
+    );
+    expect(within(panel).getAllByRole('img')).toHaveLength(
+      registrationMethodFixture.posGuide.steps.length,
+    );
     registrationMethodFixture.posGuide.steps.forEach((step) => {
-      expect(within(panel).getByText(step.title)).toBeInTheDocument();
-      expect(within(panel).getByText(step.description)).toBeInTheDocument();
+      expect(
+        within(panel).getByRole('img', { name: `${step.title}: ${step.description}` }),
+      ).toBeInTheDocument();
     });
   });
 

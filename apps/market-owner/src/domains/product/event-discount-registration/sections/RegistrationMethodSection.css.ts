@@ -152,7 +152,7 @@ export const guideLineButtonClassName = style({
 
 export const supportGroupClassName = style({
   minHeight: '3.4rem',
-  gap: '0.6rem',
+  gap: 0,
   marginTop: '2.4rem',
 });
 
