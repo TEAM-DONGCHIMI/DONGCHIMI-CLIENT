@@ -7,14 +7,18 @@ export const sectionClassName = style({
   minWidth: 0,
   flex: 1,
   alignItems: 'center',
-  justifyContent: 'center',
+  boxSizing: 'border-box',
   gap: '6.8rem',
+  justifyContent: 'flex-start',
+  paddingTop: '9rem',
   '@media': {
     'screen and (max-width: 1280px)': {
       gap: '4rem',
+      paddingTop: '7rem',
     },
     'screen and (max-width: 768px)': {
       gap: '3.2rem',
+      padding: '4rem 1.6rem 0',
     },
   },
 });

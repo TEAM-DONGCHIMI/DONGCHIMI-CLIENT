@@ -144,7 +144,6 @@ export const EventDiscountRegistrationPage = () => {
   return (
     <main className={S.pageRootClassName}>
       <DesktopHeader
-        className={S.pageHeaderClassName}
         currentLabel={headerLabels.currentLabel}
         parentLabel={headerLabels.parentLabel}
         showSearchBar={false}
