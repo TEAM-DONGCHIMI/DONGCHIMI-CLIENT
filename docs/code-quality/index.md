@@ -5,7 +5,14 @@
 ## Source Of Truth
 
 - Frontend Fundamentals 상세 기준: [frontend-fundamentals.md](./frontend-fundamentals.md)
+- Readability 상세 기준: [frontend-readability.md](./frontend-readability.md)
+- Predictability 상세 기준: [frontend-predictability.md](./frontend-predictability.md)
+- Cohesion 상세 기준: [frontend-cohesion.md](./frontend-cohesion.md)
+- Coupling 상세 기준: [frontend-coupling.md](./frontend-coupling.md)
+- Logic Composition 상세 기준: [frontend-logic-composition.md](./frontend-logic-composition.md)
 - Codex review skill: `.agents/skills/frontend-fundamentals-review/SKILL.md`
+- Codex criterion skills: `.agents/skills/frontend-readability-check/SKILL.md`, `.agents/skills/frontend-predictability-check/SKILL.md`, `.agents/skills/frontend-cohesion-check/SKILL.md`, `.agents/skills/frontend-coupling-check/SKILL.md`
+- Codex logic composition skill: `.agents/skills/frontend-logic-composition-workflow/SKILL.md`
 - Review recipe: `recipes/frontend-fundamentals-review.md`
 
 ## General
@@ -24,6 +31,7 @@
 - 예측 가능성: 함수, hook, component 이름과 반환 타입만 보고 동작을 예측할 수 있어야 합니다.
 - 응집도: 함께 수정되는 파일, 상수, 타입, fixture, API helper는 가능한 한 가까이 둡니다.
 - 결합도: 변경 영향 범위를 줄이고, prop drilling, god hook, 과도한 전역 context를 피합니다.
+- 로직 구성: 컴포넌트 내부 로직, 단일 책임 hook, orchestration hook, 공통 hook 승격 기준을 명확히 합니다.
 - UI 상태는 loading, empty, error, disabled, selected, invalid를 의도적으로 다룹니다.
 - form, API, route, public props가 바뀌면 가까운 spec을 갱신합니다.
 - 접근성은 keyboard, focus-visible, accessible name을 최소 기준으로 확인합니다.
@@ -40,6 +48,8 @@
 ## Frontend Fundamentals Review
 
 페이지, 컴포넌트, hook/state, API query/mutation, form flow 구현 후에는 [frontend-fundamentals.md](./frontend-fundamentals.md)를 self-check 기준으로 사용합니다.
+구현 중 특정 기준만 빠르게 확인해야 하면 [frontend-readability.md](./frontend-readability.md), [frontend-predictability.md](./frontend-predictability.md), [frontend-cohesion.md](./frontend-cohesion.md), [frontend-coupling.md](./frontend-coupling.md)와 대응하는 `$frontend-*-check` skill을 사용합니다.
+컴포넌트 내부 로직과 custom hook 추출 단위는 [frontend-logic-composition.md](./frontend-logic-composition.md)와 `$frontend-logic-composition-workflow`를 사용합니다.
 비자명한 변경, shared/public API 변경, PR 전 품질 점검에는 필요에 따라 `$frontend-fundamentals-review`를 사용합니다.
 이 review는 lint/typecheck/build를 대체하지 않습니다. 정적 검증은 실행 가능 여부를 확인하고, 이 review는 변경하기 쉬운 코드인지 판단합니다.
 
