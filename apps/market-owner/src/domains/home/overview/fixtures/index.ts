@@ -1,4 +1,5 @@
 export {
+  getHomeSearchProductsByQuery,
   homeHeroActions,
   homeProductSections,
   homeSearchProducts,

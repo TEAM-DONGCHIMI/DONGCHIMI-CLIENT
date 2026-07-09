@@ -12,25 +12,21 @@ const products = [
     id: 'today-tofu',
     label: '오늘의 특가',
     name: '풀무원 두부 1팩',
-    registeredAt: '2026-07-08T08:00:00.000Z',
   },
   {
     id: 'today-bean-sprout',
     label: '오늘의 특가',
     name: '풀무원 콩나물 100g',
-    registeredAt: '2026-07-08T07:00:00.000Z',
   },
   {
     id: 'event-grass',
     label: '행사 할인',
     name: '풀숲',
-    registeredAt: '2026-07-08T06:00:00.000Z',
   },
   {
     id: 'event-pool',
     label: '행사 할인',
     name: '풀풀풀',
-    registeredAt: '2026-07-08T05:00:00.000Z',
   },
 ] satisfies ProductSearchPanelItemTypes[];
 
@@ -44,7 +40,7 @@ const renderPanel = (props: Partial<ProductSearchPanelProps> = {}) => {
 };
 
 describe('ProductSearchPanel', () => {
-  it('opens the dropdown after one or more characters and sorts by match score then latest registration', async () => {
+  it('opens the dropdown after one or more characters and renders results in the provided order', async () => {
     const user = userEvent.setup();
 
     renderPanel();
@@ -66,7 +62,6 @@ describe('ProductSearchPanel', () => {
       id: `product-${index}`,
       label: '오늘의 특가',
       name: `풀무원 상품 ${index}`,
-      registeredAt: `2026-07-${String(index + 1).padStart(2, '0')}T00:00:00.000Z`,
     }));
 
     renderPanel({ items: manyProducts });
@@ -109,10 +104,10 @@ describe('ProductSearchPanel', () => {
     expect(screen.queryByRole('list', { name: '상품 검색 결과' })).not.toBeInTheDocument();
   });
 
-  it('renders empty feedback when no products match', async () => {
+  it('renders empty feedback when no products are provided', async () => {
     const user = userEvent.setup();
 
-    renderPanel();
+    renderPanel({ items: [] });
 
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '감자');
 

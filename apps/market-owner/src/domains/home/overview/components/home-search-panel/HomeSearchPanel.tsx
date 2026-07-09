@@ -1,8 +1,9 @@
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { ProductSearchPanel } from '@/shared/components';
 
-import { homeSearchProducts } from '../../fixtures';
+import { getHomeSearchProductsByQuery, homeSearchProducts } from '../../fixtures';
 
 interface HomeSearchPanelProps {
   onProductLoadError: () => void;
@@ -14,10 +15,13 @@ const getSearchProductById = (productId: string) => {
 
 export const HomeSearchPanel = ({ onProductLoadError }: HomeSearchPanelProps) => {
   const navigate = useNavigate();
+  const [query, setQuery] = useState('');
+  const searchProducts = useMemo(() => getHomeSearchProductsByQuery(query), [query]);
 
   return (
     <ProductSearchPanel
-      items={homeSearchProducts}
+      items={searchProducts}
+      onQueryChange={(nextQuery) => setQuery(nextQuery)}
       onSelectProduct={(item) => {
         const selectedProduct = getSearchProductById(item.id);
 

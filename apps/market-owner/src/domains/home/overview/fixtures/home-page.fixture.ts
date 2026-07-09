@@ -24,16 +24,18 @@ interface HomeSearchProductFixtureTypes extends ProductSearchPanelItemTypes {
   isProductInfoLoadable?: boolean;
 }
 
-const todaySpecialProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
+const normalizeSearchText = (value: string) => value.toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
+
+const dailyProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
   discountRate: 10,
-  id: `today-special-product-${index + 1}`,
+  id: `daily-product-${index + 1}`,
   name: '풀무원 콩나물 500g',
   originalPriceText: '5,000원',
   priceText: '4,500원',
 }));
 
-const eventDiscountProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
-  id: `event-discount-product-${index + 1}`,
+const periodicProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
+  id: `periodic-product-${index + 1}`,
   name: '풀무원 콩나물 500g',
   priceText: '5,000원',
   rank: index + 1,
@@ -42,63 +44,69 @@ const eventDiscountProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, 
 export const homeSearchProducts: HomeSearchProductFixtureTypes[] = [
   {
     editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
-    id: 'search-today-tofu',
+    id: 'search-daily-tofu',
     isProductInfoLoadable: false,
     label: '오늘의 특가',
     name: '풀무원 두부 1팩',
-    registeredAt: '2026-07-08T07:30:00.000Z',
   },
   {
     editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
-    id: 'search-today-bean-sprout',
+    id: 'search-daily-bean-sprout',
     label: '오늘의 특가',
     name: '풀무원 콩나물 100g',
-    registeredAt: '2026-07-08T07:00:00.000Z',
   },
   {
     editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
-    id: 'search-event-pool-forest',
+    id: 'search-periodic-pool-forest',
     label: '행사 할인',
     name: '풀숲',
-    registeredAt: '2026-07-08T06:30:00.000Z',
   },
   {
     editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
-    id: 'search-event-pool',
+    id: 'search-periodic-pool',
     label: '행사 할인',
     name: '풀풀풀',
-    registeredAt: '2026-07-08T06:00:00.000Z',
   },
   {
     editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
-    id: 'search-today-soft-tofu',
+    id: 'search-daily-soft-tofu',
     label: '오늘의 특가',
     name: '풀무원 순두부 350g',
-    registeredAt: '2026-07-08T05:30:00.000Z',
   },
   {
     editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
-    id: 'search-event-tofu-set',
+    id: 'search-periodic-tofu-set',
     label: '행사 할인',
     name: '풀무원 두부 세트',
-    registeredAt: '2026-07-08T05:00:00.000Z',
   },
 ] satisfies HomeSearchProductFixtureTypes[];
+
+export const getHomeSearchProductsByQuery = (query: string) => {
+  const normalizedQuery = normalizeSearchText(query);
+
+  if (normalizedQuery.length === 0) {
+    return [];
+  }
+
+  return homeSearchProducts.filter((product) =>
+    normalizeSearchText(`${product.label}${product.name}`).includes(normalizedQuery),
+  );
+};
 
 export const homeProductSections: HomeProductSectionFixtureTypes[] = [
   {
     editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
-    id: 'today-special',
+    id: 'daily',
     itemVariant: 'today',
-    items: todaySpecialProducts,
+    items: dailyProducts,
     title: '오늘의 특가 상품',
     totalCount: 20,
   },
   {
     editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
-    id: 'event-discount',
+    id: 'periodic',
     itemVariant: 'period',
-    items: eventDiscountProducts,
+    items: periodicProducts,
     title: '행사 할인 상품',
     totalCount: 35,
   },
@@ -107,13 +115,13 @@ export const homeProductSections: HomeProductSectionFixtureTypes[] = [
 export const homeHeroActions: HomeHeroActionFixtureTypes[] = [
   {
     description: '오늘만 진행하는 특가 상품을 등록해요.',
-    id: 'today-special-registration',
+    id: 'daily-registration',
     route: MARKET_OWNER_ROUTES.todaySpecialRegistration,
     title: '오늘의 특가 상품 등록하기',
   },
   {
     description: '행사 기간 동안 판매할 할인 상품을 등록해요.',
-    id: 'event-discount-registration',
+    id: 'periodic-registration',
     route: MARKET_OWNER_ROUTES.eventDiscountRegistration,
     title: '행사 할인 상품 등록하기',
   },
