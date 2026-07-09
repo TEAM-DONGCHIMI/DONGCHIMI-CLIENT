@@ -211,7 +211,7 @@ TextInput
 - helper/error text: Caption 1 Medium, 12px/1.4
 - label/helper/error text: 긴 문구와 공백 없는 문자열을 줄바꿈해 전체 내용을 표시합니다.
 - trailing icon/action slot: 24×24px, input 오른쪽 12px, text와 8px 간격
-- error icon: Figma node `1148:29939`의 `Name=circleExclamation, size=small, color=negative, Fill=false`에 대응하는 16×16px 장식 아이콘을 error text와 4px 간격으로 표시합니다.
+- error icon slot: 16×16px, error text와 4px 간격. `circleExclamation` 아이콘을 error color로 표시합니다.
 - transition: border/background/color 변화에만 짧게 적용하고 layout은 움직이지 않습니다.
 - token usage: 기존 `atomic`, `semantic`, `typography` token과 component-local vanilla-extract style을 사용합니다.
 
@@ -277,4 +277,5 @@ TextInput
 
 ## Open Questions
 
+- Figma error status icon은 generated `IcCircleExclamationSizeSmallColorNegative`를 렌더링합니다.
 - disabled/readOnly 전용 Figma visual이 제공되면 상태 색상과 interaction 우선순위를 추가합니다. 현재는 native semantics만 지원합니다.
