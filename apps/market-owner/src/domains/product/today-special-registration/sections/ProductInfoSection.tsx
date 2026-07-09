@@ -20,7 +20,7 @@ import * as S from '../TodaySpecialRegistrationPage.css';
 interface ProductInfoSectionProps {
   categoryDropdownId: string;
   categoryTriggerRef: RefObject<HTMLButtonElement | null>;
-  isCategoryOpen: boolean;
+  isCategoryDropdownOpen: boolean;
   onCategoryTriggerClick: MouseEventHandler<HTMLButtonElement>;
   onDescriptionBlur: FocusEventHandler<HTMLInputElement>;
   onDescriptionChange: ChangeEventHandler<HTMLInputElement>;
@@ -34,7 +34,7 @@ interface ProductInfoSectionProps {
 export const ProductInfoSection = ({
   categoryDropdownId,
   categoryTriggerRef,
-  isCategoryOpen,
+  isCategoryDropdownOpen,
   onCategoryTriggerClick,
   onDescriptionBlur,
   onDescriptionChange,
@@ -125,8 +125,8 @@ export const ProductInfoSection = ({
             <div className={S.categoryWrapperClassName}>
               <button
                 aria-describedby={productErrorMessages.category ? categoryErrorId : undefined}
-                aria-controls={isCategoryOpen ? categoryDropdownId : undefined}
-                aria-expanded={isCategoryOpen}
+                aria-controls={isCategoryDropdownOpen ? categoryDropdownId : undefined}
+                aria-expanded={isCategoryDropdownOpen}
                 className={cn(
                   S.categoryTriggerClassName,
                   productErrorMessages.category && S.categoryTriggerErrorClassName,
@@ -139,7 +139,7 @@ export const ProductInfoSection = ({
                 <span className={!product.category ? S.categoryPlaceholderClassName : undefined}>
                   {product.category || '카테고리'}
                 </span>
-                {isCategoryOpen ? (
+                {isCategoryDropdownOpen ? (
                   <IcChevronUp aria-hidden='true' />
                 ) : (
                   <IcChevronDown aria-hidden='true' />
