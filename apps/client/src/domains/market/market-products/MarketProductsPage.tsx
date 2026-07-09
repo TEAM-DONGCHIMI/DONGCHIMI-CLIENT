@@ -1,27 +1,129 @@
-import Link from 'next/link';
+'use client';
 
+import { useMemo, useState } from 'react';
+
+import { useRouter } from 'next/navigation';
+
+import { IcChevronLeft } from '@dongchimi/design-system/icons';
+
+import { MobileHeader } from '@/shared/components/ui/mobile-header';
+import { MobileModal } from '@/shared/components/ui/mobile-modal';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
-const SAMPLE_PRODUCT_ID = 'samgyeopsal-500g';
+import {
+  DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT,
+  DEFAULT_TODAY_SPECIAL_VISIBLE_COUNT,
+  marketProductsFixture,
+} from './fixtures/market-products.fixture';
+import * as S from './MarketProductsPage.css';
+import {
+  EVENT_DISCOUNT_ALL_CATEGORY_ID,
+  EventDiscountProductsSection,
+} from './sections/EventDiscountProductsSection';
+import { MarketOverviewSection } from './sections/MarketOverviewSection';
+import { PopularProductsSection } from './sections/PopularProductsSection';
+import { TodaySpecialProductsSection } from './sections/TodaySpecialProductsSection';
 
 type MarketProductsPageProps = Readonly<{
   marketId: string;
 }>;
 
-export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
-  return (
-    <main>
-      <section aria-labelledby='market-products-title'>
-        <p>마트 ID: {marketId}</p>
-        <h1 id='market-products-title'>마트 전단 상품</h1>
-        <p>오늘의 특가와 기간 할인 상품을 목록으로 확인하는 화면입니다.</p>
+const getTelHref = (phoneNumber: string) => `tel:${phoneNumber.replaceAll('-', '')}`;
+const getShareUrl = (slug: string) => `dongchimi.kr/${slug}`;
 
-        <nav aria-label='상품 탐색'>
-          <Link href={CLIENT_ROUTES.marketProduct(marketId, SAMPLE_PRODUCT_ID)}>
-            삼겹살 500g 상세 보기
-          </Link>
-        </nav>
-      </section>
+const MarketProductsBackButton = () => {
+  const router = useRouter();
+
+  const handleBackButtonClick = () => {
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.push(CLIENT_ROUTES.markets);
+  };
+
+  return (
+    <MobileHeader.BackButton
+      aria-label='마트 목록으로 돌아가기'
+      icon={<IcChevronLeft />}
+      onClick={handleBackButtonClick}
+    />
+  );
+};
+
+export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [isTodaySpecialExpanded, setIsTodaySpecialExpanded] = useState(false);
+  const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(EVENT_DISCOUNT_ALL_CATEGORY_ID);
+
+  const { eventDiscount, market, share, todaySpecial } = marketProductsFixture;
+  const shareUrl = getShareUrl(share.slug);
+  const telHref = getTelHref(market.marketPhone1);
+
+  const visibleTodaySpecialProducts = isTodaySpecialExpanded
+    ? todaySpecial.products
+    : todaySpecial.products.slice(0, DEFAULT_TODAY_SPECIAL_VISIBLE_COUNT);
+
+  const eventDiscountProducts = useMemo(() => {
+    if (selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID) {
+      return eventDiscount.products;
+    }
+
+    return eventDiscount.products.filter((product) => product.categoryId === selectedCategoryId);
+  }, [eventDiscount.products, selectedCategoryId]);
+
+  const handleConfirmCall = () => {
+    window.location.href = telHref;
+    setIsCallModalOpen(false);
+  };
+
+  return (
+    <main className={S.pageClassName}>
+      <MobileHeader className={S.headerClassName}>
+        <MarketProductsBackButton />
+        <MobileHeader.Title>전단보기</MobileHeader.Title>
+      </MobileHeader>
+
+      <div className={S.contentClassName}>
+        <MarketOverviewSection
+          market={market}
+          onOpenCallModal={() => setIsCallModalOpen(true)}
+          shareUrl={shareUrl}
+        />
+
+        <PopularProductsSection marketId={marketId} products={market.top3} />
+
+        <TodaySpecialProductsSection
+          isExpanded={isTodaySpecialExpanded}
+          marketId={marketId}
+          onToggleExpanded={() => setIsTodaySpecialExpanded((previousValue) => !previousValue)}
+          products={visibleTodaySpecialProducts}
+          totalCount={todaySpecial.totalCount}
+        />
+
+        <EventDiscountProductsSection
+          categories={eventDiscount.categories}
+          isCategoryExpanded={isCategoryExpanded}
+          marketId={marketId}
+          onSelectCategory={setSelectedCategoryId}
+          onToggleCategoryExpanded={() => setIsCategoryExpanded((previousValue) => !previousValue)}
+          products={eventDiscountProducts}
+          selectedCategoryId={selectedCategoryId}
+          visibleCategoryCount={DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT}
+        />
+      </div>
+
+      <MobileModal
+        confirmLabel='전화걸기'
+        description={market.isOpenNow ? '현재 영업중이에요.' : '현재 영업 시간이 아니에요.'}
+        onConfirm={handleConfirmCall}
+        onOpenChange={setIsCallModalOpen}
+        open={isCallModalOpen}
+        subText={market.marketPhone1}
+        title={`${market.name}에 전화할까요?`}
+      />
     </main>
   );
 };
