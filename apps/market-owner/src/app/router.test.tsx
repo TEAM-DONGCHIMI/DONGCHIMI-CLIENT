@@ -146,11 +146,24 @@ describe('marketOwnerRoutes', () => {
 
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '콩나물 100g');
-    await user.click(screen.getByRole('button', { name: /풀무원 콩나물 100g/ }));
+    await user.click(await screen.findByRole('button', { name: /풀무원 콩나물 100g/ }));
 
     expect(
       await screen.findByRole('heading', { name: '오늘의 특가 상품 수정' }),
     ).toBeInTheDocument();
+  });
+
+  it('shows pending feedback before debounced search results are applied', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '풀');
+
+    expect(screen.getByRole('status')).toHaveTextContent('검색 중...');
+    expect(screen.queryByText('검색 결과가 없어요. 상품을 등록해보세요.')).not.toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /풀무원 두부 1팩/ })).toBeInTheDocument();
   });
 
   it('shows an error toast when selected search product info cannot be loaded', async () => {
@@ -160,7 +173,7 @@ describe('marketOwnerRoutes', () => {
 
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '두부 1팩');
-    await user.click(screen.getByRole('button', { name: /풀무원 두부 1팩/ }));
+    await user.click(await screen.findByRole('button', { name: /풀무원 두부 1팩/ }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('상품 정보를 불러오지 못했어요.');
     expect(screen.getByRole('heading', { name: '동치미 홈' })).toBeInTheDocument();

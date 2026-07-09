@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { ProductSearchPanel } from '@/shared/components';
+import { useDebouncedValue } from '@/shared/hooks';
 
 import { getHomeSearchProductsByQuery, homeSearchProducts } from '../../fixtures';
 
@@ -16,10 +17,16 @@ const getSearchProductById = (productId: string) => {
 export const HomeSearchPanel = ({ onProductLoadError }: HomeSearchPanelProps) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const searchProducts = useMemo(() => getHomeSearchProductsByQuery(query), [query]);
+  const debouncedQuery = useDebouncedValue(query);
+  const isSearchPending = query.trim().length > 0 && query !== debouncedQuery;
+  const searchProducts = useMemo(
+    () => getHomeSearchProductsByQuery(debouncedQuery),
+    [debouncedQuery],
+  );
 
   return (
     <ProductSearchPanel
+      isPending={isSearchPending}
       items={searchProducts}
       onQueryChange={(nextQuery) => setQuery(nextQuery)}
       onSelectProduct={(item) => {

@@ -130,7 +130,7 @@ HomePage(main)
 
 ## States
 
-- loading: 검색 loading은 이번 범위에서 다루지 않습니다.
+- loading: 검색 결과 갱신 대기 중에는 dropdown empty message 대신 pending message를 표시합니다.
 - empty: fixture 기준 기본 상품 목록을 노출하고, 검색 결과가 없으면 검색 dropdown에 empty message를 표시합니다.
 - error: 알 수 없는 route는 router fallback에서 처리합니다. 검색 결과에서 상품을 선택했지만 상품 정보를
   불러오지 못하면 상단 error toast로 `상품 정보를 불러오지 못했어요.`를 표시합니다.
@@ -166,6 +166,8 @@ HomePage(main)
 - toast는 홈 본문 스크롤 위치와 무관하게 viewport 상단 20px 아래에 표시합니다.
 - 상품 검색은 한 글자 이상 입력 시 dropdown을 열고, 검색창과 dropdown 사이 gap은 4px입니다.
 - 검색 결과의 필터링/정렬은 API 응답 순서를 따르고, `ProductSearchPanel`은 전달받은 순서를 유지합니다.
+- 검색 결과 조회는 호출부에서 debounce된 query를 기준으로 처리해 불필요한 네트워크 요청을 줄입니다.
+- debounce 반영 전에는 `ProductSearchPanel`에 pending 상태를 전달해 결과 없음 message가 잘못 깜빡이지 않게 합니다.
 - 검색 dropdown은 4개 기본 노출, 4개 초과 시 scroll 영역으로 전환하며 최대 10개까지만 렌더링합니다.
 - 검색 dropdown 외부 영역을 클릭하면 dropdown을 닫습니다.
 - 검색 결과 item을 클릭하면 상품 정보 load 가능 여부를 확인합니다.
