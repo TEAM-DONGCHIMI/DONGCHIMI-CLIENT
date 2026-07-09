@@ -12,11 +12,6 @@ export const cardClassName = style({
   borderRadius: '2.4rem',
   backgroundColor: atomic.common[0],
   boxShadow: shadow.normal.medium,
-  '@media': {
-    'screen and (max-width: 640px)': {
-      padding: '3.2rem 2rem',
-    },
-  },
 });
 
 export const headerClassName = style({
@@ -113,9 +108,7 @@ export const actionRowClassName = style({
 export const actionButtonClassName = style({
   ...typography['body-3-semibold'],
   width: '12rem',
-  maxWidth: '100%',
   minWidth: '12rem',
-  flex: '0 1 12rem',
   height: '4.4rem',
   padding: '1.2rem 2.4rem',
   letterSpacing: 0,
