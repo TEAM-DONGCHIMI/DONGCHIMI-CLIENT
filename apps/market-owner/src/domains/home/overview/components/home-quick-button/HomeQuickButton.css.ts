@@ -3,7 +3,7 @@ import { globalStyle, style } from '@vanilla-extract/css';
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
-const hoverOverlayColor = 'rgba(51, 61, 75, 0.25)';
+const hoverOverlayColor = `color-mix(in srgb, ${atomic.neutral[80]} 25%, transparent)`;
 
 export const buttonClassName = style({
   appearance: 'none',
