@@ -31,7 +31,8 @@ Use this skill before refactoring existing code. Evaluate necessity before chang
 
 - Follow `AGENTS.md`.
 - Apply `docs/code-quality/index.md`.
-- Apply `docs/code-quality/frontend-fundamentals.md` when evaluating React component, hook, API, form, or page structure.
+- Apply `docs/code-quality/frontend-fundamentals.md` and the individual criterion docs when evaluating React component, hook, API, form, or page structure.
+- Apply `docs/code-quality/frontend-logic-composition.md` when component logic, custom hook extraction, orchestration hook, or common hook promotion is involved.
 - Avoid unnecessary splitting.
 - Do not refactor unrelated code.
 - Prefer local duplication over premature shared abstraction.
@@ -44,5 +45,8 @@ Use this skill before refactoring existing code. Evaluate necessity before chang
 - Is the code only long, or does it actually mix responsibilities?
 - Should the code stay page-local, app-shared, or package-shared?
 - Does extraction improve usage-site readability?
+- Is extraction creating a single-responsibility hook, or just moving component complexity into a god hook?
+- Would multiple hook imports stay readable, or should a page/section orchestration hook compose them?
+- Is a proposed shared hook justified by identical change reasons, not just similar code?
 - Does the refactor change route, query, form, or API behavior?
 - Which commands or manual checks prove behavior stayed the same?

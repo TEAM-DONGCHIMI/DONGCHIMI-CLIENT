@@ -19,6 +19,7 @@
   "dependencies": {
     "@hookform/resolvers": "catalog:",
     "@dongchimi/design-system": "workspace:*",
+    "@dongchimi/shared": "workspace:*",
     "@sentry/react": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@vanilla-extract/css": "catalog:",

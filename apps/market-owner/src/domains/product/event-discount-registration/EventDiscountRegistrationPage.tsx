@@ -1,12 +1,18 @@
+import { useState } from 'react';
+
 import { DesktopHeader } from '@/shared/components';
 
-import { fileAnalysisConfirmFixture } from './fixtures';
-import { FileAnalysisConfirmSection } from './sections';
+import { fileAnalysisConfirmFixture, fileAnalysisProgressFixtures } from './fixtures';
+import { FileAnalysisConfirmSection, FileAnalysisProgressSection } from './sections';
 import * as S from './EventDiscountRegistrationPage.css';
 
 const noop = () => undefined;
+type FileAnalysisViewTypes = 'confirm' | 'progress';
 
 export const EventDiscountRegistrationPage = () => {
+  const [fileAnalysisView, setFileAnalysisView] = useState<FileAnalysisViewTypes>('confirm');
+  const shouldShowProgress = fileAnalysisView === 'progress';
+
   return (
     <main className={S.pageRootClassName}>
       <DesktopHeader
@@ -16,12 +22,20 @@ export const EventDiscountRegistrationPage = () => {
         showSearchBar={false}
       />
 
-      <FileAnalysisConfirmSection
-        analysisItems={fileAnalysisConfirmFixture.analysisItems}
-        fileName={fileAnalysisConfirmFixture.fileName}
-        onCancel={noop}
-        onStartAnalysis={noop}
-      />
+      {shouldShowProgress ? (
+        <FileAnalysisProgressSection
+          onCancel={() => setFileAnalysisView('confirm')}
+          progressPercentage={fileAnalysisProgressFixtures.processing.progressPercentage}
+          steps={fileAnalysisProgressFixtures.processing.steps}
+        />
+      ) : (
+        <FileAnalysisConfirmSection
+          analysisItems={fileAnalysisConfirmFixture.analysisItems}
+          fileName={fileAnalysisConfirmFixture.fileName}
+          onCancel={noop}
+          onStartAnalysis={() => setFileAnalysisView('progress')}
+        />
+      )}
     </main>
   );
 };
