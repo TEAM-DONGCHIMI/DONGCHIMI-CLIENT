@@ -115,11 +115,7 @@ catalogs:
       specifier: ^19.2.0
       version: 19.2.7
     react-hook-form:
-<<<<<<< HEAD
-      specifier: ^7.66.0
-=======
       specifier: ^7.81.0
->>>>>>> 15b899cec8e6f6d0c53c74c5fe6d2b8dce6e512d
       version: 7.81.0
     react-router:
       specifier: ^7.18.0
@@ -213,6 +209,9 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.7(react@19.2.7)
+      react-kakao-maps-sdk:
+        specifier: ^1.2.1
+        version: 1.2.1(kakao.maps.d.ts@0.1.40)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -289,12 +288,12 @@ importers:
       '@dongchimi/design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
-      '@hookform/resolvers':
-        specifier: 'catalog:'
-        version: 5.4.0(react-hook-form@7.81.0(react@19.2.7))
       '@dongchimi/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@hookform/resolvers':
+        specifier: 'catalog:'
+        version: 5.4.0(react-hook-form@7.81.0(react@19.2.7))
       '@sentry/react':
         specifier: 'catalog:'
         version: 10.60.0(react@19.2.7)
@@ -4677,6 +4676,9 @@ packages:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
     engines: {node: '>=4.0'}
 
+  kakao.maps.d.ts@0.1.40:
+    resolution: {integrity: sha512-nX69MB1ok04epe3OqS+/tEeWBbU31GSQbvDPJmQRRltzzqn6t4jBsO5v1nzalUjCKzwcH2CptOc767NZ7Hbu3g==}
+
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
@@ -5438,6 +5440,13 @@ packages:
 
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
+
+  react-kakao-maps-sdk@1.2.1:
+    resolution: {integrity: sha512-qvdt+82D/MxTxmgF9tXaqa6eNqMUiFOeEdn+PyU0u9EHoxeD9WMJeHkum/GWrbP62MR0qWPtZ/G4iM9f2/1TPQ==}
+    peerDependencies:
+      kakao.maps.d.ts: ^0.1.40
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   react-router@7.18.0:
     resolution: {integrity: sha512-pTTGt8J+ji1NOmYnjzT+bAJy/1zD+Jp4ziO6cL7T3ZLvXKtusO7BpFqlRXitqpcPVqllsIXFHRMt+2/k3Xn6HQ==}
@@ -10684,6 +10693,8 @@ snapshots:
       object.assign: 4.1.7
       object.values: 1.2.1
 
+  kakao.maps.d.ts@0.1.40: {}
+
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
@@ -11520,6 +11531,14 @@ snapshots:
   react-is@16.13.1: {}
 
   react-is@17.0.2: {}
+
+  react-kakao-maps-sdk@1.2.1(kakao.maps.d.ts@0.1.40)(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      kakao.maps.d.ts: 0.1.40
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+      use-sync-external-store: 1.6.0(react@19.2.7)
 
   react-router@7.18.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
