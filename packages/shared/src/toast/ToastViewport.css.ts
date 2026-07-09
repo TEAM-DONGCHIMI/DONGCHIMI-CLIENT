@@ -6,7 +6,7 @@ const toastEnterAnimationDurationMs = 160;
 
 export const toastExitAnimationDurationMs = 180;
 
-const toastEnter = keyframes({
+const toastEnterFromTop = keyframes({
   from: {
     opacity: 0,
     transform: 'translateY(-0.8rem)',
@@ -17,7 +17,18 @@ const toastEnter = keyframes({
   },
 });
 
-const toastExit = keyframes({
+const toastEnterFromBottom = keyframes({
+  from: {
+    opacity: 0,
+    transform: 'translateY(0.8rem)',
+  },
+  to: {
+    opacity: 1,
+    transform: 'translateY(0)',
+  },
+});
+
+const toastExitToTop = keyframes({
   from: {
     opacity: 1,
     transform: 'translateY(0)',
@@ -25,6 +36,17 @@ const toastExit = keyframes({
   to: {
     opacity: 0,
     transform: 'translateY(-0.8rem)',
+  },
+});
+
+const toastExitToBottom = keyframes({
+  from: {
+    opacity: 1,
+    transform: 'translateY(0)',
+  },
+  to: {
+    opacity: 0,
+    transform: 'translateY(0.8rem)',
   },
 });
 
@@ -80,17 +102,39 @@ export const toastViewportItemClassName = style({
   pointerEvents: 'auto',
 });
 
-export const toastViewportItemPhaseClassNameMap = styleVariants({
+const topToastViewportItemPhaseClassNameMap = styleVariants({
   dismissing: [
     toastViewportItemClassName,
     {
-      animation: `${toastExit} ${toastExitAnimationDurationMs}ms ease-in forwards`,
+      animation: `${toastExitToTop} ${toastExitAnimationDurationMs}ms ease-in forwards`,
     },
   ],
   visible: [
     toastViewportItemClassName,
     {
-      animation: `${toastEnter} ${toastEnterAnimationDurationMs}ms ease-out`,
+      animation: `${toastEnterFromTop} ${toastEnterAnimationDurationMs}ms ease-out`,
     },
   ],
 });
+
+const bottomToastViewportItemPhaseClassNameMap = styleVariants({
+  dismissing: [
+    toastViewportItemClassName,
+    {
+      animation: `${toastExitToBottom} ${toastExitAnimationDurationMs}ms ease-in forwards`,
+    },
+  ],
+  visible: [
+    toastViewportItemClassName,
+    {
+      animation: `${toastEnterFromBottom} ${toastEnterAnimationDurationMs}ms ease-out`,
+    },
+  ],
+});
+
+export const toastViewportItemPhaseClassNameMap = {
+  'bottom-center': bottomToastViewportItemPhaseClassNameMap,
+  'bottom-right': bottomToastViewportItemPhaseClassNameMap,
+  'top-center': topToastViewportItemPhaseClassNameMap,
+  'top-right': topToastViewportItemPhaseClassNameMap,
+} as const;

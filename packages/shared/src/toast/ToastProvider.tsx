@@ -141,7 +141,11 @@ const toastReducer = (toasts: ToastEntry[], action: ToastActionTypes) => {
     return toasts.filter(({ id }) => id !== action.id);
   }
 
-  return [];
+  if (action.type === 'clear') {
+    return [];
+  }
+
+  return toasts;
 };
 
 const getSafeMaxVisibleCount = (maxVisibleCount: number) => {
@@ -201,10 +205,11 @@ const getPortalContainer = () => {
 interface ToastViewportItemProps {
   onDismiss: (id: ToastIdTypes) => void;
   onRemove: (id: ToastIdTypes) => void;
+  placement: ToastPlacementTypes;
   toast: ToastEntry;
 }
 
-const ToastViewportItem = ({ onDismiss, onRemove, toast }: ToastViewportItemProps) => {
+const ToastViewportItem = ({ onDismiss, onRemove, placement, toast }: ToastViewportItemProps) => {
   useEffect(() => {
     if (toast.durationMs === null || toast.phase === 'dismissing') {
       return;
@@ -234,7 +239,10 @@ const ToastViewportItem = ({ onDismiss, onRemove, toast }: ToastViewportItemProp
   }, [onRemove, toast.id, toast.phase]);
 
   return (
-    <div className={S.toastViewportItemPhaseClassNameMap[toast.phase]} data-toast-id={toast.id}>
+    <div
+      className={S.toastViewportItemPhaseClassNameMap[placement][toast.phase]}
+      data-toast-id={toast.id}
+    >
       <Toast icon={toast.icon} status={toast.status}>
         {toast.message}
       </Toast>
@@ -339,6 +347,7 @@ export const ToastProvider = ({
                 key={toast.id}
                 onDismiss={dismiss}
                 onRemove={remove}
+                placement={placement}
                 toast={toast}
               />
             ))}

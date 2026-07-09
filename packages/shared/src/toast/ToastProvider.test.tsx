@@ -58,6 +58,41 @@ const MultipleToastLauncher = () => {
   );
 };
 
+const StableIdToastLauncher = () => {
+  const toast = useToast();
+
+  const openToasts = () => {
+    toast.completed('교체 전 토스트', { durationMs: null, id: 'stable-toast' });
+    toast.completed('교체 후 토스트', { durationMs: null, id: 'stable-toast' });
+  };
+
+  return (
+    <button onClick={openToasts} type='button'>
+      동일 id 토스트 열기
+    </button>
+  );
+};
+
+const ClearableToastLauncher = () => {
+  const toast = useToast();
+
+  const openToasts = () => {
+    toast.completed('첫 번째 삭제 대상 토스트', { durationMs: null });
+    toast.error('두 번째 삭제 대상 토스트', { durationMs: null });
+  };
+
+  return (
+    <>
+      <button onClick={openToasts} type='button'>
+        삭제 대상 토스트 열기
+      </button>
+      <button onClick={() => toast.clear()} type='button'>
+        토스트 모두 지우기
+      </button>
+    </>
+  );
+};
+
 const TrimmedToastLauncher = () => {
   const toast = useToast();
 
@@ -163,6 +198,38 @@ describe('ToastProvider', () => {
 
     expect(screen.queryByText('첫 번째 토스트')).not.toBeInTheDocument();
     expect(screen.getByText('두 번째 토스트')).toBeInTheDocument();
+  });
+
+  it('replaces toast with the same stable id', () => {
+    render(
+      <ToastProvider>
+        <StableIdToastLauncher />
+      </ToastProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '동일 id 토스트 열기' }));
+
+    expect(screen.queryByText('교체 전 토스트')).not.toBeInTheDocument();
+    expect(screen.getByText('교체 후 토스트')).toBeInTheDocument();
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+  });
+
+  it('clears all toasts', () => {
+    render(
+      <ToastProvider>
+        <ClearableToastLauncher />
+      </ToastProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '삭제 대상 토스트 열기' }));
+
+    expect(screen.getByText('첫 번째 삭제 대상 토스트')).toBeInTheDocument();
+    expect(screen.getByText('두 번째 삭제 대상 토스트')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '토스트 모두 지우기' }));
+
+    expect(screen.queryByText('첫 번째 삭제 대상 토스트')).not.toBeInTheDocument();
+    expect(screen.queryByText('두 번째 삭제 대상 토스트')).not.toBeInTheDocument();
   });
 
   it('removes excess toast from state when visible count is exceeded', () => {
