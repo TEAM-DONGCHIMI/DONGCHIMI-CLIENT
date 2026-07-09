@@ -144,26 +144,29 @@ export const MarketInformationRegistrationPage = () => {
                 />
                 <div className={S.fieldPairGridClassName}>
                   <BusinessOperationSection
-                    additionalBusinessDay={form.additionalBusinessDay}
-                    additionalBusinessTime={form.additionalBusinessTime}
-                    additionalBusinessOperationErrorMessage={
-                      errors.additionalBusinessTime?.message ??
-                      errors.additionalBusinessDay?.message
-                    }
-                    additionalBusinessTimeField={register('additionalBusinessTime')}
-                    businessDay={form.businessDay}
-                    businessTime={form.businessTime}
-                    businessOperationErrorMessage={
-                      errors.businessTime?.message ?? errors.businessDay?.message
-                    }
-                    businessTimeField={register('businessTime')}
-                    holiday={form.holiday}
-                    onAdditionalBusinessDayChange={handleAdditionalBusinessDayChange}
-                    onAdditionalBusinessTimeChange={handleFormattedInputChange}
-                    onAdditionalBusinessTimeRemove={handleAdditionalBusinessTimeRemove}
-                    onBusinessDayChange={handleBusinessDayChange}
-                    onHolidayChange={handleHolidayChange}
-                    onBusinessTimeChange={handleFormattedInputChange}
+                    additionalBusinessHours={{
+                      day: form.additionalBusinessDay,
+                      errorMessage:
+                        errors.additionalBusinessTime?.message ??
+                        errors.additionalBusinessDay?.message,
+                      onDayChange: handleAdditionalBusinessDayChange,
+                      onRemove: handleAdditionalBusinessTimeRemove,
+                      onTimeChange: handleFormattedInputChange,
+                      time: form.additionalBusinessTime,
+                      timeField: register('additionalBusinessTime'),
+                    }}
+                    businessHours={{
+                      day: form.businessDay,
+                      errorMessage: errors.businessTime?.message ?? errors.businessDay?.message,
+                      onDayChange: handleBusinessDayChange,
+                      onTimeChange: handleFormattedInputChange,
+                      time: form.businessTime,
+                      timeField: register('businessTime'),
+                    }}
+                    holidaySelection={{
+                      onChange: handleHolidayChange,
+                      value: form.holiday,
+                    }}
                   />
                   <ContactSection
                     marketPhone={form.marketPhone}

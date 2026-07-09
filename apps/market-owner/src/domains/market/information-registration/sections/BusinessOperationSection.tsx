@@ -27,22 +27,28 @@ const getBusinessDaysDisplayLabel = (businessDays: string[]) => {
   return businessDays.map(getBusinessDayDisplayLabel).join(', ');
 };
 
+interface BusinessHoursProps<TFieldName extends 'businessTime' | 'additionalBusinessTime'> {
+  day: string;
+  time: string;
+  errorMessage?: string;
+  timeField: UseFormRegisterReturn<TFieldName>;
+  onDayChange: (businessDay: string) => void;
+  onTimeChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+interface AdditionalBusinessHoursProps extends BusinessHoursProps<'additionalBusinessTime'> {
+  onRemove: () => void;
+}
+
+interface HolidaySelectionProps {
+  value: string;
+  onChange: (holiday: string) => void;
+}
+
 export interface BusinessOperationSectionProps {
-  additionalBusinessDay: string;
-  additionalBusinessTime: string;
-  additionalBusinessOperationErrorMessage?: string;
-  additionalBusinessTimeField: UseFormRegisterReturn<'additionalBusinessTime'>;
-  businessDay: string;
-  businessTime: string;
-  businessOperationErrorMessage?: string;
-  businessTimeField: UseFormRegisterReturn<'businessTime'>;
-  holiday: string;
-  onAdditionalBusinessDayChange: (businessDay: string) => void;
-  onAdditionalBusinessTimeChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onAdditionalBusinessTimeRemove: () => void;
-  onBusinessDayChange: (businessDay: string) => void;
-  onHolidayChange: (holiday: string) => void;
-  onBusinessTimeChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  additionalBusinessHours: AdditionalBusinessHoursProps;
+  businessHours: BusinessHoursProps<'businessTime'>;
+  holidaySelection: HolidaySelectionProps;
 }
 
 interface BusinessTimeErrorMessageProps {
@@ -60,22 +66,28 @@ const BusinessTimeErrorMessage = ({ message }: BusinessTimeErrorMessageProps) =>
 );
 
 export const BusinessOperationSection = ({
-  additionalBusinessDay,
-  additionalBusinessTime,
-  additionalBusinessOperationErrorMessage,
-  additionalBusinessTimeField,
-  businessDay,
-  businessTime,
-  businessOperationErrorMessage,
-  businessTimeField,
-  holiday,
-  onAdditionalBusinessDayChange,
-  onAdditionalBusinessTimeChange,
-  onAdditionalBusinessTimeRemove,
-  onBusinessDayChange,
-  onHolidayChange,
-  onBusinessTimeChange,
+  additionalBusinessHours,
+  businessHours,
+  holidaySelection,
 }: BusinessOperationSectionProps) => {
+  const {
+    day: businessDay,
+    errorMessage: businessOperationErrorMessage,
+    onDayChange: onBusinessDayChange,
+    onTimeChange: onBusinessTimeChange,
+    time: businessTime,
+    timeField: businessTimeField,
+  } = businessHours;
+  const {
+    day: additionalBusinessDay,
+    errorMessage: additionalBusinessOperationErrorMessage,
+    onDayChange: onAdditionalBusinessDayChange,
+    onRemove: onAdditionalBusinessTimeRemove,
+    onTimeChange: onAdditionalBusinessTimeChange,
+    time: additionalBusinessTime,
+    timeField: additionalBusinessTimeField,
+  } = additionalBusinessHours;
+  const { onChange: onHolidayChange, value: holiday } = holidaySelection;
   const [isBusinessDayMenuOpen, setIsBusinessDayMenuOpen] = useState(false);
   const [isHolidayDropdownOpen, setIsHolidayDropdownOpen] = useState(false);
   const [isAdditionalBusinessTimeVisible, setIsAdditionalBusinessTimeVisible] = useState(false);
@@ -137,6 +149,7 @@ export const BusinessOperationSection = ({
           <RequiredMark />
         </span>
         <div className={S.businessHourRowsClassName}>
+          {/* 기본 영업 시간 */}
           <div className={S.businessHourControlClassName}>
             <div className={S.dropdownFieldClassName}>
               <button
@@ -191,6 +204,7 @@ export const BusinessOperationSection = ({
           )}
           {shouldShowAdditionalBusinessTime && (
             <>
+              {/* 추가 영업 시간 */}
               <div className={S.businessHourControlClassName}>
                 <div className={S.dropdownFieldClassName}>
                   <button
@@ -256,6 +270,7 @@ export const BusinessOperationSection = ({
         </div>
       </div>
 
+      {/* 휴무일 선택 */}
       <div className={S.inlineFieldClassName}>
         <span className={S.inlineLabelClassName}>휴무일</span>
         <div className={S.dropdownFieldClassName}>
