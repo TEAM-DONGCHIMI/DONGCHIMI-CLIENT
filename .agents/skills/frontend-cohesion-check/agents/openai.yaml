@@ -1,0 +1,6 @@
+interface:
+  display_name: '프론트엔드 응집도 점검'
+  short_description: '함께 수정되는 코드와 파일 배치 점검'
+  default_prompt: '$frontend-cohesion-check로 현재 프론트엔드 diff의 응집도를 점검해줘.'
+policy:
+  allow_implicit_invocation: true
