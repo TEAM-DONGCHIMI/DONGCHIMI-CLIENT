@@ -18,7 +18,14 @@ export const rootClassName = style({
   borderBottomLeftRadius: '1.2rem',
   padding: '1.6rem 2.4rem',
   overflowX: 'auto',
+  scrollbarWidth: 'none',
+  msOverflowStyle: 'none',
   backgroundColor: atomic.common[0],
+  selectors: {
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
+  },
 });
 
 export const contentClassName = style({

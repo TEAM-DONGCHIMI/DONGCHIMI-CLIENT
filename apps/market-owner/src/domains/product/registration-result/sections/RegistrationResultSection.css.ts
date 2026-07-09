@@ -4,12 +4,15 @@ import { recipe } from '@vanilla-extract/recipes';
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
+const contentMaxWidth = '137.6rem';
+const tableColumnTemplate = '61fr 100fr 196fr 147fr 160fr 365fr 230fr 117fr';
 
 export const sectionClassName = style({
   boxSizing: 'border-box',
   display: 'flex',
   width: '100%',
   minHeight: 'calc(100vh - 6.4rem)',
+  alignItems: 'center',
   flexDirection: 'column',
   padding: '3.2rem 3.2rem 0',
   backgroundColor: atomic.neutral[5],
@@ -18,6 +21,7 @@ export const sectionClassName = style({
 export const headingContainerClassName = style({
   display: 'flex',
   width: '100%',
+  maxWidth: contentMaxWidth,
   minWidth: 0,
   flexDirection: 'column',
   gap: '0.4rem',
@@ -42,6 +46,7 @@ export const requiredMarkClassName = style({
 export const tableContainerClassName = style({
   display: 'flex',
   width: '100%',
+  maxWidth: contentMaxWidth,
   minWidth: 0,
   flexDirection: 'column',
   marginTop: '3.2rem',
@@ -51,19 +56,26 @@ export const tableScrollClassName = style({
   width: '100%',
   minWidth: 0,
   overflowX: 'auto',
-  scrollbarWidth: 'thin',
+  scrollbarWidth: 'none',
+  msOverflowStyle: 'none',
+  selectors: {
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
+  },
 });
 
 export const tableClassName = style({
   width: '100%',
-  minWidth: '137.6rem',
+  maxWidth: contentMaxWidth,
+  minWidth: 0,
 });
 
 export const tableHeaderClassName = style({
   boxSizing: 'border-box',
   display: 'grid',
   height: '7.4rem',
-  gridTemplateColumns: '6.1rem 10rem 19.6rem 14.7rem 16rem 36.5rem 23rem 12.8rem',
+  gridTemplateColumns: tableColumnTemplate,
   alignItems: 'stretch',
   border: `1px solid ${atomic.neutral[30]}`,
   backgroundColor: atomic.common[0],
@@ -181,6 +193,17 @@ export const listClassName = style({
   minHeight: '39.2rem',
 });
 
+export const productRowClassName = style({
+  overflowX: 'hidden',
+  scrollbarWidth: 'none',
+  msOverflowStyle: 'none',
+  selectors: {
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
+  },
+});
+
 export const emptyStateClassName = style({
   ...typography['body-2-medium'],
   display: 'flex',
@@ -247,6 +270,7 @@ export const bottomBarClassName = style({
   boxSizing: 'border-box',
   display: 'flex',
   width: '100%',
+  maxWidth: contentMaxWidth,
   minWidth: 0,
   alignItems: 'center',
   justifyContent: 'space-between',

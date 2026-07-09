@@ -7,7 +7,7 @@ export const headerClassName = style({
   width: '100%',
   height: '5.4rem',
   minWidth: 0,
-  backgroundColor: atomic.common[0],
+  backgroundColor: atomic.neutral[5],
 });
 
 export const segmentNavigationClassName = style({

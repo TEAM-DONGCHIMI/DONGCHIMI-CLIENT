@@ -79,6 +79,29 @@ describe('RegistrationResultSection', () => {
     expect(screen.getByText('선택된 상품 (10)')).toBeInTheDocument();
   });
 
+  it('moves between pages and updates the visible row range', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    expect(screen.getByText('1-10')).toBeInTheDocument();
+    expect(screen.getAllByLabelText('상품 이미지 파일 선택')).toHaveLength(10);
+
+    await user.click(screen.getByRole('button', { name: '다음 페이지' }));
+
+    expect(screen.getByRole('button', { name: '2 페이지, 현재 페이지' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByText('11-12')).toBeInTheDocument();
+    expect(screen.getAllByLabelText('상품 이미지 파일 선택')).toHaveLength(2);
+    expect(screen.getByRole('button', { name: '다음 페이지' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: '이전 페이지' }));
+
+    expect(screen.getByText('1-10')).toBeInTheDocument();
+  });
+
   it('opens category filter dropdown from the sort action', async () => {
     const user = userEvent.setup();
 
