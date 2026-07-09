@@ -47,7 +47,7 @@ export const SignupPage = () => {
         </p>
       </Flex>
 
-      <form className={S.formClassName} onSubmit={handleSignupSubmit}>
+      <form className={S.formClassName} noValidate onSubmit={handleSignupSubmit}>
         <Flex className={S.fieldGroupClassName} direction='column'>
           <TextInput
             autoComplete='email'
