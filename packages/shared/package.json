@@ -26,7 +26,8 @@
   },
   "dependencies": {
     "@dongchimi/design-system": "workspace:*",
-    "@vanilla-extract/css": "catalog:"
+    "@vanilla-extract/css": "catalog:",
+    "zod": "catalog:"
   },
   "peerDependencies": {
     "react": "catalog:",
