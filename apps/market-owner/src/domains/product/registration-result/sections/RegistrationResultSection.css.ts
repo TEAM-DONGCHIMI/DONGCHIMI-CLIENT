@@ -60,12 +60,12 @@ export const tableClassName = style({
 });
 
 export const tableHeaderClassName = style({
+  boxSizing: 'border-box',
   display: 'grid',
-  minHeight: '7.4rem',
+  height: '7.4rem',
   gridTemplateColumns: '6.1rem 10rem 19.6rem 14.7rem 16rem 36.5rem 23rem 12.8rem',
   alignItems: 'stretch',
   border: `1px solid ${atomic.neutral[30]}`,
-  borderTopRightRadius: '1.2rem',
   backgroundColor: atomic.common[0],
 });
 
@@ -204,16 +204,16 @@ export const bottomBarClassName = style({
   alignItems: 'center',
   justifyContent: 'space-between',
   gap: '2rem',
-  marginTop: '2.2rem',
-  paddingTop: '2rem',
-  paddingBottom: '0.4rem',
+  marginTop: '3.2rem',
   backgroundColor: atomic.neutral[5],
 });
 
 export const statusNoticeRecipe = recipe({
   base: {
     ...typography['body-3-semibold'],
+    boxSizing: 'border-box',
     display: 'inline-flex',
+    height: '3.6rem',
     alignItems: 'center',
     gap: '0.8rem',
     margin: 0,

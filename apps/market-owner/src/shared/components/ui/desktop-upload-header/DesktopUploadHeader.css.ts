@@ -5,6 +5,7 @@ import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 export const headerClassName = style({
   width: '100%',
+  height: '5.4rem',
   minWidth: 0,
   backgroundColor: atomic.common[0],
 });
@@ -18,8 +19,10 @@ export const segmentNavigationClassName = style({
 
 export const segmentItemRecipe = recipe({
   base: {
+    boxSizing: 'border-box',
     display: 'inline-flex',
     width: '15rem',
+    height: '5.4rem',
     alignItems: 'flex-start',
     gap: '0.4rem',
     border: 0,

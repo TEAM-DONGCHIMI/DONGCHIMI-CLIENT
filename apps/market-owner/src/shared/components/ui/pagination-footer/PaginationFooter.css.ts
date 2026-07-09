@@ -3,8 +3,10 @@ import { style } from '@vanilla-extract/css';
 import { atomic, typography } from '@dongchimi/design-system/tokens';
 
 export const rootClassName = style({
+  boxSizing: 'border-box',
   display: 'flex',
   width: '100%',
+  height: '6.4rem',
   minWidth: 0,
   alignItems: 'center',
   justifyContent: 'space-between',

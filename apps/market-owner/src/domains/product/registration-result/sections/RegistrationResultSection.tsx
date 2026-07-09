@@ -191,16 +191,14 @@ const RegistrationProductRow = ({
       fields={[
         {
           id: `${product.id}-name`,
-          placeholder: '제품명을 입력하세요',
-          status: needsEdit && product.productName.length === 0 ? 'error' : 'default',
+          placeholder: '제품명을 입력하세요.',
           value: product.productName || undefined,
           width: '16rem',
         },
         {
           id: `${product.id}-price`,
           inputMode: 'numeric',
-          placeholder: '가격을 입력하세요',
-          status: needsEdit && product.price.length === 0 ? 'error' : 'default',
+          placeholder: '가격을 입력하세요.',
           unit: product.price.length > 0 ? '원' : undefined,
           value: product.price || undefined,
           width: '11.2rem',
@@ -215,14 +213,13 @@ const RegistrationProductRow = ({
         },
         {
           id: `${product.id}-promotion`,
-          placeholder: '홍보문구를 입력하세요',
+          placeholder: '홍보문구를 입력하세요.',
           value: product.promotionText || undefined,
           width: '31.9rem',
         },
         {
           id: `${product.id}-discount-period`,
           placeholder: 'YYYY-MM-DD ~  YYYY-MM-DD',
-          status: needsEdit && product.discountPeriod.length === 0 ? 'error' : 'default',
           value: product.discountPeriod || undefined,
           width: '19.8rem',
         },
