@@ -49,11 +49,6 @@ export const contentClassName = style({
   flexDirection: 'column',
   gap: '2.2rem',
   padding: '1.2rem 2.5rem 3rem',
-  '@media': {
-    'screen and (max-width: 480px)': {
-      padding: '1.2rem 2.5rem 3rem',
-    },
-  },
 });
 
 export const titleClassName = style({

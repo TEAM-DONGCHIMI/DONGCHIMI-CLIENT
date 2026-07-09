@@ -1,4 +1,4 @@
-import { useState, type ChangeEventHandler } from 'react';
+import { useState, type ChangeEventHandler, type ReactNode } from 'react';
 import { IcCircleCheckFill, IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
@@ -110,6 +110,37 @@ export const EventDiscountRegistrationPage = () => {
     });
   };
 
+  let registrationContent: ReactNode = null;
+
+  if (shouldShowMethod) {
+    registrationContent = (
+      <RegistrationMethodSection
+        fixture={registrationMethodFixture}
+        onDownloadExcelTemplate={handleDownloadExcelTemplate}
+        onOpenExcelUpload={handleOpenExcelUpload}
+        onOpenPosGuide={() => setIsPosGuideOpen(true)}
+        onUploadLeaflet={handleUploadLeaflet}
+      />
+    );
+  } else if (shouldShowProgress) {
+    registrationContent = (
+      <FileAnalysisProgressSection
+        onCancel={() => setRegistrationView('confirm')}
+        progressPercentage={fileAnalysisProgressFixtures.processing.progressPercentage}
+        steps={fileAnalysisProgressFixtures.processing.steps}
+      />
+    );
+  } else if (uploadedExcelFileName != null) {
+    registrationContent = (
+      <FileAnalysisConfirmSection
+        analysisItems={fileAnalysisConfirmFixture.analysisItems}
+        fileName={uploadedExcelFileName}
+        onCancel={() => setRegistrationView('method')}
+        onStartAnalysis={() => setRegistrationView('progress')}
+      />
+    );
+  }
+
   return (
     <main className={S.pageRootClassName}>
       <DesktopHeader
@@ -119,28 +150,7 @@ export const EventDiscountRegistrationPage = () => {
         showSearchBar={false}
       />
 
-      {shouldShowMethod ? (
-        <RegistrationMethodSection
-          fixture={registrationMethodFixture}
-          onDownloadExcelTemplate={handleDownloadExcelTemplate}
-          onOpenExcelUpload={handleOpenExcelUpload}
-          onOpenPosGuide={() => setIsPosGuideOpen(true)}
-          onUploadLeaflet={handleUploadLeaflet}
-        />
-      ) : shouldShowProgress ? (
-        <FileAnalysisProgressSection
-          onCancel={() => setRegistrationView('confirm')}
-          progressPercentage={fileAnalysisProgressFixtures.processing.progressPercentage}
-          steps={fileAnalysisProgressFixtures.processing.steps}
-        />
-      ) : uploadedExcelFileName != null ? (
-        <FileAnalysisConfirmSection
-          analysisItems={fileAnalysisConfirmFixture.analysisItems}
-          fileName={uploadedExcelFileName}
-          onCancel={() => setRegistrationView('method')}
-          onStartAnalysis={() => setRegistrationView('progress')}
-        />
-      ) : null}
+      {registrationContent}
 
       <UploadModal
         accept={EXCEL_UPLOAD_ACCEPT}
