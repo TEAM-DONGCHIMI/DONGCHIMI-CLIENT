@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-
-import { Toast } from '@dongchimi/design-system';
+import { useToast, type ToastStatusTypes } from '@dongchimi/shared/toast';
 import {
   IcCircleCheckFillSizeSmall,
   IcCircleExclamationFillColor0,
@@ -18,13 +16,7 @@ const SHARE_COPY_ERROR_MESSAGE = '링크를 복사하지 못했습니다. 다시
 const SEARCH_PRODUCT_LOAD_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요.';
 const QR_CODE_PREPARING_MESSAGE = 'QR코드 보기 기능은 준비 중입니다.';
 
-interface HomeToastTypes {
-  id: number;
-  message: string;
-  status: 'completed' | 'error';
-}
-
-const getHomeToastIcon = (status: HomeToastTypes['status']) => {
+const getHomeToastIcon = (status: ToastStatusTypes) => {
   if (status === 'error') {
     return <IcCircleExclamationFillColor0 className={S.homeToastIconClassName} />;
   }
@@ -33,60 +25,41 @@ const getHomeToastIcon = (status: HomeToastTypes['status']) => {
 };
 
 export const HomePage = () => {
-  const [homeToast, setHomeToast] = useState<HomeToastTypes | null>(null);
+  const toast = useToast();
 
-  useEffect(() => {
-    if (homeToast == null) {
+  const showHomeToast = (message: string, status: ToastStatusTypes) => {
+    const options = {
+      durationMs: HOME_TOAST_DISMISS_MS,
+      icon: getHomeToastIcon(status),
+    };
+
+    if (status === 'error') {
+      toast.error(message, options);
+
       return;
     }
 
-    const timeoutId = window.setTimeout(() => {
-      setHomeToast(null);
-    }, HOME_TOAST_DISMISS_MS);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [homeToast]);
+    toast.completed(message, options);
+  };
 
   const handleCopyLinkResult = (isCopied: boolean) => {
-    setHomeToast({
-      id: Date.now(),
-      message: isCopied ? SHARE_COPY_SUCCESS_MESSAGE : SHARE_COPY_ERROR_MESSAGE,
-      status: isCopied ? 'completed' : 'error',
-    });
+    showHomeToast(
+      isCopied ? SHARE_COPY_SUCCESS_MESSAGE : SHARE_COPY_ERROR_MESSAGE,
+      isCopied ? 'completed' : 'error',
+    );
   };
 
   const handleProductLoadError = () => {
-    setHomeToast({
-      id: Date.now(),
-      message: SEARCH_PRODUCT_LOAD_ERROR_MESSAGE,
-      status: 'error',
-    });
+    showHomeToast(SEARCH_PRODUCT_LOAD_ERROR_MESSAGE, 'error');
   };
 
   const handleQrCodePreparing = () => {
-    setHomeToast({
-      id: Date.now(),
-      message: QR_CODE_PREPARING_MESSAGE,
-      status: 'completed',
-    });
+    showHomeToast(QR_CODE_PREPARING_MESSAGE, 'completed');
   };
 
   return (
     <main className={S.pageRootClassName}>
       <h1 className={S.visuallyHiddenHeadingClassName}>동치미 홈</h1>
-      {homeToast && (
-        <div className={S.homeToastLayerClassName}>
-          <Toast
-            key={homeToast.id}
-            icon={getHomeToastIcon(homeToast.status)}
-            status={homeToast.status}
-          >
-            {homeToast.message}
-          </Toast>
-        </div>
-      )}
       <DesktopHeader
         className={S.pageHeaderClassName}
         homeLabel='동치미 홈'

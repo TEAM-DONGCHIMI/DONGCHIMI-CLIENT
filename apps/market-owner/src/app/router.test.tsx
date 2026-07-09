@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen } from '@/test';
+import { AppProviders } from './AppProviders';
 import { marketOwnerRoutes } from './router';
 
 const renderRoute = (path: string) => {
@@ -10,7 +11,11 @@ const renderRoute = (path: string) => {
     initialEntries: [path],
   });
 
-  return render(<RouterProvider router={router} />);
+  return render(
+    <AppProviders>
+      <RouterProvider router={router} />
+    </AppProviders>,
+  );
 };
 
 const mockClipboardWriteText = (writeText: (text: string) => Promise<void>) => {
@@ -110,6 +115,10 @@ describe('marketOwnerRoutes', () => {
 
     expect(writeText).toHaveBeenCalledWith('dongchimi.kr/mangwon-fresh');
     expect(await screen.findByRole('status')).toHaveTextContent('전단 링크가 복사되었습니다.');
+    expect(screen.getByRole('region', { name: '토스트 알림' })).toHaveStyle({
+      '--toast-viewport-center-offset-x': '145px',
+      '--toast-viewport-offset-y': '2rem',
+    });
   });
 
   it('shows an error toast when leaflet link copy fails', async () => {

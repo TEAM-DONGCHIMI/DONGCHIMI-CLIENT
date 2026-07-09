@@ -40,17 +40,6 @@ export const pageHeaderClassName = style({
   flexShrink: 0,
 });
 
-export const homeToastLayerClassName = style({
-  position: 'fixed',
-  zIndex: 20,
-  top: '2rem',
-  left: '50%',
-  display: 'flex',
-  maxWidth: 'calc(100% - 8rem)',
-  pointerEvents: 'none',
-  transform: 'translateX(-50%)',
-});
-
 export const homeToastIconClassName = style({
   display: 'block',
   width: '2rem',
