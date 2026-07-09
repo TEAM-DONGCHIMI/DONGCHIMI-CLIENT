@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest';
 import { EventDiscountRegistrationPage } from './EventDiscountRegistrationPage';
 import { registrationMethodFixture } from './fixtures';
 
+const posGuideDialogName = /POS에서 엑셀 파일을\s+이렇게 다운 받으시면 돼요\./;
+
 const renderEventDiscountRegistrationPage = () => {
   return render(
     <ToastProvider defaultDurationMs={null}>
@@ -93,11 +95,11 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'POS에서 엑셀 파일 받는 방법 보기' }));
 
-    expect(screen.getByRole('dialog', { name: 'POS 엑셀 다운로드 안내' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: posGuideDialogName })).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'POS 안내 닫기' }));
 
-    expect(screen.queryByRole('dialog', { name: 'POS 엑셀 다운로드 안내' })).toBeNull();
+    expect(screen.queryByRole('dialog', { name: posGuideDialogName })).toBeNull();
 
     await user.click(screen.getByRole('button', { name: '전단지 업로드' }));
 

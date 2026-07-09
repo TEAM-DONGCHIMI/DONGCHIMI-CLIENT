@@ -8,7 +8,7 @@ export const overlayClassName = style({
   zIndex: 20,
   display: 'flex',
   justifyContent: 'flex-end',
-  backgroundColor: 'rgba(17, 24, 39, 0.48)',
+  backgroundColor: semantic.overlay.dimmer,
 });
 
 export const panelClassName = style({

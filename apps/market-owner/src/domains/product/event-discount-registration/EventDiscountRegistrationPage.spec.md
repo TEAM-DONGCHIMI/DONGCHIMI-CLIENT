@@ -96,7 +96,7 @@
 - breadcrumb: current location nav and current page use `aria-current="page"`.
 - modal: `UploadModal` provides dialog title/description through the shared component.
 - toast: shared toast runtime renders design-system `Toast`, which supplies status/alert roles and live region defaults; page-supplied icons are decorative.
-- POS guide: the right panel is a labelled modal dialog (`role="dialog"`, `aria-modal="true"`) with Escape/backdrop close, focus move-to/return, Tab containment, and body scroll lock.
+- POS guide: the right panel is a modal dialog labelled by its visible title (`role="dialog"`, `aria-modal="true"`, `aria-labelledby`) with Escape/backdrop close, focus move-to/return, Tab containment, and body scroll lock.
 - analysis items: `AI 분석 항목` label and list semantics are preserved.
 - analysis progress: `AI 분석 진행 현황` ordered list and `AI 분석 진행률` progressbar semantics are preserved.
 

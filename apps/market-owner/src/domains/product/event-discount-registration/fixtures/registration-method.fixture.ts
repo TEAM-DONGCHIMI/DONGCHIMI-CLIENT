@@ -39,7 +39,6 @@ export const registrationMethodFixture = {
     title: 'POS에서 엑셀 파일을\n이렇게 다운 받으시면 돼요.',
   },
   toast: {
-    downloadError: '엑셀 양식 다운로드를 실패했습니다.',
     downloadSuccess: '엑셀 양식 다운로드 완료',
     leafletUnavailable: '아직 준비중인 기능이에요.',
   },

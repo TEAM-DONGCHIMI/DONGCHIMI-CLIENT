@@ -12,7 +12,7 @@ export interface PosExcelGuidePanelProps {
   onClose: () => void;
 }
 
-const PANEL_LABEL = 'POS 엑셀 다운로드 안내';
+const POS_GUIDE_TITLE_ID = 'pos-excel-guide-title';
 const GUIDE_IMAGE_SIZE_KEYS = ['large', 'medium', 'small'] as const;
 
 export const PosExcelGuidePanel = ({ open, posGuide, onClose }: PosExcelGuidePanelProps) => {
@@ -25,7 +25,7 @@ export const PosExcelGuidePanel = ({ open, posGuide, onClose }: PosExcelGuidePan
   return (
     <div className={S.overlayClassName} ref={overlayRef}>
       <div
-        aria-label={PANEL_LABEL}
+        aria-labelledby={POS_GUIDE_TITLE_ID}
         aria-modal='true'
         className={S.panelClassName}
         ref={dialogRef}
@@ -43,7 +43,9 @@ export const PosExcelGuidePanel = ({ open, posGuide, onClose }: PosExcelGuidePan
         </button>
 
         <div className={S.contentClassName}>
-          <h2 className={S.titleClassName}>{posGuide.title}</h2>
+          <h2 className={S.titleClassName} id={POS_GUIDE_TITLE_ID}>
+            {posGuide.title}
+          </h2>
 
           <div className={S.imageListClassName}>
             {posGuide.steps.map((step, index) => {

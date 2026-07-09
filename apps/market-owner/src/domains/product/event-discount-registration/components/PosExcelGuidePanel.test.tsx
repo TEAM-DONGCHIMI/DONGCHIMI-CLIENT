@@ -16,17 +16,19 @@ const renderPosExcelGuidePanel = (
   return render(<PosExcelGuidePanel {...defaultProps} {...props} />);
 };
 
+const posGuideDialogName = /POS에서 엑셀 파일을\s+이렇게 다운 받으시면 돼요\./;
+
 describe('PosExcelGuidePanel', () => {
   it('does not render when closed', () => {
     renderPosExcelGuidePanel({ open: false });
 
-    expect(screen.queryByRole('dialog', { name: 'POS 엑셀 다운로드 안내' })).toBeNull();
+    expect(screen.queryByRole('dialog', { name: posGuideDialogName })).toBeNull();
   });
 
   it('renders POS guide image placeholders as a modal dialog when open', () => {
     renderPosExcelGuidePanel();
 
-    const panel = screen.getByRole('dialog', { name: 'POS 엑셀 다운로드 안내' });
+    const panel = screen.getByRole('dialog', { name: posGuideDialogName });
 
     expect(panel).toHaveAttribute('aria-modal', 'true');
 
