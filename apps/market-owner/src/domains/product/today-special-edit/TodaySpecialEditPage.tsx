@@ -5,7 +5,12 @@ import { TodaySpecialEditProductSection } from './sections/TodaySpecialEditProdu
 export const TodaySpecialEditPage = () => {
   return (
     <ProductEditPageShell activeType='todaySpecial'>
-      {(selectedFilter) => <TodaySpecialEditProductSection selectedFilter={selectedFilter} />}
+      {(selectedFilter, selectedCategory) => (
+        <TodaySpecialEditProductSection
+          selectedCategory={selectedCategory}
+          selectedFilter={selectedFilter}
+        />
+      )}
     </ProductEditPageShell>
   );
 };

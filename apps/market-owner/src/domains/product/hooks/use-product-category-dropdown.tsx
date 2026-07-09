@@ -3,12 +3,11 @@ import { overlay, useOverlayData } from 'overlay-kit';
 
 import { type ProductCategoryTypes } from '../constants';
 
-const DEFAULT_CATEGORY = '정육·달걀' satisfies ProductCategoryTypes;
 const CATEGORY_DROPDOWN_OVERLAY_ID = 'product-category-dropdown';
 
 export const useProductCategoryDropdown = (categoryFilterRef: RefObject<HTMLDivElement | null>) => {
   const overlayData = useOverlayData();
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategoryTypes>(DEFAULT_CATEGORY);
+  const [selectedCategory, setSelectedCategory] = useState<ProductCategoryTypes | null>(null);
   const isCategoryDropdownOpen = Boolean(overlayData[CATEGORY_DROPDOWN_OVERLAY_ID]?.isOpen);
 
   const closeCategoryDropdown = useCallback(() => {
@@ -26,7 +25,7 @@ export const useProductCategoryDropdown = (categoryFilterRef: RefObject<HTMLDivE
   }, [closeCategoryDropdown, isCategoryDropdownOpen]);
 
   const selectCategory = useCallback(
-    (category: ProductCategoryTypes) => {
+    (category: ProductCategoryTypes | null) => {
       setSelectedCategory(category);
       closeCategoryDropdown();
     },

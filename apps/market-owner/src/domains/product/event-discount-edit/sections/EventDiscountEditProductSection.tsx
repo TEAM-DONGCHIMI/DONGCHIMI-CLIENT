@@ -4,16 +4,18 @@ import {
   ProductEditProductList,
 } from '@/domains/product/components/product-edit-product-list';
 import { type ProductEditFilterTypes } from '@/domains/product/components/product-edit-page-shell';
+import { type ProductCategoryTypes } from '@/domains/product/constants';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 import { eventDiscountEditProducts } from '../fixtures';
 
 interface EventDiscountEditProductSectionProps {
+  selectedCategory: ProductCategoryTypes | null;
   selectedFilter: ProductEditFilterTypes;
 }
 
-// 현재 선택한 filter 기준 변경
 export const EventDiscountEditProductSection = ({
+  selectedCategory,
   selectedFilter,
 }: EventDiscountEditProductSectionProps) => {
   const productGroups = createProductEditDisplayGroups({
@@ -23,6 +25,7 @@ export const EventDiscountEditProductSection = ({
         variant: 'eventDiscount',
       }),
     products: eventDiscountEditProducts,
+    selectedCategory,
     selectedFilter,
     supportsCategoryFilter: true,
   });

@@ -11,8 +11,14 @@ interface UseProductEditFilterParams {
   activeType: ProductEditTypeTypes;
 }
 
+const getDefaultSelectedFilter = (activeType: ProductEditTypeTypes): ProductEditFilterTypes => {
+  return activeType === 'eventDiscount' ? 'category' : 'registered';
+};
+
 export const useProductEditFilter = ({ activeType }: UseProductEditFilterParams) => {
-  const [selectedFilter, setSelectedFilter] = useState<ProductEditFilterTypes>('registered');
+  const [selectedFilter, setSelectedFilter] = useState<ProductEditFilterTypes>(() =>
+    getDefaultSelectedFilter(activeType),
+  );
   const categoryFilterRef = useRef<HTMLDivElement>(null);
   const showCategoryFilter = activeType === 'eventDiscount';
   const {
@@ -31,7 +37,7 @@ export const useProductEditFilter = ({ activeType }: UseProductEditFilterParams)
   };
 
   const selectCategoryFilter = (category: ProductCategoryTypes) => {
-    selectCategory(category);
+    selectCategory(category === '전체' ? null : category);
     setSelectedFilter('category');
   };
 

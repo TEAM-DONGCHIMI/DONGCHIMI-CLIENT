@@ -1,3 +1,4 @@
+import { productCategoryOptions, type ProductCategoryTypes } from '../../../constants';
 import {
   type ProductEditCardProps,
   type ProductEditGroupableProduct,
@@ -8,10 +9,12 @@ import {
 interface CreateProductEditDisplayGroupsParams<ProductTypes extends ProductEditGroupableProduct> {
   createCardProps: (product: ProductTypes) => ProductEditCardProps;
   products: readonly ProductTypes[];
+  selectedCategory: ProductCategoryTypes | null;
   selectedFilter: ProductEditGroupFilterTypes;
   supportsCategoryFilter: boolean;
 }
 
+const ALL_CATEGORY = '전체';
 const HIGH_VIEW_COUNT_GROUP_TITLE = '조회수 높은 순';
 
 const groupProductsBy = <ProductTypes extends ProductEditGroupableProduct>(
@@ -41,35 +44,72 @@ const createGroupedProductSections = <ProductTypes extends ProductEditGroupableP
   }));
 };
 
-// 선택된 pill filter 값에 맞게 상품 그룹 설정
-export const createProductEditDisplayGroups = <ProductTypes extends ProductEditGroupableProduct>({
-  createCardProps,
-  products,
-  selectedFilter,
-  supportsCategoryFilter,
-}: CreateProductEditDisplayGroupsParams<ProductTypes>): ProductEditProductGroup[] => {
-  if (selectedFilter === 'category' && supportsCategoryFilter) {
-    return createGroupedProductSections(
-      products,
-      (product) => product.categoryName,
-      createCardProps,
-    );
-  }
-
-  if (selectedFilter === 'views') {
-    return [
-      {
-        products: [...products]
-          .sort((previousProduct, nextProduct) => nextProduct.viewCount - previousProduct.viewCount)
-          .map(createCardProps),
-        title: HIGH_VIEW_COUNT_GROUP_TITLE,
-      },
-    ];
-  }
-
+const createRegisteredDateGroups = <ProductTypes extends ProductEditGroupableProduct>(
+  products: readonly ProductTypes[],
+  createCardProps: (product: ProductTypes) => ProductEditCardProps,
+) => {
   return createGroupedProductSections(
     products,
     (product) => product.registeredDateLabel,
     createCardProps,
   );
+};
+
+const createViewCountGroup = <ProductTypes extends ProductEditGroupableProduct>(
+  products: readonly ProductTypes[],
+  createCardProps: (product: ProductTypes) => ProductEditCardProps,
+) => {
+  return [
+    {
+      products: [...products]
+        .sort((previousProduct, nextProduct) => nextProduct.viewCount - previousProduct.viewCount)
+        .map(createCardProps),
+      title: HIGH_VIEW_COUNT_GROUP_TITLE,
+    },
+  ];
+};
+
+const createCategoryGroup = <ProductTypes extends ProductEditGroupableProduct>(
+  products: readonly ProductTypes[],
+  selectedCategory: ProductCategoryTypes | null,
+  createCardProps: (product: ProductTypes) => ProductEditCardProps,
+) => {
+  if (selectedCategory != null && selectedCategory !== ALL_CATEGORY) {
+    return [
+      {
+        products: products
+          .filter((product) => product.categoryName === selectedCategory)
+          .map(createCardProps),
+        title: selectedCategory,
+      },
+    ];
+  }
+
+  return productCategoryOptions
+    .filter((category) => category !== ALL_CATEGORY)
+    .map((category) => ({
+      products: products
+        .filter((product) => product.categoryName === category)
+        .map(createCardProps),
+      title: category,
+    }))
+    .filter(({ products: categoryProducts }) => categoryProducts.length > 0);
+};
+
+export const createProductEditDisplayGroups = <ProductTypes extends ProductEditGroupableProduct>({
+  createCardProps,
+  products,
+  selectedCategory,
+  selectedFilter,
+  supportsCategoryFilter,
+}: CreateProductEditDisplayGroupsParams<ProductTypes>): ProductEditProductGroup[] => {
+  if (selectedFilter === 'category' && supportsCategoryFilter) {
+    return createCategoryGroup(products, selectedCategory, createCardProps);
+  }
+
+  if (selectedFilter === 'views') {
+    return createViewCountGroup(products, createCardProps);
+  }
+
+  return createRegisteredDateGroups(products, createCardProps);
 };

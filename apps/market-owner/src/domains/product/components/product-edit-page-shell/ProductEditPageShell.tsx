@@ -12,6 +12,7 @@ import {
 
 import { DesktopHeader } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { type ProductCategoryTypes } from '../../constants';
 
 import {
   editPageCopyByType,
@@ -25,7 +26,12 @@ import { useProductEditFilter } from './hooks';
 
 export interface ProductEditPageShellProps {
   activeType: ProductEditTypeTypes;
-  children: ReactNode | ((selectedFilter: ProductEditFilterTypes) => ReactNode);
+  children:
+    | ReactNode
+    | ((
+        selectedFilter: ProductEditFilterTypes,
+        selectedCategory: ProductCategoryTypes | null,
+      ) => ReactNode);
 }
 export const ProductEditPageShell = ({ activeType, children }: ProductEditPageShellProps) => {
   const pageCopy = editPageCopyByType[activeType];
@@ -120,7 +126,7 @@ export const ProductEditPageShell = ({ activeType, children }: ProductEditPageSh
                   variant={isCategorySelected ? 'filled' : 'outlined-light'}
                   onClick={openCategoryDropdown}
                 >
-                  카테고리별
+                  {selectedCategory ?? '카테고리별'}
                 </PillButton>
 
                 {isCategoryDropdownOpen && (
@@ -151,7 +157,7 @@ export const ProductEditPageShell = ({ activeType, children }: ProductEditPageSh
       </div>
 
       <div className={S.contentClassName}>
-        {typeof children === 'function' ? children(selectedFilter) : children}
+        {typeof children === 'function' ? children(selectedFilter, selectedCategory) : children}
       </div>
     </main>
   );

@@ -5,7 +5,12 @@ import { EventDiscountEditProductSection } from './sections/EventDiscountEditPro
 export const EventDiscountEditPage = () => {
   return (
     <ProductEditPageShell activeType='eventDiscount'>
-      {(selectedFilter) => <EventDiscountEditProductSection selectedFilter={selectedFilter} />}
+      {(selectedFilter, selectedCategory) => (
+        <EventDiscountEditProductSection
+          selectedCategory={selectedCategory}
+          selectedFilter={selectedFilter}
+        />
+      )}
     </ProductEditPageShell>
   );
 };

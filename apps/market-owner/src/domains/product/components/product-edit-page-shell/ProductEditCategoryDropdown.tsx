@@ -4,7 +4,7 @@ import { productCategoryOptions, type ProductCategoryTypes } from '../../constan
 import * as S from './ProductEditPageShell.css';
 
 interface ProductEditCategoryDropdownProps {
-  selectedCategory: ProductCategoryTypes;
+  selectedCategory: ProductCategoryTypes | null;
   onSelect: (category: ProductCategoryTypes) => void;
 }
 
@@ -19,7 +19,9 @@ export const ProductEditCategoryDropdown = ({
           key={category}
           color='primary'
           onClick={() => onSelect(category)}
-          selected={category === selectedCategory}
+          selected={
+            category === selectedCategory || (category === '전체' && selectedCategory == null)
+          }
         >
           {category}
         </Dropdown.Item>

@@ -4,15 +4,18 @@ import {
   ProductEditProductList,
 } from '@/domains/product/components/product-edit-product-list';
 import { type ProductEditFilterTypes } from '@/domains/product/components/product-edit-page-shell';
+import { type ProductCategoryTypes } from '@/domains/product/constants';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 import { todaySpecialEditProducts } from '../fixtures';
 
 interface TodaySpecialEditProductSectionProps {
+  selectedCategory: ProductCategoryTypes | null;
   selectedFilter: ProductEditFilterTypes;
 }
 
 export const TodaySpecialEditProductSection = ({
+  selectedCategory,
   selectedFilter,
 }: TodaySpecialEditProductSectionProps) => {
   const productGroups = createProductEditDisplayGroups({
@@ -22,6 +25,7 @@ export const TodaySpecialEditProductSection = ({
         variant: 'todaySpecial',
       }),
     products: todaySpecialEditProducts,
+    selectedCategory,
     selectedFilter,
     supportsCategoryFilter: false,
   });
