@@ -90,6 +90,7 @@
 
 - [ ] `git diff --check`
 - [ ] Frontend Fundamentals self-check
+- [ ] Logic composition self-check
 - [ ] format/lint/typecheck/build when package scripts exist
 - [ ] browser route and viewport:
 

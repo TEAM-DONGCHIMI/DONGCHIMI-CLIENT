@@ -78,6 +78,7 @@ ComponentName
 
 - [ ] `git diff --check`
 - [ ] Frontend Fundamentals self-check
+- [ ] Logic composition self-check
 - [ ] visual states checked
 - [ ] accessibility checked
 

@@ -91,6 +91,7 @@ export const WithUnit: StoryTypes = {
 export const Error: StoryTypes = {
   args: {
     defaultValue: 'Invalid value',
+    errorMessage: '값을 입력해주세요.',
     status: 'error',
   },
 };
@@ -121,7 +122,12 @@ export const VariantMatrix: StoryTypes = {
             size={size}
             unit='원'
           />
-          <InlineField aria-label={`${size} error value`} size={size} status='error' />
+          <InlineField
+            aria-label={`${size} error value`}
+            errorMessage='값을 입력해주세요.'
+            size={size}
+            status='error'
+          />
           <InlineField
             aria-label={`${size} read only value`}
             readOnly

@@ -9,6 +9,8 @@ Detailed rules:
 - `docs/architecture/design-system-component-plan.md`
 - `docs/workflows/spec-writing.md`
 - `docs/code-quality/frontend-fundamentals.md`
+- `docs/code-quality/frontend-readability.md`, `docs/code-quality/frontend-predictability.md`, `docs/code-quality/frontend-cohesion.md`, `docs/code-quality/frontend-coupling.md`
+- `docs/code-quality/frontend-logic-composition.md`
 
 ## Flow
 
@@ -25,7 +27,7 @@ Detailed rules:
 6. 가장 작은 stable public API를 구현합니다.
 7. `ComponentName.stories.tsx`에 meaningful states와 variants를 추가합니다.
 8. explicit exports와 public prop types를 검토합니다.
-9. Frontend Fundamentals 기준으로 public API 예측 가능성, DOM semantics, ARIA/ref 책임, 조건 분기 복잡도, 응집도/결합도를 self-check합니다.
+9. Frontend Fundamentals 허브, 개별 기준 문서, logic composition 기준으로 public API 예측 가능성, DOM semantics, ARIA/ref 책임, 조건 분기 복잡도, 응집도/결합도를 self-check합니다.
 10. Storybook 설정이 추가되기 전까지는 package build/typecheck/lint로 정적 검증합니다.
 11. Storybook 또는 시각 검증이 연결된 뒤에는 story 검증을 추가합니다.
 12. 검증을 실행합니다.
