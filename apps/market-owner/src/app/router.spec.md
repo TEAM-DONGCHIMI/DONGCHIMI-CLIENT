@@ -3,9 +3,9 @@
 ## Metadata
 
 - Jira: DCMSM-15
-- Related Jira: DCMSM-17, DCMSM-24
+- Related Jira: DCMSM-17, DCMSM-20, DCMSM-24, DCMSM-26
 - Screen ID: APPJAM login/signup, 행사 할인 상품 등록 flow, sidebar/edit tabs screenshots
-- Route: `/`, `/login`, `/signup`, `/products/today-special/new`, `/products/event-discount/new`, `/products/today-special/edit`, `/products/event-discount/edit`, `/products/registration-result`, `/leaflets/share`, `*`
+- Route: `/`, `/login`, `/signup`, `/products/today-special/new`, `/products/event-discount/new`, `/products/today-special/edit`, `/products/event-discount/edit`, `/markets/information-registration`, `/products/registration-result`, `/leaflets/share`, `*`
 - Owner: FE
 - Status: Implemented
 
@@ -15,6 +15,7 @@
 실제 auth API와 상품 form/API가 붙기 전에도 각 주요 route가 브라우저에서 진입 가능해야 합니다.
 DCMSM-17부터 lazy route page는 앱 전용 `AsyncBoundary`를 통해 Suspense loading fallback과 render error fallback을 가집니다.
 DCMSM-24부터 sidebar layout은 viewport 높이에 고정되고, protected page 본문만 독립적으로 스크롤됩니다.
+DCMSM-26부터 마트 정보 등록 route는 protected no-sidebar layout에서 렌더링됩니다.
 
 ## Source Of Truth
 
@@ -31,6 +32,7 @@ DCMSM-24부터 sidebar layout은 viewport 높이에 고정되고, protected page
 - 홈, 상품 등록, 상품 수정 route는 protected route 아래 sidebar layout에서 렌더링하고 sidebar item으로 노출합니다.
 - `/leaflets/share` route는 protected sidebar layout을 유지하지만, 요구사항에서 제외되어 sidebar item으로 노출하지 않습니다.
 - Protected sidebar layout은 viewport 높이를 넘기지 않고 main content slot에만 세로 스크롤을 부여합니다.
+- 마트 정보 등록 route는 protected route이지만 no-sidebar layout에서 렌더링합니다.
 - 상품 등록 결과 확인 route는 protected route이지만 no-sidebar layout에서 렌더링합니다.
 - `ProtectedRoute`는 실제 auth API 전까지 fixture 통과 정책을 둡니다.
 - 수정하기 탭은 오늘의 특가와 행사 할인 각각 별도 route로 두어 sidebar active state와 같은 URL을 공유합니다.
@@ -42,7 +44,7 @@ DCMSM-24부터 sidebar layout은 viewport 높이에 고정되고, protected page
 - 실제 로그인/회원가입 API, token 저장, refresh 처리
 - 상품 등록/수정 form validation, submit mutation, cache invalidation
 - 각 page 본문 UI의 pixel-perfect 퍼블리싱
-- 등록 결과 데이터 연동
+- 등록 결과 데이터 API 연동
 - 새 design-system public component 구현
 - 서버 HTTP 404 응답 정책
 
@@ -52,7 +54,7 @@ DCMSM-24부터 sidebar layout은 viewport 높이에 고정되고, protected page
 - Protected sidebar layout: `/`, `/products/today-special/new`, `/products/event-discount/new`, `/products/today-special/edit`, `/products/event-discount/edit`, `/leaflets/share`
   - sidebar slot: viewport 높이에 고정되어 page content 스크롤과 함께 움직이지 않습니다.
   - content slot: page overflow를 소유하는 scroll container입니다.
-- Protected no-sidebar layout: `/products/registration-result`
+- Protected no-sidebar layout: `/markets/information-registration`, `/products/registration-result`
 - Fallback: `*`
 
 ## States
@@ -101,6 +103,7 @@ DCMSM-24부터 sidebar layout은 viewport 높이에 고정되고, protected page
 - [ ] browser route: `/products/event-discount/new`
 - [ ] browser route: `/products/today-special/edit`
 - [ ] browser route: `/products/event-discount/edit`
+- [ ] browser route: `/markets/information-registration`
 - [ ] browser route: `/products/registration-result`
 - [ ] browser route: `/leaflets/share`
 - [ ] sidebar does not render `오늘의 전단 공유` item
@@ -109,4 +112,4 @@ DCMSM-24부터 sidebar layout은 viewport 높이에 고정되고, protected page
 ## Open Questions
 
 - 실제 auth API가 붙으면 `ProtectedRoute`의 fixture 통과 정책을 제거하고 session/token 판단으로 교체합니다.
-- 등록 결과 확인 화면의 상세 CTA와 데이터는 후속 flow 이슈에서 확정합니다.
+- 상품 결과 등록 확인 화면 본문 UI는 DCMSM-20에서 route-local page로 구현하고, 실제 API/polling/최종 등록 완료 이동은 후속 flow 이슈에서 확정합니다.

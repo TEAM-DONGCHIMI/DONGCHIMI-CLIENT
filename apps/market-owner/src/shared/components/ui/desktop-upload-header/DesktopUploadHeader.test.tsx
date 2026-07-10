@@ -21,6 +21,9 @@ describe('DesktopUploadHeader', () => {
     );
     expect(screen.getByRole('button', { name: '등록 완료 112' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '수정 필요 12' })).toBeInTheDocument();
+    expect(screen.queryByText(/선택된 상품/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '정렬' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('searchbox', { name: '상품 검색' })).not.toBeInTheDocument();
   });
 
   it('calls onSegmentChange with selected segment value', async () => {

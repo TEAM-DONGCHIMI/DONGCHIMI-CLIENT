@@ -19,7 +19,7 @@
 ## Purpose
 
 행사 할인 상품 등록 flow에서 업로드가 완료된 등록 파일을 분석하기 전에 파일명과 AI 분석 항목을 확인하고, 분석 시작 후 AI 등록 파일 분석 진행 상태를 표시합니다.
-사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, 분석 결과 확인/임시 저장 화면은 DCMSM-20에서 이어서 구현합니다.
+사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, 분석 결과 확인 화면은 DCMSM-20의 no-sidebar 결과 확인 route에서 이어집니다.
 
 ## Ownership
 
@@ -29,11 +29,11 @@
 - Sidebar/protected layout responsibility stays in `src/app/layouts/SidebarLayout.tsx` and `src/app/routes/ProtectedRoute.tsx`.
 - `FileAnalysisConfirmSection` is page-local because the copy, file fixture, and next-step behavior are tied to this registration flow.
 - `FileAnalysisConfirmSection` renders the Figma `Section` card as the root `section` element instead of adding a separate layout wrapper.
-- `FileAnalysisProgressSection` is page-local because the current SSE payload shape and DCMSM-20 handoff route are not implemented yet.
+- `FileAnalysisProgressSection` is page-local because the current SSE payload shape and DCMSM-20 handoff timing are not implemented yet.
 - `ProcessingStep` is reused from market-owner shared UI for the ordered analysis step list.
 - App-shared `DesktopHeader` is reused for the breadcrumb header.
 - Design-system `Flex` is reused for internal layout and `Button` is reused for actions.
-- Analysis item chips are page-local static labels until repeated reuse is confirmed in DCMSM-20.
+- Analysis item chips are page-local static labels until repeated reuse is confirmed in a later API integration issue.
 
 ## Layout
 
@@ -66,8 +66,9 @@
 - `분석 시작`은 같은 route 안에서 DCMSM-19 분석 진행 화면으로 전환합니다.
 - 분석 진행 단계는 `파일 업로드`, `상품명 등록`, `판매가격 등록`, `상품 이미지 연결`, `카테고리 분류` 순서로 표시합니다.
 - 진행 중 step은 `aria-current="step"`을 적용합니다.
+- 진행률은 서버 SSE 연결 전까지 fixture의 `progressPercentage`를 사용하며, 실제 SSE 연결 시 동일 props에 서버 값을 주입합니다.
 - 진행률 표시는 반올림한 0~100 값을 사용하되, 완료 판단은 표시값이 아니라 원본 진행률 또는 step 완료 상태를 기준으로 합니다.
-- 분석 완료 후 `상품 등록 내용 확인` 화면으로 자동 이동하는 동작은 DCMSM-20 route가 구현된 뒤 연결합니다.
+- 분석 완료 후 `/products/registration-result` 화면으로 자동 이동하는 동작은 SSE 완료 이벤트와 route handoff가 확정된 뒤 연결합니다.
 - 행사 할인 상품 등록 form, 업로드 API, SSE transport, 분석 결과 확인/임시 저장, 최종 등록 완료 결과 UI는 이번 이슈 범위가 아닙니다.
 
 ## Accessibility
