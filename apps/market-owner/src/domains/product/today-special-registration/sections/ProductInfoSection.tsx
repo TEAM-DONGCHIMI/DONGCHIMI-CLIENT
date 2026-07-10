@@ -7,10 +7,11 @@ import {
   IcCircleExclamationSizeSmallColorNegative,
 } from '@dongchimi/design-system/icons';
 
+import { imageUploadInputAccept } from '@/shared/utils/image-upload.utils';
+
 import { ProductImageUploadField } from '../../components/product-image-upload-field';
 import { FieldGroup } from '../components/FieldGroup';
 import {
-  todaySpecialImageInputAccept,
   type TodaySpecialProductErrorMessageTypes,
   type TodaySpecialProductFormTypes,
 } from '../model';
@@ -53,7 +54,7 @@ export const ProductInfoSection = ({
 
       <div className={S.sectionBodyClassName}>
         <ProductImageUploadField
-          accept={todaySpecialImageInputAccept}
+          accept={imageUploadInputAccept}
           description={
             <>
               권장 비율 4:3 1200 x 900px 이상을 권장해요.

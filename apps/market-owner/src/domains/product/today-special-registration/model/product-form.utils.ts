@@ -1,11 +1,5 @@
 import type { TodaySpecialProductFormTypes } from './product-form.types';
 
-export {
-  imageUploadErrorMessages as todaySpecialImageUploadErrorMessages,
-  imageUploadInputAccept as todaySpecialImageInputAccept,
-  isValidImageUploadFile as isValidTodaySpecialImageFile,
-} from '@/shared/utils/image-upload.utils';
-
 // 입력 글자 수 제한
 export const todaySpecialProductNameMaxLength = 15;
 export const todaySpecialProductDescriptionMaxLength = 25;

@@ -1,6 +1,5 @@
-import { Dropdown } from '@dongchimi/design-system/components';
-
 import { productCategoryOptions, type ProductCategoryTypes } from '../../constants';
+import { ProductCategoryDropdown } from '../product-category-dropdown';
 import * as S from './ProductEditPageShell.css';
 
 interface ProductEditCategoryDropdownProps {
@@ -13,19 +12,15 @@ export const ProductEditCategoryDropdown = ({
   onSelect,
 }: ProductEditCategoryDropdownProps) => {
   return (
-    <Dropdown aria-label='카테고리 선택' className={S.dropdownMenuClassName} role='group'>
-      {productCategoryOptions.map((category) => (
-        <Dropdown.Item
-          key={category}
-          color='primary'
-          onClick={() => onSelect(category)}
-          selected={
-            category === selectedCategory || (category === '전체' && selectedCategory == null)
-          }
-        >
-          {category}
-        </Dropdown.Item>
-      ))}
-    </Dropdown>
+    <ProductCategoryDropdown
+      ariaLabel='카테고리 선택'
+      className={S.dropdownMenuClassName}
+      isSelected={(category) =>
+        category === selectedCategory || (category === '전체' && selectedCategory == null)
+      }
+      options={productCategoryOptions}
+      selectedCategory={selectedCategory}
+      onSelect={onSelect}
+    />
   );
 };

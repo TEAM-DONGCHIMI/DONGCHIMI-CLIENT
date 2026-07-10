@@ -12,3 +12,14 @@ export const productCategoryOptions = [
 ] as const;
 
 export type ProductCategoryTypes = (typeof productCategoryOptions)[number];
+export type ProductSelectableCategoryTypes = Exclude<ProductCategoryTypes, '전체'>;
+
+export const productSelectableCategoryOptions = productCategoryOptions.filter(
+  (category): category is ProductSelectableCategoryTypes => category !== '전체',
+);
+
+export const isProductSelectableCategory = (
+  categoryName: string,
+): categoryName is ProductSelectableCategoryTypes => {
+  return productSelectableCategoryOptions.includes(categoryName as ProductSelectableCategoryTypes);
+};
