@@ -67,7 +67,7 @@ export const methodCardClassName = style({
   padding: '3.6rem',
   borderRadius: '2.4rem',
   backgroundColor: atomic.common[0],
-  boxShadow: shadow.normal.medium,
+  boxShadow: shadow.normal.small,
   '@media': {
     'screen and (max-width: 768px)': {
       minHeight: 'auto',
@@ -142,7 +142,7 @@ export const secondaryActionButtonClassName = style({
 });
 
 export const guideLineButtonClassName = style({
-  ...typography['caption-1-medium'],
+  ...typography['body-3-semibold'],
   alignSelf: 'center',
   maxWidth: '100%',
   color: atomic.neutral[60],
@@ -152,6 +152,14 @@ export const guideLineButtonClassName = style({
   textDecoration: 'underline',
   textUnderlineOffset: '0.2rem',
   whiteSpace: 'normal',
+  selectors: {
+    '&:not(:disabled):hover': {
+      ...typography['body-3-semibold'],
+    },
+    '&:focus-visible': {
+      ...typography['body-3-semibold'],
+    },
+  },
 });
 
 export const supportGroupClassName = style({
