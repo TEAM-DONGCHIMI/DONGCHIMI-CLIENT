@@ -22,6 +22,7 @@ interface ProductEditPeriodModalProps {
 
 interface OpenProductEditPeriodModalParams {
   initialPeriod?: ProductEditPeriodValues;
+  onClose?: () => void;
   variant: ProductEditTypeTypes;
 }
 
@@ -148,16 +149,24 @@ export const ProductEditPeriodModal = ({
 
 export const openProductEditPeriodModal = ({
   initialPeriod,
+  onClose,
   variant,
 }: OpenProductEditPeriodModalParams) => {
   openProductEditOverlay({
-    render: ({ closeOverlay, isOpen }) => (
-      <ProductEditPeriodModal
-        initialPeriod={initialPeriod}
-        open={isOpen}
-        variant={variant}
-        onClose={closeOverlay}
-      />
-    ),
+    render: ({ closeOverlay, isOpen }) => {
+      const closePeriodModal = () => {
+        closeOverlay();
+        onClose?.();
+      };
+
+      return (
+        <ProductEditPeriodModal
+          initialPeriod={initialPeriod}
+          open={isOpen}
+          variant={variant}
+          onClose={closePeriodModal}
+        />
+      );
+    },
   });
 };

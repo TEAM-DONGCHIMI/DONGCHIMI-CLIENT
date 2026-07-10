@@ -8,7 +8,12 @@ import * as Content from '../ProductEditModalContent.css';
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 const categoryFieldWidth = '20.6rem';
 
-export const contentClassName = Content.contentClassName;
+export const contentClassName = style([
+  Content.contentClassName,
+  {
+    height: '81.2rem',
+  },
+]);
 export const containerClassName = Content.containerClassName;
 export const titleClassName = Content.titleClassName;
 
@@ -108,7 +113,7 @@ export const categoryTriggerClassName = style({
 
 export const categoryDropdownClassName = style({
   position: 'absolute',
-  top: '6.6rem',
+  top: 'calc(100% + 0.8rem)',
   right: 0,
   zIndex: 1,
   width: categoryFieldWidth,
