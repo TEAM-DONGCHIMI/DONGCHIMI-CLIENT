@@ -7,16 +7,39 @@ import { cn } from '@dongchimi/design-system/styles';
 import { SearchBar, type SearchBarProps } from '../search-bar';
 import * as S from './DesktopHeader.css';
 
-interface DesktopHeaderSearchProps {
+interface DesktopHeaderSearchBarProps {
   searchValue?: string;
   onSearch?: SearchBarProps['onSearch'];
   onSearchValueChange?: SearchBarProps['onValueChange'];
 }
 
-interface DesktopHeaderBaseProps extends DesktopHeaderSearchProps {
+type DesktopHeaderSearchProps =
+  | (DesktopHeaderSearchBarProps & {
+      searchSlot?: never;
+      showSearchBar?: true;
+    })
+  | {
+      searchSlot: ReactNode;
+      searchValue?: never;
+      onSearch?: never;
+      onSearchValueChange?: never;
+      showSearchBar?: true;
+    }
+  | {
+      searchSlot?: never;
+      searchValue?: never;
+      onSearch?: never;
+      onSearchValueChange?: never;
+      showSearchBar: false;
+    };
+
+type DesktopHeaderSearchRenderProps = DesktopHeaderSearchBarProps & {
+  searchSlot?: ReactNode;
+};
+
+type DesktopHeaderBaseProps = DesktopHeaderSearchProps & {
   className?: string;
-  showSearchBar?: boolean;
-}
+};
 
 interface DesktopHeaderDefaultProps {
   currentLabel: string;
@@ -38,13 +61,13 @@ interface DesktopHeaderLogoOnlyProps {
 export type DesktopHeaderProps = DesktopHeaderBaseProps &
   (DesktopHeaderDefaultProps | DesktopHeaderOnlyHomeProps | DesktopHeaderLogoOnlyProps);
 
-const searchIcon = <IcSearchSizeSmall />;
+const searchIcon = <IcSearchSizeSmall aria-hidden='true' className={S.searchIconClassName} />;
 
 const renderSearchBar = ({
   searchValue,
   onSearch,
   onSearchValueChange,
-}: DesktopHeaderSearchProps) => (
+}: DesktopHeaderSearchBarProps) => (
   <SearchBar
     aria-label='상품 검색'
     icon={searchIcon}
@@ -55,8 +78,18 @@ const renderSearchBar = ({
   />
 );
 
+const renderSearchArea = ({
+  searchSlot,
+  searchValue,
+  onSearch,
+  onSearchValueChange,
+}: DesktopHeaderSearchRenderProps) => {
+  return searchSlot ?? renderSearchBar({ searchValue, onSearch, onSearchValueChange });
+};
+
 export const DesktopHeader = ({
   className,
+  searchSlot,
   searchValue,
   showSearchBar = true,
   onSearch,
@@ -90,7 +123,7 @@ export const DesktopHeader = ({
 
         {showSearchBar && (
           <span className={S.logoSearchSlotClassName}>
-            {renderSearchBar({ searchValue, onSearch, onSearchValueChange })}
+            {renderSearchArea({ searchSlot, searchValue, onSearch, onSearchValueChange })}
           </span>
         )}
       </Flex>
@@ -113,7 +146,8 @@ export const DesktopHeader = ({
         </Flex>
       )}
 
-      {showSearchBar && renderSearchBar({ searchValue, onSearch, onSearchValueChange })}
+      {showSearchBar &&
+        renderSearchArea({ searchSlot, searchValue, onSearch, onSearchValueChange })}
     </Flex>
   );
 };

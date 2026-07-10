@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { render, screen, userEvent } from '../../../../test';
+import { render, screen, userEvent } from '@/test';
 import { DesktopHeader } from './DesktopHeader';
 
 describe('DesktopHeader', () => {
@@ -44,5 +44,18 @@ describe('DesktopHeader', () => {
     await user.keyboard('{Enter}');
 
     expect(handleSearch).toHaveBeenCalledWith('감자', expect.any(Object));
+  });
+
+  it('renders custom search slot when provided', () => {
+    render(
+      <DesktopHeader
+        currentLabel='홈'
+        parentLabel='동치미 점주 홈'
+        searchSlot={<div data-testid='product-search-panel'>상품 검색 패널</div>}
+      />,
+    );
+
+    expect(screen.getByTestId('product-search-panel')).toBeInTheDocument();
+    expect(screen.queryByRole('searchbox', { name: '상품 검색' })).not.toBeInTheDocument();
   });
 });

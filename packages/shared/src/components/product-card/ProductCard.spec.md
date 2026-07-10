@@ -118,8 +118,10 @@ ProductCard(section)
   - root width는 부모 container를 `100%`로 따릅니다.
   - Storybook 예시는 Figma 기준 폭을 최대값으로만 사용하고 viewport가 더 좁으면 함께 줄어듭니다.
   - product image `5.6rem`
+  - product item row height `5.6rem`. `today`와 `period` variant는 같은 row height를 유지합니다.
 - spacing:
   - card/header/list/footer spacing은 Figma 값을 rem으로 변환합니다.
+  - action footer는 고정 높이 카드에서 남은 세로 공간을 채우고 action을 중앙 정렬합니다.
 - color/token:
   - design-system token을 우선 사용합니다.
   - typography는 design-system `typography` token을 사용합니다.

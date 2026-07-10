@@ -134,6 +134,44 @@ describe('ToastProvider', () => {
     expect(toast).toHaveTextContent('저장되었어요');
   });
 
+  it('applies string viewport offset without center correction', () => {
+    render(
+      <ToastProvider offset='2.4rem' placement='top-center'>
+        <CompletedToastLauncher />
+      </ToastProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '완료 토스트 열기' }));
+
+    const viewport = screen.getByRole('region', { name: '토스트 알림' });
+
+    expect(viewport).toHaveStyle({
+      '--toast-viewport-offset-x': '2.4rem',
+      '--toast-viewport-offset-y': '2.4rem',
+    });
+    expect(viewport).not.toHaveStyle({
+      '--toast-viewport-center-offset-x': '2.4rem',
+    });
+  });
+
+  it('applies object viewport offset as center correction', () => {
+    render(
+      <ToastProvider offset={{ x: '145px', y: '2rem' }} placement='top-center'>
+        <CompletedToastLauncher />
+      </ToastProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '완료 토스트 열기' }));
+
+    const viewport = screen.getByRole('region', { name: '토스트 알림' });
+
+    expect(viewport).toHaveStyle({
+      '--toast-viewport-center-offset-x': '145px',
+      '--toast-viewport-offset-x': '145px',
+      '--toast-viewport-offset-y': '2rem',
+    });
+  });
+
   it('auto dismisses toast after the default duration', () => {
     vi.useFakeTimers();
 

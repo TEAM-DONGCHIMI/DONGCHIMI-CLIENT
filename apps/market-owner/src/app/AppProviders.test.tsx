@@ -75,5 +75,14 @@ describe('AppProviders', () => {
     await user.click(await screen.findByRole('button', { name: '토스트 열기' }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('오버레이 토스트 준비');
+    const viewport = screen.getByRole('region', { name: '토스트 알림' });
+
+    expect(viewport).toHaveStyle({
+      '--toast-viewport-offset-x': '2.4rem',
+      '--toast-viewport-offset-y': '2.4rem',
+    });
+    expect(viewport).not.toHaveStyle({
+      '--toast-viewport-center-offset-x': '2.4rem',
+    });
   });
 });
