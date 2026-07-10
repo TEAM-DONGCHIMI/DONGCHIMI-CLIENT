@@ -192,11 +192,26 @@ describe('RegistrationResultSection', () => {
 
     await user.click(categoryButton);
 
-    const dropdown = await screen.findByRole('menu', { name: '상품 카테고리' });
+    const dropdown = await screen.findByRole('group', { name: '상품 카테고리' });
 
     await user.click(within(dropdown).getByRole('button', { name: '수산' }));
 
     expect(categoryButton).toHaveTextContent('수산');
+  });
+
+  it('keeps edited product field values in the result row', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    const [productNameInput] = screen.getAllByPlaceholderText('제품명을 입력하세요.');
+    const [priceInput] = screen.getAllByPlaceholderText('가격을 입력하세요.');
+
+    await user.type(productNameInput, '수정 상품');
+    await user.type(priceInput, '4500');
+
+    expect(productNameInput).toHaveValue('수정 상품');
+    expect(priceInput).toHaveValue('4500');
   });
 
   it('uploads a product image preview from the image field', async () => {

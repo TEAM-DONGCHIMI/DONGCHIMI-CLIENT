@@ -15,6 +15,7 @@ import { RegistrationResultTable } from '../components/RegistrationResultTable';
 import { useRegistrationResultCategoryDropdowns } from '../hooks/useRegistrationResultCategoryDropdowns';
 import { useRegistrationResultImagePreviews } from '../hooks/useRegistrationResultImagePreviews';
 import { useRegistrationResultPagination } from '../hooks/useRegistrationResultPagination';
+import { useRegistrationResultProductDrafts } from '../hooks/useRegistrationResultProductDrafts';
 import { useRegistrationResultProductSearch } from '../hooks/useRegistrationResultProductSearch';
 import { useRegistrationResultSelection } from '../hooks/useRegistrationResultSelection';
 
@@ -64,9 +65,6 @@ export const RegistrationResultSection = ({
 }: RegistrationResultSectionProps) => {
   const toast = useToast();
   const [removedIds, setRemovedIds] = useState<ReadonlySet<string>>(new Set());
-  const [productCategories, setProductCategories] = useState<ReadonlyMap<string, string>>(
-    new Map(),
-  );
   const [selectedSegment, setSelectedSegment] = useState<UploadSegmentTypes>('needsEdit');
   const { deleteImagePreviews, imagePreviews, setImagePreview } =
     useRegistrationResultImagePreviews({
@@ -74,6 +72,10 @@ export const RegistrationResultSection = ({
         toast.error('이미지 미리보기를 생성하지 못했습니다. 다시 시도해주세요.');
       },
     });
+  const {
+    action: { changeProductField, deleteProductDrafts },
+    state: { productDrafts },
+  } = useRegistrationResultProductDrafts();
   const currentProducts = useMemo(() => {
     return products.filter((product) => !removedIds.has(product.id));
   }, [products, removedIds]);
@@ -93,7 +95,7 @@ export const RegistrationResultSection = ({
     action: { changeSearchValue, changeSelectedCategories },
     state: { filteredProducts, hasActiveFilter, searchValue, selectedCategories },
   } = useRegistrationResultProductSearch({
-    productCategories,
+    productDrafts,
     products: currentProducts,
     selectedSegment,
   });
@@ -150,13 +152,7 @@ export const RegistrationResultSection = ({
   };
 
   const handleProductCategoryChange = (productId: string, category: ProductCategoryGroupTypes) => {
-    setProductCategories((previousProductCategories) => {
-      const nextProductCategories = new Map(previousProductCategories);
-
-      nextProductCategories.set(productId, category);
-
-      return nextProductCategories;
-    });
+    changeProductField(productId, 'category', category);
   };
 
   const {
@@ -165,7 +161,7 @@ export const RegistrationResultSection = ({
   } = useRegistrationResultCategoryDropdowns({
     onCategoryFilterChange: handleCategoryFilterChange,
     onProductCategoryChange: handleProductCategoryChange,
-    productCategories,
+    productDrafts,
     selectedCategoryFilters: selectedCategories,
   });
 
@@ -184,6 +180,7 @@ export const RegistrationResultSection = ({
       return nextRemovedIds;
     });
     deleteImagePreviews(selectedIds);
+    deleteProductDrafts(selectedIds);
     clearSelection();
     resetPage();
   };
@@ -215,11 +212,12 @@ export const RegistrationResultSection = ({
         allVisibleSelected={allVisibleSelected}
         hasVisibleSelection={hasVisibleSelection}
         imagePreviews={imagePreviews}
-        productCategories={productCategories}
+        productDrafts={productDrafts}
         products={pageProducts}
         selectedIds={selectedIds}
         segmentLabel={SEGMENT_LABELS[selectedSegment]}
         onImageFileChange={handleImageFileChange}
+        onProductFieldChange={changeProductField}
         onProductCategoryClick={openProductCategoryDropdown}
         onRowCheckedChange={changeRowChecked}
         onSelectAll={toggleVisibleSelection}

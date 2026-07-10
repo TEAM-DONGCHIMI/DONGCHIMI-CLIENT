@@ -5,9 +5,13 @@ import type { ProductCategoryGroupTypes } from '@/shared/constants/product-categ
 import { getProductMatchesCategoryFilter } from '@/shared/utils/product-category.utils';
 
 import type { RegistrationResultProduct } from '../fixtures';
+import {
+  getRegistrationResultProductFieldValue,
+  type RegistrationResultProductDraftMapTypes,
+} from './useRegistrationResultProductDrafts';
 
 interface UseRegistrationResultProductSearchParams {
-  productCategories: ReadonlyMap<string, string>;
+  productDrafts: RegistrationResultProductDraftMapTypes;
   products: readonly RegistrationResultProduct[];
   selectedSegment: UploadSegmentTypes;
 }
@@ -44,7 +48,7 @@ const getProductMatchesSegment = (
 };
 
 export const useRegistrationResultProductSearch = ({
-  productCategories,
+  productDrafts,
   products,
   selectedSegment,
 }: UseRegistrationResultProductSearchParams) => {
@@ -55,15 +59,26 @@ export const useRegistrationResultProductSearch = ({
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      const category = productCategories.get(product.id) ?? product.category;
+      const category = getRegistrationResultProductFieldValue(product, productDrafts, 'category');
+      const productName = getRegistrationResultProductFieldValue(
+        product,
+        productDrafts,
+        'productName',
+      );
+      const promotionText = getRegistrationResultProductFieldValue(
+        product,
+        productDrafts,
+        'promotionText',
+      );
+      const searchableProduct = { ...product, productName, promotionText };
 
       return (
         getProductMatchesSegment(product, selectedSegment) &&
-        getProductMatchesSearch(product, searchValue, category) &&
+        getProductMatchesSearch(searchableProduct, searchValue, category) &&
         getProductMatchesCategoryFilter(category, selectedCategories)
       );
     });
-  }, [productCategories, products, searchValue, selectedCategories, selectedSegment]);
+  }, [productDrafts, products, searchValue, selectedCategories, selectedSegment]);
 
   const changeSearchValue = (nextSearchValue: string) => {
     setSearchValue(nextSearchValue);

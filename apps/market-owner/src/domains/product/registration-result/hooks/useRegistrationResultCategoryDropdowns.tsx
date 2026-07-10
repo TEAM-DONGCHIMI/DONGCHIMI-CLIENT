@@ -10,9 +10,13 @@ import {
   getAnchorRect,
 } from '../components/RegistrationResultDropdown';
 import type { RegistrationResultProduct } from '../fixtures';
+import {
+  getRegistrationResultProductFieldValue,
+  type RegistrationResultProductDraftMapTypes,
+} from './useRegistrationResultProductDrafts';
 
 interface UseRegistrationResultCategoryDropdownsParams {
-  productCategories: ReadonlyMap<string, string>;
+  productDrafts: RegistrationResultProductDraftMapTypes;
   selectedCategoryFilters: ReadonlySet<ProductCategoryGroupTypes>;
   onCategoryFilterChange: (selectedCategories: ReadonlySet<ProductCategoryGroupTypes>) => void;
   onProductCategoryChange: (productId: string, category: ProductCategoryGroupTypes) => void;
@@ -37,7 +41,7 @@ const closeProductCategoryDropdownOverlay = (overlayId: string | null) => {
 };
 
 export const useRegistrationResultCategoryDropdowns = ({
-  productCategories,
+  productDrafts,
   selectedCategoryFilters,
   onCategoryFilterChange,
   onProductCategoryChange,
@@ -88,7 +92,11 @@ export const useRegistrationResultCategoryDropdowns = ({
   const openProductCategoryDropdown =
     (product: RegistrationResultProduct) => (event: MouseEvent<HTMLButtonElement>) => {
       const anchorRect = getAnchorRect(event.currentTarget);
-      const selectedCategory = productCategories.get(product.id) ?? product.category;
+      const selectedCategory = getRegistrationResultProductFieldValue(
+        product,
+        productDrafts,
+        'category',
+      );
       const overlayId = getProductCategoryDropdownOverlayId(product.id);
 
       closeProductCategoryDropdown(productCategoryDropdownOverlayIdRef.current);

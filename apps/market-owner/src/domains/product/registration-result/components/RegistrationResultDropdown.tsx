@@ -240,7 +240,7 @@ export const ProductCategoryDropdown = ({
         aria-label='상품 카테고리'
         className={S.dropdownPanelClassName}
         onClick={(event) => event.stopPropagation()}
-        role='menu'
+        role='group'
         style={positionStyle}
       >
         {PRODUCT_CATEGORY_GROUP_OPTIONS.map((option) => (
