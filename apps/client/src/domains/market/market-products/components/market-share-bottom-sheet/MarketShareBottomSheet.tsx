@@ -16,7 +16,6 @@ import { ToastProvider, useToast, type ToastStatusTypes } from '@dongchimi/share
 import * as S from './MarketShareBottomSheet.css';
 
 type MarketShareActionHandlerTypes = () => void | Promise<void>;
-type ShareFallbackResultTypes = 'copied' | 'failed' | 'shared';
 
 export interface MarketShareBottomSheetProps {
   marketName: string;
@@ -37,6 +36,7 @@ const MARKET_SHARE_TOAST_ID = 'market-share-action-feedback';
 const MARKET_SHARE_TOAST_DISMISS_MS = 2500;
 const SHARE_COPY_SUCCESS_MESSAGE = '전단 링크가 복사되었습니다.';
 const SHARE_COPY_ERROR_MESSAGE = '링크를 복사하지 못했습니다. 다시 시도해주세요.';
+const SHARE_KAKAO_PENDING_MESSAGE = '아직 준비중인 기능이에요.';
 
 const getShareToastIcon = (status: ToastStatusTypes) => {
   if (status === 'error') {
@@ -58,27 +58,6 @@ const copyToClipboard = async (shareUrl: string) => {
   } catch {
     return false;
   }
-};
-
-const fallbackShare = async (
-  marketName: string,
-  shareUrl: string,
-): Promise<ShareFallbackResultTypes> => {
-  if (typeof navigator !== 'undefined' && navigator.share != null) {
-    try {
-      await navigator.share({
-        text: `${marketName} 전단을 공유해보세요.`,
-        title: `${marketName} 전단`,
-        url: shareUrl,
-      });
-
-      return 'shared';
-    } catch {
-      return 'failed';
-    }
-  }
-
-  return (await copyToClipboard(shareUrl)) ? 'copied' : 'failed';
 };
 
 const MarketShareBottomSheetContent = ({
@@ -127,16 +106,7 @@ const MarketShareBottomSheetContent = ({
       return;
     }
 
-    const result = await fallbackShare(marketName, shareUrl);
-
-    if (result === 'shared') {
-      return;
-    }
-
-    showShareToast(
-      result === 'copied' ? SHARE_COPY_SUCCESS_MESSAGE : SHARE_COPY_ERROR_MESSAGE,
-      result === 'copied' ? 'completed' : 'error',
-    );
+    showShareToast(SHARE_KAKAO_PENDING_MESSAGE, 'error');
   };
 
   const handleOpenQrCode = () => {

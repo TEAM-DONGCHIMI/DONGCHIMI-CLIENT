@@ -33,17 +33,18 @@
   - `onOpenQrCode`: QR 코드 보기 액션을 호출부가 직접 처리해야 할 때 사용합니다. 전달되지 않으면 QR 버튼은 비활성화됩니다.
 - external state:
   - bottom sheet open state는 `BottomSheet` primitive가 관리합니다.
-  - 링크 복사 toast는 native dialog top-layer 위에 보이도록 bottom sheet dialog 내부의 local `ToastProvider`를 사용합니다.
+  - 링크 복사와 준비중 toast는 native dialog top-layer 위에 보이도록 bottom sheet dialog 내부의 local `ToastProvider`를 사용합니다.
   - 공유 API 연동 시 호출부는 `slug`로 공유 URL을 만들고, `qrCode`는 QR 보기 UI가 확정된 뒤 `onOpenQrCode` 또는 별도 QR view props로 연결합니다.
 
 ## States
 
 - default: trigger를 누르면 공유 bottom sheet를 엽니다.
 - copied: 링크 복사 fallback이 성공하면 bottom-center completed toast를 표시합니다.
+- pending: Kakao SDK 연동 전까지 카카오톡 공유를 누르면 bottom-center error toast로 `아직 준비중인 기능이에요.`를 표시합니다.
 - disabled: QR 보기 UI/handler가 없으면 QR 버튼은 비활성화하되 아이콘과 라벨은 유지합니다.
 - loading: 지원하지 않습니다. 공유 API 연결 시 호출부에서 액션 상태를 분리합니다.
 - empty: 지원하지 않습니다. `marketName`, `shareUrl`은 필수입니다.
-- error: clipboard/share fallback 실패 시 bottom-center error toast를 표시합니다.
+- error: clipboard fallback 실패 시 bottom-center error toast를 표시합니다.
 
 ## Styling
 

@@ -103,6 +103,21 @@ describe('MarketProductsPage', () => {
     expect(within(dialog).getByRole('region', { name: '토스트 알림' })).toBeInTheDocument();
   });
 
+  it('shows a pending toast when kakao share is selected', async () => {
+    const user = userEvent.setup();
+
+    renderMarketProductsPage();
+
+    await user.click(screen.getByRole('button', { name: '공유하기' }));
+
+    const dialog = await screen.findByRole('dialog', { name: '전단 공유하기' });
+
+    await user.click(within(dialog).getByRole('button', { name: '카카오톡으로 공유' }));
+
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent('아직 준비중인 기능이에요.');
+    expect(within(dialog).getByRole('region', { name: '토스트 알림' })).toBeInTheDocument();
+  });
+
   it('filters event discount products by category', async () => {
     const user = userEvent.setup();
 
