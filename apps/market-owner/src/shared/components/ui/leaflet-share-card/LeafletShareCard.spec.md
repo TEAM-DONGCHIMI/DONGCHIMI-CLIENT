@@ -28,6 +28,8 @@
 - `description?: string`
 - `copyLabel?: string`
 - `qrLabel?: string`
+- `disabled?: boolean`: 링크 field copy button, 링크 복사, QR 보기 action을 모두 비활성화합니다. 카드 layout과
+  텍스트는 유지합니다.
 - `onCopyLink: () => void`
 - `onOpenQrCode: () => void`
 - native `section` props except `children`
@@ -35,7 +37,7 @@
 ## States
 
 - default: title, description, share URL field, link copy action, QR action을 렌더링합니다.
-- disabled: 이번 컴포넌트는 disabled 상태를 소유하지 않습니다. 호출부에서 handler 정책을 결정합니다.
+- disabled: 링크 field의 copy button, 링크 복사 action, QR 보기 action을 모두 native disabled로 렌더링합니다.
 - loading: none
 - error: none
 
