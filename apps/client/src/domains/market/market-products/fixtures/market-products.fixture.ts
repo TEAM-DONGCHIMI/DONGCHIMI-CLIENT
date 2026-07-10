@@ -36,6 +36,11 @@ export interface TodaySpecialProductFixtureTypes {
   thumbnailUrl: string | null;
 }
 
+export interface TodaySpecialProductsFixtureTypes {
+  products: TodaySpecialProductFixtureTypes[];
+  totalCount: number;
+}
+
 export interface EventDiscountProductFixtureTypes {
   categoryId: string;
   discountedPrice: number;
@@ -44,9 +49,22 @@ export interface EventDiscountProductFixtureTypes {
   thumbnailUrl: string | null;
 }
 
+export interface EventDiscountProductsFixtureTypes {
+  hasNext: boolean;
+  nextCursor: number | null;
+  products: EventDiscountProductFixtureTypes[];
+}
+
 export interface EventDiscountCategoryFixtureTypes {
   categoryId: string;
   label: string;
+}
+
+export interface MarketShareFixtureTypes {
+  marketId: number;
+  marketName: string;
+  qrCode: string;
+  slug: string;
 }
 
 export const DEFAULT_TODAY_SPECIAL_VISIBLE_COUNT = 2;
@@ -65,15 +83,35 @@ export const marketProductsFixture = {
       },
       {
         categoryId: 'seafood',
-        label: '수산·건어물',
+        label: '수산',
+      },
+      {
+        categoryId: 'dairy',
+        label: '유제품',
+      },
+      {
+        categoryId: 'ready-meal',
+        label: '간편식',
       },
       {
         categoryId: 'processed',
         label: '가공식품',
       },
+      {
+        categoryId: 'beverage',
+        label: '음료·주류',
+      },
+      {
+        categoryId: 'household',
+        label: '생활용품',
+      },
+      {
+        categoryId: 'etc',
+        label: '기타',
+      },
     ] satisfies EventDiscountCategoryFixtureTypes[],
     hasNext: true,
-    nextCursor: 'event-discount-101',
+    nextCursor: 309,
     products: [
       {
         categoryId: 'meat-egg',
@@ -139,6 +177,8 @@ export const marketProductsFixture = {
         thumbnailUrl: null,
       },
     ] satisfies EventDiscountProductFixtureTypes[],
+  } satisfies EventDiscountProductsFixtureTypes & {
+    categories: EventDiscountCategoryFixtureTypes[];
   },
   market: {
     address: '서울 마포구 망원동',
@@ -194,9 +234,9 @@ export const marketProductsFixture = {
   share: {
     marketId: 1,
     marketName: '망원 신선마트',
-    qrCode: null,
+    qrCode: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...',
     slug: 'mangwon-fresh',
-  },
+  } satisfies MarketShareFixtureTypes,
   todaySpecial: {
     products: [
       {
@@ -273,5 +313,5 @@ export const marketProductsFixture = {
       },
     ] satisfies TodaySpecialProductFixtureTypes[],
     totalCount: 30,
-  },
+  } satisfies TodaySpecialProductsFixtureTypes,
 } as const;

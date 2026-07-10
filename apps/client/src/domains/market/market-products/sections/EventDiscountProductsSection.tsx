@@ -34,11 +34,10 @@ export const EventDiscountProductsSection = ({
   selectedCategoryId,
   visibleCategoryCount,
 }: EventDiscountProductsSectionProps) => {
-  const visibleCategories = isCategoryExpanded
-    ? categories
-    : categories.slice(0, visibleCategoryCount);
+  const defaultVisibleCategories = categories.slice(0, visibleCategoryCount);
+  const hiddenCategories = categories.slice(visibleCategoryCount);
+  const expandedCategories = isCategoryExpanded ? hiddenCategories : [];
   const hasHiddenCategories = categories.length > visibleCategoryCount;
-  const moreButtonLabel = isCategoryExpanded ? '접기' : '더보기';
   const MoreButtonIcon = isCategoryExpanded ? IcChevronUp : IcChevronDown;
 
   return (
@@ -56,7 +55,7 @@ export const EventDiscountProductsSection = ({
         >
           전체
         </button>
-        {visibleCategories.map((category) => (
+        {defaultVisibleCategories.map((category) => (
           <button
             key={category.categoryId}
             aria-pressed={selectedCategoryId === category.categoryId}
@@ -74,10 +73,21 @@ export const EventDiscountProductsSection = ({
             onClick={onToggleCategoryExpanded}
             type='button'
           >
-            {moreButtonLabel}
+            더보기
             <MoreButtonIcon aria-hidden='true' />
           </button>
         ) : null}
+        {expandedCategories.map((category) => (
+          <button
+            key={category.categoryId}
+            aria-pressed={selectedCategoryId === category.categoryId}
+            className={S.categoryButtonClassName}
+            onClick={() => onSelectCategory(category.categoryId)}
+            type='button'
+          >
+            {category.label}
+          </button>
+        ))}
       </div>
 
       {products.length > 0 ? (

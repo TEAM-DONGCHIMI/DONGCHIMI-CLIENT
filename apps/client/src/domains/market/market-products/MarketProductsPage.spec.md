@@ -27,6 +27,7 @@
 - 공유하기는 기존 page-local `MarketShareBottomSheet`를 재사용합니다.
 - 전화걸기는 확인 modal 후 `tel:` URL로 이동합니다.
 - 상품 카드는 `/markets/[marketId]/products/[productId]` 상세 route로 이동합니다.
+- TOP3와 오늘의 특가 상품은 `discountRate`로 할인칩을 표시하고, 행사 할인 상품 목록은 API 응답에 `discountRate`가 없어 할인칩을 표시하지 않습니다.
 
 ## Out Of Scope
 
@@ -46,6 +47,17 @@
 - `TodaySpecialProductsSection`: 오늘의 특가 상품 일부를 먼저 표시하고, 버튼으로 전체/접기 상태를 전환합니다.
 - `EventDiscountProductsSection`: 행사 할인 상품을 카테고리 chip과 3열 grid로 표시합니다.
 
+## API Fixture Contract
+
+- market summary: `marketId`, `name`, `thumbnailUrl`, `address`, `isOpenNow`, `businessHours`, `marketPhone1`, optional `marketPhone2`, `ownerPhone`, `top3[]`.
+- top3 item: `productId`, `name`, `thumbnailUrl`, `discountedPrice`, `discountRate`.
+- today special response: `totalCount`, `products[]`.
+- today special item: `productId`, `name`, `thumbnailUrl`, `originalPrice`, `discountedPrice`, `discountRate`.
+- event discount list query: path `marketId`, query `category`, `cursor`, `size`.
+- event discount list response: `products[]`, `hasNext`, nullable numeric `nextCursor`.
+- event discount item: `productId`, `name`, `thumbnailUrl`, `discountedPrice`.
+- leaflet share response: `marketId`, `marketName`, `slug`, `qrCode`.
+
 ## States
 
 - default: 마트 정보, TOP3, 오늘의 특가 2개, 행사 할인 상품 전체 카테고리를 표시합니다.
@@ -54,7 +66,7 @@
 - selectedCategory: `전체` 또는 개별 카테고리를 선택하면 행사 할인 상품 목록이 필터링됩니다.
 - callModalOpen: 전화걸기 클릭 시 확인 modal을 표시합니다.
 - shareSheetOpen: `MarketShareBottomSheet` primitive가 open state를 관리합니다.
-- disabled: QR 코드 보기는 이번 범위에서 handler를 전달하지 않아 비활성화됩니다.
+- disabled: QR 코드 데이터는 fixture에 포함하되, QR 코드 보기는 이번 범위에서 handler를 전달하지 않아 비활성화됩니다.
 
 ## Behavior
 

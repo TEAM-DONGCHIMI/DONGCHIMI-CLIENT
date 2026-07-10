@@ -115,8 +115,16 @@ describe('MarketProductsPage', () => {
     expect(eventSection.getAllByRole('link')).toHaveLength(3);
     expect(eventSection.queryByText('대추방울토마토 500G')).not.toBeInTheDocument();
 
-    await user.click(eventSection.getByRole('button', { name: '더보기' }));
-    await user.click(eventSection.getByRole('button', { name: '수산·건어물' }));
+    const moreButton = eventSection.getByRole('button', { name: '더보기' });
+
+    expect(moreButton).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(moreButton);
+
+    expect(moreButton).toHaveAttribute('aria-expanded', 'true');
+    expect(eventSection.queryByRole('button', { name: '접기' })).not.toBeInTheDocument();
+
+    await user.click(eventSection.getByRole('button', { name: '수산' }));
 
     expect(eventSection.getAllByRole('link')).toHaveLength(1);
     expect(eventSection.getByText('손질 고등어 1팩')).toBeInTheDocument();
