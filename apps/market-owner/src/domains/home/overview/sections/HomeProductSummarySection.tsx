@@ -31,7 +31,7 @@ export const HomeProductSummarySection = ({
         const isEmpty = section.totalCount === 0;
 
         return (
-          <div className={S.productCardContainerClassName} key={section.id}>
+          <div className={S.dashboardCardContainerClassName} key={section.id}>
             <ProductCard
               className={S.productCardClassName}
               emptyMessage={isEmpty ? '' : undefined}
@@ -55,8 +55,8 @@ export const HomeProductSummarySection = ({
             />
 
             {isEmpty && (
-              <div className={S.productCardEmptyOverlayClassName}>
-                <p className={S.productCardEmptyMessageClassName}>{EMPTY_PRODUCT_MESSAGE}</p>
+              <div className={S.dashboardCardEmptyOverlayClassName}>
+                <p className={S.dashboardCardEmptyMessageClassName}>{EMPTY_PRODUCT_MESSAGE}</p>
               </div>
             )}
           </div>

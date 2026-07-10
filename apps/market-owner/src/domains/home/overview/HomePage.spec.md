@@ -137,6 +137,9 @@ HomePage(main)
 - empty: 상품 summary는 `dailyCount === 0` 또는 `periodicCount === 0`이면 각 카드에 딤드 오버레이와
   `등록한 상품이 없어요. 상품을 먼저 등록해주세요.` 문구를 표시합니다. 검색 결과가 없으면 검색 dropdown에
   empty message를 표시합니다.
+- flyer empty: `flyer === null`이면 전단 공유 카드에 딤드 오버레이와 `전단을 공유하려면` / `상품을 먼저
+등록해주세요.` 문구를 두 줄로 표시합니다. 링크 field와 action 행은 유지하되 URL 텍스트만 비우고, 모든 공유
+  action은 disabled로 렌더링합니다.
 - error: 알 수 없는 route는 router fallback에서 처리합니다. 검색 결과에서 상품을 선택했지만 상품 정보를
   불러오지 못하면 상단 error toast로 `상품 정보를 불러오지 못했어요.`를 표시합니다.
 - disabled: QR 보기 실제 API 동작은 후속 범위이며, 현재는 버튼 클릭 시 준비 중 toast를 표시합니다.
@@ -154,7 +157,7 @@ HomePage(main)
     `itemVariant`, `totalCount`, edit route로 매핑
   - 검색 dropdown에 사용할 상품명, 구분 label, 등록일, edit route, 상품 정보 load 가능 여부
   - hero quick action title, description, route
-  - 전단 공유 링크와 공유 설명 copy
+  - 전단 공유 링크와 공유 설명 copy, `flyer` 존재 여부
 - model: none
 
 ## Behavior
@@ -168,6 +171,8 @@ HomePage(main)
   이동합니다.
 - `dailyCount` 또는 `periodicCount`가 0이면 해당 카드의 row는 렌더링하지 않고, actionSlot button도
   disabled로 렌더링합니다. 딤드 오버레이는 card 전체 클릭을 막습니다.
+- `flyer === null`이면 전단 공유 카드의 URL 텍스트는 비우고, 공유 action은 disabled로 렌더링합니다. 카드
+  layout은 유지한 채 딤드 오버레이가 클릭을 막습니다.
 - 링크 복사는 clipboard 성공 시 `전단 링크가 복사되었습니다.` completed toast를 표시합니다.
 - 링크 복사 실패 또는 clipboard 미지원 시 `링크를 복사하지 못했습니다. 다시 시도해주세요.` error toast를 표시합니다.
 - QR 보기 클릭은 QR 표시 API/flow가 확정되기 전까지 `QR코드 보기 기능은 준비 중입니다.` completed toast를 표시합니다.
@@ -194,6 +199,7 @@ HomePage(main)
   0건 카드의 action은 disabled이며 상품 row도 제공하지 않습니다.
 - product empty state: 0건 안내 문구는 일반 텍스트로 노출하며, 별도 live announcement를 사용하지 않습니다.
 - share actions: 링크 복사, QR 보기 액션은 native `button`으로 렌더링하고 accessible name을 제공합니다.
+  `flyer === null`이면 세 공유 action은 모두 disabled로 렌더링합니다.
 - toast: 링크 복사 성공 toast는 `role="status"`, 링크 복사 실패와 상품 정보 load 실패 toast는
   `role="alert"`로 노출합니다.
 - keyboard: 검색 입력, 상품 row button, 공유 action button은 keyboard focus와 activation을 지원합니다.
@@ -239,6 +245,7 @@ HomePage(main)
 - [x] product row click navigates to each edit page
 - [x] product summary action buttons navigate to each edit page
 - [x] share card renders share URL, copy action, and QR action
+- [x] null flyer state dims the share card, clears only its URL text, and disables all share actions
 - [x] link copy success shows completed toast
 - [x] link copy failure shows error toast
 - [x] QR code action shows preparing toast

@@ -24,6 +24,19 @@ interface HomeSearchProductFixtureTypes extends ProductSearchPanelItemTypes {
   isProductInfoLoadable?: boolean;
 }
 
+interface HomeFlyerFixtureTypes {
+  flyerId: number;
+  qrCode: string;
+  slug: string;
+}
+
+export interface HomeShareFixtureTypes {
+  description: string;
+  flyer: HomeFlyerFixtureTypes | null;
+  title: string;
+  url: string;
+}
+
 const normalizeSearchText = (value: string) => value.toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
 
 const dailyProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
@@ -140,8 +153,13 @@ export const homeHeroActions: HomeHeroActionFixtureTypes[] = [
   },
 ] satisfies HomeHeroActionFixtureTypes[];
 
-export const homeShare = {
+export const homeShare: HomeShareFixtureTypes = {
   description: '카카오톡, 문자로 공유하거나 마트에 QR을 붙여보세요.',
+  flyer: {
+    flyerId: 1,
+    qrCode: 'QR코드 base64 이미지',
+    slug: 'mangwon-fresh',
+  },
   title: '전단 공유하기',
   url: 'dongchimi.kr/mangwon-fresh',
-} as const;
+};

@@ -95,12 +95,12 @@ export const productCardClassName = style({
   overflow: 'hidden',
 });
 
-export const productCardContainerClassName = style({
+export const dashboardCardContainerClassName = style({
   position: 'relative',
   minWidth: 0,
 });
 
-export const productCardEmptyOverlayClassName = style({
+export const dashboardCardEmptyOverlayClassName = style({
   position: 'absolute',
   zIndex: 1,
   inset: 0,
@@ -115,7 +115,7 @@ export const productCardEmptyOverlayClassName = style({
   textAlign: 'center',
 });
 
-export const productCardEmptyMessageClassName = style({
+export const dashboardCardEmptyMessageClassName = style({
   ...typography['heading-2-semibold'],
   letterSpacing: '-0.044rem',
   margin: 0,
