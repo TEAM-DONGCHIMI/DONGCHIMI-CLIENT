@@ -126,13 +126,13 @@ const SortButton = ({
   const popupProps: {
     'aria-controls'?: string;
     'aria-expanded'?: boolean;
-    'aria-haspopup'?: 'menu';
+    'aria-haspopup'?: true;
   } = {};
 
   if (controlsId != null) {
     popupProps['aria-controls'] = controlsId;
     popupProps['aria-expanded'] = open;
-    popupProps['aria-haspopup'] = 'menu';
+    popupProps['aria-haspopup'] = true;
   }
 
   return (
@@ -158,7 +158,7 @@ export const DesktopUploadHeader = ({
   completedCount,
   needsEditCount,
   searchValue,
-  selectedCount = 0,
+  selectedCount,
   selectedSegment,
   sortDropdownId,
   sortOpen,
@@ -169,6 +169,11 @@ export const DesktopUploadHeader = ({
   onSegmentChange,
   onSortClick,
 }: DesktopUploadHeaderProps) => {
+  const showSelectedProductAction = selectedCount != null || onDeleteSelected != null;
+  const showSortButton = sortDropdownId != null || onSortClick != null;
+  const showSearchBar = searchValue != null || onSearch != null || onSearchValueChange != null;
+  const showActions = showSelectedProductAction || showSortButton || showSearchBar;
+
   return (
     <Flex align='center' as='header' className={cn(S.headerClassName, className)} justify='between'>
       <SegmentNavigation
@@ -179,18 +184,29 @@ export const DesktopUploadHeader = ({
         totalCount={totalCount}
       />
 
-      <Flex align='center' className={S.actionsClassName}>
-        <SelectedProductAction selectedCount={selectedCount} onDeleteSelected={onDeleteSelected} />
-        <SortButton controlsId={sortDropdownId} open={sortOpen} onSortClick={onSortClick} />
-        <SearchBar
-          aria-label='상품 검색'
-          icon={searchIcon}
-          onSearch={onSearch}
-          onValueChange={onSearchValueChange}
-          placeholder='상품 검색...'
-          value={searchValue}
-        />
-      </Flex>
+      {showActions && (
+        <Flex align='center' className={S.actionsClassName}>
+          {showSelectedProductAction && (
+            <SelectedProductAction
+              selectedCount={selectedCount ?? 0}
+              onDeleteSelected={onDeleteSelected}
+            />
+          )}
+          {showSortButton && (
+            <SortButton controlsId={sortDropdownId} open={sortOpen} onSortClick={onSortClick} />
+          )}
+          {showSearchBar && (
+            <SearchBar
+              aria-label='상품 검색'
+              icon={searchIcon}
+              onSearch={onSearch}
+              onValueChange={onSearchValueChange}
+              placeholder='상품 검색...'
+              value={searchValue}
+            />
+          )}
+        </Flex>
+      )}
     </Flex>
   );
 };

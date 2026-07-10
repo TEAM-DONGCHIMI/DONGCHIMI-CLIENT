@@ -15,7 +15,8 @@
 
 - 사장님 사이트 상품 결과 확인 뷰에서 상품 상태 탭, 선택 상품 액션, 정렬 액션, 상품 검색을 한 줄로 제공하는 desktop upload header입니다.
 - segment navigation의 텍스트는 고정하고, 숫자는 호출부에서 전달받습니다.
-- 선택된 상품 개수에 따라 `선택삭제` 액션의 활성/비활성 상태를 표현합니다.
+- 선택된 상품 개수가 전달된 경우 `선택삭제` 액션의 활성/비활성 상태를 표현합니다.
+- 정렬 또는 검색 관련 props가 전달된 경우에만 해당 액션을 렌더링합니다.
 - 검색 UI는 기존 `SearchBar`를 재사용하고, 실제 검색 결과 반영은 호출부가 처리합니다.
 
 ## Requirements
@@ -30,11 +31,11 @@
 - `totalCount`: `총 상품` 옆에 표시할 숫자입니다.
 - `completedCount`: `등록 완료` 옆에 표시할 숫자입니다.
 - `needsEditCount`: `수정 필요` 옆에 표시할 숫자입니다.
-- `selectedCount`: 선택된 상품 개수입니다. 기본값은 `0`입니다.
-- `searchValue`, `onSearchValueChange`, `onSearch`: 내부 SearchBar로 전달하는 검색 관련 props입니다. Header에서는 페이지 검색 상태와 맞추기 위해 controlled 검색값만 전달합니다.
+- `selectedCount`: 선택된 상품 개수입니다. 전달된 경우에만 선택 상품 액션 영역을 렌더링합니다.
+- `searchValue`, `onSearchValueChange`, `onSearch`: 내부 SearchBar로 전달하는 검색 관련 props입니다. 하나라도 전달된 경우에만 검색 UI를 렌더링합니다.
 - `onSegmentChange`: segment 버튼 클릭 시 선택한 segment 값을 호출부에 전달합니다. 호출부는 이 값으로 `selectedSegment`를 갱신하고, 필요하면 아래 상품 목록/결과 영역도 함께 변경합니다.
-- `onDeleteSelected`: `selectedCount > 0`일 때 선택삭제 버튼 클릭 시 호출합니다.
-- `onSortClick`: 정렬 버튼 클릭 시 호출합니다.
+- `onDeleteSelected`: 선택삭제 버튼 클릭 시 호출합니다. `selectedCount` 또는 이 handler가 전달된 경우 선택 상품 액션 영역을 렌더링합니다.
+- `onSortClick`: 정렬 버튼 클릭 시 호출합니다. `onSortClick` 또는 `sortDropdownId`가 전달된 경우 정렬 액션을 렌더링합니다.
 - `className`: header wrapper className을 추가할 때 사용합니다.
 
 ## States
@@ -42,6 +43,7 @@
 - total / completed / needsEdit: `selectedSegment`로 받은 활성 segment에 neutral 60 background와 white text를 적용합니다.
 - no selection: `selectedCount`가 0이면 선택삭제 버튼을 disabled로 두고 neutral 30 text를 사용합니다.
 - selected: `selectedCount`가 1 이상이면 선택삭제 버튼을 활성화하고 negative text를 사용합니다.
+- no optional action: 선택, 정렬, 검색 관련 props가 없으면 오른쪽 action group을 렌더링하지 않습니다.
 - search focus/hover/error/filled: 내부 SearchBar 상태 정책을 따릅니다.
 - loading/error: Header 자체 상태로는 제공하지 않습니다.
 
