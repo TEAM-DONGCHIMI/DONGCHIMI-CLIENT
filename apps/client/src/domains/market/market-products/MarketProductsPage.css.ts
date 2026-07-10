@@ -61,8 +61,9 @@ export const marketInfoClassName = style({
 
 export const marketImageFrameClassName = style({
   position: 'relative',
-  width: '100%',
+  width: '14.1rem',
   height: '10.6rem',
+  flexShrink: 0,
   overflow: 'hidden',
   borderRadius: 8,
   backgroundColor: atomic.neutral[10],
@@ -129,29 +130,19 @@ export const actionRowClassName = style({
   marginTop: '-0.2rem',
 });
 
-export const shareTriggerClassName = style({
-  width: '100%',
-  minHeight: '4.4rem',
-  border: `0.1rem solid ${atomic.neutral[20]}`,
-  borderRadius: 8,
-  backgroundColor: atomic.common[0],
-  color: atomic.neutral[90],
-  padding: '0 1.2rem',
-});
-
-export const primaryActionButtonClassName = style({
+const marketActionButtonBaseClassName = style({
   ...typography['body-3-semibold'],
   display: 'inline-flex',
   width: '100%',
-  minHeight: '4.4rem',
+  height: '4.4rem',
   alignItems: 'center',
   justifyContent: 'center',
-  border: 0,
+  border: `0.1rem solid ${atomic.neutral[20]}`,
   borderRadius: 8,
   padding: '0 1.2rem',
-  backgroundColor: semantic.primary.normal,
-  color: atomic.common[0],
+  whiteSpace: 'nowrap',
   cursor: 'pointer',
+  textDecoration: 'none',
   selectors: {
     '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
@@ -159,6 +150,23 @@ export const primaryActionButtonClassName = style({
     },
   },
 });
+
+export const shareTriggerClassName = style([
+  marketActionButtonBaseClassName,
+  {
+    backgroundColor: atomic.common[0],
+    color: atomic.neutral[90],
+  },
+]);
+
+export const primaryActionButtonClassName = style([
+  marketActionButtonBaseClassName,
+  {
+    borderColor: semantic.primary.normal,
+    backgroundColor: semantic.primary.normal,
+    color: atomic.common[0],
+  },
+]);
 
 export const sectionClassName = style({
   display: 'flex',

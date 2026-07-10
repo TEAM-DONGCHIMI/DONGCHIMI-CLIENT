@@ -30,6 +30,11 @@ type MarketProductsPageProps = Readonly<{
 
 const getTelHref = (phoneNumber: string) => `tel:${phoneNumber.replaceAll('-', '')}`;
 const getShareUrl = (slug: string) => `dongchimi.kr/${slug}`;
+const getCurrentBusinessCloseTime = (
+  businessHours: typeof marketProductsFixture.market.businessHours,
+) => {
+  return businessHours.find((businessHour) => businessHour.isOpen)?.close;
+};
 
 const MarketProductsBackButton = () => {
   const router = useRouter();
@@ -61,6 +66,11 @@ export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
   const { eventDiscount, market, share, todaySpecial } = marketProductsFixture;
   const shareUrl = getShareUrl(share.slug);
   const telHref = getTelHref(market.marketPhone1);
+  const currentBusinessCloseTime = getCurrentBusinessCloseTime(market.businessHours);
+  const callModalDescription =
+    market.isOpenNow && currentBusinessCloseTime != null
+      ? `현재 영업중: ${currentBusinessCloseTime}까지`
+      : '현재 영업 시간이 아니에요.';
 
   const visibleTodaySpecialProducts = isTodaySpecialExpanded
     ? todaySpecial.products
@@ -117,7 +127,7 @@ export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
 
       <MobileModal
         confirmLabel='전화걸기'
-        description={market.isOpenNow ? '현재 영업중이에요.' : '현재 영업 시간이 아니에요.'}
+        description={callModalDescription}
         onConfirm={handleConfirmCall}
         onOpenChange={setIsCallModalOpen}
         open={isCallModalOpen}

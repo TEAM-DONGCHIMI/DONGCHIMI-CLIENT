@@ -31,6 +31,7 @@ const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, tr
 
 export const contentClassName = style({
   position: 'fixed',
+  top: 'auto',
   right: 'auto',
   bottom: 0,
   left: '50%',

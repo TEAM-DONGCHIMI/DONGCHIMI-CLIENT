@@ -25,8 +25,15 @@ export const triggerClassName = style({
 });
 
 export const sheetClassName = style({
+  position: 'fixed',
+  top: 'auto',
+  right: 'auto',
+  bottom: 0,
+  left: '50%',
   minHeight: '43rem',
+  margin: 0,
   boxShadow: 'none',
+  transform: 'translate3d(-50%, 0, 0)',
 });
 
 export const bodyClassName = style({

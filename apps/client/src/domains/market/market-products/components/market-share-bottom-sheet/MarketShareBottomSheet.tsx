@@ -1,7 +1,6 @@
 'use client';
 
 import { BottomSheet } from '@dongchimi/design-system';
-import { cn } from '@dongchimi/design-system/styles';
 
 import * as S from './MarketShareBottomSheet.css';
 
@@ -73,7 +72,7 @@ export const MarketShareBottomSheet = ({
 
   return (
     <BottomSheet>
-      <BottomSheet.Trigger className={cn(S.triggerClassName, triggerClassName)}>
+      <BottomSheet.Trigger className={triggerClassName ?? S.triggerClassName}>
         {triggerLabel}
       </BottomSheet.Trigger>
       <BottomSheet.Content className={S.sheetClassName}>
