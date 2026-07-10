@@ -1,22 +1,15 @@
-export const productCategoryOptions = [
-  '전체',
-  '채소·과일',
-  '정육·달걀',
-  '수산',
-  '유제품',
-  '간편식',
-  '가공식품',
-  '음료·주류',
-  '생활용품',
-  '기타',
-] as const;
+import {
+  PRODUCT_CATEGORY_FILTER_OPTIONS,
+  PRODUCT_CATEGORY_GROUP_OPTIONS,
+  type ProductCategoryFilterOptionTypes,
+  type ProductCategoryGroupTypes,
+} from '@/shared/constants/product-categories';
 
-export type ProductCategoryTypes = (typeof productCategoryOptions)[number];
-export type ProductSelectableCategoryTypes = Exclude<ProductCategoryTypes, '전체'>;
+export const productCategoryOptions = PRODUCT_CATEGORY_FILTER_OPTIONS;
+export const productSelectableCategoryOptions = PRODUCT_CATEGORY_GROUP_OPTIONS;
 
-export const productSelectableCategoryOptions = productCategoryOptions.filter(
-  (category): category is ProductSelectableCategoryTypes => category !== '전체',
-);
+export type ProductCategoryTypes = ProductCategoryFilterOptionTypes;
+export type ProductSelectableCategoryTypes = ProductCategoryGroupTypes;
 
 export const isProductSelectableCategory = (
   categoryName: string,

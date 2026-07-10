@@ -1,8 +1,8 @@
-import { style, styleVariants } from '@vanilla-extract/css';
+import { globalStyle, style, styleVariants } from '@vanilla-extract/css';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
-const SEARCH_ICON_SIZE = '1.6rem';
+const SEARCH_ICON_SIZE = '2rem';
 
 export const searchBarClassName = style({
   display: 'flex',
@@ -47,6 +47,11 @@ export const iconClassName = style({
   flexShrink: 0,
   alignItems: 'center',
   justifyContent: 'center',
+});
+
+globalStyle(`${iconClassName} svg`, {
+  width: SEARCH_ICON_SIZE,
+  height: SEARCH_ICON_SIZE,
 });
 
 export const inputClassName = style({

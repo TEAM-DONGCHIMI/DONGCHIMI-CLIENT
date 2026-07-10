@@ -8,6 +8,7 @@ const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, tr
 export const rootClassName = style({
   boxSizing: 'border-box',
   width: '100%',
+  height: 98,
   minWidth: 0,
   minHeight: 98,
   borderRight: `1px solid ${atomic.neutral[30]}`,
@@ -22,8 +23,9 @@ export const rootClassName = style({
 export const rowClassName = style({
   display: 'flex',
   width: 'max-content',
+  height: '100%',
   minWidth: '100%',
-  minHeight: 98,
+  minHeight: 0,
   alignItems: 'center',
   gap: '4.2rem',
 });
@@ -170,7 +172,7 @@ export const fieldsClassName = style({
   display: 'inline-flex',
   flexShrink: 0,
   alignItems: 'center',
-  gap: '3rem',
+  gap: '4.2rem',
 });
 
 export const inlineFieldWrapperClassName = style({

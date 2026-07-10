@@ -1,6 +1,6 @@
 export const todaySpecialEditProducts = [
   {
-    categoryName: '채소·과일',
+    categoryName: '채소･과일',
     endDate: '2026. 8. 16',
     originalPrice: '5,900',
     productName: '딸기 2팩',
@@ -10,7 +10,7 @@ export const todaySpecialEditProducts = [
     viewCount: 162,
   },
   {
-    categoryName: '채소·과일',
+    categoryName: '채소･과일',
     endDate: '2026. 8. 16',
     originalPrice: '9,900',
     productName: '사과 4입',
@@ -20,7 +20,7 @@ export const todaySpecialEditProducts = [
     viewCount: 148,
   },
   {
-    categoryName: '채소·과일',
+    categoryName: '채소･과일',
     endDate: '2026. 8. 16',
     originalPrice: '7,900',
     productName: '방울토마토 750g',
@@ -30,7 +30,7 @@ export const todaySpecialEditProducts = [
     viewCount: 121,
   },
   {
-    categoryName: '정육·달걀',
+    categoryName: '정육･달걀',
     endDate: '2026. 8. 16',
     originalPrice: '12,900',
     productName: '한우 불고기 300g',
@@ -40,7 +40,7 @@ export const todaySpecialEditProducts = [
     viewCount: 201,
   },
   {
-    categoryName: '정육·달걀',
+    categoryName: '정육･달걀',
     endDate: '2026. 8. 16',
     originalPrice: '8,900',
     productName: '목살 구이용 500g',

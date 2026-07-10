@@ -76,7 +76,7 @@ describe('ProductEditProductList', () => {
                 title: '2026년 8월 15일',
                 products: [
                   {
-                    categoryName: '채소·과일',
+                    categoryName: '채소･과일',
                     endDate: '2026. 8. 16',
                     originalPrice: '5,000',
                     productName: '딸기 2팩',
@@ -117,7 +117,7 @@ describe('ProductEditProductList', () => {
         title: '2026년 8월 15일',
         products: [
           {
-            categoryName: '채소·과일',
+            categoryName: '채소･과일',
             endDate: '2026. 8. 16',
             originalPrice: '5,000',
             productName: '딸기 2팩',
@@ -164,10 +164,10 @@ describe('ProductEditProductList', () => {
     renderProductList(
       [
         {
-          title: '채소·과일',
+          title: '채소･과일',
           products: [
             {
-              categoryName: '채소·과일',
+              categoryName: '채소･과일',
               endDate: '2026. 8. 16',
               productName: '햇감자 1kg',
               salePrice: '3,900',
@@ -188,13 +188,13 @@ describe('ProductEditProductList', () => {
       await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
     ).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: '채소·과일' }));
+    await user.click(screen.getByRole('button', { name: '채소･과일' }));
 
     expect(await screen.findByRole('group', { name: '상품 구분 선택' })).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: '정육·달걀' }));
+    await user.click(screen.getByRole('button', { name: '정육･달걀' }));
 
-    expect(screen.getByRole('button', { name: '정육·달걀' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '정육･달걀' })).toBeInTheDocument();
     expect(screen.queryByRole('group', { name: '상품 구분 선택' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '변경하기' })).toBeEnabled();
 
@@ -203,7 +203,7 @@ describe('ProductEditProductList', () => {
     expect(handleUpdateProduct).toHaveBeenCalledWith(
       '햇감자 1kg',
       expect.objectContaining({
-        categoryName: '정육·달걀',
+        categoryName: '정육･달걀',
         productName: '햇감자 1kg',
       }),
     );
@@ -217,7 +217,7 @@ describe('ProductEditProductList', () => {
         title: '2026년 8월 15일',
         products: [
           {
-            categoryName: '채소·과일',
+            categoryName: '채소･과일',
             endDate: '2026. 8. 16',
             originalPrice: '5,000',
             productName: '딸기 2팩',
@@ -243,10 +243,10 @@ describe('ProductEditProductList', () => {
     renderProductList(
       [
         {
-          title: '채소·과일',
+          title: '채소･과일',
           products: [
             {
-              categoryName: '채소·과일',
+              categoryName: '채소･과일',
               endDate: '2026. 8. 16',
               productName: '햇감자 1kg',
               salePrice: '3,900',
@@ -279,7 +279,7 @@ describe('ProductEditProductList', () => {
           title: '2026년 8월 15일',
           products: [
             {
-              categoryName: '채소·과일',
+              categoryName: '채소･과일',
               endDate: '2026. 8. 16',
               originalPrice: '5,000',
               productName: '딸기 2팩',
@@ -316,7 +316,7 @@ describe('ProductEditProductList', () => {
           title: '2020년 8월 15일',
           products: [
             {
-              categoryName: '채소·과일',
+              categoryName: '채소･과일',
               endDate: '2020. 8. 16',
               originalPrice: '5,000',
               productName: '지난 딸기 2팩',

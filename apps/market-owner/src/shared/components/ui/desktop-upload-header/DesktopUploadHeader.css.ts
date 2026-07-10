@@ -5,8 +5,9 @@ import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 export const headerClassName = style({
   width: '100%',
+  height: '5.4rem',
   minWidth: 0,
-  backgroundColor: atomic.common[0],
+  backgroundColor: atomic.neutral[5],
 });
 
 export const segmentNavigationClassName = style({
@@ -18,8 +19,10 @@ export const segmentNavigationClassName = style({
 
 export const segmentItemRecipe = recipe({
   base: {
+    boxSizing: 'border-box',
     display: 'inline-flex',
     width: '15rem',
+    height: '5.4rem',
     alignItems: 'flex-start',
     gap: '0.4rem',
     border: 0,
@@ -119,15 +122,26 @@ export const deleteButtonRecipe = recipe({
   },
 });
 
-export const sortButtonClassName = style({
-  display: 'inline-flex',
-  height: '3.6rem',
-  alignItems: 'center',
-  gap: '0.1rem',
-  border: 0,
-  borderRadius: '2.8rem',
-  padding: '1rem 1.6rem 1rem 2rem',
-  backgroundColor: atomic.neutral[10],
+export const sortButtonRecipe = recipe({
+  base: {
+    display: 'inline-flex',
+    height: '3.6rem',
+    alignItems: 'center',
+    gap: '0.1rem',
+    border: 0,
+    borderRadius: '2.8rem',
+    padding: '1rem 1.6rem 1rem 2rem',
+    backgroundColor: atomic.neutral[10],
+  },
+  variants: {
+    open: {
+      false: {},
+      true: {
+        position: 'relative',
+        zIndex: 22,
+      },
+    },
+  },
 });
 
 export const sortButtonTextClassName = style({
@@ -137,10 +151,11 @@ export const sortButtonTextClassName = style({
 });
 
 export const iconClassName = style({
-  display: 'block',
+  display: 'inline-flex',
   width: '1.6rem',
   height: '1.6rem',
+  alignItems: 'center',
+  justifyContent: 'center',
   flexShrink: 0,
-  border: `0.15rem dashed ${atomic.neutral[90]}`,
-  borderRadius: '0.4rem',
+  color: atomic.neutral[70],
 });
