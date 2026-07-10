@@ -15,7 +15,7 @@ export interface RegistrationResultProduct {
 
 const completedProducts: RegistrationResultProduct[] = [
   {
-    category: '김치/반찬',
+    category: '가공식품',
     discountPeriod: '2026-07-06 ~ 2026-07-12',
     id: 'completed-001',
     price: '12,900',
@@ -24,7 +24,7 @@ const completedProducts: RegistrationResultProduct[] = [
     status: 'completed',
   },
   {
-    category: '정육',
+    category: '정육･달걀',
     discountPeriod: '2026-07-06 ~ 2026-07-10',
     id: 'completed-002',
     price: '8,900',
@@ -33,7 +33,7 @@ const completedProducts: RegistrationResultProduct[] = [
     status: 'completed',
   },
   {
-    category: '채소',
+    category: '채소･과일',
     discountPeriod: '2026-07-07 ~ 2026-07-12',
     id: 'completed-003',
     price: '2,980',
@@ -56,7 +56,7 @@ const needsEditProducts = Array.from({ length: 12 }, (_, index): RegistrationRes
   const productNumber = index + 1;
 
   return {
-    category: '김치/반찬',
+    category: '가공식품',
     discountPeriod: '',
     id: `needs-edit-${String(productNumber).padStart(3, '0')}`,
     price: '',

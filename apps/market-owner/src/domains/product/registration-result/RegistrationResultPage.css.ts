@@ -10,7 +10,9 @@ export const pageRootClassName = style({
 export const pageHeaderClassName = style({
   position: 'sticky',
   top: 0,
-  zIndex: 2,
+  zIndex: 10,
+  borderBottom: `1px solid ${atomic.neutral[20]}`,
+  backgroundColor: atomic.neutral[5],
 });
 
 export const logoPlaceholderClassName = style({

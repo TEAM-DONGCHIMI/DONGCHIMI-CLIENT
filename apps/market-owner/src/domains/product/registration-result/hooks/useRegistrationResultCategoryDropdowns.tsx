@@ -2,6 +2,7 @@ import { useEffect, useRef, type MouseEvent } from 'react';
 import { overlay, useOverlayData } from 'overlay-kit';
 
 import type { ProductCategoryGroupTypes } from '@/shared/constants/product-categories';
+import { getProductCategoryGroup } from '@/shared/utils/product-category.utils';
 
 import {
   CATEGORY_FILTER_DROPDOWN_OVERLAY_ID,
@@ -92,11 +93,12 @@ export const useRegistrationResultCategoryDropdowns = ({
   const openProductCategoryDropdown =
     (product: RegistrationResultProduct) => (event: MouseEvent<HTMLButtonElement>) => {
       const anchorRect = getAnchorRect(event.currentTarget);
-      const selectedCategory = getRegistrationResultProductFieldValue(
+      const selectedCategoryValue = getRegistrationResultProductFieldValue(
         product,
         productDrafts,
         'category',
       );
+      const selectedCategory = getProductCategoryGroup(selectedCategoryValue);
       const overlayId = getProductCategoryDropdownOverlayId(product.id);
 
       closeProductCategoryDropdown(productCategoryDropdownOverlayIdRef.current);

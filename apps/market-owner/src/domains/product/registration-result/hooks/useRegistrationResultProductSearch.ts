@@ -2,7 +2,10 @@ import { useMemo, useState } from 'react';
 
 import type { UploadSegmentTypes } from '@/shared/components';
 import type { ProductCategoryGroupTypes } from '@/shared/constants/product-categories';
-import { getProductMatchesCategoryFilter } from '@/shared/utils/product-category.utils';
+import {
+  getProductCategoryGroup,
+  getProductMatchesCategoryFilter,
+} from '@/shared/utils/product-category.utils';
 
 import type { RegistrationResultProduct } from '../fixtures';
 import {
@@ -59,7 +62,12 @@ export const useRegistrationResultProductSearch = ({
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      const category = getRegistrationResultProductFieldValue(product, productDrafts, 'category');
+      const categoryValue = getRegistrationResultProductFieldValue(
+        product,
+        productDrafts,
+        'category',
+      );
+      const category = getProductCategoryGroup(categoryValue);
       const productName = getRegistrationResultProductFieldValue(
         product,
         productDrafts,

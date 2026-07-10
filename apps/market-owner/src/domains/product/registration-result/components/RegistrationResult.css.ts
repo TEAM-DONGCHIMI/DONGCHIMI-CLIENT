@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { globalStyle, style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
@@ -202,6 +202,10 @@ export const productRowClassName = style({
       display: 'none',
     },
   },
+});
+
+globalStyle(`${productRowClassName} > div > div:last-child`, {
+  alignItems: 'center',
 });
 
 export const emptyStateClassName = style({

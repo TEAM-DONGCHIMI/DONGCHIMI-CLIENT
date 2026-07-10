@@ -160,7 +160,7 @@ describe('RegistrationResultSection', () => {
       const productNumber = index + 13;
 
       return {
-        category: '김치/반찬',
+        category: '가공식품',
         discountPeriod: '',
         id: `needs-edit-${String(productNumber).padStart(3, '0')}`,
         price: '',
@@ -190,6 +190,8 @@ describe('RegistrationResultSection', () => {
 
     const [categoryButton] = screen.getAllByRole('button', { name: '상품 카테고리 선택' });
 
+    expect(categoryButton).toHaveTextContent('가공식품');
+
     await user.click(categoryButton);
 
     const dropdown = await screen.findByRole('group', { name: '상품 카테고리' });
@@ -197,6 +199,18 @@ describe('RegistrationResultSection', () => {
     await user.click(within(dropdown).getByRole('button', { name: '수산' }));
 
     expect(categoryButton).toHaveTextContent('수산');
+  });
+
+  it('formats discount period while typing date digits', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    const [discountPeriodInput] = screen.getAllByRole('textbox', { name: '상품 할인 기간 입력' });
+
+    await user.type(discountPeriodInput, '2026063020260702');
+
+    expect(discountPeriodInput).toHaveValue('2026-06-30 ~ 2026-07-02');
   });
 
   it('keeps edited product field values in the result row', async () => {

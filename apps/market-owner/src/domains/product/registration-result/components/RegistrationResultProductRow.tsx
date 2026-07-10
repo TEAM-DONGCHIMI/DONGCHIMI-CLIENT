@@ -91,12 +91,84 @@ const getImageAlt = ({
   return product.imageAlt ?? productLabel;
 };
 
+const getProductImageSrc = (productImage: ImagePreview | string) => {
+  if (typeof productImage === 'string') {
+    return productImage;
+  }
+
+  return productImage.src;
+};
+
+const getPriceUnit = (price: string) => {
+  if (price.length === 0) {
+    return undefined;
+  }
+
+  return '원';
+};
+
+const getMediaActionViewModel = ({
+  hasProductImage,
+  needsEdit,
+}: {
+  hasProductImage: boolean;
+  needsEdit: boolean;
+}) => {
+  if (!needsEdit || hasProductImage) {
+    return {
+      icon: undefined,
+      label: undefined,
+      status: 'default' as const,
+    };
+  }
+
+  return {
+    icon: <IcPlus />,
+    label: '이미지 추가',
+    status: 'error' as const,
+  };
+};
+
+const formatDateDigits = (value: string) => {
+  if (value.length <= 4) {
+    return value;
+  }
+
+  if (value.length <= 6) {
+    return `${value.slice(0, 4)}-${value.slice(4)}`;
+  }
+
+  return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
+};
+
+export const formatDiscountPeriodInput = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 16);
+  const startDate = formatDateDigits(digits.slice(0, 8));
+  const endDate = formatDateDigits(digits.slice(8, 16));
+
+  if (endDate.length === 0) {
+    return startDate;
+  }
+
+  return `${startDate} ~ ${endDate}`;
+};
+
+const getNextFieldValue = (field: RegistrationResultEditableProductFieldTypes, value: string) => {
+  if (field === 'discountPeriod') {
+    return formatDiscountPeriodInput(value);
+  }
+
+  return value;
+};
+
 const getFieldChangeHandler = (
   field: RegistrationResultEditableProductFieldTypes,
   onFieldChange: ProductFieldParams['onFieldChange'],
 ): ChangeEventHandler<HTMLInputElement> => {
   return (event) => {
-    onFieldChange(field, event.currentTarget.value);
+    const nextValue = getNextFieldValue(field, event.currentTarget.value);
+
+    onFieldChange(field, nextValue);
   };
 };
 
@@ -120,7 +192,7 @@ const getProductFields = ({
       inputMode: 'numeric',
       onChange: getFieldChangeHandler('price', onFieldChange),
       placeholder: '가격을 입력하세요.',
-      unit: fieldValues.price.length > 0 ? '원' : undefined,
+      unit: getPriceUnit(fieldValues.price),
       value: fieldValues.price,
       width: '11.2rem',
     },
@@ -140,7 +212,9 @@ const getProductFields = ({
       width: '31.9rem',
     },
     {
+      'aria-label': `${productLabel} 할인 기간 입력`,
       id: `${productId}-discount-period`,
+      inputMode: 'numeric',
       onChange: getFieldChangeHandler('discountPeriod', onFieldChange),
       placeholder: 'YYYY-MM-DD ~  YYYY-MM-DD',
       value: fieldValues.discountPeriod,
@@ -165,6 +239,7 @@ export const RegistrationResultProductRow = ({
   const productImage = imagePreview ?? product.imageUrl;
   const hasProductImage = productImage != null;
   const statusViewModel = getProductStatusViewModel(product);
+  const mediaActionViewModel = getMediaActionViewModel({ hasProductImage, needsEdit });
   const productFields = getProductFields({
     fieldValues,
     productId: product.id,
@@ -179,7 +254,7 @@ export const RegistrationResultProductRow = ({
   }
 
   if (hasProductImage) {
-    const imageSrc = typeof productImage === 'string' ? productImage : productImage.src;
+    const imageSrc = getProductImageSrc(productImage);
     const imageAlt = getImageAlt({ imagePreview, product, productLabel });
 
     media = (
@@ -216,9 +291,9 @@ export const RegistrationResultProductRow = ({
         helperText={statusViewModel.helperText}
         media={media}
         mediaActionAriaLabel={`${productLabel} 이미지 추가`}
-        mediaActionIcon={needsEdit && !hasProductImage ? <IcPlus /> : undefined}
-        mediaActionLabel={needsEdit && !hasProductImage ? '이미지 추가' : undefined}
-        mediaStatus={needsEdit && !hasProductImage ? 'error' : 'default'}
+        mediaActionIcon={mediaActionViewModel.icon}
+        mediaActionLabel={mediaActionViewModel.label}
+        mediaStatus={mediaActionViewModel.status}
         onCheckedChange={onCheckedChange}
         onMediaAction={() => fileInputRef.current?.click()}
         statusLabel={statusViewModel.statusLabel}
