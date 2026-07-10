@@ -14,6 +14,8 @@ import {
   DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT,
   DEFAULT_TODAY_SPECIAL_VISIBLE_COUNT,
   marketProductsFixture,
+  type BusinessDayTypes,
+  type BusinessHourTypes,
 } from './fixtures/market-products.fixture';
 import * as S from './MarketProductsPage.css';
 import {
@@ -28,12 +30,56 @@ type MarketProductsPageProps = Readonly<{
   marketId: string;
 }>;
 
+type OpenBusinessHourTypes = Extract<BusinessHourTypes, { isOpen: true }>;
+
 const getTelHref = (phoneNumber: string) => `tel:${phoneNumber.replaceAll('-', '')}`;
 const getShareUrl = (slug: string) => `dongchimi.kr/${slug}`;
-const getCurrentBusinessCloseTime = (
-  businessHours: typeof marketProductsFixture.market.businessHours,
+
+const BUSINESS_DAY_BY_DATE_DAY_INDEX = [
+  'SUNDAY',
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+] satisfies BusinessDayTypes[];
+
+export const getCurrentBusinessCloseTime = (
+  businessHours: readonly BusinessHourTypes[],
+  date = new Date(),
 ) => {
-  return businessHours.find((businessHour) => businessHour.isOpen)?.close;
+  const currentBusinessDay = BUSINESS_DAY_BY_DATE_DAY_INDEX[date.getDay()];
+
+  if (currentBusinessDay == null) {
+    return undefined;
+  }
+
+  const currentBusinessHour = businessHours.find(
+    (businessHour): businessHour is OpenBusinessHourTypes => {
+      return businessHour.isOpen && businessHour.days.includes(currentBusinessDay);
+    },
+  );
+
+  return currentBusinessHour?.close;
+};
+
+const getCallModalDescription = ({
+  closeTime,
+  isOpenNow,
+}: {
+  closeTime: string | undefined;
+  isOpenNow: boolean;
+}) => {
+  if (!isOpenNow) {
+    return '현재 영업 시간이 아니에요.';
+  }
+
+  if (closeTime == null) {
+    return '현재 영업중';
+  }
+
+  return `현재 영업중· ${closeTime}까지`;
 };
 
 const MarketProductsBackButton = () => {
@@ -67,10 +113,10 @@ export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
   const shareUrl = getShareUrl(share.slug);
   const telHref = getTelHref(market.marketPhone1);
   const currentBusinessCloseTime = getCurrentBusinessCloseTime(market.businessHours);
-  const callModalDescription =
-    market.isOpenNow && currentBusinessCloseTime != null
-      ? `현재 영업중· ${currentBusinessCloseTime}까지`
-      : '현재 영업 시간이 아니에요.';
+  const callModalDescription = getCallModalDescription({
+    closeTime: currentBusinessCloseTime,
+    isOpenNow: market.isOpenNow,
+  });
 
   const visibleTodaySpecialProducts = isTodaySpecialExpanded
     ? todaySpecial.products

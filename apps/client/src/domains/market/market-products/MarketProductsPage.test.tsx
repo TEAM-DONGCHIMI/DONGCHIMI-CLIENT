@@ -2,8 +2,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { renderWithProviders, screen, userEvent, within } from '@/test';
 
-import { MarketProductsPage } from './MarketProductsPage';
+import { getCurrentBusinessCloseTime, MarketProductsPage } from './MarketProductsPage';
+import type { BusinessHourTypes } from './fixtures/market-products.fixture';
 import { calculateFirstRowCategoryCount } from './sections/EventDiscountProductsSection';
+import { formatBusinessDays } from './sections/MarketOverviewSection';
 
 const router = {
   back: vi.fn(),
@@ -170,5 +172,44 @@ describe('calculateFirstRowCategoryCount', () => {
         moreCategoryWidth: 72,
       }),
     ).toBe(1);
+  });
+});
+
+describe('formatBusinessDays', () => {
+  it('formats continuous business days as a range', () => {
+    expect(formatBusinessDays(['FRIDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY'])).toBe('화-금');
+  });
+
+  it('does not format non-continuous business days as a single range', () => {
+    expect(formatBusinessDays(['MONDAY', 'WEDNESDAY', 'FRIDAY'])).toBe('월요일, 수요일, 금요일');
+  });
+});
+
+describe('getCurrentBusinessCloseTime', () => {
+  const businessHours = [
+    {
+      close: '20:00',
+      days: ['MONDAY', 'TUESDAY'],
+      isOpen: true,
+      open: '10:00',
+    },
+    {
+      close: '22:00',
+      days: ['SATURDAY'],
+      isOpen: true,
+      open: '12:00',
+    },
+    {
+      days: ['SUNDAY'],
+      isOpen: false,
+    },
+  ] satisfies BusinessHourTypes[];
+
+  it('returns the close time for the current business day', () => {
+    expect(getCurrentBusinessCloseTime(businessHours, new Date(2026, 6, 11))).toBe('22:00');
+  });
+
+  it('returns undefined when the current business day is closed', () => {
+    expect(getCurrentBusinessCloseTime(businessHours, new Date(2026, 6, 12))).toBeUndefined();
   });
 });

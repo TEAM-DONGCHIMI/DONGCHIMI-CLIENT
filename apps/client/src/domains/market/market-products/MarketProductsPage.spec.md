@@ -32,7 +32,7 @@
 ## Out Of Scope
 
 - 실제 API query/mutation 연동
-- 현재 시간 기반 영업 상태 계산
+- 현재 영업중 여부 자체 계산 (`isOpenNow`는 API/fixture 값을 사용)
 - Kakao SDK 공유 연동
 - QR 코드 modal 또는 QR 이미지 표시
 - 상품 상세 페이지 UI 변경
@@ -72,7 +72,7 @@
 
 - navigation: 상품 카드는 `CLIENT_ROUTES.marketProduct(marketId, productId)`로 이동합니다.
 - back: header back button은 history가 있으면 `router.back()`, 없으면 `/markets`로 이동합니다.
-- call: 전화걸기 확인 modal에서 확인하면 대표 전화번호의 `tel:` URL로 이동합니다.
+- call: 전화걸기 확인 modal에서 확인하면 대표 전화번호의 `tel:` URL로 이동합니다. modal description은 `isOpenNow`가 true이면 오늘 요일에 맞는 영업 종료 시간을 찾아 `현재 영업중· HH:mm까지`로 표시하고, 오늘 종료 시간을 찾지 못하면 잘못된 시간을 표시하지 않고 `현재 영업중`까지만 표시합니다.
 - share: 공유하기 button은 `MarketShareBottomSheet`를 열고 링크 복사는 컴포넌트에 위임합니다. 카카오톡 공유는 Kakao SDK 연동 전까지 준비중 toast로 피드백합니다.
 - today special: 기본 2개 노출, 전체보기 시 fixture 전체 노출, 접기 시 기본 노출로 복귀합니다.
 - category: 기본은 `전체` 선택, 기본 노출 chip은 사용 가능한 첫 줄 폭에 맞춰 계산합니다. 숨겨진 카테고리가 있으면 첫 줄에 `더보기`를 함께 배치하고, 더보기 클릭 시 나머지 카테고리를 보여줍니다.
@@ -93,7 +93,7 @@
 - scroll: page 전체 세로 스크롤
 - sticky/fixed: header는 상단 sticky
 - tablet/desktop: 모바일 폭을 기준으로 자연스럽게 늘어나되, 핵심 콘텐츠는 overflow 없이 유지합니다.
-- product grid: TOP3와 행사 할인 상품 grid는 3열을 유지하고, 작은 화면에서는 카드 이미지가 정사각 비율로 함께 줄어듭니다.
+- product grid: TOP3와 행사 할인 상품 grid는 3열을 유지하고, 작은 화면에서는 카드 이미지가 정사각 비율로 함께 줄어듭니다. 행사 할인 상품의 `PeriodProductCard`는 실제 3열 grid 폭에 맞는 `imageSizes`를 전달합니다.
 
 ## Verification
 

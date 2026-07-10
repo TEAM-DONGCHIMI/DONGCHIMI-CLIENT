@@ -17,6 +17,20 @@ const DAY_LABELS: Record<BusinessDayTypes, string> = {
   WEDNESDAY: '수',
 };
 
+const BUSINESS_DAY_ORDER = [
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+  'SUNDAY',
+] satisfies BusinessDayTypes[];
+
+const BUSINESS_DAY_INDEX = new Map(
+  BUSINESS_DAY_ORDER.map((businessDay, index) => [businessDay, index]),
+);
+
 interface MarketOverviewSectionProps {
   market: {
     address: string;
@@ -30,16 +44,55 @@ interface MarketOverviewSectionProps {
   shareUrl: string;
 }
 
-const formatBusinessDays = (days: BusinessDayTypes[]) => {
-  if (days.length === 0) {
+const sortBusinessDays = (days: readonly BusinessDayTypes[]) => {
+  return Array.from(new Set(days)).sort((previousDay, nextDay) => {
+    return (BUSINESS_DAY_INDEX.get(previousDay) ?? 0) - (BUSINESS_DAY_INDEX.get(nextDay) ?? 0);
+  });
+};
+
+const groupContinuousBusinessDays = (days: readonly BusinessDayTypes[]) => {
+  const sortedDays = sortBusinessDays(days);
+
+  return sortedDays.reduce<BusinessDayTypes[][]>((groups, day) => {
+    const previousGroup = groups[groups.length - 1];
+    const previousDay = previousGroup?.[previousGroup.length - 1];
+    const previousDayIndex = previousDay == null ? undefined : BUSINESS_DAY_INDEX.get(previousDay);
+    const currentDayIndex = BUSINESS_DAY_INDEX.get(day);
+    const isContinuous =
+      previousDayIndex != null &&
+      currentDayIndex != null &&
+      currentDayIndex === previousDayIndex + 1;
+
+    if (previousGroup != null && isContinuous) {
+      previousGroup.push(day);
+      return groups;
+    }
+
+    return [...groups, [day]];
+  }, []);
+};
+
+const formatBusinessDayGroup = (days: readonly BusinessDayTypes[]) => {
+  const firstDay = days[0];
+  const lastDay = days[days.length - 1];
+
+  if (firstDay == null || lastDay == null) {
     return '';
   }
 
   if (days.length === 1) {
-    return `${DAY_LABELS[days[0]]}요일`;
+    return `${DAY_LABELS[firstDay]}요일`;
   }
 
-  return `${DAY_LABELS[days[0]]}-${DAY_LABELS[days[days.length - 1]]}`;
+  return `${DAY_LABELS[firstDay]}-${DAY_LABELS[lastDay]}`;
+};
+
+export const formatBusinessDays = (days: readonly BusinessDayTypes[]) => {
+  if (days.length === 0) {
+    return '';
+  }
+
+  return groupContinuousBusinessDays(days).map(formatBusinessDayGroup).join(', ');
 };
 
 const formatBusinessHour = (businessHour: BusinessHourTypes) => {
@@ -83,7 +136,7 @@ export const MarketOverviewSection = ({
             <Image
               alt={`${market.name} 대표 이미지`}
               fill
-              sizes='14rem'
+              sizes='14.1rem'
               src={market.thumbnailUrl}
               unoptimized
             />

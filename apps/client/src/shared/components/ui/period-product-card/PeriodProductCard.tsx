@@ -10,6 +10,7 @@ type PeriodProductCardBaseProps = AriaAttributes & {
   className?: string;
   id?: string;
   imageAlt?: string;
+  imageSizes?: ImageProps['sizes'];
   imageSrc?: ImageProps['src'];
   priceText: string;
   productName: string;
@@ -37,10 +38,14 @@ const hasProductImage = (imageSrc: ImageProps['src'] | undefined): imageSrc is I
 
 const PeriodProductCardContent = ({
   imageAlt,
+  imageSizes,
   imageSrc,
   priceText,
   productName,
-}: Pick<PeriodProductCardProps, 'imageAlt' | 'imageSrc' | 'priceText' | 'productName'>) => {
+}: Pick<
+  PeriodProductCardProps,
+  'imageAlt' | 'imageSizes' | 'imageSrc' | 'priceText' | 'productName'
+>) => {
   const hasImage = hasProductImage(imageSrc);
 
   return (
@@ -51,7 +56,7 @@ const PeriodProductCardContent = ({
             alt={imageAlt ?? `${productName} ${PRODUCT_IMAGE_SUFFIX}`}
             className={S.imageClassName}
             fill
-            sizes='9.4rem'
+            sizes={imageSizes ?? '9.4rem'}
             src={imageSrc}
             unoptimized
           />
@@ -75,6 +80,7 @@ export const PeriodProductCard = ({
   href,
   className,
   imageAlt,
+  imageSizes,
   imageSrc,
   onClick,
   priceText,
@@ -94,6 +100,7 @@ export const PeriodProductCard = ({
       >
         <PeriodProductCardContent
           imageAlt={imageAlt}
+          imageSizes={imageSizes}
           imageSrc={imageSrc}
           priceText={priceText}
           productName={productName}
@@ -106,6 +113,7 @@ export const PeriodProductCard = ({
     <div aria-label={ariaLabel} className={cn(S.rootClassName, className)} {...props}>
       <PeriodProductCardContent
         imageAlt={imageAlt}
+        imageSizes={imageSizes}
         imageSrc={imageSrc}
         priceText={priceText}
         productName={productName}

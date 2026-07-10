@@ -23,6 +23,8 @@ interface EventDiscountProductsSectionProps {
 
 export const EVENT_DISCOUNT_ALL_CATEGORY_ID = 'all';
 
+const EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES = 'calc((100vw - 10rem) / 3)';
+
 const formatPrice = (price: number) => price.toLocaleString('ko-KR');
 
 type CategoryRowMeasurementTypes = Readonly<{
@@ -243,6 +245,7 @@ export const EventDiscountProductsSection = ({
               key={product.productId}
               className={S.eventProductCardClassName}
               href={CLIENT_ROUTES.marketProduct(marketId, String(product.productId))}
+              imageSizes={EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES}
               imageSrc={product.thumbnailUrl ?? undefined}
               priceText={formatPrice(product.discountedPrice)}
               productName={product.name}
