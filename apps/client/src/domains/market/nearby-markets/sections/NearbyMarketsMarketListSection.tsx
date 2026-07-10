@@ -12,15 +12,21 @@ import { flattenNearbyMarketsPages } from '../utils/flatten-nearby-markets-pages
 
 export interface NearbyMarketsMarketListSectionProps {
   keyword?: string;
+  marketSearchOrigin: { lat: number; lng: number };
 }
 
 export const NearbyMarketsMarketListSection = ({
   keyword,
+  marketSearchOrigin,
 }: NearbyMarketsMarketListSectionProps) => {
   const router = useRouter();
 
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isError, isPending } =
-    useNearbyMarketsInfiniteQuery({ keyword });
+    useNearbyMarketsInfiniteQuery({
+      keyword,
+      latitude: marketSearchOrigin.lat,
+      longitude: marketSearchOrigin.lng,
+    });
 
   const sentinelRef = useIntersectionObserver<HTMLDivElement>({
     enabled: Boolean(hasNextPage) && !isFetchingNextPage,

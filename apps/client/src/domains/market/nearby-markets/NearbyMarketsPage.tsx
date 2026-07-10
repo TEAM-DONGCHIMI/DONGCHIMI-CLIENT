@@ -15,6 +15,7 @@ import {
   NearbyMarketsMarketListSection,
   NearbyMarketsSearchSection,
 } from './sections';
+import { DEFAULT_CENTER } from './sections/NearbyMarketsMapSection.constants';
 
 export const NearbyMarketsPage = () => {
   const [keyword, setKeyword] = useState('');
@@ -24,6 +25,7 @@ export const NearbyMarketsPage = () => {
   const locationPlaceholder = coordinates
     ? DEFAULT_LOCATION_PLACEHOLDER
     : LOCATION_PERMISSION_DENIED_PLACEHOLDER;
+  const marketSearchOrigin = coordinates ?? DEFAULT_CENTER;
 
   return (
     <main className={S.pageClassName}>
@@ -37,13 +39,17 @@ export const NearbyMarketsPage = () => {
         coordinates={coordinates}
         errorCode={errorCode}
         keyword={debouncedKeyword}
+        marketSearchOrigin={marketSearchOrigin}
       />
       <NearbyMarketsSearchSection
         keyword={keyword}
         onKeywordChange={setKeyword}
         placeholder={locationPlaceholder}
       />
-      <NearbyMarketsMarketListSection keyword={debouncedKeyword} />
+      <NearbyMarketsMarketListSection
+        keyword={debouncedKeyword}
+        marketSearchOrigin={marketSearchOrigin}
+      />
     </main>
   );
 };

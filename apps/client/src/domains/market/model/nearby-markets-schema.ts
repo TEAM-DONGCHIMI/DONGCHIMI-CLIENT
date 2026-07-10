@@ -48,6 +48,8 @@ export const resolveNearbyMarketsResponse = (
 
 export const nearbyMarketsListParamsSchema = z.object({
   keyword: z.string().trim().optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   pageSize: z.number().int().positive().optional(),
 });
 

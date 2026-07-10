@@ -25,6 +25,7 @@ export interface NearbyMarketsMapSectionProps {
   coordinates: { lat: number; lng: number } | null;
   errorCode: GeolocationErrorCodeTypes | null;
   keyword?: string;
+  marketSearchOrigin: { lat: number; lng: number };
 }
 
 const resolveStatusMessage = (
@@ -46,12 +47,17 @@ export const NearbyMarketsMapSection = ({
   coordinates,
   errorCode,
   keyword,
+  marketSearchOrigin,
 }: NearbyMarketsMapSectionProps) => {
   const [loading, error] = useKakaoLoader({
     appkey: KAKAO_MAP_APP_KEY ?? '',
   });
 
-  const { data, isError: isMarketsError } = useNearbyMarketsInfiniteQuery({ keyword });
+  const { data, isError: isMarketsError } = useNearbyMarketsInfiniteQuery({
+    keyword,
+    latitude: marketSearchOrigin.lat,
+    longitude: marketSearchOrigin.lng,
+  });
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
 
   if (loading) {
