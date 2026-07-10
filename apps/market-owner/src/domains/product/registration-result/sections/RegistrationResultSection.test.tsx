@@ -3,7 +3,7 @@ import { OverlayProvider, overlay } from 'overlay-kit';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent, within } from '@/test';
-import { registrationResultFixture } from '../fixtures';
+import { registrationResultFixture, type RegistrationResultProduct } from '../fixtures';
 import {
   RegistrationResultSection,
   type RegistrationResultSectionProps,
@@ -240,6 +240,54 @@ describe('RegistrationResultSection', () => {
 
     expect(await screen.findByRole('img', { name: 'preview.png' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '상품 이미지 변경' })).toBeInTheDocument();
+  });
+
+  it('replaces an existing product image from the uploaded image button', async () => {
+    const user = userEvent.setup();
+    const replacementImage = new File(['replacement'], 'replacement.png', { type: 'image/png' });
+    const productWithExistingImage: RegistrationResultProduct = {
+      category: '가공식품',
+      discountPeriod: '',
+      id: 'needs-edit-with-image',
+      imageAlt: '기존 상품 이미지',
+      imageUrl: 'https://example.com/product.png',
+      price: '',
+      productName: '기존 이미지 상품',
+      promotionText: '',
+      status: 'needsEdit',
+      statusReason: '판매가격 미입력',
+    };
+
+    renderSection({
+      products: [productWithExistingImage],
+      summary: {
+        completedCount: 0,
+        needsEditCount: 1,
+        totalCount: 1,
+      },
+    });
+
+    expect(screen.getByRole('img', { name: '기존 상품 이미지' })).toBeInTheDocument();
+
+    const changeImageButton = screen.getByRole('button', {
+      name: '기존 이미지 상품 이미지 변경',
+    });
+    const imageInputClickSpy = vi
+      .spyOn(HTMLInputElement.prototype, 'click')
+      .mockImplementation(() => undefined);
+
+    try {
+      await user.click(changeImageButton);
+
+      expect(imageInputClickSpy).toHaveBeenCalledTimes(1);
+    } finally {
+      imageInputClickSpy.mockRestore();
+    }
+
+    await user.upload(screen.getByLabelText('기존 이미지 상품 이미지 파일 선택'), replacementImage);
+
+    expect(await screen.findByRole('img', { name: 'replacement.png' })).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: '기존 상품 이미지' })).not.toBeInTheDocument();
   });
 
   it('filters products by search value', async () => {

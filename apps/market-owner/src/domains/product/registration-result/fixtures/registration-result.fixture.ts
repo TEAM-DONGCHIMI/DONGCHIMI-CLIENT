@@ -13,6 +13,25 @@ export interface RegistrationResultProduct {
   statusReason?: string;
 }
 
+interface RegistrationResultProductImageFixture {
+  imageAlt?: string;
+  imageUrl?: string;
+}
+
+const existingProductImageFixture: RegistrationResultProductImageFixture = {
+  imageAlt: '등록된 상품 이미지',
+  imageUrl:
+    'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%228%22 fill=%22%23E5F7EF%22/%3E%3Cpath d=%22M18 43h28L36 28l-7 9-4-5-7 11Z%22 fill=%22%2324C383%22/%3E%3Ccircle cx=%2223%22 cy=%2222%22 r=%224%22 fill=%22%2324C383%22/%3E%3C/svg%3E',
+};
+
+const getNeedsEditProductImageFixture = (index: number): RegistrationResultProductImageFixture => {
+  if (index !== 0) {
+    return {};
+  }
+
+  return existingProductImageFixture;
+};
+
 const completedProducts: RegistrationResultProduct[] = [
   {
     category: '가공식품',
@@ -64,6 +83,7 @@ const needsEditProducts = Array.from({ length: 12 }, (_, index): RegistrationRes
     promotionText: '',
     status: 'needsEdit',
     statusReason: productNumber % 3 === 0 ? '할인기간 미입력' : '판매가격 미입력',
+    ...getNeedsEditProductImageFixture(index),
   };
 });
 

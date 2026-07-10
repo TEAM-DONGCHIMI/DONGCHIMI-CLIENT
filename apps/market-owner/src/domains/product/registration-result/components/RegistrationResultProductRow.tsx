@@ -247,6 +247,9 @@ export const RegistrationResultProductRow = ({
     onCategoryClick,
     onFieldChange,
   });
+  const openImageFileDialog = () => {
+    fileInputRef.current?.click();
+  };
   let media: ReactNode = undefined;
 
   if (!hasProductImage && !needsEdit) {
@@ -261,7 +264,7 @@ export const RegistrationResultProductRow = ({
       <button
         aria-label={`${productLabel} 이미지 변경`}
         className={S.uploadedImageButtonClassName}
-        onClick={() => fileInputRef.current?.click()}
+        onClick={openImageFileDialog}
         type='button'
       >
         <img alt={imageAlt} className={S.uploadedProductImageClassName} src={imageSrc} />
@@ -295,7 +298,7 @@ export const RegistrationResultProductRow = ({
         mediaActionLabel={mediaActionViewModel.label}
         mediaStatus={mediaActionViewModel.status}
         onCheckedChange={onCheckedChange}
-        onMediaAction={() => fileInputRef.current?.click()}
+        onMediaAction={openImageFileDialog}
         statusLabel={statusViewModel.statusLabel}
         statusTone={statusViewModel.statusTone}
       />
