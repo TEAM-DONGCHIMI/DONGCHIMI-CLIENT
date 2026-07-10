@@ -79,7 +79,6 @@ export const imageBoxRecipe = recipe({
         width: '11.2rem',
         height: '11.2rem',
         border: `1px dashed ${atomic.neutral[40]}`,
-        cursor: 'pointer',
         transition: 'border-color 160ms ease, outline-color 160ms ease',
         selectors: {
           '&:focus-within': {
@@ -90,6 +89,10 @@ export const imageBoxRecipe = recipe({
       },
     },
   },
+});
+
+export const uploadTriggerClassName = style({
+  cursor: 'pointer',
 });
 
 export const imageBoxPreviewRecipe = recipe({

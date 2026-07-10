@@ -41,6 +41,7 @@ export const ProductImageUploadField = ({
   const hasFileInput = id != null && onImageChange != null;
   const imageBoxClassName = cn(
     S.imageBoxRecipe({ variant }),
+    hasFileInput && S.uploadTriggerClassName,
     previewUrl && S.imageBoxPreviewRecipe({ variant }),
   );
   const imageBoxContent = previewUrl ? (
