@@ -40,6 +40,38 @@ const DEFAULT_SALE_PERCENT_UNIT = '%';
 const DEFAULT_EDIT_LABEL = '상품 수정';
 const DEFAULT_DELETE_LABEL = '상품 삭제';
 const DEFAULT_SELECT_LABEL = '상품 선택';
+const THOUSAND_VIEW_COUNT = 1_000;
+const TEN_THOUSAND_VIEW_COUNT = 10_000;
+
+const formatDisplayDate = (date: string) => {
+  const match = date.match(/(\d{4})[.-]\s*(\d{1,2})[.-]\s*(\d{1,2})/);
+
+  if (match == null) {
+    return date;
+  }
+
+  const [, year, month, day] = match;
+
+  return `${year}. ${Number(month)}. ${Number(day)}`;
+};
+
+const formatViewCount = (viewCount: number | string | undefined) => {
+  const numericViewCount = Number(viewCount ?? 0);
+
+  if (!Number.isFinite(numericViewCount)) {
+    return viewCount ?? '0';
+  }
+
+  if (numericViewCount >= TEN_THOUSAND_VIEW_COUNT) {
+    return `${Math.floor(numericViewCount / TEN_THOUSAND_VIEW_COUNT)}만`;
+  }
+
+  if (numericViewCount >= THOUSAND_VIEW_COUNT) {
+    return `${Math.floor(numericViewCount / 100) / 10}천`;
+  }
+
+  return String(numericViewCount);
+};
 
 const CheckIcon = () => {
   return (
@@ -144,8 +176,12 @@ export const ProductEditCardDesktop = ({
   const shouldShowSalePercent = todayDiscountPrice && salePercent != null;
   const shouldShowDate = endDate != null;
   const shouldShowStartDate = periodDiscountDate && startDate != null;
+  const formattedStartDate =
+    shouldShowStartDate && startDate != null ? formatDisplayDate(startDate) : undefined;
+  const formattedEndDate = endDate != null ? formatDisplayDate(endDate) : undefined;
+  const formattedViewCount = formatViewCount(viewCount);
   const dateText = shouldShowDate
-    ? `${shouldShowStartDate ? `${startDate}~` : ''}${endDate}일까지`
+    ? `${formattedStartDate != null ? `${formattedStartDate}~` : ''}${formattedEndDate}일까지`
     : undefined;
   const cardLabel = ariaLabel ?? `${productName} 상품 수정 카드`;
 
@@ -159,12 +195,10 @@ export const ProductEditCardDesktop = ({
         <header className={S.headerClassName}>
           <div className={S.metaClassName}>
             <span className={S.categoryChipClassName}>{categoryName}</span>
-            {viewCount != null && (
-              <span className={S.viewChipClassName}>
-                <span>{viewCount}</span>
-                <span>{viewCountLabel}</span>
-              </span>
-            )}
+            <span className={S.viewChipClassName}>
+              <span>{formattedViewCount}</span>
+              <span>{viewCountLabel}</span>
+            </span>
           </div>
 
           <div className={S.actionGroupClassName}>

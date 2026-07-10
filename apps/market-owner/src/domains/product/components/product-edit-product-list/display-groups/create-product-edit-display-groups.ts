@@ -16,6 +16,57 @@ interface CreateProductEditDisplayGroupsParams<ProductTypes extends ProductEditG
 
 const ALL_CATEGORY = '전체';
 const HIGH_VIEW_COUNT_GROUP_TITLE = '조회수 높은 순';
+const FALLBACK_SORT_TIME = 0;
+
+const parseProductEditSortDate = (date?: string) => {
+  if (date == null) {
+    return FALLBACK_SORT_TIME;
+  }
+
+  const match = date.match(/(\d{4})[년.-]\s*(\d{1,2})[월.-]\s*(\d{1,2})/);
+
+  if (match == null) {
+    return FALLBACK_SORT_TIME;
+  }
+
+  const [, year, month, day] = match;
+
+  return new Date(Number(year), Number(month) - 1, Number(day)).getTime();
+};
+
+const getRegisteredSortTime = (product: ProductEditGroupableProduct) => {
+  return parseProductEditSortDate(product.registeredAt ?? product.registeredDateLabel);
+};
+
+const sortProductsBy = <ProductTypes extends ProductEditGroupableProduct>(
+  products: readonly ProductTypes[],
+  compareProducts: (previousProduct: ProductTypes, nextProduct: ProductTypes) => number,
+) => {
+  return [...products]
+    .map((product, index) => ({
+      index,
+      product,
+    }))
+    .sort((previousItem, nextItem) => {
+      const order = compareProducts(previousItem.product, nextItem.product);
+
+      return order === 0 ? previousItem.index - nextItem.index : order;
+    })
+    .map(({ product }) => product);
+};
+
+const compareByRegisteredDateDesc = <ProductTypes extends ProductEditGroupableProduct>(
+  previousProduct: ProductTypes,
+  nextProduct: ProductTypes,
+) => {
+  return getRegisteredSortTime(nextProduct) - getRegisteredSortTime(previousProduct);
+};
+
+const sortByRegisteredDateDesc = <ProductTypes extends ProductEditGroupableProduct>(
+  products: readonly ProductTypes[],
+) => {
+  return sortProductsBy(products, compareByRegisteredDateDesc);
+};
 
 const groupProductsBy = <ProductTypes extends ProductEditGroupableProduct>(
   products: readonly ProductTypes[],
@@ -49,7 +100,7 @@ const createRegisteredDateGroups = <ProductTypes extends ProductEditGroupablePro
   createCardProps: (product: ProductTypes) => ProductEditCardProps,
 ) => {
   return createGroupedProductSections(
-    products,
+    sortByRegisteredDateDesc(products),
     (product) => product.registeredDateLabel,
     createCardProps,
   );
@@ -61,9 +112,15 @@ const createViewCountGroup = <ProductTypes extends ProductEditGroupableProduct>(
 ) => {
   return [
     {
-      products: [...products]
-        .sort((previousProduct, nextProduct) => nextProduct.viewCount - previousProduct.viewCount)
-        .map(createCardProps),
+      products: sortProductsBy(products, (previousProduct, nextProduct) => {
+        const viewCountOrder = (nextProduct.viewCount ?? 0) - (previousProduct.viewCount ?? 0);
+
+        if (viewCountOrder !== 0) {
+          return viewCountOrder;
+        }
+
+        return compareByRegisteredDateDesc(previousProduct, nextProduct);
+      }).map(createCardProps),
       title: HIGH_VIEW_COUNT_GROUP_TITLE,
     },
   ];

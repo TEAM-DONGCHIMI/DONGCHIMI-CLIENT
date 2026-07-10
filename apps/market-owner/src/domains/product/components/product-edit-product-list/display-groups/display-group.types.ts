@@ -16,7 +16,8 @@ export type ProductEditGroupFilterTypes = 'category' | 'registered' | 'views';
 export interface ProductEditGroupableProduct extends ProductEditCardProps {
   categoryName: string;
   productName: string;
+  registeredAt?: string;
   registeredDateLabel: string;
   salePrice: string;
-  viewCount: number;
+  viewCount?: number;
 }

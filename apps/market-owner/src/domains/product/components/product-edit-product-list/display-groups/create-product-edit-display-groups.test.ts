@@ -94,4 +94,36 @@ describe('createProductEditDisplayGroups', () => {
       '사과 4입',
     ]);
   });
+
+  it('sorts products by latest registered date for registered filter', () => {
+    const groups = createProductEditDisplayGroups({
+      createCardProps,
+      products,
+      selectedCategory: null,
+      selectedFilter: 'registered',
+      supportsCategoryFilter: true,
+    });
+
+    expect(groups.map((group) => group.title)).toEqual(['2026년 8월 15일', '2026년 8월 14일']);
+    expect(groups[0]?.products.map((product) => product.productName)).toEqual(['삼겹살 500g']);
+  });
+
+  it('falls back to registered date order when view counts are tied', () => {
+    const groups = createProductEditDisplayGroups({
+      createCardProps,
+      products: products.map((product) => ({
+        ...product,
+        viewCount: 0,
+      })),
+      selectedCategory: null,
+      selectedFilter: 'views',
+      supportsCategoryFilter: true,
+    });
+
+    expect(groups[0]?.products.map((product) => product.productName)).toEqual([
+      '삼겹살 500g',
+      '사과 4입',
+      '대란 30구',
+    ]);
+  });
 });
