@@ -65,7 +65,12 @@ export const LeafletSharePage = () => {
 
       {toastStatus === 'copyError' && (
         <ShareToast
-          icon={<IcCircleExclamation aria-hidden='true' />}
+          icon={
+            <IcCircleExclamation
+              aria-hidden='true'
+              className={ShareToastStyles.errorIconClassName}
+            />
+          }
           onAnimationEnd={hideToast}
           status='error'
         >
