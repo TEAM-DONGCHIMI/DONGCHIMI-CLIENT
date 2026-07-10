@@ -106,6 +106,13 @@ export const sectionBodyClassName = style({
   minWidth: 0,
 });
 
+export const productInfoFieldRowsClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.9rem',
+  minWidth: 0,
+});
+
 export const fieldLabelClassName = style({
   ...typography['body-3-medium'],
   color: atomic.neutral[70],
