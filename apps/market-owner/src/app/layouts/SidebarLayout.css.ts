@@ -9,7 +9,7 @@ export const sidebarLayoutRootClassName = style({
   height: '100vh',
   gridTemplateColumns: `${SIDEBAR_LAYOUT_SIDEBAR_WIDTH} minmax(0, 1fr)`,
   overflow: 'hidden',
-  backgroundColor: atomic.neutral[10],
+  backgroundColor: atomic.neutral[5],
 });
 
 export const sidebarSlotClassName = style({
