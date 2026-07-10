@@ -19,7 +19,10 @@
 - `editModalVariant`: 카드 수정 버튼에서 열 개별 상품 수정 modal의 오늘의 특가/행사 할인 variant입니다.
 - `groups`: 렌더링할 상품 그룹입니다. 모든 그룹의 `products`가 비어 있으면 empty 상태를 표시합니다.
 - `registrationHref`: empty CTA가 이동할 상품 등록 route입니다.
+- `selectionMode`: true이면 상품 카드를 bulk selection 상태로 렌더링합니다.
+- `selectedProductNames`: bulk selection 상태에서 선택된 상품명 목록입니다.
 - `onDeleteProduct`: 개별 카드 삭제가 확정되거나 즉시 삭제 가능한 경우 호출하는 handler입니다.
+- `onToggleProductSelection`: bulk selection 상태에서 상품 선택 상태를 토글하는 handler입니다.
 - category filter: 카테고리를 선택하기 전에는 상품을 카테고리 옵션 순서대로 그룹화해 표시하고, 카테고리를 선택한 뒤에는 해당 카테고리 상품만 표시합니다.
 
 ## UI States
@@ -29,6 +32,7 @@
 - error: 이번 컴포넌트 범위에서 다루지 않습니다.
 - success: 상품이 있으면 그룹 제목과 상품 수정 카드를 grid로 표시합니다.
 - delete confirm: 개별 상품 카드 삭제 버튼을 누르면 삭제 확인 modal을 표시합니다.
+- bulk selection: `selectionMode`가 true이면 카드는 dimmed selectable 상태가 되고 선택된 상품은 check 상태로 표시합니다.
 
 ## Behavior
 
@@ -37,6 +41,7 @@
 - empty CTA는 native link로 렌더링해 오늘의 특가/행사 할인 등록 route로 이동합니다.
 - 상품이 있는 그룹은 전달받은 순서를 유지하며, 카드의 accessible name은 주입된 `aria-label`을 우선 사용합니다.
 - 카드 수정 버튼을 누르면 `openProductEditModal`로 `ProductEditModal`을 열고 선택된 카드 값을 form 초기값으로 전달합니다.
+- bulk selection mode에서는 카드 수정/삭제 버튼을 disabled 처리하고, selection button만 `onToggleProductSelection`으로 동작합니다.
 - 카드 삭제 버튼을 눌렀을 때 행사 종료일이 오늘 이후이면 `ProductEditConfirmModal action="delete"`를 열고, 확인 버튼을 누르면 `onDeleteProduct`를 호출합니다.
 - 카드 삭제 버튼을 눌렀을 때 행사 종료일이 지난 상품이면 확인 modal 없이 바로 `onDeleteProduct`를 호출합니다.
 - 오늘의 특가 수정 modal은 시작일을 비활성 상태로 표시하고 `하루 더 늘리기` 버튼을 제공합니다.
@@ -48,6 +53,7 @@
 - empty 이미지는 장식 이미지이므로 `alt=""`로 숨깁니다.
 - empty 제목은 `h2`로 렌더링합니다.
 - CTA는 link role과 visible label을 제공합니다.
+- bulk selection button은 `aria-pressed`로 선택 여부를 제공합니다.
 
 ## Verification
 
@@ -56,5 +62,6 @@
 - [x] edit action opens product edit modal
 - [x] today special edit modal extends end date by one day
 - [x] event discount edit modal hides one-day extension
+- [x] bulk selection mode renders selectable cards and disables card actions
 - [x] remaining-period delete action opens product delete confirm modal before delete
 - [x] ended-period delete action deletes immediately

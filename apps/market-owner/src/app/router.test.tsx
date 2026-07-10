@@ -357,6 +357,68 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('link', { name: '행사 할인' })).toHaveAttribute('aria-current', 'page');
   });
 
+  it('opens period bulk edit modal after selecting products on the edit page', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/products/today-special/edit');
+
+    expect(
+      await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '기간 일괄 수정' }));
+
+    expect(screen.getByText('선택된 상품 (0)')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '딸기 2팩 상품 수정' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '딸기 2팩 상품 삭제' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 선택' }));
+
+    expect(screen.getByText('선택된 상품 (1)')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '기간 일괄 수정' }));
+
+    expect(
+      await screen.findByRole('dialog', { name: '선택된 상품들의 판매 기간을 수정해주세요' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('행사 종료일')).toHaveValue('2026-08-16');
+
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    expect(screen.queryByText('선택된 상품 (1)')).not.toBeInTheDocument();
+  });
+
+  it('deletes selected products from the edit page bulk delete flow', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/products/event-discount/edit');
+
+    expect(
+      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '일괄 삭제' }));
+
+    expect(screen.getByText('선택된 상품 (0)')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '햇감자 1kg 상품 선택' }));
+
+    expect(screen.getByText('선택된 상품 (1)')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '일괄 삭제' }));
+
+    expect(
+      await screen.findByRole('dialog', {
+        name: /행사 기간이 아직 남았어요\.\s*정말 삭제하시겠어요\?/,
+      }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '삭제하기' }));
+
+    expect(screen.queryByText('햇감자 1kg')).not.toBeInTheDocument();
+    expect(screen.queryByText('선택된 상품 (1)')).not.toBeInTheDocument();
+  });
+
   it('renders the not found page for unknown routes', async () => {
     renderRoute('/unknown-route');
 

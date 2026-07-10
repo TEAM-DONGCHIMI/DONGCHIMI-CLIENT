@@ -1,7 +1,7 @@
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { fireEvent, waitFor } from '@testing-library/react';
 import { OverlayProvider } from 'overlay-kit';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent } from '@/test';
 
@@ -57,6 +57,54 @@ describe('ProductEditProductList', () => {
     await user.click(screen.getByRole('button', { name: '상품 등록하러 가기' }));
 
     expect(screen.getByText('오늘의 특가 상품 등록 화면')).toBeInTheDocument();
+  });
+
+  it('renders selectable cards and disables card actions in bulk selection mode', async () => {
+    const user = userEvent.setup();
+    const handleToggleProductSelection = vi.fn();
+
+    render(
+      <MemoryRouter>
+        <OverlayProvider>
+          <ProductEditProductList
+            ariaLabel='오늘의 특가 상품 수정 목록'
+            editModalVariant='todaySpecial'
+            groups={[
+              {
+                title: '2026년 8월 15일',
+                products: [
+                  {
+                    categoryName: '채소·과일',
+                    endDate: '2026. 8. 16',
+                    originalPrice: '5,000',
+                    productName: '딸기 2팩',
+                    salePrice: '4,500',
+                    viewCount: 162,
+                  },
+                ],
+              },
+            ]}
+            registrationHref='/products/today-special/new'
+            selectedProductNames={['딸기 2팩']}
+            selectionMode
+            onToggleProductSelection={handleToggleProductSelection}
+          />
+        </OverlayProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('button', { name: '딸기 2팩 상품 수정' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '딸기 2팩 상품 삭제' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '딸기 2팩 상품 선택' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+
+    await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 선택' }));
+
+    expect(handleToggleProductSelection).toHaveBeenCalledWith(
+      expect.objectContaining({ productName: '딸기 2팩' }),
+    );
   });
 
   it('opens today special edit modal from product card edit action', async () => {
