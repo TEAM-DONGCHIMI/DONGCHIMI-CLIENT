@@ -85,12 +85,11 @@ LoginPage
 
 ## Verification
 
-- [ ] `git diff --check`
-- [ ] `pnpm format:check`
-- [ ] `pnpm --filter client lint`
-- [ ] `pnpm --filter client typecheck`
-- [ ] `pnpm --filter client build`
-- [ ] browser route: `/login`
+- [x] `git diff --check`
+- [x] `pnpm --filter client lint`
+- [x] `pnpm --filter client typecheck`
+- [x] `pnpm --filter client build`
+- [x] browser route: `/login`
 
 ## Open Questions
 
