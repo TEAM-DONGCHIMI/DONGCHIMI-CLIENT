@@ -1,0 +1,80 @@
+# Section Spec: `LoginForm`
+
+## Metadata
+
+- App: `market-owner`
+- Domain: `auth`
+- Page: `login`
+- Path: `apps/market-owner/src/domains/auth/login/sections/login-form/LoginForm.tsx`
+- Jira: `DCMSM-23`
+- Status: Implemented
+
+## Purpose
+
+- 로그인 화면의 카드 레이아웃 내부에 직접 렌더링되는 화면 구획으로, 로그인 폼 자체(이메일/비밀번호 입력, 로그인 상태 유지, 제출 버튼)만 담당합니다.
+- 회원가입 유도는 인증 액션과 무관한 별개 구획인 `SignupPrompt`로 분리되어 있습니다.
+
+## Composition
+
+- Implementation note: `login/hooks/use-login-fields.ts` now uses React Hook Form controllers for email, password, and auto-login fields.
+- Validation note: `login/schemas/login-schema.ts` owns zod rules, default values, inferred form type, and the RHF resolver.
+
+- components: 디자인 시스템 `TextInput`, `Button`, `Toast`, `IcCheckboxSizeSmall`, `IcCheckboxActionSizeSmall`
+- hook: `login/hooks/use-login-form.ts`가 field hook과 submit hook을 조합합니다.
+- field hook: `login/hooks/use-login-fields.ts`가 React Hook Form controller로 이메일/비밀번호 입력 상태, 로그인 상태 유지 선택, error 표시 props를 관리합니다.
+- submit hook: `login/hooks/use-login-submit.ts`가 submit loading, redirect, error toast message 상태를 관리합니다.
+- schema: `login/schemas/login-schema.ts`가 zod 기반 필드 검증 규칙, 기본값, RHF resolver를 제공합니다.
+- utils: `login/utils/email-validation.ts`, `login/utils/password-validation.ts`가 validation message와 입력 제한 helper를 제공합니다.
+- data: 없음. auth API 연동은 후속 이슈 범위입니다.
+- states: default(초기 빈 폼), email/password editing, field validation error를 다룹니다. loading/server error는 이번 범위에서 다루지 않습니다.
+
+## Email Validation
+
+- 이메일 필드는 필수 입력 항목입니다.
+- 사용자가 이메일 필드를 수정하기 전에는 초기 빈 값 오류를 노출하지 않습니다.
+- 사용자가 이메일 값을 수정하면 입력값을 실시간으로 검증합니다.
+- 입력 가능한 문자는 영문, 숫자, `@`, `.`, `_`, `-`입니다. 한글과 그 밖의 문자는 입력값에 반영하지 않습니다.
+- 빈 값이면 `이메일을 입력해주세요.` 오류를 표시합니다.
+- `example@email.com`, `example@email.co.kr`처럼 `@`와 점으로 구분된 도메인을 포함하지 않으면 `올바른 이메일 형식이 아닙니다.` 오류를 표시합니다.
+- 오류 상태는 디자인 시스템 `TextInput`의 `status='error'`와 `errorMessage`로 표시합니다.
+
+## Keep Signed In
+
+- 로그인 상태 유지 체크박스의 기본값은 해제 상태입니다.
+- 체크하면 로그인 성공 시 로그인 유지 정책을 적용할 수 있도록 `keepSignedIn=true`로 관리합니다.
+- 체크 해제하면 일반 로그인으로 진행할 수 있도록 `keepSignedIn=false`로 관리합니다.
+- 체크 상태는 native checkbox의 `checked` 상태를 기준으로 디자인 시스템 체크박스 아이콘의 활성/비활성 visual을 표시합니다.
+- 로그인 성공 시 로그인 정보 저장, 로그아웃 시 저장된 로그인 정보 삭제, 로그인 유지 기간 만료 후 재로그인 요구는 실제 auth API/session 연결 시 처리합니다.
+
+## Submit
+
+- 기본 상태의 로그인 버튼은 비활성화합니다.
+- 이메일과 비밀번호가 모두 입력되고 모든 유효성 검사를 통과하면 로그인 버튼을 활성화합니다.
+- 활성화된 로그인 버튼은 디자인 시스템 `Button`의 기본 primary solid visual을 사용합니다.
+- 필수 입력 항목이 비어 있거나 유효성 검사를 통과하지 못하면 로그인 버튼은 비활성화 상태를 유지합니다.
+- 비활성화 상태에서는 submit 요청을 보내지 않습니다.
+- 로그인 요청 중에는 버튼을 비활성화해 중복 요청을 방지합니다.
+- 로그인 성공 시 submit 결과의 `redirectTo`로 이동합니다. 실제 auth API 연결 전 기본 submit은 등록 완료 케이스로 `/` 이동을 반환합니다.
+- 로그인 실패 시 현재 화면을 유지하고 디자인 시스템 `Toast`의 error 상태로 오류 메시지를 표시합니다.
+
+## Submit Error Toast
+
+- 이메일 또는 비밀번호가 일치하지 않으면 `이메일 또는 비밀번호가 일치하지 않습니다.`를 표시합니다.
+- 네트워크 오류가 발생하면 `네트워크 연결을 확인한 후 다시 시도해주세요.`를 표시합니다.
+- 토스트는 `status='error'`로 렌더링하며 `role='alert'`, `aria-live='assertive'`는 디자인 시스템 `Toast` 기본값을 따릅니다.
+
+## Password Validation
+
+- 비밀번호 필드는 필수 입력 항목입니다.
+- 비밀번호 입력값은 native `type='password'`로 마스킹합니다.
+- 사용자가 비밀번호 필드를 수정하기 전에는 초기 빈 값 오류를 노출하지 않습니다.
+- 사용자가 비밀번호 값을 수정하면 입력값을 실시간으로 검증합니다.
+- 빈 값이면 `비밀번호를 입력해주세요.` 오류를 표시합니다.
+- 오류 상태는 디자인 시스템 `TextInput`의 `status='error'`와 `errorMessage`로 표시합니다.
+
+## Verification
+
+- [x] `git diff --check`
+- [x] `pnpm.cmd --filter market-owner test -- src/domains/auth/login/sections/login-form/LoginForm.test.tsx src/domains/auth/login/utils/email-validation.test.ts src/domains/auth/login/utils/password-validation.test.ts`
+- [x] `pnpm.cmd --filter market-owner lint`
+- [x] `pnpm.cmd --filter market-owner typecheck`

@@ -84,6 +84,7 @@ type ToastActionTypes =
     }>;
 
 type ToastViewportStyleTypes = CSSProperties & {
+  '--toast-viewport-center-offset-x'?: string;
   '--toast-viewport-offset-x'?: string;
   '--toast-viewport-offset-y'?: string;
 };
@@ -184,6 +185,7 @@ const getToastViewportStyle = (offset: ToastViewportOffsetTypes | undefined) => 
   }
 
   if (offset.x !== undefined) {
+    style['--toast-viewport-center-offset-x'] = offset.x;
     style['--toast-viewport-offset-x'] = offset.x;
   }
 
