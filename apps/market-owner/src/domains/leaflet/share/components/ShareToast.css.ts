@@ -2,6 +2,8 @@ import { globalStyle, keyframes, style } from '@vanilla-extract/css';
 
 import { atomic } from '@dongchimi/design-system/tokens';
 
+import { MARKET_OWNER_SIDEBAR_WIDTH_PX } from '@/shared/constants/layout';
+
 const toastLifetime = keyframes({
   '0%, 84%': {
     opacity: 1,
@@ -16,7 +18,7 @@ const toastLifetime = keyframes({
 export const toastClassName = style({
   position: 'fixed',
   top: '2rem',
-  left: 'calc(50% + 145px)',
+  left: `calc(50% + ${MARKET_OWNER_SIDEBAR_WIDTH_PX / 2}px)`,
   zIndex: 20,
   animation: `${toastLifetime} 3000ms ease forwards`,
 });

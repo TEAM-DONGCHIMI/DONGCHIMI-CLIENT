@@ -2,10 +2,12 @@ import { style } from '@vanilla-extract/css';
 
 import { atomic, typography } from '@dongchimi/design-system/tokens';
 
+import { MARKET_OWNER_SIDEBAR_WIDTH_PX } from '@/shared/constants/layout';
+
 export const sidebarLayoutRootClassName = style({
   display: 'grid',
   height: '100vh',
-  gridTemplateColumns: '290px minmax(0, 1fr)',
+  gridTemplateColumns: `${MARKET_OWNER_SIDEBAR_WIDTH_PX}px minmax(0, 1fr)`,
   overflow: 'hidden',
   backgroundColor: atomic.neutral[10],
 });
