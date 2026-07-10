@@ -60,3 +60,5 @@ export const todaySpecialEditProducts = [
     viewCount: 109,
   },
 ] as const;
+
+export type TodaySpecialEditProductTypes = (typeof todaySpecialEditProducts)[number];

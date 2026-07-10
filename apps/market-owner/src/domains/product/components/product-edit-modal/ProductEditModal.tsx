@@ -1,0 +1,305 @@
+import { useRef, useState, type ChangeEventHandler } from 'react';
+
+import { Button, Dialog, Dropdown, InlineField } from '@dongchimi/design-system/components';
+import { IcChevronDownSizeSmallColor50 } from '@dongchimi/design-system/icons';
+
+import { productCategoryOptions, type ProductCategoryTypes } from '../../constants';
+import { useProductOverlayDisclosure } from '../../hooks';
+import {
+  addOneDayToProductEditDate,
+  formatProductEditDateForInput,
+} from '../../utils/product-edit-date';
+import {
+  type ProductEditCardProps,
+  type ProductEditCardVariantTypes,
+} from '../product-edit-product-list';
+import { DateField } from '../date-field';
+import { ProductImageUploadField } from '../product-image-upload-field';
+import { openProductEditOverlay } from './open-product-edit-overlay';
+import { ProductEditPeriodToggleButton } from './ProductEditPeriodToggleButton';
+import * as S from './ProductEditModal.css';
+
+interface ProductEditModalProps {
+  open: boolean;
+  product: ProductEditCardProps;
+  variant: ProductEditCardVariantTypes;
+  onClose: () => void;
+}
+
+interface OpenProductEditModalParams {
+  product: ProductEditCardProps;
+  variant: ProductEditCardVariantTypes;
+}
+
+interface ProductEditFormValues {
+  categoryName: ProductSelectableCategoryTypes;
+  endDate: string;
+  originalPrice: string;
+  productName: string;
+  promotionText: string;
+  salePrice: string;
+  startDate: string;
+}
+
+type ProductSelectableCategoryTypes = Exclude<ProductCategoryTypes, '전체'>;
+
+const CATEGORY_OPTIONS = productCategoryOptions.filter(
+  (category): category is ProductSelectableCategoryTypes => category !== '전체',
+);
+
+const DEFAULT_PROMOTION_TEXT = '아주 맛있는 딸기 착한 가격에 데려가세요!';
+const PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID = 'product-edit-modal-category-dropdown';
+
+const isProductCategory = (
+  categoryName: string,
+): categoryName is ProductSelectableCategoryTypes => {
+  return CATEGORY_OPTIONS.includes(categoryName as ProductSelectableCategoryTypes);
+};
+
+const createInitialValues = (
+  product: ProductEditCardProps,
+  variant: ProductEditCardVariantTypes,
+): ProductEditFormValues => {
+  const categoryName =
+    product.categoryName != null && isProductCategory(product.categoryName)
+      ? product.categoryName
+      : '기타';
+  const endDate = formatProductEditDateForInput(product.endDate);
+
+  return {
+    categoryName,
+    endDate,
+    originalPrice: product.originalPrice ?? '',
+    productName: product.productName,
+    promotionText: variant === 'todaySpecial' ? DEFAULT_PROMOTION_TEXT : '',
+    salePrice: product.salePrice,
+    startDate: formatProductEditDateForInput(product.startDate ?? product.endDate),
+  };
+};
+
+const isSameFormValues = (values: ProductEditFormValues, initialValues: ProductEditFormValues) => {
+  return (Object.keys(initialValues) as (keyof ProductEditFormValues)[]).every(
+    (key) => values[key] === initialValues[key],
+  );
+};
+
+export const ProductEditModal = ({ open, product, variant, onClose }: ProductEditModalProps) => {
+  const [initialValues] = useState(() => createInitialValues(product, variant));
+  const [values, setValues] = useState(initialValues);
+  const categoryFieldRef = useRef<HTMLDivElement>(null);
+  const categoryDropdown = useProductOverlayDisclosure({
+    overlayId: PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID,
+    triggerRef: categoryFieldRef,
+  });
+  const isTodaySpecial = variant === 'todaySpecial';
+  const isTodayOnly = values.startDate === values.endDate;
+  const isEdited = !isSameFormValues(values, initialValues);
+
+  const closeModal = () => {
+    categoryDropdown.close();
+    onClose();
+  };
+
+  const updateValue =
+    (key: keyof ProductEditFormValues): ChangeEventHandler<HTMLInputElement> =>
+    (event) => {
+      setValues((currentValues) => ({
+        ...currentValues,
+        [key]: event.target.value,
+      }));
+    };
+
+  const selectCategory = (categoryName: ProductSelectableCategoryTypes) => {
+    setValues((currentValues) => ({
+      ...currentValues,
+      categoryName,
+    }));
+    categoryDropdown.close();
+  };
+
+  const toggleTodayOnlyPeriod = () => {
+    setValues((currentValues) => ({
+      ...currentValues,
+      endDate:
+        currentValues.endDate === currentValues.startDate
+          ? addOneDayToProductEditDate(currentValues.endDate)
+          : currentValues.startDate,
+    }));
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          closeModal();
+        }
+      }}
+    >
+      <Dialog.Content className={S.contentRecipe({ variant })}>
+        <div className={S.containerRecipe({ variant })}>
+          <Dialog.Title className={S.titleClassName}>판매 정보를 수정해주세요</Dialog.Title>
+
+          <div className={S.bodyClassName}>
+            <section className={S.sectionRecipe({ variant })}>
+              <h3 className={S.sectionTitleClassName}>상품 정보</h3>
+              <div className={S.productSectionContentClassName}>
+                <ProductImageUploadField label='상품 이미지' variant='editModal' />
+                <div className={S.formColumnClassName}>
+                  <div className={S.productInfoGridClassName}>
+                    <div className={S.fieldGroupClassName}>
+                      <span className={S.fieldLabelClassName}>상품명</span>
+                      <InlineField
+                        aria-label='상품명'
+                        value={values.productName}
+                        onChange={updateValue('productName')}
+                      />
+                    </div>
+                    <div ref={categoryFieldRef} className={S.categoryFieldClassName}>
+                      <span className={S.fieldLabelClassName}>상품 구분</span>
+                      <button
+                        aria-expanded={categoryDropdown.isOpen}
+                        className={S.categoryTriggerClassName}
+                        type='button'
+                        onClick={categoryDropdown.toggle}
+                      >
+                        <span>{values.categoryName}</span>
+                        <IcChevronDownSizeSmallColor50 aria-hidden='true' />
+                      </button>
+
+                      {categoryDropdown.isOpen && (
+                        <Dropdown
+                          aria-label='상품 구분 선택'
+                          className={S.categoryDropdownClassName}
+                          role='group'
+                        >
+                          {CATEGORY_OPTIONS.map((category) => (
+                            <Dropdown.Item
+                              key={category}
+                              color='primary'
+                              selected={values.categoryName === category}
+                              onClick={() => selectCategory(category)}
+                            >
+                              {category}
+                            </Dropdown.Item>
+                          ))}
+                        </Dropdown>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className={S.fieldGroupClassName}>
+                    <span className={S.fieldLabelClassName}>상품 한줄 홍보글</span>
+                    <InlineField
+                      aria-label='상품 한줄 홍보글'
+                      value={values.promotionText}
+                      onChange={updateValue('promotionText')}
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className={S.sectionRecipe({ variant })}>
+              <h3 className={S.sectionTitleClassName}>상품 가격</h3>
+              <div className={S.sectionContentClassName}>
+                <div aria-hidden='true' className={S.sectionSpacerRecipe({ variant })} />
+                <div className={S.formColumnClassName}>
+                  <div className={S.priceGridClassName}>
+                    {isTodaySpecial && (
+                      <div className={S.fieldGroupClassName}>
+                        <span className={S.fieldLabelClassName}>원가</span>
+                        <InlineField
+                          aria-label='원가'
+                          inputMode='numeric'
+                          unit='원'
+                          value={values.originalPrice}
+                          onChange={updateValue('originalPrice')}
+                        />
+                      </div>
+                    )}
+                    <div className={S.fieldGroupClassName}>
+                      <span className={S.fieldLabelClassName}>
+                        {isTodaySpecial ? '오늘의 특가' : '판매가'}
+                      </span>
+                      <InlineField
+                        aria-label={isTodaySpecial ? '오늘의 특가' : '판매가'}
+                        inputMode='numeric'
+                        unit='원'
+                        value={values.salePrice}
+                        onChange={updateValue('salePrice')}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className={S.sectionRecipe({ variant })}>
+              <h3 className={S.sectionTitleClassName}>기간 설정</h3>
+              <div className={S.sectionContentClassName}>
+                <div aria-hidden='true' className={S.sectionSpacerRecipe({ variant })} />
+                <div className={S.formColumnClassName}>
+                  <div className={S.fieldGroupClassName}>
+                    <span className={S.fieldLabelClassName}>행사 기간</span>
+                    <div className={S.dateRowClassName}>
+                      <DateField
+                        ariaLabel='행사 시작일'
+                        className={S.dateFieldClassName}
+                        readOnly={isTodaySpecial}
+                        value={values.startDate}
+                        onChange={updateValue('startDate')}
+                      />
+                      <span className={S.dateDividerClassName}>~</span>
+                      <DateField
+                        ariaLabel='행사 종료일'
+                        className={S.dateFieldClassName}
+                        value={values.endDate}
+                        onChange={updateValue('endDate')}
+                      />
+                      {isTodaySpecial && (
+                        <ProductEditPeriodToggleButton
+                          isTodayOnly={isTodayOnly}
+                          onClick={toggleTodayOnlyPeriod}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div className={S.footerClassName}>
+            <Button
+              className={S.footerButtonClassName}
+              color='assistive'
+              size='small'
+              variant='outlined'
+              onClick={closeModal}
+            >
+              취소
+            </Button>
+            <Button
+              className={S.footerButtonClassName}
+              disabled={!isEdited}
+              size='small'
+              variant='solid'
+              onClick={closeModal}
+            >
+              변경하기
+            </Button>
+          </div>
+        </div>
+      </Dialog.Content>
+    </Dialog>
+  );
+};
+
+export const openProductEditModal = ({ product, variant }: OpenProductEditModalParams) => {
+  openProductEditOverlay({
+    render: ({ closeOverlay, isOpen }) => (
+      <ProductEditModal open={isOpen} product={product} variant={variant} onClose={closeOverlay} />
+    ),
+  });
+};

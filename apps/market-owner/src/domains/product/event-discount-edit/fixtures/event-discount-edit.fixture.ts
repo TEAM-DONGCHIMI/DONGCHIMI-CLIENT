@@ -117,3 +117,5 @@ export const eventDiscountEditProducts = [
     viewCount: 88,
   },
 ] as const;
+
+export type EventDiscountEditProductTypes = (typeof eventDiscountEditProducts)[number];

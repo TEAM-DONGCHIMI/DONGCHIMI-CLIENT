@@ -46,7 +46,10 @@
 - 오늘의 특가 수정 페이지에는 카테고리 filter를 노출하지 않습니다.
 - `상품 등록 순` filter는 등록일별 섹션을 표시합니다.
 - `조회수 순` filter는 조회수 높은 순 단일 섹션을 표시합니다.
-- 일괄 기간 수정, 일괄 삭제, 초기화 버튼은 shared shell에서 레이아웃 button으로 렌더링합니다.
+- 개별 상품 카드의 수정 버튼을 누르면 오늘의 특가 variant의 판매 정보 수정 modal을 엽니다.
+- 일괄 기간 수정, 일괄 삭제 버튼은 shared shell에서 레이아웃 button으로 렌더링합니다.
+- 초기화 버튼은 shared shell에서 초기화 확인 modal을 열고, 확인하면 오늘의 특가 상품 목록을 비웁니다.
+- 개별 상품 카드의 삭제 버튼은 행사 기간이 남았으면 삭제 확인 modal 확인 후 해당 카드를 목록에서 제거하고, 기간이 지났으면 바로 제거합니다.
 - 실제 상품 목록 query, mutation, selection, pagination, table/list 확장은 후속 이슈 범위입니다.
 
 ## Accessibility

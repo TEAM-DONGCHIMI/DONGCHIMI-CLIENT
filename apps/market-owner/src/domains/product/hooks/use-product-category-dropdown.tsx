@@ -1,28 +1,17 @@
-import { type RefObject, useCallback, useEffect, useState } from 'react';
-import { overlay, useOverlayData } from 'overlay-kit';
+import { type RefObject, useCallback, useState } from 'react';
 
 import { type ProductCategoryTypes } from '../constants';
+import { useProductOverlayDisclosure } from './use-product-overlay-disclosure';
 
 const CATEGORY_DROPDOWN_OVERLAY_ID = 'product-category-dropdown';
 
 export const useProductCategoryDropdown = (categoryFilterRef: RefObject<HTMLDivElement | null>) => {
-  const overlayData = useOverlayData();
   const [selectedCategory, setSelectedCategory] = useState<ProductCategoryTypes | null>(null);
-  const isCategoryDropdownOpen = Boolean(overlayData[CATEGORY_DROPDOWN_OVERLAY_ID]?.isOpen);
-
-  const closeCategoryDropdown = useCallback(() => {
-    overlay.close(CATEGORY_DROPDOWN_OVERLAY_ID);
-    overlay.unmount(CATEGORY_DROPDOWN_OVERLAY_ID);
-  }, []);
-
-  const toggleCategoryDropdown = useCallback(() => {
-    if (isCategoryDropdownOpen) {
-      closeCategoryDropdown();
-      return;
-    }
-
-    overlay.open(() => null, { overlayId: CATEGORY_DROPDOWN_OVERLAY_ID });
-  }, [closeCategoryDropdown, isCategoryDropdownOpen]);
+  const categoryDropdown = useProductOverlayDisclosure({
+    overlayId: CATEGORY_DROPDOWN_OVERLAY_ID,
+    triggerRef: categoryFilterRef,
+  });
+  const closeCategoryDropdown = categoryDropdown.close;
 
   const selectCategory = useCallback(
     (category: ProductCategoryTypes | null) => {
@@ -32,39 +21,11 @@ export const useProductCategoryDropdown = (categoryFilterRef: RefObject<HTMLDivE
     [closeCategoryDropdown],
   );
 
-  useEffect(() => {
-    if (!isCategoryDropdownOpen) {
-      return;
-    }
-
-    const closeCategoryDropdownOnPointerDown = (event: PointerEvent) => {
-      const target = event.target as Node;
-
-      if (!categoryFilterRef.current?.contains(target)) {
-        closeCategoryDropdown();
-      }
-    };
-
-    const closeCategoryDropdownOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeCategoryDropdown();
-      }
-    };
-
-    document.addEventListener('pointerdown', closeCategoryDropdownOnPointerDown);
-    document.addEventListener('keydown', closeCategoryDropdownOnEscape);
-
-    return () => {
-      document.removeEventListener('pointerdown', closeCategoryDropdownOnPointerDown);
-      document.removeEventListener('keydown', closeCategoryDropdownOnEscape);
-    };
-  }, [categoryFilterRef, closeCategoryDropdown, isCategoryDropdownOpen]);
-
   return {
     closeCategoryDropdown,
-    isCategoryDropdownOpen,
+    isCategoryDropdownOpen: categoryDropdown.isOpen,
     selectCategory,
     selectedCategory,
-    toggleCategoryDropdown,
+    toggleCategoryDropdown: categoryDropdown.toggle,
   };
 };

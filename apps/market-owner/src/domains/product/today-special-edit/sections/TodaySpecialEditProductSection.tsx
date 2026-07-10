@@ -6,14 +6,18 @@ import {
 import { type ProductEditFilterTypes } from '@/domains/product/components/product-edit-page-shell';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
-import { todaySpecialEditProducts } from '../fixtures';
+import { type TodaySpecialEditProductTypes } from '../fixtures';
 
 interface TodaySpecialEditProductSectionProps {
+  products: TodaySpecialEditProductTypes[];
   selectedFilter: ProductEditFilterTypes;
+  onDeleteProduct: (productName: string) => void;
 }
 
 export const TodaySpecialEditProductSection = ({
+  products,
   selectedFilter,
+  onDeleteProduct,
 }: TodaySpecialEditProductSectionProps) => {
   const productGroups = createProductEditDisplayGroups({
     createCardProps: (product) =>
@@ -21,7 +25,7 @@ export const TodaySpecialEditProductSection = ({
         product,
         variant: 'todaySpecial',
       }),
-    products: todaySpecialEditProducts,
+    products,
     selectedFilter,
     supportsCategoryFilter: false,
   });
@@ -29,8 +33,10 @@ export const TodaySpecialEditProductSection = ({
   return (
     <ProductEditProductList
       ariaLabel='오늘의 특가 상품 수정 목록'
+      editModalVariant='todaySpecial'
       groups={productGroups}
       registrationHref={MARKET_OWNER_ROUTES.todaySpecialRegistration}
+      onDeleteProduct={(product) => onDeleteProduct(product.productName)}
     />
   );
 };

@@ -13,6 +13,7 @@ import {
 import { DesktopHeader } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { type ProductCategoryTypes } from '../../constants';
+import { openProductEditConfirmModal, openProductEditPeriodModal } from '../product-edit-modal';
 
 import {
   editPageCopyByType,
@@ -32,8 +33,13 @@ export interface ProductEditPageShellProps {
         selectedFilter: ProductEditFilterTypes,
         selectedCategory: ProductCategoryTypes | null,
       ) => ReactNode);
+  onResetProducts?: () => void;
 }
-export const ProductEditPageShell = ({ activeType, children }: ProductEditPageShellProps) => {
+export const ProductEditPageShell = ({
+  activeType,
+  children,
+  onResetProducts,
+}: ProductEditPageShellProps) => {
   const pageCopy = editPageCopyByType[activeType];
   const {
     categoryFilterRef,
@@ -85,6 +91,7 @@ export const ProductEditPageShell = ({ activeType, children }: ProductEditPageSh
                 leftIcon={<IcCalendarSizeXsmallColorPrimary aria-hidden='true' />}
                 size='xsmall'
                 variant='soft'
+                onClick={() => openProductEditPeriodModal({ variant: activeType })}
               >
                 기간 일괄 수정
               </Button>
@@ -94,6 +101,7 @@ export const ProductEditPageShell = ({ activeType, children }: ProductEditPageSh
                 leftIcon={<IcTrashSizeSmallColorNegative aria-hidden='true' />}
                 size='xsmall'
                 variant='outlined'
+                onClick={() => openProductEditConfirmModal({ action: 'delete' })}
               >
                 일괄 삭제
               </Button>
@@ -103,6 +111,12 @@ export const ProductEditPageShell = ({ activeType, children }: ProductEditPageSh
                 leftIcon={<IcResetSizeSmallColorNegative aria-hidden='true' />}
                 size='xsmall'
                 variant='outlined'
+                onClick={() =>
+                  openProductEditConfirmModal({
+                    action: 'reset',
+                    onConfirm: onResetProducts,
+                  })
+                }
               >
                 초기화
               </Button>
