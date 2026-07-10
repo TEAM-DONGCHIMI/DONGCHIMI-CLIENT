@@ -32,7 +32,7 @@ export const PopularProductsSection = ({ marketId, products }: PopularProductsSe
             <article className={S.topProductCardClassName}>
               <span aria-hidden='true' className={S.topProductImageFallbackClassName} />
               <span aria-hidden='true' className={S.topProductScrimClassName} />
-              <PointChip className={S.discountChipClassName} rounded={false} size='mobile'>
+              <PointChip className={S.discountChipClassName} size='mobile'>
                 {product.discountRate}%
               </PointChip>
               <span className={S.topProductContentClassName}>

@@ -59,7 +59,7 @@ export const TodaySpecialProductsSection = ({
                 </span>
               </span>
             </span>
-            <PointChip className={S.discountChipClassName} rounded={false} size='mobile'>
+            <PointChip className={S.discountChipClassName} size='mobile'>
               {product.discountRate}%
             </PointChip>
           </Link>

@@ -16,7 +16,6 @@ export const headerClassName = style({
   position: 'sticky',
   top: 0,
   zIndex: 10,
-  borderBottom: `0.1rem solid ${atomic.neutral[10]}`,
 });
 
 export const contentClassName = style({
@@ -298,12 +297,6 @@ export const discountChipClassName = style({
   top: '0.4rem',
   right: '0.4rem',
   zIndex: 1,
-  backgroundColor: semantic.status.negative,
-  backgroundImage: 'none',
-  borderRadius: 0,
-  clipPath:
-    'polygon(50% 0%, 59% 13%, 74% 7%, 78% 23%, 94% 25%, 86% 39%, 100% 50%, 86% 61%, 94% 75%, 78% 77%, 74% 93%, 59% 87%, 50% 100%, 41% 87%, 26% 93%, 22% 77%, 6% 75%, 14% 61%, 0% 50%, 14% 39%, 6% 25%, 22% 23%, 26% 7%, 41% 13%)',
-  overflow: 'visible',
 });
 
 export const todaySpecialCardClassName = style({
