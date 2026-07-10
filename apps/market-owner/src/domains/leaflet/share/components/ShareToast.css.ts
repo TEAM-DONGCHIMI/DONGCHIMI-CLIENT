@@ -1,5 +1,7 @@
 import { globalStyle, keyframes, style } from '@vanilla-extract/css';
 
+import { atomic } from '@dongchimi/design-system/tokens';
+
 const toastLifetime = keyframes({
   '0%, 84%': {
     opacity: 1,
@@ -17,6 +19,10 @@ export const toastClassName = style({
   left: 'calc(50% + 145px)',
   zIndex: 20,
   animation: `${toastLifetime} 3000ms ease forwards`,
+});
+
+export const errorIconClassName = style({
+  color: atomic.common[0],
 });
 
 globalStyle(`${toastClassName} svg`, {
