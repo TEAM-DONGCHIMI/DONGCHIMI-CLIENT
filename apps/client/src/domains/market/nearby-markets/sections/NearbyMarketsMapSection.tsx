@@ -25,7 +25,7 @@ export interface NearbyMarketsMapSectionProps {
   coordinates: { lat: number; lng: number } | null;
   errorCode: GeolocationErrorCodeTypes | null;
   keyword?: string;
-  marketSearchOrigin: { lat: number; lng: number };
+  marketSearchOrigin?: { lat: number; lng: number };
 }
 
 const resolveStatusMessage = (
@@ -55,8 +55,8 @@ export const NearbyMarketsMapSection = ({
 
   const { data, isError: isMarketsError } = useGetNearbyMarketsInfiniteQuery({
     keyword,
-    lat: marketSearchOrigin.lat,
-    lng: marketSearchOrigin.lng,
+    lat: marketSearchOrigin?.lat,
+    lng: marketSearchOrigin?.lng,
   });
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
 

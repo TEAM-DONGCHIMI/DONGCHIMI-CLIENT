@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { useToast } from '@dongchimi/shared/toast';
 import { MobileHeader } from '@/shared/components';
 import { useDebouncedValue, useGeolocation } from '@/shared/hooks';
 
@@ -15,23 +16,34 @@ import {
   NearbyMarketsMarketListSection,
   NearbyMarketsSearchSection,
 } from './sections';
-import { DEFAULT_CENTER } from './sections/NearbyMarketsMapSection.constants';
+
+const LOCATION_PERMISSION_ERROR_TOAST_ID = 'nearby-markets-location-permission-error';
+const LOCATION_PERMISSION_ERROR_MESSAGE = '위치 접근 허용에 실패했어요';
 
 export const NearbyMarketsPage = () => {
+  const toast = useToast();
   const [keyword, setKeyword] = useState('');
   const [hasEditedKeyword, setHasEditedKeyword] = useState(false);
   const debouncedKeyword = useDebouncedValue(keyword);
   const { coordinates, errorCode } = useGeolocation();
+
+  useEffect(() => {
+    if (errorCode === null) {
+      return;
+    }
+
+    toast.error(LOCATION_PERMISSION_ERROR_MESSAGE, {
+      id: LOCATION_PERMISSION_ERROR_TOAST_ID,
+    });
+  }, [errorCode, toast]);
 
   const handleKeywordChange = (value: string) => {
     setHasEditedKeyword(true);
     setKeyword(value);
   };
 
-  // 위치 권한 허용 시 입력창 기본 값으로 노출하는 현재 위치 주소 텍스트. 사용자가 직접 검색어를 입력하기 전까지는 keyword 필터에 영향을 주지 않는다.
   const displayValue =
     !hasEditedKeyword && coordinates != null ? DEFAULT_LOCATION_ADDRESS_TEXT : keyword;
-  const marketSearchOrigin = coordinates ?? DEFAULT_CENTER;
 
   return (
     <main className={S.pageClassName}>
@@ -50,11 +62,11 @@ export const NearbyMarketsPage = () => {
         coordinates={coordinates}
         errorCode={errorCode}
         keyword={debouncedKeyword}
-        marketSearchOrigin={marketSearchOrigin}
+        marketSearchOrigin={coordinates ?? undefined}
       />
       <NearbyMarketsMarketListSection
         keyword={debouncedKeyword}
-        marketSearchOrigin={marketSearchOrigin}
+        marketSearchOrigin={coordinates ?? undefined}
       />
     </main>
   );

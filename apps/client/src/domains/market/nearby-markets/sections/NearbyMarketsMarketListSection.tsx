@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { useToast } from '@dongchimi/shared/toast';
 import { MartSummaryCard } from '@/shared/components';
 import { CLIENT_ROUTES } from '@/shared/constants';
 import { useIntersectionObserver } from '@/shared/hooks';
@@ -10,9 +12,12 @@ import { useGetNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets
 import * as S from '../NearbyMarketsPage.css';
 import { flattenNearbyMarketsPages } from '../utils/flatten-nearby-markets-pages';
 
+const NEARBY_MARKETS_LOAD_ERROR_TOAST_ID = 'nearby-markets-load-error';
+const NEARBY_MARKETS_LOAD_ERROR_MESSAGE = '위치 접근 허용에 실패했어요';
+
 export interface NearbyMarketsMarketListSectionProps {
   keyword?: string;
-  marketSearchOrigin: { lat: number; lng: number };
+  marketSearchOrigin?: { lat: number; lng: number };
 }
 
 export const NearbyMarketsMarketListSection = ({
@@ -20,13 +25,24 @@ export const NearbyMarketsMarketListSection = ({
   marketSearchOrigin,
 }: NearbyMarketsMarketListSectionProps) => {
   const router = useRouter();
+  const toast = useToast();
 
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isError, isPending } =
     useGetNearbyMarketsInfiniteQuery({
       keyword,
-      lat: marketSearchOrigin.lat,
-      lng: marketSearchOrigin.lng,
+      lat: marketSearchOrigin?.lat,
+      lng: marketSearchOrigin?.lng,
     });
+
+  useEffect(() => {
+    if (!isError) {
+      return;
+    }
+
+    toast.error(NEARBY_MARKETS_LOAD_ERROR_MESSAGE, {
+      id: NEARBY_MARKETS_LOAD_ERROR_TOAST_ID,
+    });
+  }, [isError, toast]);
 
   const sentinelRef = useIntersectionObserver<HTMLDivElement>({
     enabled: Boolean(hasNextPage) && !isFetchingNextPage,
