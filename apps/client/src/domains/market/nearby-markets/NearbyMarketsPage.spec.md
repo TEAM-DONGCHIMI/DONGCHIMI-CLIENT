@@ -24,7 +24,7 @@
 - 화면 섹션은 `sections` 폴더의 page-local 컴포넌트로 분리합니다.
 - 현재 위치 기준 안내 타이틀과 위치/마트 검색 input을 표시합니다.
 - 카카오맵 SDK로 지도를 렌더링하고, `navigator.geolocation`으로 조회한 현재 위치를 지도 중심으로 사용합니다. SDK 로딩 전/실패 시에는 Figma 높이 기준의 placeholder 영역을 표시합니다.
-- 지도 위에 현재 위치 마커(커스텀 오버레이)와 주변 마트 마커(`MapMarker`)를 표시하고, 마트 마커를 터치하면 마트명을 보여주는 정보창을 노출합니다.
+- 지도 위에 현재 위치 마커와 주변 마트 마커(둘 다 `MapMarker`)를 표시하고, 마트 마커를 터치하면 마트명을 보여주는 정보창을 노출합니다.
 - `useNearbyMarketsInfiniteQuery`로 주변 마트 목록을 무한스크롤 방식으로 조회하여 `MartSummaryCard` 목록으로 표시합니다.
 - 위치/마트 검색 input의 입력값을 `useDebouncedValue`로 debounce한 뒤 `keyword` 파라미터로 전달하여, 마트 이름/주소 기준으로 목록을 필터링합니다.
 - 검색 input의 placeholder는 위치 권한 상태에 따라 전환됩니다: 현재 위치 조회 성공 시 위치 안내 placeholder, 실패/미허용 시 "현재 위치를 검색해주세요" placeholder를 노출합니다.
@@ -62,7 +62,7 @@
 - search input: 위치/마트 검색 영역은 `input type="search"`로 노출하며, `NearbyMarketsPage`가 입력값을 상태로 관리하는 controlled input입니다. 입력값은 `useDebouncedValue`(기본 지연 `300ms`)로 debounce한 뒤 `useNearbyMarketsInfiniteQuery`의 `keyword` 파라미터로 전달합니다. `keyword`가 바뀌면 query key가 바뀌어 첫 페이지부터 다시 조회합니다. 위치(행정동) 검색과 우편번호 찾기 모달 연동은 이후 작업에서 연결합니다.
 - search input placeholder: `NearbyMarketsPage`가 `useGeolocation`의 `coordinates` 유무로 placeholder를 계산해 `NearbyMarketsSearchSection` → `NearbyMarketsLocationSearchInput`에 전달합니다. `coordinates`가 있으면 "서울시 마포구 망원동"(실제 행정동 주소는 이후 reverse geocoding 연동 시 교체), 없으면(권한 거부/조회 실패/로딩 중) "현재 위치를 검색해주세요"를 노출합니다. 이 값은 placeholder일 뿐 실제 `keyword`/검색 필터에는 영향을 주지 않습니다.
 - map center: `NearbyMarketsPage`에서 `useGeolocation`(`navigator.geolocation.getCurrentPosition`)을 한 번 호출해 `coordinates`/`errorCode`를 `NearbyMarketsMapSection`에 props로 전달합니다(중복 조회 방지). 지도 중심은 조회된 현재 위치를 사용하며, 조회 전/실패 시에는 기본 위치(서울시청, `{ lat: 37.5665, lng: 126.978 }`)를 사용합니다.
-- map marker: 현재 위치가 있으면 `CustomOverlayMap`으로 현재 위치 마커를 표시합니다. `useNearbyMarketsInfiniteQuery({ keyword })`로 조회한(마트 목록 섹션과 동일한 keyword, react-query 캐시 공유) 마트마다 `MapMarker`를 표시하며, 마커를 터치하면 `MapInfoWindow`로 마트명을 보여주고, 같은 마커를 다시 터치하거나 지도의 다른 영역을 터치하면 닫힙니다. 카카오맵 SDK가 지도 좌측 하단에 저작권 표기("kakao")를 자동으로 표시합니다.
+- map marker: 현재 위치가 있으면 커스텀 SVG 이미지의 `MapMarker`로 현재 위치 마커를 표시합니다(`CustomOverlayMap`은 지도에 attach된 후에야 portal이 붙는 렌더링 지연 버그가 있어 사용하지 않습니다 — 최초 진입 시 마커가 몇 초간 보이지 않는 문제가 있었습니다). `useNearbyMarketsInfiniteQuery({ keyword })`로 조회한(마트 목록 섹션과 동일한 keyword, react-query 캐시 공유) 마트마다 `MapMarker`를 표시하며, 마커를 터치하면 `MapInfoWindow`로 마트명을 보여주고, 같은 마커를 다시 터치하거나 지도의 다른 영역을 터치하면 닫힙니다. 카카오맵 SDK가 지도 좌측 하단에 저작권 표기("kakao")를 자동으로 표시합니다.
 - market list: `useIntersectionObserver`로 목록 하단 sentinel을 감지해 다음 페이지를 자동으로 불러옵니다(무한스크롤).
 - navigation: 마트 카드 클릭 시 `router.push`로 `/markets/[marketId]`로 이동합니다.
 - form / validation: 요청 파라미터(`keyword`/`cursor`/`pageSize`)와 API 응답 모두 zod 스키마(`nearby-markets-schema`)로 검증합니다. 응답은 검증 후 view model로 매핑합니다.
@@ -76,7 +76,7 @@
 - geolocation 실패/권한 거부 상태 메시지는 `role="status"`로 노출합니다.
 - 마트 목록의 loading/empty/error 상태 메시지는 `role="status"` 또는 `role="alert"`로 노출합니다.
 - 마트 카드 액션은 keyboard focus 가능합니다.
-- 지도 마커는 카카오맵 SDK가 그리는 `img` 엘리먼트로, `title` 속성 외 별도의 접근 가능한 이름/키보드 포커스는 제공하지 않는 SDK 자체의 한계가 있습니다. 현재 위치 마커는 `role="img"`와 접근 가능한 이름("현재 위치")을 제공합니다.
+- 지도 마커(현재 위치, 주변 마트 모두)는 카카오맵 SDK가 그리는 `img` 엘리먼트로, `title` 속성 외 별도의 접근 가능한 이름/키보드 포커스는 제공하지 않는 SDK 자체의 한계가 있습니다.
 
 ## Responsive
 

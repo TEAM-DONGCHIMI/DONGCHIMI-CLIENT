@@ -2,13 +2,7 @@
 
 import { useState } from 'react';
 
-import {
-  CustomOverlayMap,
-  Map,
-  MapInfoWindow,
-  MapMarker,
-  useKakaoLoader,
-} from 'react-kakao-maps-sdk';
+import { Map, MapInfoWindow, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
 
 import type { GeolocationErrorCodeTypes } from '@/shared/hooks';
 
@@ -17,6 +11,7 @@ import * as S from '../NearbyMarketsPage.css';
 import { flattenNearbyMarketsPages } from '../utils/flatten-nearby-markets-pages';
 import {
   CURRENT_LOCATION_ARIA_LABEL,
+  CURRENT_LOCATION_MARKER_IMAGE,
   DEFAULT_CENTER,
   KAKAO_MAP_APP_KEY,
   LOAD_ERROR_MESSAGE,
@@ -91,13 +86,11 @@ export const NearbyMarketsMapSection = ({
         onClick={() => setSelectedMarketId(null)}
       >
         {coordinates && (
-          <CustomOverlayMap position={coordinates}>
-            <div
-              aria-label={CURRENT_LOCATION_ARIA_LABEL}
-              className={S.currentLocationMarkerClassName}
-              role='img'
-            />
-          </CustomOverlayMap>
+          <MapMarker
+            image={CURRENT_LOCATION_MARKER_IMAGE}
+            position={coordinates}
+            title={CURRENT_LOCATION_ARIA_LABEL}
+          />
         )}
 
         {markets.map((market) => (
