@@ -41,17 +41,19 @@ export const useGeolocation = ({
   useEffect(() => {
     let isSubscribed = true;
 
-    const handleUnsupportedGeolocation = () => {
+    const runIfSubscribed = (updateState: () => void) => {
       if (!isSubscribed) {
         return;
       }
 
-      setErrorCode('UNSUPPORTED');
-      setIsLoading(false);
+      updateState();
     };
 
     if (!navigator.geolocation) {
-      handleUnsupportedGeolocation();
+      runIfSubscribed(() => {
+        setErrorCode('UNSUPPORTED');
+        setIsLoading(false);
+      });
 
       return () => {
         isSubscribed = false;
@@ -60,22 +62,16 @@ export const useGeolocation = ({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        if (isSubscribed) {
+        runIfSubscribed(() => {
           setCoordinates({ lat: position.coords.latitude, lng: position.coords.longitude });
-        }
-
-        if (isSubscribed) {
           setIsLoading(false);
-        }
+        });
       },
       (error) => {
-        if (isSubscribed) {
+        runIfSubscribed(() => {
           setErrorCode(GEOLOCATION_ERROR_CODES[error.code] ?? 'POSITION_UNAVAILABLE');
-        }
-
-        if (isSubscribed) {
           setIsLoading(false);
-        }
+        });
       },
       { enableHighAccuracy, timeout },
     );
