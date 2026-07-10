@@ -1,4 +1,4 @@
-import { type Resolver } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 import { getEmailErrorMessage } from '../utils/email-validation';
@@ -27,26 +27,4 @@ export const LOGIN_FORM_DEFAULT_VALUES = {
   password: '',
 } satisfies LoginFormTypes;
 
-export const loginFormResolver: Resolver<LoginFormTypes> = (values) => {
-  const result = loginSchema.safeParse(values);
-
-  if (result.success) {
-    return {
-      errors: {},
-      values: result.data,
-    };
-  }
-
-  return {
-    errors: Object.fromEntries(
-      result.error.issues.map((issue) => [
-        issue.path[0],
-        {
-          message: issue.message,
-          type: issue.code,
-        },
-      ]),
-    ),
-    values: {},
-  };
-};
+export const loginFormResolver = zodResolver(loginSchema);

@@ -1,5 +1,7 @@
+import { AUTH_PASSWORD_ERROR_MESSAGES } from '../../constants/auth-messages';
+
 export const PASSWORD_ERROR_MESSAGES = {
-  required: '비밀번호를 입력해주세요.',
+  required: AUTH_PASSWORD_ERROR_MESSAGES.required,
 } as const;
 
 export const getPasswordErrorMessage = (password: string) => {
