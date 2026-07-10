@@ -2,7 +2,7 @@ import { style } from '@vanilla-extract/css';
 
 import { recipe } from '../../../styles/recipe';
 import { atomic, semantic, typography } from '../../../tokens';
-import chipsPointImageUrl from './assets/img-chips-point.svg';
+import chipsPointImageUrl from './assets/img-chips-point.svg?url';
 
 export const chip = recipe({
   base: {
