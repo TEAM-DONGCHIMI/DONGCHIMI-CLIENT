@@ -1,18 +1,21 @@
-import Link from 'next/link';
-
-import { CLIENT_ROUTES } from '@/shared/constants';
+import * as S from './LoginPage.css';
+import { KakaoLoginButton } from './components/KakaoLoginButton';
 
 export const LoginPage = () => {
   return (
-    <main>
-      <section aria-labelledby='login-title'>
-        <p>모바일 전단 소식</p>
-        <h1 id='login-title'>동치미 로그인</h1>
-        <p>동네 마트의 할인 소식을 내 주변 기준으로 확인합니다.</p>
+    <main className={S.pageClassName}>
+      <h1 className={S.visuallyHiddenClassName}>동치미 로그인</h1>
 
-        <nav aria-label='로그인 후 이동'>
-          <Link href={CLIENT_ROUTES.markets}>주변 마트 둘러보기</Link>
-        </nav>
+      <div aria-hidden='true' className={S.onboardingImageClassName} />
+
+      <section aria-label='로그인' className={S.loginSectionClassName}>
+        <KakaoLoginButton />
+
+        <p className={S.termsClassName}>
+          가입 시 이용약관 및 개인정보처리방침에
+          <br />
+          동의한 것으로 간주됩니다.
+        </p>
       </section>
     </main>
   );

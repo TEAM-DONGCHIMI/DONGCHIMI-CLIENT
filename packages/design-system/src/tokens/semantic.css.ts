@@ -7,6 +7,7 @@ export const semantic = createGlobalTheme(':root', {
     light: '#E6FAF2',
   },
   status: {
+    kakaoYellow: '#FEE500',
     positive: '#0066FF',
     positiveLight: '#3385FF',
     cautionary: '#FF9200',
