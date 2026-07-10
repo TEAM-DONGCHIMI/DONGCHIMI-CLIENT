@@ -15,16 +15,37 @@ import type { GeolocationErrorCodeTypes } from '@/shared/hooks';
 import { useNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-infinite-query';
 import * as S from '../NearbyMarketsPage.css';
 import { flattenNearbyMarketsPages } from '../utils/flatten-nearby-markets-pages';
-
-const KAKAO_MAP_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY;
-
-const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
+import {
+  CURRENT_LOCATION_ARIA_LABEL,
+  DEFAULT_CENTER,
+  KAKAO_MAP_APP_KEY,
+  LOAD_ERROR_MESSAGE,
+  MAP_LOADING_MESSAGE,
+  MAP_SECTION_ARIA_LABEL,
+  MAP_ZOOM_LEVEL,
+  PERMISSION_DENIED_MESSAGE,
+} from './NearbyMarketsMapSection.constants';
 
 export interface NearbyMarketsMapSectionProps {
   coordinates: { lat: number; lng: number } | null;
   errorCode: GeolocationErrorCodeTypes | null;
   keyword?: string;
 }
+
+const resolveStatusMessage = (
+  errorCode: GeolocationErrorCodeTypes | null,
+  isMarketsError: boolean,
+): string | null => {
+  if (errorCode === 'PERMISSION_DENIED') {
+    return PERMISSION_DENIED_MESSAGE;
+  }
+
+  if (errorCode || isMarketsError) {
+    return LOAD_ERROR_MESSAGE;
+  }
+
+  return null;
+};
 
 export const NearbyMarketsMapSection = ({
   coordinates,
@@ -38,47 +59,44 @@ export const NearbyMarketsMapSection = ({
   const { data, isError: isMarketsError } = useNearbyMarketsInfiniteQuery({ keyword });
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
 
-  const markets = flattenNearbyMarketsPages(data);
-
   if (loading) {
     return (
-      <section aria-label='지도 영역'>
-        <div aria-label='지도를 불러오는 중이에요' className={S.mapAreaClassName} role='img' />
+      <section aria-label={MAP_SECTION_ARIA_LABEL}>
+        <div aria-label={MAP_LOADING_MESSAGE} className={S.mapAreaClassName} role='img' />
       </section>
     );
   }
 
   if (!KAKAO_MAP_APP_KEY || error) {
     return (
-      <section aria-label='지도 영역'>
-        <div aria-label='마트를 불러올 수 없어요' className={S.mapAreaClassName} role='img' />
+      <section aria-label={MAP_SECTION_ARIA_LABEL}>
+        <div aria-label={LOAD_ERROR_MESSAGE} className={S.mapAreaClassName} role='img' />
         <p className={S.mapStatusClassName} role='status'>
-          마트를 불러올 수 없어요
+          {LOAD_ERROR_MESSAGE}
         </p>
       </section>
     );
   }
 
-  const statusMessage =
-    errorCode === 'PERMISSION_DENIED'
-      ? '위치 검색 결과를 기준으로 마트를 보여드릴게요'
-      : errorCode || isMarketsError
-        ? '마트를 불러올 수 없어요'
-        : null;
-
+  const markets = flattenNearbyMarketsPages(data);
   const selectedMarket = markets.find((market) => market.id === selectedMarketId) ?? null;
+  const statusMessage = resolveStatusMessage(errorCode, isMarketsError);
 
   return (
-    <section aria-label='지도 영역'>
+    <section aria-label={MAP_SECTION_ARIA_LABEL}>
       <Map
         center={coordinates ?? DEFAULT_CENTER}
         className={S.mapAreaClassName}
-        level={4}
+        level={MAP_ZOOM_LEVEL}
         onClick={() => setSelectedMarketId(null)}
       >
         {coordinates && (
           <CustomOverlayMap position={coordinates}>
-            <div aria-label='현재 위치' className={S.currentLocationMarkerClassName} role='img' />
+            <div
+              aria-label={CURRENT_LOCATION_ARIA_LABEL}
+              className={S.currentLocationMarkerClassName}
+              role='img'
+            />
           </CustomOverlayMap>
         )}
 
