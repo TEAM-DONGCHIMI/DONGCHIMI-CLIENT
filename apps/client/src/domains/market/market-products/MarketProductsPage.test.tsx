@@ -3,9 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, renderWithProviders, screen, userEvent, waitFor, within } from '@/test';
 
 import { getCurrentBusinessCloseTime, MarketProductsPage } from './MarketProductsPage';
-import type { BusinessHourTypes } from './fixtures/market-products.fixture';
+import { marketProductsFixture, type BusinessHourTypes } from './fixtures/market-products.fixture';
 import { calculateFirstRowCategoryCount } from './sections/EventDiscountProductsSection';
 import { formatBusinessDays } from './sections/MarketOverviewSection';
+import { formatPrice } from './utils/format-price';
 
 const router = {
   back: vi.fn(),
@@ -101,10 +102,16 @@ describe('MarketProductsPage', () => {
     renderMarketProductsPage();
 
     const todaySection = getSectionQueries('오늘의 특가 상품');
+    const toggleButton = screen.getByRole('button', { name: '등록한 상품 전체보기' });
 
+    expect(
+      todaySection.getByText(`${marketProductsFixture.todaySpecial.products.length}건`),
+    ).toBeInTheDocument();
     expect(todaySection.getAllByRole('link')).toHaveLength(2);
+    expect(toggleButton).toHaveAttribute('aria-controls', 'today-special-products-list');
+    expect(document.getElementById('today-special-products-list')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: '등록한 상품 전체보기' }));
+    await user.click(toggleButton);
 
     expect(todaySection.getAllByRole('link')).toHaveLength(9);
 
@@ -271,6 +278,12 @@ describe('formatBusinessDays', () => {
 
   it('does not format non-continuous business days as a single range', () => {
     expect(formatBusinessDays(['MONDAY', 'WEDNESDAY', 'FRIDAY'])).toBe('월요일, 수요일, 금요일');
+  });
+});
+
+describe('formatPrice', () => {
+  it('formats a price with Korean number grouping', () => {
+    expect(formatPrice(1234567)).toBe('1,234,567');
   });
 });
 

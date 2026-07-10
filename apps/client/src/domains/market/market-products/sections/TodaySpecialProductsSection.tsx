@@ -7,6 +7,9 @@ import { CLIENT_ROUTES } from '@/shared/constants';
 
 import type { TodaySpecialProductFixtureTypes } from '../fixtures/market-products.fixture';
 import * as S from '../MarketProductsPage.css';
+import { formatPrice } from '../utils/format-price';
+
+const TODAY_SPECIAL_PRODUCTS_LIST_ID = 'today-special-products-list';
 
 interface TodaySpecialProductsSectionProps {
   isExpanded: boolean;
@@ -15,8 +18,6 @@ interface TodaySpecialProductsSectionProps {
   products: TodaySpecialProductFixtureTypes[];
   totalCount: number;
 }
-
-const formatPrice = (price: number) => price.toLocaleString('ko-KR');
 
 export const TodaySpecialProductsSection = ({
   isExpanded,
@@ -37,7 +38,7 @@ export const TodaySpecialProductsSection = ({
         <span className={S.sectionCountClassName}>{totalCount}건</span>
       </div>
 
-      <div className={S.todayProductListClassName}>
+      <div className={S.todayProductListClassName} id={TODAY_SPECIAL_PRODUCTS_LIST_ID}>
         {products.map((product) => (
           <Link
             key={product.productId}
@@ -67,7 +68,7 @@ export const TodaySpecialProductsSection = ({
       </div>
 
       <button
-        aria-controls='today-special-products-title'
+        aria-controls={TODAY_SPECIAL_PRODUCTS_LIST_ID}
         aria-expanded={isExpanded}
         className={S.inlineToggleButtonClassName}
         onClick={onToggleExpanded}

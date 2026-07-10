@@ -9,6 +9,7 @@ import type {
   EventDiscountProductFixtureTypes,
 } from '../fixtures/market-products.fixture';
 import * as S from '../MarketProductsPage.css';
+import { formatPrice } from '../utils/format-price';
 
 interface EventDiscountProductsSectionProps {
   categories: EventDiscountCategoryFixtureTypes[];
@@ -27,8 +28,6 @@ interface EventDiscountProductsSectionProps {
 export const EVENT_DISCOUNT_ALL_CATEGORY_ID = 'all';
 
 const EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES = 'calc((100vw - 10rem) / 3)';
-
-const formatPrice = (price: number) => price.toLocaleString('ko-KR');
 
 type CategoryRowMeasurementTypes = Readonly<{
   allCategoryWidth: number;

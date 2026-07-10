@@ -6,13 +6,12 @@ import { CLIENT_ROUTES } from '@/shared/constants';
 
 import type { TopProductFixtureTypes } from '../fixtures/market-products.fixture';
 import * as S from '../MarketProductsPage.css';
+import { formatPrice } from '../utils/format-price';
 
 interface PopularProductsSectionProps {
   marketId: string;
   products: TopProductFixtureTypes[];
 }
-
-const formatPrice = (price: number) => price.toLocaleString('ko-KR');
 
 export const PopularProductsSection = ({ marketId, products }: PopularProductsSectionProps) => {
   return (
