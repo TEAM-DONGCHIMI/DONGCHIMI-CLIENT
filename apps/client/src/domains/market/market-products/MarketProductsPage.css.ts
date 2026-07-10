@@ -20,14 +20,20 @@ export const headerClassName = style({
 export const contentClassName = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '2.4rem',
+  gap: '3.2rem',
   padding: '2rem 2rem calc(3.6rem + var(--client-safe-area-bottom))',
+});
+
+export const productSectionsFrameClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2.4rem',
 });
 
 export const overviewClassName = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '1.6rem',
+  gap: '1.4rem',
 });
 
 export const marketTitleRowClassName = style({
@@ -119,6 +125,16 @@ export const businessHourLinesClassName = style({
   margin: 0,
 });
 
+export const openBusinessHourClassName = style({
+  display: 'inline-flex',
+  gap: '0.4rem',
+});
+
+export const closedBusinessHourClassName = style({
+  display: 'inline-flex',
+  gap: '0.9rem',
+});
+
 export const closedDayClassName = style({
   color: semantic.status.negativeLight,
 });
@@ -127,7 +143,6 @@ export const actionRowClassName = style({
   display: 'grid',
   gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
   gap: '0.8rem',
-  marginTop: '-0.2rem',
 });
 
 const marketActionButtonBaseClassName = style({
@@ -274,20 +289,13 @@ export const topProductPriceClassName = style({
   color: atomic.common[0],
 });
 
-export const discountBadgeClassName = style({
-  ...typography['caption-2-medium'],
+export const discountChipClassName = style({
   position: 'absolute',
   top: '0.4rem',
   right: '0.4rem',
   zIndex: 1,
-  display: 'inline-flex',
-  width: '4rem',
-  height: '4rem',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '999rem',
-  backgroundColor: semantic.status.negativeLight,
-  color: atomic.common[0],
+  borderRadius: 0,
+  overflow: 'visible',
 });
 
 export const todaySpecialCardClassName = style({

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { PointChip } from '@dongchimi/design-system';
 import { IcChevronDown, IcChevronUp } from '@dongchimi/design-system/icons';
 
 import { CLIENT_ROUTES } from '@/shared/constants';
@@ -58,7 +59,9 @@ export const TodaySpecialProductsSection = ({
                 </span>
               </span>
             </span>
-            <span className={S.discountBadgeClassName}>{product.discountRate}%</span>
+            <PointChip className={S.discountChipClassName} rounded={false} size='mobile'>
+              {product.discountRate}%
+            </PointChip>
           </Link>
         ))}
       </div>

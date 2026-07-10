@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { PointChip } from '@dongchimi/design-system';
+
 import { CLIENT_ROUTES } from '@/shared/constants';
 
 import type { TopProductFixtureTypes } from '../fixtures/market-products.fixture';
@@ -30,7 +32,9 @@ export const PopularProductsSection = ({ marketId, products }: PopularProductsSe
             <article className={S.topProductCardClassName}>
               <span aria-hidden='true' className={S.topProductImageFallbackClassName} />
               <span aria-hidden='true' className={S.topProductScrimClassName} />
-              <span className={S.discountBadgeClassName}>{product.discountRate}%</span>
+              <PointChip className={S.discountChipClassName} rounded={false} size='mobile'>
+                {product.discountRate}%
+              </PointChip>
               <span className={S.topProductContentClassName}>
                 <span className={S.topProductNameClassName}>{product.name}</span>
                 <strong className={S.topProductPriceClassName}>

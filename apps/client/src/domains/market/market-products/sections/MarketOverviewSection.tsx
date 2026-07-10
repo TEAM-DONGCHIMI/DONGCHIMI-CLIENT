@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 import { Chip } from '@dongchimi/design-system';
-import { IcCalendar, IcClock, IcLocation, IcPhone } from '@dongchimi/design-system/icons';
+import { IcCalendar, IcLocation, IcPhone } from '@dongchimi/design-system/icons';
 
 import { MarketShareBottomSheet } from '../components/market-share-bottom-sheet';
 import type { BusinessDayTypes, BusinessHourTypes } from '../fixtures/market-products.fixture';
@@ -47,14 +47,15 @@ const formatBusinessHour = (businessHour: BusinessHourTypes) => {
 
   if (!businessHour.isOpen) {
     return {
+      dayText,
       isClosed: true,
-      text: `휴무 ${dayText}`,
     };
   }
 
   return {
+    dayText,
     isClosed: false,
-    text: `${dayText} ${businessHour.open} - ${businessHour.close}`,
+    timeText: `${businessHour.open} - ${businessHour.close}`,
   };
 };
 
@@ -108,30 +109,26 @@ export const MarketOverviewSection = ({
           </div>
           <div className={S.marketMetaItemClassName}>
             <dt className={S.marketMetaIconClassName}>
-              <IcClock aria-hidden='true' />
+              <IcCalendar aria-hidden='true' />
               <span className={S.visuallyHiddenClassName}>영업시간</span>
             </dt>
             <dd className={S.businessHourLinesClassName}>
-              {businessHourTexts
-                .filter((businessHour) => !businessHour.isClosed)
-                .map((businessHour) => (
-                  <span key={businessHour.text}>{businessHour.text}</span>
-                ))}
-            </dd>
-          </div>
-          <div className={S.marketMetaItemClassName}>
-            <dt className={S.marketMetaIconClassName}>
-              <IcCalendar aria-hidden='true' />
-              <span className={S.visuallyHiddenClassName}>휴무일</span>
-            </dt>
-            <dd className={S.businessHourLinesClassName}>
-              {businessHourTexts
-                .filter((businessHour) => businessHour.isClosed)
-                .map((businessHour) => (
-                  <span key={businessHour.text} className={S.closedDayClassName}>
-                    {businessHour.text}
+              {businessHourTexts.map((businessHour) =>
+                businessHour.isClosed ? (
+                  <span key={businessHour.dayText} className={S.closedBusinessHourClassName}>
+                    <span className={S.closedDayClassName}>휴무</span>
+                    <span>{businessHour.dayText}</span>
                   </span>
-                ))}
+                ) : (
+                  <span
+                    key={`${businessHour.dayText} ${businessHour.timeText}`}
+                    className={S.openBusinessHourClassName}
+                  >
+                    <span>{businessHour.dayText}</span>
+                    <span>{businessHour.timeText}</span>
+                  </span>
+                ),
+              )}
             </dd>
           </div>
         </dl>

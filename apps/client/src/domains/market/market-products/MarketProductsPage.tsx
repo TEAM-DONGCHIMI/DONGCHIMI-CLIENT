@@ -103,26 +103,30 @@ export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
           shareUrl={shareUrl}
         />
 
-        <PopularProductsSection marketId={marketId} products={market.top3} />
+        <div className={S.productSectionsFrameClassName}>
+          <PopularProductsSection marketId={marketId} products={market.top3} />
 
-        <TodaySpecialProductsSection
-          isExpanded={isTodaySpecialExpanded}
-          marketId={marketId}
-          onToggleExpanded={() => setIsTodaySpecialExpanded((previousValue) => !previousValue)}
-          products={visibleTodaySpecialProducts}
-          totalCount={todaySpecial.totalCount}
-        />
+          <TodaySpecialProductsSection
+            isExpanded={isTodaySpecialExpanded}
+            marketId={marketId}
+            onToggleExpanded={() => setIsTodaySpecialExpanded((previousValue) => !previousValue)}
+            products={visibleTodaySpecialProducts}
+            totalCount={todaySpecial.totalCount}
+          />
 
-        <EventDiscountProductsSection
-          categories={eventDiscount.categories}
-          isCategoryExpanded={isCategoryExpanded}
-          marketId={marketId}
-          onSelectCategory={setSelectedCategoryId}
-          onToggleCategoryExpanded={() => setIsCategoryExpanded((previousValue) => !previousValue)}
-          products={eventDiscountProducts}
-          selectedCategoryId={selectedCategoryId}
-          visibleCategoryCount={DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT}
-        />
+          <EventDiscountProductsSection
+            categories={eventDiscount.categories}
+            isCategoryExpanded={isCategoryExpanded}
+            marketId={marketId}
+            onSelectCategory={setSelectedCategoryId}
+            onToggleCategoryExpanded={() =>
+              setIsCategoryExpanded((previousValue) => !previousValue)
+            }
+            products={eventDiscountProducts}
+            selectedCategoryId={selectedCategoryId}
+            visibleCategoryCount={DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT}
+          />
+        </div>
       </div>
 
       <MobileModal
