@@ -5,6 +5,7 @@ interface ProductEditMutableProduct {
   endDate?: string;
   originalPrice?: string;
   productName: string;
+  promotionText?: string;
   salePrice?: string;
   startDate?: string;
 }

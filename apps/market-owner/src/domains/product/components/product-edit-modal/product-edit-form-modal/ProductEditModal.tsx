@@ -57,13 +57,9 @@ interface ProductEditFormValues {
   startDate: string;
 }
 
-const DEFAULT_PROMOTION_TEXT = '아주 맛있는 딸기 착한 가격에 데려가세요!';
 const PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID = 'product-edit-modal-category-dropdown';
 
-const createInitialValues = (
-  product: ProductEditCardProps,
-  variant: ProductEditCardVariantTypes,
-): ProductEditFormValues => {
+const createInitialValues = (product: ProductEditCardProps): ProductEditFormValues => {
   const categoryName =
     product.categoryName != null && isProductSelectableCategory(product.categoryName)
       ? product.categoryName
@@ -77,7 +73,7 @@ const createInitialValues = (
     imagePreviewUrl: null,
     originalPrice: product.originalPrice ?? '',
     productName: product.productName,
-    promotionText: variant === 'todaySpecial' ? DEFAULT_PROMOTION_TEXT : '',
+    promotionText: product.promotionText ?? '',
     salePrice: product.salePrice,
     startDate: formatProductEditDateForInput(product.startDate ?? product.endDate),
   };
@@ -96,7 +92,7 @@ export const ProductEditModal = ({
   onClose,
   onSubmit,
 }: ProductEditModalProps) => {
-  const [initialValues] = useState(() => createInitialValues(product, variant));
+  const [initialValues] = useState(() => createInitialValues(product));
   const [values, setValues] = useState(initialValues);
   const categoryFieldRef = useRef<HTMLDivElement>(null);
   const titleRef = useProductEditModalTitleFocus(open);
@@ -160,6 +156,7 @@ export const ProductEditModal = ({
       endDate: values.endDate,
       originalPrice: values.originalPrice === '' ? undefined : values.originalPrice,
       productName: values.productName,
+      promotionText: values.promotionText,
       salePrice: values.salePrice,
       startDate: values.startDate,
     });
@@ -198,6 +195,7 @@ export const ProductEditModal = ({
                   <div ref={categoryFieldRef} className={S.categoryFieldClassName}>
                     <span className={S.fieldLabelClassName}>상품 구분</span>
                     <button
+                      aria-controls={PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID}
                       aria-expanded={categoryDropdown.isOpen}
                       className={S.categoryTriggerClassName}
                       type='button'
@@ -211,6 +209,7 @@ export const ProductEditModal = ({
                       <ProductCategoryDropdown
                         ariaLabel='상품 구분 선택'
                         className={S.categoryDropdownClassName}
+                        id={PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID}
                         options={productSelectableCategoryOptions}
                         selectedCategory={values.categoryName}
                         onSelect={selectCategory}

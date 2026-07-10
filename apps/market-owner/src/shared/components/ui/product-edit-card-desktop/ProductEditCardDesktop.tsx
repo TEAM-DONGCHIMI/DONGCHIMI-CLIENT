@@ -19,6 +19,7 @@ export interface ProductEditCardDesktopProps extends NativeArticleProps {
   periodDiscountDate?: boolean;
   priceUnit?: string;
   productName: string;
+  promotionText?: string;
   salePercent?: string;
   salePercentUnit?: string;
   salePrice: string;

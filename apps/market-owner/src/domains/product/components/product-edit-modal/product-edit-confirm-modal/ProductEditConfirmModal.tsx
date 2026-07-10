@@ -1,6 +1,6 @@
 import { Button, Dialog } from '@dongchimi/design-system/components';
 
-import { keepProductEditDialogOpen, openProductEditOverlay } from '../open-product-edit-overlay';
+import { openProductEditOverlay } from '../open-product-edit-overlay';
 import * as S from './ProductEditConfirmModal.css';
 
 export type ProductEditConfirmModalActionTypes = 'delete' | 'reset';
@@ -37,7 +37,7 @@ export const ProductEditConfirmModal = ({
   const copy = confirmModalCopyByAction[action];
 
   return (
-    <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
+    <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && onCancel()}>
       <Dialog.Content className={S.contentClassName}>
         <div className={S.containerClassName}>
           <Dialog.Title className={S.titleClassName}>{copy.title}</Dialog.Title>

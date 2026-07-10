@@ -38,6 +38,10 @@ export const DateField = ({
   const hasErrorMessage = hasError && Boolean(errorMessage);
 
   const preventManualDateInput: KeyboardEventHandler<HTMLInputElement> = (event) => {
+    if (event.key === 'Tab') {
+      return;
+    }
+
     if (readOnly) {
       event.preventDefault();
       return;
@@ -49,7 +53,7 @@ export const DateField = ({
       return;
     }
 
-    if (event.key === 'Tab' || event.key.startsWith('Arrow')) {
+    if (event.key.startsWith('Arrow')) {
       return;
     }
 
