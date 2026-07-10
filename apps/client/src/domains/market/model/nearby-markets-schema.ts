@@ -12,6 +12,7 @@ export const nearbyMarketPreviewProductSchema = z.object({
 export const nearbyMarketDtoSchema = z.object({
   marketId: z.number(),
   name: z.string(),
+  slug: z.string(),
   thumbnailUrl: z.string(),
   address: z.string(),
   latitude: z.number(),
@@ -25,10 +26,9 @@ export const nearbyMarketDtoSchema = z.object({
 export type NearbyMarketDtoTypes = z.infer<typeof nearbyMarketDtoSchema>;
 
 export const nearbyMarketsResponseDataSchema = z.object({
-  totalCount: z.number(),
   hasNext: z.boolean(),
   nextCursor: z.number().nullable(),
-  markets: z.array(nearbyMarketDtoSchema),
+  contents: z.array(nearbyMarketDtoSchema),
 });
 
 export type NearbyMarketsResponseDataTypes = z.infer<typeof nearbyMarketsResponseDataSchema>;
@@ -48,9 +48,10 @@ export const resolveNearbyMarketsResponse = (
 
 export const nearbyMarketsListParamsSchema = z.object({
   keyword: z.string().trim().optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
-  pageSize: z.number().int().positive().optional(),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
+  radius: z.number().positive().optional(),
+  size: z.number().int().positive().optional(),
 });
 
 export type NearbyMarketsListParamsTypes = z.infer<typeof nearbyMarketsListParamsSchema>;

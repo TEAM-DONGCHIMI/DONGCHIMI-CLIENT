@@ -1,6 +1,6 @@
 import type { NearbyMarketDtoTypes } from '../model/nearby-markets-schema';
 
-type MarketTemplateTypes = Omit<NearbyMarketDtoTypes, 'marketId'>;
+type MarketTemplateTypes = Omit<NearbyMarketDtoTypes, 'marketId' | 'slug'>;
 
 const MARKET_TEMPLATES: readonly MarketTemplateTypes[] = [
   {
@@ -304,6 +304,7 @@ const buildMockNearbyMarkets = (): NearbyMarketDtoTypes[] => {
       ...template,
       marketId: index + 1,
       name: cycle === 1 ? template.name : `${template.name} ${cycle}호점`,
+      slug: `market-${index + 1}`,
     };
   });
 };

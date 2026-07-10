@@ -13,7 +13,7 @@ export const useNearbyMarketsInfiniteQuery = (params: NearbyMarketsListParamsTyp
       const response = await getNearbyMarkets({ ...params, cursor: pageParam });
 
       return {
-        items: response.markets.map(mapNearbyMarketDtoToViewTypes),
+        items: response.contents.map(mapNearbyMarketDtoToViewTypes),
         nextCursor: response.nextCursor,
       };
     },

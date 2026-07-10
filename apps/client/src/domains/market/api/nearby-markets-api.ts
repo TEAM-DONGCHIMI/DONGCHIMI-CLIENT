@@ -62,34 +62,32 @@ const sortMarketsByDistance = (
   );
 };
 
-// TODO: 백엔드 주변 마트 목록 endpoint가 나오면 httpClient.get 호출로 교체합니다.
 export const getNearbyMarkets = async (
   rawParams: NearbyMarketsParamsTypes,
 ): Promise<NearbyMarketsResponseDataTypes> => {
   const {
     cursor,
     keyword,
-    latitude,
-    longitude,
-    pageSize = DEFAULT_PAGE_SIZE,
+    lat,
+    lng,
+    size = DEFAULT_PAGE_SIZE,
   } = resolveNearbyMarketsParams(rawParams);
 
   await wait(MOCK_NETWORK_DELAY_MS);
 
   const filteredMarkets = filterMarketsByKeyword(MOCK_NEARBY_MARKETS, keyword);
   const sortedMarkets =
-    latitude === undefined || longitude === undefined
+    lat === undefined || lng === undefined
       ? filteredMarkets
-      : sortMarketsByDistance(filteredMarkets, { lat: latitude, lng: longitude });
-  const page = paginateByCursor(sortedMarkets, { cursor, pageSize });
+      : sortMarketsByDistance(filteredMarkets, { lat, lng });
+  const page = paginateByCursor(sortedMarkets, { cursor, pageSize: size });
 
   return resolveNearbyMarketsResponse({
     code: MOCK_SUCCESS_CODE,
     data: {
+      contents: page.items,
       hasNext: page.nextCursor !== null,
-      markets: page.items,
       nextCursor: page.nextCursor,
-      totalCount: filteredMarkets.length,
     },
     message: MOCK_SUCCESS_MESSAGE,
     success: true,

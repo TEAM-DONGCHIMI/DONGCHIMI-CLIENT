@@ -65,7 +65,7 @@
 - map marker: 현재 위치가 있으면 커스텀 SVG 이미지의 `MapMarker`로 현재 위치 마커를 표시합니다(`CustomOverlayMap`은 지도에 attach된 후에야 portal이 붙는 렌더링 지연 버그가 있어 사용하지 않습니다 — 최초 진입 시 마커가 몇 초간 보이지 않는 문제가 있었습니다). `useNearbyMarketsInfiniteQuery({ keyword })`로 조회한(마트 목록 섹션과 동일한 keyword, react-query 캐시 공유) 마트마다 `MapMarker`를 표시하며, 마커를 터치하면 `MapInfoWindow`로 마트명을 보여주고, 같은 마커를 다시 터치하거나 지도의 다른 영역을 터치하면 닫힙니다. 카카오맵 SDK가 지도 좌측 하단에 저작권 표기("kakao")를 자동으로 표시합니다.
 - market list: `useIntersectionObserver`로 목록 하단 sentinel을 감지해 다음 페이지를 자동으로 불러옵니다(무한스크롤).
 - navigation: 마트 카드 클릭 시 `router.push`로 `/markets/[marketId]`로 이동합니다.
-- form / validation: 요청 파라미터(`keyword`/`cursor`/`pageSize`)와 API 응답 모두 zod 스키마(`nearby-markets-schema`)로 검증합니다. 응답은 검증 후 view model로 매핑합니다.
+- form / validation: 요청 파라미터(`keyword`/`cursor`/`lat`/`lng`/`radius`/`size`)와 API 응답 모두 zod 스키마(`nearby-markets-schema`)로 검증합니다. 응답은 검증 후 view model로 매핑합니다.
 - API: `useNearbyMarketsInfiniteQuery` → `getNearbyMarkets`(현재 mock)로 주변 마트 목록을 조회합니다. `keyword` 파라미터를 전달하면 mock 목록을 마트 이름/주소 기준(대소문자 무시)으로 필터링합니다.
 
 ## Accessibility

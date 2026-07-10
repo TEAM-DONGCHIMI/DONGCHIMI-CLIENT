@@ -55,8 +55,8 @@ export const NearbyMarketsMapSection = ({
 
   const { data, isError: isMarketsError } = useNearbyMarketsInfiniteQuery({
     keyword,
-    latitude: marketSearchOrigin.lat,
-    longitude: marketSearchOrigin.lng,
+    lat: marketSearchOrigin.lat,
+    lng: marketSearchOrigin.lng,
   });
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
 

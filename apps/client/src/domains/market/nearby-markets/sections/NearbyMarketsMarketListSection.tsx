@@ -24,8 +24,8 @@ export const NearbyMarketsMarketListSection = ({
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isError, isPending } =
     useNearbyMarketsInfiniteQuery({
       keyword,
-      latitude: marketSearchOrigin.lat,
-      longitude: marketSearchOrigin.lng,
+      lat: marketSearchOrigin.lat,
+      lng: marketSearchOrigin.lng,
     });
 
   const sentinelRef = useIntersectionObserver<HTMLDivElement>({
