@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { overlay } from 'overlay-kit';
 
 import { IcCircleCheckFill, IcCircleExclamation } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
@@ -7,6 +8,7 @@ import { useToast } from '@dongchimi/shared/toast';
 import { DesktopHeader } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
+import { QrDownloadModal } from './components';
 import { leafletShareFixture } from './fixtures/leaflet-share.fixture';
 import { LeafletConfirmSection, LeafletShareSection } from './sections';
 import * as S from './LeafletSharePage.css';
@@ -14,12 +16,12 @@ import * as S from './LeafletSharePage.css';
 type LeafletShareViewTypes = 'confirm' | 'share';
 
 const TOAST_DURATION_MS = 3000;
+const QR_DOWNLOAD_MODAL_OVERLAY_ID = 'leaflet-share-qr-download-modal';
 
 export const LeafletSharePage = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [shareView, setShareView] = useState<LeafletShareViewTypes>('confirm');
-  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const isConfirmView = shareView === 'confirm';
 
   const showShareView = () => setShareView('share');
@@ -42,14 +44,35 @@ export const LeafletSharePage = () => {
       },
     );
   };
-  const openQrModal = () => setIsQrModalOpen(true);
-  const closeQrModal = () => setIsQrModalOpen(false);
   const showDownloadErrorToast = () => {
-    setIsQrModalOpen(false);
     toast.error('QR 이미지 다운로드를 실패했습니다.', {
       durationMs: TOAST_DURATION_MS,
       icon: <IcCircleExclamation aria-hidden='true' className={S.errorIconClassName} />,
     });
+  };
+  const openQrModal = () => {
+    overlay.open(
+      ({ close, isOpen, unmount }) => {
+        const closeQrModal = () => {
+          close();
+          unmount();
+        };
+        const handleDownloadQrCode = () => {
+          closeQrModal();
+          showDownloadErrorToast();
+        };
+
+        return (
+          <QrDownloadModal
+            imageLabel={leafletShareFixture.qrImageLabel}
+            open={isOpen}
+            onClose={closeQrModal}
+            onDownload={handleDownloadQrCode}
+          />
+        );
+      },
+      { overlayId: QR_DOWNLOAD_MODAL_OVERLAY_ID },
+    );
   };
   const goHome = () => navigate(MARKET_OWNER_ROUTES.home);
 
@@ -64,13 +87,9 @@ export const LeafletSharePage = () => {
         />
       ) : (
         <LeafletShareSection
-          isQrModalOpen={isQrModalOpen}
-          qrImageLabel={leafletShareFixture.qrImageLabel}
           shareUrl={leafletShareFixture.shareUrl}
-          onCloseQrModal={closeQrModal}
           onCopyLinkError={showCopyErrorToast}
           onCopyLink={showCopiedToast}
-          onDownloadQrCode={showDownloadErrorToast}
           onGoHome={goHome}
           onOpenQrModal={openQrModal}
         />

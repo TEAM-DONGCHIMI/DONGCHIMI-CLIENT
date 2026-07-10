@@ -1,28 +1,20 @@
 import { Flex, Grid } from '@dongchimi/design-system/components';
 
-import { QrDownloadModal, ShareLinkBox } from '../components';
+import { ShareLinkBox } from '../components';
 import * as S from './LeafletShareSection.css';
 
 export interface LeafletShareSectionProps {
-  isQrModalOpen: boolean;
-  qrImageLabel: string;
   shareUrl: string;
-  onCloseQrModal: () => void;
   onCopyLink: () => void;
   onCopyLinkError: () => void;
-  onDownloadQrCode: () => void;
   onGoHome: () => void;
   onOpenQrModal: () => void;
 }
 
 export const LeafletShareSection = ({
-  isQrModalOpen,
-  qrImageLabel,
   shareUrl,
-  onCloseQrModal,
   onCopyLink,
   onCopyLinkError,
-  onDownloadQrCode,
   onGoHome,
   onOpenQrModal,
 }: LeafletShareSectionProps) => {
@@ -46,13 +38,6 @@ export const LeafletShareSection = ({
           onOpenQrModal={onOpenQrModal}
         />
       </Flex>
-
-      <QrDownloadModal
-        imageLabel={qrImageLabel}
-        open={isQrModalOpen}
-        onClose={onCloseQrModal}
-        onDownload={onDownloadQrCode}
-      />
     </Grid>
   );
 };
