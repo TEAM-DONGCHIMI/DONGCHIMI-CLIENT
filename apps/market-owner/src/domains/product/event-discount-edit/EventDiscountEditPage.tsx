@@ -9,7 +9,11 @@ export const EventDiscountEditPage = () => {
     useProductEditProducts(eventDiscountEditProducts);
 
   return (
-    <ProductEditPageShell activeType='eventDiscount' onResetProducts={resetProducts}>
+    <ProductEditPageShell
+      activeType='eventDiscount'
+      periodBaseProduct={products[0]}
+      onResetProducts={resetProducts}
+    >
       {(selectedFilter, selectedCategory) => (
         <EventDiscountEditProductSection
           products={products}

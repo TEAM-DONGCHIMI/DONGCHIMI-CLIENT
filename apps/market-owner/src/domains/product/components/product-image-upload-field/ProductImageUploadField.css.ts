@@ -14,7 +14,7 @@ export const rootRecipe = recipe({
   variants: {
     variant: {
       editModal: {
-        gap: 12,
+        gap: '1.2rem',
       },
       registration: {
         gap: '0.9rem',
@@ -67,8 +67,8 @@ export const imageBoxRecipe = recipe({
   variants: {
     variant: {
       editModal: {
-        width: 120,
-        height: 120,
+        width: '12rem',
+        height: '12rem',
         backgroundImage:
           'linear-gradient(45deg, #e2e5e8 25%, transparent 25%), linear-gradient(-45deg, #e2e5e8 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e5e8 75%), linear-gradient(-45deg, transparent 75%, #e2e5e8 75%)',
         backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0',
@@ -152,10 +152,10 @@ export const cameraBadgeRecipe = recipe({
   variants: {
     variant: {
       editModal: {
-        top: 10,
-        right: 10,
-        width: 38,
-        height: 38,
+        top: '1rem',
+        right: '1rem',
+        width: '3.8rem',
+        height: '3.8rem',
         boxShadow: shadow.normal.small,
         fontSize: 20,
       },

@@ -7,7 +7,7 @@
 
 ## Ownership
 
-- 위치: `apps/market-owner/src/domains/product/components/product-edit-modal/ProductEditConfirmModal.tsx`
+- 위치: `apps/market-owner/src/domains/product/components/product-edit-modal/product-edit-confirm-modal/ProductEditConfirmModal.tsx`
 - 사용처: `ProductEditProductList`, `ProductEditPageShell`
 - 상품 수정 화면 전용 확인 UI이므로 design-system이나 app shared component로 승격하지 않습니다.
 

@@ -59,6 +59,13 @@ export const useProductOverlayDisclosure = ({
     };
   }, [close, isOpen, triggerRef]);
 
+  useEffect(() => {
+    return () => {
+      overlay.close(overlayId);
+      overlay.unmount(overlayId);
+    };
+  }, [overlayId]);
+
   return {
     close,
     isOpen,

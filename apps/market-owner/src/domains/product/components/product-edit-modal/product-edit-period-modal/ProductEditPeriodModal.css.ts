@@ -1,13 +1,10 @@
 import { globalStyle, style } from '@vanilla-extract/css';
 
-import { atomic, shadow, typography } from '@dongchimi/design-system/tokens';
+import { atomic, typography } from '@dongchimi/design-system/tokens';
 
-export const contentClassName = style({
-  width: 1182,
-  maxWidth: 'calc(100vw - 32px)',
-  borderRadius: 24,
-  boxShadow: shadow.normal.medium,
-});
+import * as Content from '../ProductEditModalContent.css';
+
+export const contentClassName = Content.contentClassName;
 
 export const containerClassName = style({
   boxSizing: 'border-box',
@@ -15,8 +12,7 @@ export const containerClassName = style({
   width: '100%',
   minWidth: 0,
   flexDirection: 'column',
-  gap: 52,
-  padding: '72px 68px 66px',
+  gap: '5.2rem',
   backgroundColor: atomic.common[0],
   color: atomic.neutral[90],
 });
@@ -31,8 +27,8 @@ export const sectionClassName = style({
   display: 'grid',
   width: '100%',
   minWidth: 0,
-  gridTemplateColumns: '172px 1fr',
-  columnGap: 70,
+  gridTemplateColumns: '17.2rem 1fr',
+  columnGap: '7rem',
 });
 
 export const sectionTitleClassName = style({
@@ -46,7 +42,7 @@ export const fieldGroupClassName = style({
   width: '100%',
   minWidth: 0,
   flexDirection: 'column',
-  gap: 8,
+  gap: '0.8rem',
 });
 
 export const fieldLabelClassName = style({
@@ -59,7 +55,7 @@ export const dateRowClassName = style({
   width: '100%',
   minWidth: 0,
   alignItems: 'center',
-  gap: 16,
+  gap: '1.6rem',
 });
 
 export const dateDividerClassName = style({
@@ -69,24 +65,34 @@ export const dateDividerClassName = style({
 });
 
 export const dateFieldClassName = style({
-  width: 290,
-  flexShrink: 0,
+  flex: '1 1 0',
+  minWidth: 0,
 });
 
 globalStyle(`${dateFieldClassName} label`, {
-  height: 40,
-  padding: '10px 16px',
+  height: '4rem',
+  padding: '1rem 1.6rem',
+});
+
+export const periodToggleButtonClassName = style({
+  flexShrink: 0,
+  width: '13.7rem',
+  minWidth: '13.7rem',
+  height: '4rem',
+  borderRadius: '10rem',
+  paddingRight: '1.6rem',
+  paddingLeft: '1.6rem',
 });
 
 export const footerClassName = style({
   display: 'flex',
   width: '100%',
   justifyContent: 'flex-end',
-  gap: 14,
+  gap: '1.4rem',
 });
 
 export const footerButtonClassName = style({
   width: '16rem',
   minWidth: '16rem',
-  height: 44,
+  height: '4.4rem',
 });

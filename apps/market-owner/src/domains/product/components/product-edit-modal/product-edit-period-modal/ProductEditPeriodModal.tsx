@@ -1,33 +1,54 @@
-import { useState, type ChangeEventHandler } from 'react';
+import { useEffect, useRef, useState, type ChangeEventHandler } from 'react';
 
 import { Button, Dialog } from '@dongchimi/design-system/components';
+import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
 
-import { addOneDayToProductEditDate } from '../../utils/product-edit-date';
-import { DateField } from '../date-field';
-import { type ProductEditTypeTypes } from '../product-edit-page-shell';
-import { openProductEditOverlay } from './open-product-edit-overlay';
-import { ProductEditPeriodToggleButton } from './ProductEditPeriodToggleButton';
+import {
+  addOneDayToProductEditDate,
+  formatProductEditDateForInput,
+} from '../../../utils/product-edit-date';
+import { DateField } from '../../date-field';
+import { type ProductEditTypeTypes } from '../../product-edit-page-shell';
+import { openProductEditOverlay } from '../open-product-edit-overlay';
 import * as S from './ProductEditPeriodModal.css';
 
 interface ProductEditPeriodModalProps {
+  initialPeriod?: ProductEditPeriodValues;
   open: boolean;
   variant: ProductEditTypeTypes;
   onClose: () => void;
 }
 
 interface OpenProductEditPeriodModalParams {
+  initialPeriod?: ProductEditPeriodValues;
   variant: ProductEditTypeTypes;
 }
 
-const DEFAULT_PERIOD_DATE = '2026-08-16';
+interface ProductEditPeriodValues {
+  endDate?: string;
+  startDate?: string;
+}
 
-export const ProductEditPeriodModal = ({ open, variant, onClose }: ProductEditPeriodModalProps) => {
-  const initialPeriod = {
-    endDate: DEFAULT_PERIOD_DATE,
-    startDate: DEFAULT_PERIOD_DATE,
+const createInitialPeriod = (period?: ProductEditPeriodValues) => {
+  const endDate = formatProductEditDateForInput(period?.endDate);
+  const startDate = formatProductEditDateForInput(period?.startDate ?? period?.endDate);
+
+  return {
+    endDate,
+    startDate,
   };
-  const [startDate, setStartDate] = useState(DEFAULT_PERIOD_DATE);
-  const [endDate, setEndDate] = useState(DEFAULT_PERIOD_DATE);
+};
+
+export const ProductEditPeriodModal = ({
+  initialPeriod: initialPeriodProp,
+  open,
+  variant,
+  onClose,
+}: ProductEditPeriodModalProps) => {
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const [initialPeriod] = useState(() => createInitialPeriod(initialPeriodProp));
+  const [startDate, setStartDate] = useState(initialPeriod.startDate);
+  const [endDate, setEndDate] = useState(initialPeriod.endDate);
   const isTodaySpecial = variant === 'todaySpecial';
   const isTodayOnly = startDate === endDate;
   const isEdited = startDate !== initialPeriod.startDate || endDate !== initialPeriod.endDate;
@@ -46,18 +67,29 @@ export const ProductEditPeriodModal = ({ open, variant, onClose }: ProductEditPe
     );
   };
 
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    let innerFrameId = 0;
+    const frameId = window.requestAnimationFrame(() => {
+      innerFrameId = window.requestAnimationFrame(() => {
+        titleRef.current?.focus();
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.cancelAnimationFrame(innerFrameId);
+    };
+  }, [open]);
+
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        if (!nextOpen) {
-          onClose();
-        }
-      }}
-    >
+    <Dialog open={open} onOpenChange={() => undefined}>
       <Dialog.Content className={S.contentClassName}>
         <div className={S.containerClassName}>
-          <Dialog.Title className={S.titleClassName}>
+          <Dialog.Title ref={titleRef} className={S.titleClassName} tabIndex={-1}>
             선택된 상품들의 판매 기간을 수정해주세요
           </Dialog.Title>
 
@@ -81,10 +113,23 @@ export const ProductEditPeriodModal = ({ open, variant, onClose }: ProductEditPe
                   onChange={updateEndDate}
                 />
                 {isTodaySpecial && (
-                  <ProductEditPeriodToggleButton
-                    isTodayOnly={isTodayOnly}
+                  <Button
+                    className={S.periodToggleButtonClassName}
+                    color='assistive'
+                    rightIcon={
+                      isTodayOnly ? (
+                        <IcCalendarPlusSizeSmall aria-hidden='true' />
+                      ) : (
+                        <IcLineHorizontalSizeSmall aria-hidden='true' />
+                      )
+                    }
+                    size='small'
+                    type='button'
+                    variant='outlined'
                     onClick={toggleTodayOnlyPeriod}
-                  />
+                  >
+                    {isTodayOnly ? '하루 더 늘리기' : '오늘만 특가로'}
+                  </Button>
                 )}
               </div>
             </div>
@@ -116,10 +161,18 @@ export const ProductEditPeriodModal = ({ open, variant, onClose }: ProductEditPe
   );
 };
 
-export const openProductEditPeriodModal = ({ variant }: OpenProductEditPeriodModalParams) => {
+export const openProductEditPeriodModal = ({
+  initialPeriod,
+  variant,
+}: OpenProductEditPeriodModalParams) => {
   openProductEditOverlay({
     render: ({ closeOverlay, isOpen }) => (
-      <ProductEditPeriodModal open={isOpen} variant={variant} onClose={closeOverlay} />
+      <ProductEditPeriodModal
+        initialPeriod={initialPeriod}
+        open={isOpen}
+        variant={variant}
+        onClose={closeOverlay}
+      />
     ),
   });
 };

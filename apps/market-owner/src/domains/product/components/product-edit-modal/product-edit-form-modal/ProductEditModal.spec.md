@@ -7,7 +7,7 @@
 
 ## Ownership
 
-- 위치: `apps/market-owner/src/domains/product/components/product-edit-modal`
+- 위치: `apps/market-owner/src/domains/product/components/product-edit-modal/product-edit-form-modal`
 - 사용처: `ProductEditProductList`
 - product edit page 전용 form이므로 design-system이나 shared component로 승격하지 않습니다.
 

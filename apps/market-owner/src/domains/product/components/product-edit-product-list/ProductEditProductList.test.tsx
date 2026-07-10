@@ -1,4 +1,5 @@
 import { MemoryRouter, Route, Routes } from 'react-router';
+import { fireEvent } from '@testing-library/react';
 import { OverlayProvider } from 'overlay-kit';
 import { describe, expect, it } from 'vitest';
 
@@ -99,6 +100,73 @@ describe('ProductEditProductList', () => {
     expect(screen.getByLabelText('행사 종료일')).toHaveValue('2026-08-16');
     expect(screen.getByRole('button', { name: '하루 더 늘리기' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '변경하기' })).toBeDisabled();
+  });
+
+  it('updates category from edit modal category dropdown', async () => {
+    const user = userEvent.setup();
+
+    renderProductList(
+      [
+        {
+          title: '채소·과일',
+          products: [
+            {
+              categoryName: '채소·과일',
+              endDate: '2026. 8. 16',
+              productName: '햇감자 1kg',
+              salePrice: '3,900',
+              startDate: '2026. 8. 12',
+              viewCount: 241,
+            },
+          ],
+        },
+      ],
+      'eventDiscount',
+    );
+
+    await user.click(screen.getByRole('button', { name: '햇감자 1kg 상품 수정' }));
+
+    expect(
+      await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '채소·과일' }));
+
+    expect(await screen.findByRole('group', { name: '상품 구분 선택' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '정육·달걀' }));
+
+    expect(screen.getByRole('button', { name: '정육·달걀' })).toBeInTheDocument();
+    expect(screen.queryByRole('group', { name: '상품 구분 선택' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '변경하기' })).toBeEnabled();
+  });
+
+  it('keeps edit modal open when backdrop is pressed', async () => {
+    const user = userEvent.setup();
+
+    renderProductList([
+      {
+        title: '2026년 8월 15일',
+        products: [
+          {
+            categoryName: '채소·과일',
+            endDate: '2026. 8. 16',
+            originalPrice: '5,000',
+            productName: '딸기 2팩',
+            salePrice: '4,500',
+            viewCount: 162,
+          },
+        ],
+      },
+    ]);
+
+    await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 수정' }));
+
+    const dialog = await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' });
+
+    fireEvent.mouseDown(dialog, { clientX: -1, clientY: -1 });
+
+    expect(screen.getByRole('dialog', { name: '판매 정보를 수정해주세요' })).toBeInTheDocument();
   });
 
   it('opens event discount edit modal from product card edit action', async () => {

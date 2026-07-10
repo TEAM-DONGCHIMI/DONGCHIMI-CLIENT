@@ -22,6 +22,7 @@
 - `activeType`: `todaySpecial | eventDiscount`
 - `children`: 현재 route의 상품 카드/list/table 영역
 - `onResetProducts`: 초기화 확인 modal에서 확인을 누르면 현재 페이지의 상품 목록을 비우는 handler
+- `periodBaseProduct`: 일괄 기간 수정 modal의 기본 기간으로 사용할 현재 목록의 기준 상품
 
 ## Behavior
 
@@ -36,7 +37,7 @@
 - 오늘의 특가 filter pill button은 `상품 등록 순`, `조회수 순` 중 하나만 selected 상태로 표시합니다.
 - 기본 selected 상태는 행사 할인 수정 페이지에서는 `카테고리별`, 오늘의 특가 수정 페이지에서는 `상품 등록 순`이며, 사용자가 선택한 항목을 filled 상태와 `aria-pressed`로 표시합니다.
 - breadcrumb header와 상단 control 영역은 scroll container 안에서 함께 고정되어 상품 목록 스크롤 중에도 유지됩니다.
-- 일괄 기간 수정 버튼을 누르면 `openProductEditPeriodModal`로 `ProductEditPeriodModal`을 엽니다.
+- 일괄 기간 수정 버튼을 누르면 `periodBaseProduct`의 기간을 기본값으로 전달해 `ProductEditPeriodModal`을 엽니다.
 - 오늘의 특가 기간 수정 modal은 시작일을 비활성 상태로 표시하고 `하루 더 늘리기` 버튼을 제공합니다.
 - 행사 할인 기간 수정 modal은 시작일과 종료일을 모두 수정 가능하게 표시하고 `하루 더 늘리기` 버튼을 제공하지 않습니다.
 - 일괄 삭제 버튼을 누르면 `openProductEditConfirmModal`로 `ProductEditConfirmModal action="delete"`를 엽니다.

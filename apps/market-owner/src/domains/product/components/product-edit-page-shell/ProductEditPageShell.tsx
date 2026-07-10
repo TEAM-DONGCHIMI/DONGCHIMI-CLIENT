@@ -14,6 +14,7 @@ import { DesktopHeader } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { type ProductCategoryTypes } from '../../constants';
 import { openProductEditConfirmModal, openProductEditPeriodModal } from '../product-edit-modal';
+import { type ProductEditCardProps } from '../product-edit-product-list';
 
 import {
   editPageCopyByType,
@@ -34,11 +35,13 @@ export interface ProductEditPageShellProps {
         selectedCategory: ProductCategoryTypes | null,
       ) => ReactNode);
   onResetProducts?: () => void;
+  periodBaseProduct?: ProductEditCardProps;
 }
 export const ProductEditPageShell = ({
   activeType,
   children,
   onResetProducts,
+  periodBaseProduct,
 }: ProductEditPageShellProps) => {
   const pageCopy = editPageCopyByType[activeType];
   const {
@@ -91,7 +94,12 @@ export const ProductEditPageShell = ({
                 leftIcon={<IcCalendarSizeXsmallColorPrimary aria-hidden='true' />}
                 size='xsmall'
                 variant='soft'
-                onClick={() => openProductEditPeriodModal({ variant: activeType })}
+                onClick={() =>
+                  openProductEditPeriodModal({
+                    initialPeriod: periodBaseProduct,
+                    variant: activeType,
+                  })
+                }
               >
                 기간 일괄 수정
               </Button>

@@ -7,20 +7,22 @@
 
 ## Ownership
 
-- 위치: `apps/market-owner/src/domains/product/components/product-edit-modal/ProductEditPeriodModal.tsx`
+- 위치: `apps/market-owner/src/domains/product/components/product-edit-modal/product-edit-period-modal/ProductEditPeriodModal.tsx`
 - 사용처: `ProductEditPageShell`
 - modal open/close는 `openProductEditPeriodModal` helper가 공통 overlay helper로 처리합니다.
 
 ## Public API
 
 - `variant`: `todaySpecial | eventDiscount`로 시작일 disabled 여부와 기간 toggle 버튼 노출 여부를 결정합니다.
+- `initialPeriod`: 호출부의 상품 목록 데이터에서 가져온 시작일/종료일 기본값입니다.
 - `open`: OverlayKit controller가 전달하는 modal open 상태입니다.
 - `onClose`: OverlayKit `close`/`unmount` 흐름으로 modal을 닫는 handler입니다.
-- `openProductEditPeriodModal`: 호출부에서 variant만 전달하면 modal overlay helper로 modal을 엽니다.
+- `openProductEditPeriodModal`: 호출부에서 variant와 initialPeriod를 전달하면 modal overlay helper로 modal을 엽니다.
 
 ## Behavior
 
 - 제목은 `선택된 상품들의 판매 기간을 수정해주세요`를 표시합니다.
+- 시작일과 종료일 기본값은 고정 날짜가 아니라 호출부에서 전달한 상품 기간 데이터를 input 형식으로 변환해 사용합니다.
 - 오늘의 특가 variant는 시작일을 비활성 상태로 표시하고 `하루 더 늘리기` 버튼을 표시합니다.
 - `하루 더 늘리기`를 누르면 종료일을 하루 증가시키고 버튼을 `오늘만 특가로`로 전환합니다.
 - `오늘만 특가로`를 누르면 종료일을 시작일로 되돌리고 다른 변경이 없으면 `변경하기`를 다시 disabled 처리합니다.

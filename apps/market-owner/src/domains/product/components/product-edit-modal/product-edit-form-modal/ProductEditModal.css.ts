@@ -1,27 +1,13 @@
 import { globalStyle, style } from '@vanilla-extract/css';
 
 import { recipe } from '@dongchimi/design-system/styles';
-import { atomic, semantic, shadow, typography } from '@dongchimi/design-system/tokens';
+import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
+
+import * as Content from '../ProductEditModalContent.css';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
-export const contentRecipe = recipe({
-  base: {
-    maxWidth: 'calc(100vw - 32px)',
-    borderRadius: 24,
-    boxShadow: shadow.normal.medium,
-  },
-  variants: {
-    variant: {
-      eventDiscount: {
-        width: 930,
-      },
-      todaySpecial: {
-        width: 1008,
-      },
-    },
-  },
-});
+export const contentClassName = Content.contentClassName;
 
 export const containerRecipe = recipe({
   base: {
@@ -32,24 +18,12 @@ export const containerRecipe = recipe({
     flexDirection: 'column',
     backgroundColor: atomic.common[0],
     color: atomic.neutral[90],
-  },
-  variants: {
-    variant: {
-      eventDiscount: {
-        gap: 38,
-        padding: '52px 55px 47px',
-      },
-      todaySpecial: {
-        minHeight: 802,
-        gap: 48,
-        padding: 60,
-      },
-    },
+    gap: '4rem',
   },
 });
 
 export const titleClassName = style({
-  ...typography['title-2-semibold'],
+  ...typography['heading-1-semibold'],
   margin: 0,
   color: atomic.neutral[90],
 });
@@ -59,27 +33,15 @@ export const bodyClassName = style({
   width: '100%',
   minWidth: 0,
   flexDirection: 'column',
-  gap: 36,
+  gap: '2rem',
 });
 
-export const sectionRecipe = recipe({
-  base: {
-    display: 'grid',
-    width: '100%',
-    minWidth: 0,
-  },
-  variants: {
-    variant: {
-      eventDiscount: {
-        gridTemplateColumns: '124px 1fr',
-        columnGap: 60,
-      },
-      todaySpecial: {
-        gridTemplateColumns: '124px 1fr',
-        columnGap: 60,
-      },
-    },
-  },
+export const sectionClassName = style({
+  display: 'grid',
+  width: '100%',
+  minWidth: 0,
+  gridTemplateColumns: '6.6rem 1fr',
+  columnGap: '14rem',
 });
 
 export const sectionTitleClassName = style({
@@ -88,47 +50,19 @@ export const sectionTitleClassName = style({
   color: atomic.neutral[90],
 });
 
-export const sectionContentClassName = style({
-  display: 'flex',
-  minWidth: 0,
-  gap: 38,
-});
-
-export const productSectionContentClassName = style({
-  display: 'flex',
-  width: '100%',
-  minWidth: 0,
-  flexDirection: 'column',
-  gap: 20,
-});
-
-export const sectionSpacerRecipe = recipe({
-  base: {
-    flexShrink: 0,
-  },
-  variants: {
-    variant: {
-      eventDiscount: {
-        width: 112,
-      },
-      todaySpecial: {
-        width: 120,
-      },
-    },
-  },
-});
-
 export const fieldLabelClassName = style({
   ...typography['body-3-semibold'],
-  color: atomic.neutral[90],
+  color: atomic.neutral[70],
 });
 
-export const formColumnClassName = style({
-  display: 'flex',
-  width: '100%',
-  minWidth: 0,
-  flexDirection: 'column',
-  gap: 20,
+export const formColumnRecipe = recipe({
+  base: {
+    display: 'flex',
+    flex: '0 1 auto',
+    minWidth: 0,
+    flexDirection: 'column',
+    gap: '2rem',
+  },
 });
 
 export const fieldGroupClassName = style({
@@ -136,38 +70,49 @@ export const fieldGroupClassName = style({
   width: '100%',
   minWidth: 0,
   flexDirection: 'column',
-  gap: 8,
+  gap: '0.8rem',
 });
 
 const fieldGridBaseClassName = style({
   display: 'grid',
   width: '100%',
   minWidth: 0,
-  gap: 24,
+  gap: '2.4rem',
 });
 
 export const productInfoGridClassName = style([
   fieldGridBaseClassName,
   {
-    gridTemplateColumns: '320px 134px',
-    columnGap: 48,
+    gridTemplateColumns: '31.9rem 13.4rem',
+    columnGap: '4.8rem',
   },
 ]);
 
-export const priceGridClassName = style([
-  fieldGridBaseClassName,
-  {
-    gridTemplateColumns: 'repeat(2, 320px)',
-    columnGap: 48,
+export const priceGridRecipe = recipe({
+  base: [
+    fieldGridBaseClassName,
+    {
+      columnGap: '4.6rem',
+    },
+  ],
+  variants: {
+    variant: {
+      eventDiscount: {
+        gridTemplateColumns: '31.9rem',
+      },
+      todaySpecial: {
+        gridTemplateColumns: 'repeat(2, 31.9rem)',
+      },
+    },
   },
-]);
+});
 
 export const categoryFieldClassName = style({
   position: 'relative',
   display: 'flex',
   minWidth: 0,
   flexDirection: 'column',
-  gap: 8,
+  gap: '0.8rem',
 });
 
 export const categoryTriggerClassName = style({
@@ -176,12 +121,12 @@ export const categoryTriggerClassName = style({
   boxSizing: 'border-box',
   display: 'flex',
   width: '100%',
-  height: 40,
+  height: '4rem',
   alignItems: 'center',
   justifyContent: 'space-between',
   border: `1px solid ${atomic.neutral[20]}`,
-  borderRadius: 4,
-  padding: '10px 16px',
+  borderRadius: '0.4rem',
+  padding: '1rem 1.6rem',
   backgroundColor: atomic.common[0],
   color: atomic.neutral[90],
   cursor: 'pointer',
@@ -195,7 +140,7 @@ export const categoryTriggerClassName = style({
 
 export const categoryDropdownClassName = style({
   position: 'absolute',
-  top: 66,
+  top: '6.6rem',
   right: 0,
   zIndex: 1,
   width: '100%',
@@ -206,7 +151,7 @@ export const dateRowClassName = style({
   width: '100%',
   minWidth: 0,
   alignItems: 'center',
-  gap: 12,
+  gap: '1.2rem',
 });
 
 export const dateDividerClassName = style({
@@ -216,13 +161,24 @@ export const dateDividerClassName = style({
 });
 
 export const dateFieldClassName = style({
-  width: 250,
-  flexShrink: 0,
+  width: '25rem',
+  flex: '0 1 25rem',
+  minWidth: 0,
 });
 
 globalStyle(`${dateFieldClassName} label`, {
-  height: 40,
-  padding: '10px 16px',
+  height: '4rem',
+  padding: '1rem 1.6rem',
+});
+
+export const periodToggleButtonClassName = style({
+  flexShrink: 0,
+  width: '13.7rem',
+  minWidth: '13.7rem',
+  height: '4rem',
+  borderRadius: '10rem',
+  paddingRight: '1.6rem',
+  paddingLeft: '1.6rem',
 });
 
 export const footerClassName = style({
@@ -230,11 +186,11 @@ export const footerClassName = style({
   width: '100%',
   minWidth: 0,
   justifyContent: 'flex-end',
-  gap: 14,
+  gap: '1.4rem',
 });
 
 export const footerButtonClassName = style({
   width: '16rem',
   minWidth: '16rem',
-  height: 44,
+  height: '4.4rem',
 });

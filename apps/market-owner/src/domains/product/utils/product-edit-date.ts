@@ -1,8 +1,6 @@
-const DEFAULT_DATE = '2026-08-16';
-
 export const formatProductEditDateForInput = (date?: string) => {
   if (date == null) {
-    return DEFAULT_DATE;
+    return '';
   }
 
   const match = date.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})/);

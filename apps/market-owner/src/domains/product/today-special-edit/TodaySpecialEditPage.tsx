@@ -9,7 +9,11 @@ export const TodaySpecialEditPage = () => {
     useProductEditProducts(todaySpecialEditProducts);
 
   return (
-    <ProductEditPageShell activeType='todaySpecial' onResetProducts={resetProducts}>
+    <ProductEditPageShell
+      activeType='todaySpecial'
+      periodBaseProduct={products[0]}
+      onResetProducts={resetProducts}
+    >
       {(selectedFilter) => (
         <TodaySpecialEditProductSection
           products={products}
