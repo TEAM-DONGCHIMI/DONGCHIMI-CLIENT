@@ -62,7 +62,7 @@ export const NearbyMarketsMapSection = ({
 
   if (loading) {
     return (
-      <section aria-label={MAP_SECTION_ARIA_LABEL}>
+      <section aria-label={MAP_SECTION_ARIA_LABEL} className={S.mapSectionClassName}>
         <div aria-label={MAP_LOADING_MESSAGE} className={S.mapAreaClassName} role='img' />
       </section>
     );
@@ -70,7 +70,7 @@ export const NearbyMarketsMapSection = ({
 
   if (!KAKAO_MAP_APP_KEY || error) {
     return (
-      <section aria-label={MAP_SECTION_ARIA_LABEL}>
+      <section aria-label={MAP_SECTION_ARIA_LABEL} className={S.mapSectionClassName}>
         <div aria-label={LOAD_ERROR_MESSAGE} className={S.mapAreaClassName} role='img' />
         <p className={S.mapStatusClassName} role='status'>
           {LOAD_ERROR_MESSAGE}
@@ -84,7 +84,7 @@ export const NearbyMarketsMapSection = ({
   const statusMessage = resolveStatusMessage(errorCode, isMarketsError);
 
   return (
-    <section aria-label={MAP_SECTION_ARIA_LABEL}>
+    <section aria-label={MAP_SECTION_ARIA_LABEL} className={S.mapSectionClassName}>
       <Map
         center={coordinates ?? DEFAULT_CENTER}
         className={S.mapAreaClassName}

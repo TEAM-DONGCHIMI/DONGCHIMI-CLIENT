@@ -41,16 +41,16 @@ export const NearbyMarketsPage = () => {
         </MobileHeader.Logo>
       </MobileHeader>
 
+      <NearbyMarketsSearchSection
+        keyword={displayValue}
+        onKeywordChange={handleKeywordChange}
+        placeholder={LOCATION_PERMISSION_DENIED_PLACEHOLDER}
+      />
       <NearbyMarketsMapSection
         coordinates={coordinates}
         errorCode={errorCode}
         keyword={debouncedKeyword}
         marketSearchOrigin={marketSearchOrigin}
-      />
-      <NearbyMarketsSearchSection
-        keyword={displayValue}
-        onKeywordChange={handleKeywordChange}
-        placeholder={LOCATION_PERMISSION_DENIED_PLACEHOLDER}
       />
       <NearbyMarketsMarketListSection
         keyword={debouncedKeyword}

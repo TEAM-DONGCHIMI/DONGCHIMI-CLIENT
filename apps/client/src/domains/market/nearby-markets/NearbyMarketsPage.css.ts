@@ -91,6 +91,10 @@ export const visuallyHiddenClassName = style({
   whiteSpace: 'nowrap',
 });
 
+export const mapSectionClassName = style({
+  padding: '0 2rem',
+});
+
 export const mapAreaClassName = style({
   width: '100%',
   height: '314px',
@@ -100,7 +104,7 @@ export const mapAreaClassName = style({
 
 export const mapStatusClassName = style({
   ...typography['caption-1-medium'],
-  padding: '0.8rem 2rem 0',
+  padding: '0.8rem 0 0',
   color: atomic.neutral[60],
   textAlign: 'center',
 });
