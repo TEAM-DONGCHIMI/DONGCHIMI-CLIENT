@@ -16,6 +16,10 @@ interface UseProductEditBulkSelectionParams {
   periodBaseProduct?: ProductEditCardProps;
   onDeleteProducts?: (productNames: string[]) => void;
   onResetProducts?: () => void;
+  onUpdateProductPeriods?: (
+    productNames: string[],
+    period: { endDate: string; startDate: string },
+  ) => void;
 }
 
 export interface ProductEditPageSelectionControls {
@@ -29,6 +33,7 @@ export const useProductEditBulkSelection = ({
   periodBaseProduct,
   onDeleteProducts,
   onResetProducts,
+  onUpdateProductPeriods,
 }: UseProductEditBulkSelectionParams) => {
   // 일괄 작업 상태
   const [bulkSelection, setBulkSelection] = useState<ProductEditBulkSelectionState>({
@@ -100,6 +105,9 @@ export const useProductEditBulkSelection = ({
     openProductEditPeriodModal({
       initialPeriod: selectedProducts[0] ?? periodBaseProduct,
       variant: activeType,
+      onSubmit: (period) => {
+        onUpdateProductPeriods?.(selectedProductNames, period);
+      },
       onClose: closeBulkAction,
     });
   };
@@ -136,6 +144,7 @@ export const useProductEditBulkSelection = ({
   };
 
   return {
+    bulkAction,
     selectedProductCount,
     selectionControls,
     selectionMode,

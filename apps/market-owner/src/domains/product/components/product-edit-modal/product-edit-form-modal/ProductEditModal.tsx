@@ -36,10 +36,12 @@ interface ProductEditModalProps {
   product: ProductEditCardProps;
   variant: ProductEditCardVariantTypes;
   onClose: () => void;
+  onSubmit?: (product: ProductEditCardProps) => void;
 }
 
 interface OpenProductEditModalParams {
   product: ProductEditCardProps;
+  onSubmit?: (product: ProductEditCardProps) => void;
   variant: ProductEditCardVariantTypes;
 }
 
@@ -87,7 +89,13 @@ const isSameFormValues = (values: ProductEditFormValues, initialValues: ProductE
   );
 };
 
-export const ProductEditModal = ({ open, product, variant, onClose }: ProductEditModalProps) => {
+export const ProductEditModal = ({
+  open,
+  product,
+  variant,
+  onClose,
+  onSubmit,
+}: ProductEditModalProps) => {
   const [initialValues] = useState(() => createInitialValues(product, variant));
   const [values, setValues] = useState(initialValues);
   const categoryFieldRef = useRef<HTMLDivElement>(null);
@@ -143,6 +151,19 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
           ? addOneDayToProductEditDate(currentValues.endDate)
           : currentValues.startDate,
     }));
+  };
+
+  const submitModal = () => {
+    onSubmit?.({
+      ...product,
+      categoryName: values.categoryName,
+      endDate: values.endDate,
+      originalPrice: values.originalPrice === '' ? undefined : values.originalPrice,
+      productName: values.productName,
+      salePrice: values.salePrice,
+      startDate: values.startDate,
+    });
+    closeModal();
   };
 
   return (
@@ -303,7 +324,7 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
               disabled={!isEdited}
               size='small'
               variant='solid'
-              onClick={closeModal}
+              onClick={submitModal}
             >
               변경하기
             </Button>
@@ -314,10 +335,20 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
   );
 };
 
-export const openProductEditModal = ({ product, variant }: OpenProductEditModalParams) => {
+export const openProductEditModal = ({
+  product,
+  variant,
+  onSubmit,
+}: OpenProductEditModalParams) => {
   openProductEditOverlay({
     render: ({ closeOverlay, isOpen }) => (
-      <ProductEditModal open={isOpen} product={product} variant={variant} onClose={closeOverlay} />
+      <ProductEditModal
+        open={isOpen}
+        product={product}
+        variant={variant}
+        onClose={closeOverlay}
+        onSubmit={onSubmit}
+      />
     ),
   });
 };

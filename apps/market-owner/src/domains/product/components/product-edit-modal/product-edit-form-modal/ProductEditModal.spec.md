@@ -17,13 +17,14 @@
 - `product`: 수정할 카드 상품 props입니다. 열릴 때 form 초기값으로 사용합니다.
 - `variant`: `todaySpecial` 또는 `eventDiscount`로 가격/기간 입력 구성을 결정합니다.
 - `onClose`: OverlayKit `close`/`unmount` 흐름으로 modal을 닫는 handler입니다.
+- `onSubmit`: 변경 확정 시 수정된 카드 값을 호출부로 전달하는 handler입니다.
 
 ## UI States
 
 - default: 상품 카드 값으로 form을 채우고 `변경하기`는 disabled입니다.
 - category dropdown: 상품 구분 trigger를 누르면 `Dropdown`으로 카테고리 옵션을 표시합니다.
 - edited: 입력값 또는 카테고리/기간이 초기값과 달라지면 `변경하기`를 활성화합니다.
-- submitted: 현재 API가 없으므로 `변경하기` 클릭 시 modal을 닫습니다.
+- submitted: `변경하기` 클릭 시 수정된 카드 값을 `onSubmit`으로 전달하고 modal을 닫습니다.
 
 ## Behavior
 

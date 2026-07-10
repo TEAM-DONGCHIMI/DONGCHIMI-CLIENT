@@ -1,6 +1,6 @@
 import { style, styleVariants } from '@vanilla-extract/css';
 
-import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
+import { atomic, typography } from '@dongchimi/design-system/tokens';
 
 export const pageClassName = style({
   display: 'flex',
@@ -67,21 +67,22 @@ export const selectedProductCountClassName = style({
 const actionButtonBaseClassName = style({
   minWidth: '11.2rem',
   padding: '0.8rem 0',
-  backgroundColor: atomic.common[0],
 });
 
 export const actionButtonClassNames = styleVariants({
-  negative: [actionButtonBaseClassName],
-  primary: [
+  negative: [
     actionButtonBaseClassName,
     {
-      borderColor: semantic.primary.normal,
-      color: semantic.primary.normal,
+      backgroundColor: atomic.common[0],
     },
   ],
+  negativeSolid: [actionButtonBaseClassName],
+  primary: [actionButtonBaseClassName],
+  primarySolid: [actionButtonBaseClassName],
   reset: [
     actionButtonBaseClassName,
     {
+      backgroundColor: atomic.common[0],
       minWidth: '8rem',
     },
   ],

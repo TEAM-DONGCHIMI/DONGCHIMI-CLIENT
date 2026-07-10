@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
+import { fireEvent } from '@testing-library/react';
 
-import { render, screen, waitFor } from '@/test';
+import { render, screen, userEvent, waitFor } from '@/test';
 
 import { ProductEditPeriodModal } from './ProductEditPeriodModal';
 
@@ -42,5 +43,35 @@ describe('ProductEditPeriodModal', () => {
     await waitFor(() => expect(title).toHaveFocus());
     expect(screen.getByLabelText('행사 시작일')).not.toHaveFocus();
     expect(screen.getByLabelText('행사 종료일')).not.toHaveFocus();
+  });
+
+  it('submits changed period when confirm button is pressed', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+    const handleClose = vi.fn();
+
+    render(
+      <ProductEditPeriodModal
+        initialPeriod={{
+          endDate: '2026. 8. 16',
+          startDate: '2026. 8. 12',
+        }}
+        open
+        variant='eventDiscount'
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('행사 종료일'), {
+      target: { value: '2026-08-17' },
+    });
+    await user.click(screen.getByRole('button', { name: '변경하기' }));
+
+    expect(handleSubmit).toHaveBeenCalledWith({
+      endDate: '2026-08-17',
+      startDate: '2026-08-12',
+    });
+    expect(handleClose).toHaveBeenCalledOnce();
   });
 });

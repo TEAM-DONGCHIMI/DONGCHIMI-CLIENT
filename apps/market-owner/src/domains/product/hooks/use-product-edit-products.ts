@@ -1,7 +1,17 @@
 import { useState } from 'react';
 
 interface ProductEditMutableProduct {
+  categoryName?: string;
+  endDate?: string;
+  originalPrice?: string;
   productName: string;
+  salePrice?: string;
+  startDate?: string;
+}
+
+interface ProductEditPeriodUpdate {
+  endDate: string;
+  startDate: string;
 }
 
 export const useProductEditProducts = <ProductTypes extends ProductEditMutableProduct>(
@@ -27,10 +37,43 @@ export const useProductEditProducts = <ProductTypes extends ProductEditMutablePr
     setProducts([]);
   };
 
+  const updateProduct = (
+    productName: string,
+    productUpdate: Partial<ProductEditMutableProduct>,
+  ) => {
+    setProducts((currentProducts) =>
+      currentProducts.map((product) =>
+        product.productName === productName
+          ? ({
+              ...product,
+              ...productUpdate,
+            } as ProductTypes)
+          : product,
+      ),
+    );
+  };
+
+  const updateProductPeriods = (productNames: string[], period: ProductEditPeriodUpdate) => {
+    const productNameSet = new Set(productNames);
+
+    setProducts((currentProducts) =>
+      currentProducts.map((product) =>
+        productNameSet.has(product.productName)
+          ? ({
+              ...product,
+              ...period,
+            } as ProductTypes)
+          : product,
+      ),
+    );
+  };
+
   return {
     deleteProduct,
     deleteProducts,
     products,
     resetProducts,
+    updateProduct,
+    updateProductPeriods,
   };
 };

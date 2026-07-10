@@ -3,10 +3,12 @@ import { Link } from 'react-router';
 
 import { Button, PillButton, TabNav } from '@dongchimi/design-system/components';
 import {
+  IcCalendarSizeXsmallColorPrimaryStrong,
   IcCalendarSizeXsmallColorPrimary,
   IcChevronDownSizeSmallColor50,
   IcChevronUpSizeSmallColor50,
   IcResetSizeSmallColorNegative,
+  IcTrashSizeSmallColorNegativeStrong,
   IcTrashSizeSmallColorNegative,
 } from '@dongchimi/design-system/icons';
 
@@ -40,7 +42,12 @@ export interface ProductEditPageShellProps {
       ) => ReactNode);
   onDeleteProducts?: (productNames: string[]) => void;
   onResetProducts?: () => void;
+  onUpdateProductPeriods?: (
+    productNames: string[],
+    period: { endDate: string; startDate: string },
+  ) => void;
   periodBaseProduct?: ProductEditCardProps;
+  productCounts?: Partial<Record<ProductEditTypeTypes, number>>;
 }
 
 export const ProductEditPageShell = ({
@@ -48,7 +55,9 @@ export const ProductEditPageShell = ({
   children,
   onDeleteProducts,
   onResetProducts,
+  onUpdateProductPeriods,
   periodBaseProduct,
+  productCounts,
 }: ProductEditPageShellProps) => {
   const pageCopy = editPageCopyByType[activeType];
 
@@ -67,6 +76,7 @@ export const ProductEditPageShell = ({
 
   // 일괄 작업 상태
   const {
+    bulkAction,
     selectedProductCount,
     selectionControls,
     selectionMode,
@@ -78,7 +88,50 @@ export const ProductEditPageShell = ({
     periodBaseProduct,
     onDeleteProducts,
     onResetProducts,
+    onUpdateProductPeriods,
   });
+  const isDeleteButtonEmphasized = bulkAction === 'delete' && selectedProductCount > 0;
+  const isPeriodButtonEmphasized = bulkAction === 'period' && selectedProductCount > 0;
+  const periodButtonProps = isPeriodButtonEmphasized
+    ? {
+        className: S.actionButtonClassNames.primarySolid,
+        color: 'primary' as const,
+        leftIcon: <IcCalendarSizeXsmallColorPrimaryStrong aria-hidden='true' />,
+        variant: 'solid' as const,
+      }
+    : {
+        className: S.actionButtonClassNames.primary,
+        color: 'primary' as const,
+        leftIcon: <IcCalendarSizeXsmallColorPrimary aria-hidden='true' />,
+        variant: 'soft' as const,
+      };
+
+  const renderEditTypeTab = ({
+    children: tabLabel,
+    type,
+    to,
+  }: {
+    children: string;
+    type: ProductEditTypeTypes;
+    to: string;
+  }) => {
+    const isSelected = activeType === type;
+    const isDisabled = productCounts?.[type] === 0;
+
+    if (isDisabled) {
+      return (
+        <TabNav.Item disabled selected={isSelected}>
+          {tabLabel}
+        </TabNav.Item>
+      );
+    }
+
+    return (
+      <TabNav.Item as={Link} selected={isSelected} to={to}>
+        {tabLabel}
+      </TabNav.Item>
+    );
+  };
 
   return (
     <main className={S.pageClassName}>
@@ -94,20 +147,16 @@ export const ProductEditPageShell = ({
           <div className={S.tabsAndActionsClassName}>
             <TabNav aria-label='상품 수정 유형'>
               <TabNav.List>
-                <TabNav.Item
-                  as={Link}
-                  selected={activeType === 'todaySpecial'}
-                  to={MARKET_OWNER_ROUTES.todaySpecialEdit}
-                >
-                  오늘의 특가
-                </TabNav.Item>
-                <TabNav.Item
-                  as={Link}
-                  selected={activeType === 'eventDiscount'}
-                  to={MARKET_OWNER_ROUTES.eventDiscountEdit}
-                >
-                  행사 할인
-                </TabNav.Item>
+                {renderEditTypeTab({
+                  children: '오늘의 특가',
+                  type: 'todaySpecial',
+                  to: MARKET_OWNER_ROUTES.todaySpecialEdit,
+                })}
+                {renderEditTypeTab({
+                  children: '행사 할인',
+                  type: 'eventDiscount',
+                  to: MARKET_OWNER_ROUTES.eventDiscountEdit,
+                })}
               </TabNav.List>
             </TabNav>
 
@@ -117,22 +166,25 @@ export const ProductEditPageShell = ({
                   선택된 상품 ({selectedProductCount})
                 </span>
               )}
-              <Button
-                className={S.actionButtonClassNames.primary}
-                color='primary'
-                leftIcon={<IcCalendarSizeXsmallColorPrimary aria-hidden='true' />}
-                size='xsmall'
-                variant='soft'
-                onClick={openPeriodBulkAction}
-              >
+              <Button {...periodButtonProps} size='xsmall' onClick={openPeriodBulkAction}>
                 기간 일괄 수정
               </Button>
               <Button
-                className={S.actionButtonClassNames.negative}
+                className={
+                  isDeleteButtonEmphasized
+                    ? S.actionButtonClassNames.negativeSolid
+                    : S.actionButtonClassNames.negative
+                }
                 color='negative'
-                leftIcon={<IcTrashSizeSmallColorNegative aria-hidden='true' />}
+                leftIcon={
+                  isDeleteButtonEmphasized ? (
+                    <IcTrashSizeSmallColorNegativeStrong aria-hidden='true' />
+                  ) : (
+                    <IcTrashSizeSmallColorNegative aria-hidden='true' />
+                  )
+                }
                 size='xsmall'
-                variant='outlined'
+                variant={isDeleteButtonEmphasized ? 'solid' : 'outlined'}
                 onClick={openDeleteBulkAction}
               >
                 일괄 삭제

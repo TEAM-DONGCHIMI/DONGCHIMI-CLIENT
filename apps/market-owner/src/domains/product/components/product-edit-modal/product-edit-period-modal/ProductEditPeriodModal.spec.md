@@ -17,6 +17,7 @@
 - `initialPeriod`: 호출부의 상품 목록 데이터에서 가져온 시작일/종료일 기본값입니다.
 - `open`: OverlayKit controller가 전달하는 modal open 상태입니다.
 - `onClose`: OverlayKit `close`/`unmount` 흐름으로 modal을 닫는 handler입니다.
+- `onSubmit`: 변경 확정 시 선택 상품에 적용할 시작일/종료일 값을 호출부로 전달하는 handler입니다.
 - `openProductEditPeriodModal`: 호출부에서 variant와 initialPeriod를 전달하면 modal overlay helper로 modal을 엽니다.
 
 ## Behavior
@@ -28,4 +29,4 @@
 - `오늘만 특가로`를 누르면 종료일을 시작일로 되돌리고 다른 변경이 없으면 `변경하기`를 다시 disabled 처리합니다.
 - 행사 할인 variant는 시작일과 종료일을 모두 수정 가능하게 표시하고 `하루 더 늘리기` 버튼을 표시하지 않습니다.
 - 변경 전에는 `변경하기` 버튼을 disabled 상태로 표시합니다.
-- 현재 API가 없으므로 `변경하기` 클릭 시 modal만 닫습니다.
+- `변경하기` 클릭 시 수정된 기간을 `onSubmit`으로 전달하고 modal을 닫습니다.

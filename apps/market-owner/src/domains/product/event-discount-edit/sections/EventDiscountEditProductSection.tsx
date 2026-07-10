@@ -1,6 +1,7 @@
 import {
   createProductEditCardProps,
   createProductEditDisplayGroups,
+  type ProductEditCardProps,
   ProductEditProductList,
 } from '@/domains/product/components/product-edit-product-list';
 import {
@@ -18,6 +19,7 @@ interface EventDiscountEditProductSectionProps {
   selectedCategory: ProductCategoryTypes | null;
   selectedFilter: ProductEditFilterTypes;
   onDeleteProduct: (productName: string) => void;
+  onUpdateProduct: (productName: string, product: ProductEditCardProps) => void;
 }
 
 export const EventDiscountEditProductSection = ({
@@ -26,6 +28,7 @@ export const EventDiscountEditProductSection = ({
   selectedCategory,
   selectedFilter,
   onDeleteProduct,
+  onUpdateProduct,
 }: EventDiscountEditProductSectionProps) => {
   const productGroups = createProductEditDisplayGroups({
     createCardProps: (product) =>
@@ -49,6 +52,7 @@ export const EventDiscountEditProductSection = ({
       selectionMode={selection.selectionMode}
       onDeleteProduct={(product) => onDeleteProduct(product.productName)}
       onToggleProductSelection={selection.onToggleProductSelection}
+      onUpdateProduct={onUpdateProduct}
     />
   );
 };

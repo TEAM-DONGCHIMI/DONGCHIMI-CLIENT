@@ -18,11 +18,13 @@ interface ProductEditPeriodModalProps {
   open: boolean;
   variant: ProductEditTypeTypes;
   onClose: () => void;
+  onSubmit?: (period: Required<ProductEditPeriodValues>) => void;
 }
 
 interface OpenProductEditPeriodModalParams {
   initialPeriod?: ProductEditPeriodValues;
   onClose?: () => void;
+  onSubmit?: (period: Required<ProductEditPeriodValues>) => void;
   variant: ProductEditTypeTypes;
 }
 
@@ -46,6 +48,7 @@ export const ProductEditPeriodModal = ({
   open,
   variant,
   onClose,
+  onSubmit,
 }: ProductEditPeriodModalProps) => {
   const titleRef = useProductEditModalTitleFocus(open);
   const [initialPeriod] = useState(() => createInitialPeriod(initialPeriodProp));
@@ -67,6 +70,14 @@ export const ProductEditPeriodModal = ({
     setEndDate((currentEndDate) =>
       currentEndDate === startDate ? addOneDayToProductEditDate(currentEndDate) : startDate,
     );
+  };
+
+  const submitPeriod = () => {
+    onSubmit?.({
+      endDate,
+      startDate,
+    });
+    onClose();
   };
 
   return (
@@ -136,7 +147,7 @@ export const ProductEditPeriodModal = ({
               disabled={!isEdited}
               size='small'
               variant='solid'
-              onClick={onClose}
+              onClick={submitPeriod}
             >
               변경하기
             </Button>
@@ -150,6 +161,7 @@ export const ProductEditPeriodModal = ({
 export const openProductEditPeriodModal = ({
   initialPeriod,
   onClose,
+  onSubmit,
   variant,
 }: OpenProductEditPeriodModalParams) => {
   openProductEditOverlay({
@@ -165,6 +177,7 @@ export const openProductEditPeriodModal = ({
           open={isOpen}
           variant={variant}
           onClose={closePeriodModal}
+          onSubmit={onSubmit}
         />
       );
     },

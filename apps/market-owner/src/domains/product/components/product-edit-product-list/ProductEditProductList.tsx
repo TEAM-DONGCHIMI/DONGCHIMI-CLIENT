@@ -8,7 +8,6 @@ import {
   type ProductEditProductGroup,
 } from './display-groups';
 import { ProductEditEmptyView } from './product-edit-empty-view';
-import { isProductEditDateTodayOrFuture } from '../../utils/product-edit-date';
 
 interface ProductEditProductListProps {
   ariaLabel: string;
@@ -19,14 +18,11 @@ interface ProductEditProductListProps {
   selectionMode?: boolean;
   onDeleteProduct?: (product: ProductEditCardProps) => void;
   onToggleProductSelection?: (product: ProductEditCardProps) => void;
+  onUpdateProduct?: (productName: string, product: ProductEditCardProps) => void;
 }
 
 const hasProducts = (groups: ProductEditProductGroup[]) =>
   groups.some(({ products }) => products.length > 0);
-
-const hasRemainingPromotionPeriod = (product: ProductEditCardProps) => {
-  return isProductEditDateTodayOrFuture(product.endDate);
-};
 
 export const ProductEditProductList = ({
   ariaLabel,
@@ -37,22 +33,17 @@ export const ProductEditProductList = ({
   registrationHref,
   onDeleteProduct,
   onToggleProductSelection,
+  onUpdateProduct,
 }: ProductEditProductListProps) => {
   if (!hasProducts(groups)) {
     return <ProductEditEmptyView ariaLabel={ariaLabel} registrationHref={registrationHref} />;
   }
 
   const deleteProduct = (product: ProductEditCardProps) => {
-    if (hasRemainingPromotionPeriod(product)) {
-      openProductEditConfirmModal({
-        action: 'delete',
-        onConfirm: () => onDeleteProduct?.(product),
-      });
-
-      return;
-    }
-
-    onDeleteProduct?.(product);
+    openProductEditConfirmModal({
+      action: 'delete',
+      onConfirm: () => onDeleteProduct?.(product),
+    });
   };
   const selectedProductNameSet = new Set(selectedProductNames);
 
@@ -79,7 +70,13 @@ export const ProductEditProductList = ({
                   onEditClick={
                     selectionMode
                       ? undefined
-                      : () => openProductEditModal({ product, variant: editModalVariant })
+                      : () =>
+                          openProductEditModal({
+                            product,
+                            variant: editModalVariant,
+                            onSubmit: (updatedProduct) =>
+                              onUpdateProduct?.(product.productName, updatedProduct),
+                          })
                   }
                   onSelectClick={
                     selectionMode ? () => onToggleProductSelection?.(product) : undefined

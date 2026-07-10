@@ -16,6 +16,7 @@ const renderProductList = (
   groups: ProductEditProductGroup[] = [],
   editModalVariant: ProductEditCardVariantTypes = 'todaySpecial',
   onDeleteProduct?: (product: ProductEditCardProps) => void,
+  onUpdateProduct?: (productName: string, product: ProductEditCardProps) => void,
 ) => {
   return render(
     <MemoryRouter>
@@ -29,6 +30,7 @@ const renderProductList = (
                 groups={groups}
                 registrationHref='/products/today-special/new'
                 onDeleteProduct={onDeleteProduct}
+                onUpdateProduct={onUpdateProduct}
               />
             }
             path='/'
@@ -157,6 +159,7 @@ describe('ProductEditProductList', () => {
 
   it('updates category from edit modal category dropdown', async () => {
     const user = userEvent.setup();
+    const handleUpdateProduct = vi.fn();
 
     renderProductList(
       [
@@ -175,6 +178,8 @@ describe('ProductEditProductList', () => {
         },
       ],
       'eventDiscount',
+      undefined,
+      handleUpdateProduct,
     );
 
     await user.click(screen.getByRole('button', { name: '햇감자 1kg 상품 수정' }));
@@ -192,6 +197,16 @@ describe('ProductEditProductList', () => {
     expect(screen.getByRole('button', { name: '정육·달걀' })).toBeInTheDocument();
     expect(screen.queryByRole('group', { name: '상품 구분 선택' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '변경하기' })).toBeEnabled();
+
+    await user.click(screen.getByRole('button', { name: '변경하기' }));
+
+    expect(handleUpdateProduct).toHaveBeenCalledWith(
+      '햇감자 1kg',
+      expect.objectContaining({
+        categoryName: '정육·달걀',
+        productName: '햇감자 1kg',
+      }),
+    );
   });
 
   it('keeps edit modal open when backdrop is pressed', async () => {
@@ -291,7 +306,7 @@ describe('ProductEditProductList', () => {
     expect(deletedProducts).toEqual(['딸기 2팩']);
   });
 
-  it('deletes product immediately when promotion period has ended', async () => {
+  it('opens delete confirmation even when product data contains ended period', async () => {
     const user = userEvent.setup();
     const deletedProducts: string[] = [];
 
@@ -317,7 +332,15 @@ describe('ProductEditProductList', () => {
 
     await user.click(screen.getByRole('button', { name: '지난 딸기 2팩 상품 삭제' }));
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole('dialog', {
+        name: /행사 기간이 아직 남았어요\.\s*정말 삭제하시겠어요\?/,
+      }),
+    ).toBeInTheDocument();
+    expect(deletedProducts).toEqual([]);
+
+    await user.click(screen.getByRole('button', { name: '삭제하기' }));
+
     expect(deletedProducts).toEqual(['지난 딸기 2팩']);
   });
 });
