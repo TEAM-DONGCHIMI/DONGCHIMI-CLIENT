@@ -6,6 +6,8 @@ import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 const contentMaxWidth = '137.6rem';
 const tableColumnTemplate = '61fr 100fr 196fr 147fr 160fr 365fr 230fr 117fr';
+const statusColumnWidth = '11.7rem';
+const statusColumnHeaderInset = '3.9rem';
 
 export const sectionClassName = style({
   boxSizing: 'border-box',
@@ -114,7 +116,9 @@ export const headerCellClassName = style({
       paddingLeft: '2.8rem',
     },
     '&:nth-child(8)': {
-      paddingLeft: '3.9rem',
+      justifyContent: 'center',
+      paddingRight: 0,
+      paddingLeft: 0,
       color: atomic.neutral[60],
     },
   },
@@ -205,6 +209,8 @@ export const productRowClassName = style({
 });
 
 globalStyle(`${productRowClassName} > div > div:last-child`, {
+  width: statusColumnWidth,
+  marginLeft: `-${statusColumnHeaderInset}`,
   alignItems: 'center',
 });
 
