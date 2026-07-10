@@ -66,8 +66,8 @@ globalStyle(`${dateFieldLabelClassName} label`, {
 
 export const periodToggleButtonClassName = style({
   flexShrink: 0,
-  width: '13.8rem',
-  minWidth: '13.8rem',
+  width: '13.5rem',
+  minWidth: '13.5rem',
   height: '4rem',
   borderRadius: '2rem',
   padding: '1rem 2rem',
