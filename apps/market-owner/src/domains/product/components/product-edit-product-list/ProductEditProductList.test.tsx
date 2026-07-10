@@ -1,5 +1,5 @@
 import { MemoryRouter, Route, Routes } from 'react-router';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { OverlayProvider } from 'overlay-kit';
 import { describe, expect, it } from 'vitest';
 
@@ -83,6 +83,11 @@ describe('ProductEditProductList', () => {
     expect(
       await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
     ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(document.activeElement).toBe(
+        screen.getByRole('heading', { name: '판매 정보를 수정해주세요' }),
+      );
+    });
     expect(screen.getByLabelText('상품명')).toHaveValue('딸기 2팩');
     expect(screen.getByLabelText('오늘의 특가')).toHaveValue('4,500');
     expect(screen.getByRole('button', { name: '변경하기' })).toBeDisabled();

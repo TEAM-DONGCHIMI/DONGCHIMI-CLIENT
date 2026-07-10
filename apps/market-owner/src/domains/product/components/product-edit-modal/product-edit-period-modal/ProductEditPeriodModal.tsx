@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEventHandler } from 'react';
+import { useState, type ChangeEventHandler } from 'react';
 
 import { Button, Dialog } from '@dongchimi/design-system/components';
 import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
@@ -9,6 +9,7 @@ import {
 } from '../../../utils/product-edit-date';
 import { DateField } from '../../date-field';
 import { type ProductEditTypeTypes } from '../../product-edit-page-shell';
+import { useProductEditModalTitleFocus } from '../hooks/use-product-edit-modal-title-focus';
 import { openProductEditOverlay } from '../open-product-edit-overlay';
 import * as S from './ProductEditPeriodModal.css';
 
@@ -45,7 +46,7 @@ export const ProductEditPeriodModal = ({
   variant,
   onClose,
 }: ProductEditPeriodModalProps) => {
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const titleRef = useProductEditModalTitleFocus(open);
   const [initialPeriod] = useState(() => createInitialPeriod(initialPeriodProp));
   const [startDate, setStartDate] = useState(initialPeriod.startDate);
   const [endDate, setEndDate] = useState(initialPeriod.endDate);
@@ -66,24 +67,6 @@ export const ProductEditPeriodModal = ({
       currentEndDate === startDate ? addOneDayToProductEditDate(currentEndDate) : startDate,
     );
   };
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    let innerFrameId = 0;
-    const frameId = window.requestAnimationFrame(() => {
-      innerFrameId = window.requestAnimationFrame(() => {
-        titleRef.current?.focus();
-      });
-    });
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      window.cancelAnimationFrame(innerFrameId);
-    };
-  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={() => undefined}>

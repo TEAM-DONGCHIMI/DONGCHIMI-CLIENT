@@ -1,13 +1,20 @@
 import { useRef, useState, type ChangeEventHandler } from 'react';
 
-import { Button, Dialog, Dropdown, InlineField } from '@dongchimi/design-system/components';
+import { Button, Dialog, InlineField } from '@dongchimi/design-system/components';
 import {
   IcCalendarPlusSizeSmall,
   IcChevronDownSizeSmallColor50,
   IcLineHorizontalSizeSmall,
 } from '@dongchimi/design-system/icons';
 
-import { productCategoryOptions, type ProductCategoryTypes } from '../../../constants';
+import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
+import { imageUploadInputAccept, isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
+
+import {
+  isProductSelectableCategory,
+  productSelectableCategoryOptions,
+  type ProductSelectableCategoryTypes,
+} from '../../../constants';
 import { useProductOverlayDisclosure } from '../../../hooks';
 import {
   addOneDayToProductEditDate,
@@ -18,7 +25,9 @@ import {
   type ProductEditCardVariantTypes,
 } from '../../product-edit-product-list';
 import { DateField } from '../../date-field';
+import { ProductCategoryDropdown } from '../../product-category-dropdown';
 import { ProductImageUploadField } from '../../product-image-upload-field';
+import { useProductEditModalTitleFocus } from '../hooks/use-product-edit-modal-title-focus';
 import { openProductEditOverlay } from '../open-product-edit-overlay';
 import * as S from './ProductEditModal.css';
 
@@ -37,6 +46,8 @@ interface OpenProductEditModalParams {
 interface ProductEditFormValues {
   categoryName: ProductSelectableCategoryTypes;
   endDate: string;
+  imageFile: File | null;
+  imagePreviewUrl: string | null;
   originalPrice: string;
   productName: string;
   promotionText: string;
@@ -44,27 +55,15 @@ interface ProductEditFormValues {
   startDate: string;
 }
 
-type ProductSelectableCategoryTypes = Exclude<ProductCategoryTypes, '전체'>;
-
-const CATEGORY_OPTIONS = productCategoryOptions.filter(
-  (category): category is ProductSelectableCategoryTypes => category !== '전체',
-);
-
 const DEFAULT_PROMOTION_TEXT = '아주 맛있는 딸기 착한 가격에 데려가세요!';
 const PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID = 'product-edit-modal-category-dropdown';
-
-const isProductCategory = (
-  categoryName: string,
-): categoryName is ProductSelectableCategoryTypes => {
-  return CATEGORY_OPTIONS.includes(categoryName as ProductSelectableCategoryTypes);
-};
 
 const createInitialValues = (
   product: ProductEditCardProps,
   variant: ProductEditCardVariantTypes,
 ): ProductEditFormValues => {
   const categoryName =
-    product.categoryName != null && isProductCategory(product.categoryName)
+    product.categoryName != null && isProductSelectableCategory(product.categoryName)
       ? product.categoryName
       : '기타';
   const endDate = formatProductEditDateForInput(product.endDate);
@@ -72,6 +71,8 @@ const createInitialValues = (
   return {
     categoryName,
     endDate,
+    imageFile: null,
+    imagePreviewUrl: null,
     originalPrice: product.originalPrice ?? '',
     productName: product.productName,
     promotionText: variant === 'todaySpecial' ? DEFAULT_PROMOTION_TEXT : '',
@@ -90,6 +91,7 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
   const [initialValues] = useState(() => createInitialValues(product, variant));
   const [values, setValues] = useState(initialValues);
   const categoryFieldRef = useRef<HTMLDivElement>(null);
+  const titleRef = useProductEditModalTitleFocus(open);
   const categoryDropdown = useProductOverlayDisclosure({
     overlayId: PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID,
     triggerRef: categoryFieldRef,
@@ -97,6 +99,19 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
   const isTodaySpecial = variant === 'todaySpecial';
   const isTodayOnly = values.startDate === values.endDate;
   const isEdited = !isSameFormValues(values, initialValues);
+  const handleImagePreviewChange = ({ file, previewUrl }: ImagePreviewChangePayload) => {
+    setValues((currentValues) => ({
+      ...currentValues,
+      imageFile: file,
+      imagePreviewUrl: previewUrl,
+    }));
+  };
+  const imagePreview = useImagePreview({
+    currentPreviewUrl: values.imagePreviewUrl,
+    isValidFile: isValidImageUploadFile,
+    onPreviewChange: handleImagePreviewChange,
+    previewUrls: [values.imagePreviewUrl],
+  });
 
   const closeModal = () => {
     categoryDropdown.close();
@@ -133,14 +148,23 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
   return (
     <Dialog open={open} onOpenChange={() => undefined}>
       <Dialog.Content className={S.contentClassName}>
-        <div className={S.containerRecipe()}>
-          <Dialog.Title className={S.titleClassName}>판매 정보를 수정해주세요</Dialog.Title>
+        <div className={S.containerClassName}>
+          <Dialog.Title ref={titleRef} className={S.titleClassName} tabIndex={-1}>
+            판매 정보를 수정해주세요
+          </Dialog.Title>
 
           <div className={S.bodyClassName}>
             <section className={S.sectionClassName}>
               <h3 className={S.sectionTitleClassName}>상품 정보</h3>
-              <div className={S.formColumnRecipe()}>
-                <ProductImageUploadField label='상품 이미지' variant='editModal' />
+              <div className={S.formColumnClassName}>
+                <ProductImageUploadField
+                  accept={imageUploadInputAccept}
+                  id='product-edit-modal-image'
+                  label='상품 이미지'
+                  previewUrl={values.imagePreviewUrl}
+                  variant='editModal'
+                  onImageChange={imagePreview.imageInputProps.onChange}
+                />
                 <div className={S.productInfoGridClassName}>
                   <div className={S.fieldGroupClassName}>
                     <span className={S.fieldLabelClassName}>상품명</span>
@@ -163,22 +187,13 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
                     </button>
 
                     {categoryDropdown.isOpen && (
-                      <Dropdown
-                        aria-label='상품 구분 선택'
+                      <ProductCategoryDropdown
+                        ariaLabel='상품 구분 선택'
                         className={S.categoryDropdownClassName}
-                        role='group'
-                      >
-                        {CATEGORY_OPTIONS.map((category) => (
-                          <Dropdown.Item
-                            key={category}
-                            color='primary'
-                            selected={values.categoryName === category}
-                            onClick={() => selectCategory(category)}
-                          >
-                            {category}
-                          </Dropdown.Item>
-                        ))}
-                      </Dropdown>
+                        options={productSelectableCategoryOptions}
+                        selectedCategory={values.categoryName}
+                        onSelect={selectCategory}
+                      />
                     )}
                   </div>
                 </div>
@@ -196,7 +211,7 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
 
             <section className={S.sectionClassName}>
               <h3 className={S.sectionTitleClassName}>상품 가격</h3>
-              <div className={S.formColumnRecipe()}>
+              <div className={S.formColumnClassName}>
                 <div className={S.priceGridRecipe({ variant })}>
                   {isTodaySpecial && (
                     <div className={S.fieldGroupClassName}>
@@ -228,7 +243,7 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
 
             <section className={S.sectionClassName}>
               <h3 className={S.sectionTitleClassName}>기간 설정</h3>
-              <div className={S.formColumnRecipe()}>
+              <div className={S.formColumnClassName}>
                 <div className={S.fieldGroupClassName}>
                   <span className={S.fieldLabelClassName}>행사 기간</span>
                   <div className={S.dateRowClassName}>

@@ -1,4 +1,4 @@
-import { globalStyle, style } from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
 
 import { recipe } from '@dongchimi/design-system/styles';
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
@@ -6,27 +6,11 @@ import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 import * as Content from '../ProductEditModalContent.css';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
+const categoryFieldWidth = '20.6rem';
 
 export const contentClassName = Content.contentClassName;
-
-export const containerRecipe = recipe({
-  base: {
-    boxSizing: 'border-box',
-    display: 'flex',
-    width: '100%',
-    minWidth: 0,
-    flexDirection: 'column',
-    backgroundColor: atomic.common[0],
-    color: atomic.neutral[90],
-    gap: '4rem',
-  },
-});
-
-export const titleClassName = style({
-  ...typography['heading-1-semibold'],
-  margin: 0,
-  color: atomic.neutral[90],
-});
+export const containerClassName = Content.containerClassName;
+export const titleClassName = Content.titleClassName;
 
 export const bodyClassName = style({
   display: 'flex',
@@ -40,38 +24,22 @@ export const sectionClassName = style({
   display: 'grid',
   width: '100%',
   minWidth: 0,
-  gridTemplateColumns: '6.6rem 1fr',
+  gridTemplateColumns: 'max-content minmax(0, 1fr)',
   columnGap: '14rem',
 });
 
-export const sectionTitleClassName = style({
-  ...typography['body-1-semibold'],
-  margin: 0,
-  color: atomic.neutral[90],
-});
+export const sectionTitleClassName = Content.sectionTitleClassName;
+export const fieldLabelClassName = Content.fieldLabelClassName;
 
-export const fieldLabelClassName = style({
-  ...typography['body-3-semibold'],
-  color: atomic.neutral[70],
-});
-
-export const formColumnRecipe = recipe({
-  base: {
-    display: 'flex',
-    flex: '0 1 auto',
-    minWidth: 0,
-    flexDirection: 'column',
-    gap: '2rem',
-  },
-});
-
-export const fieldGroupClassName = style({
+export const formColumnClassName = style({
   display: 'flex',
-  width: '100%',
+  flex: '0 1 auto',
   minWidth: 0,
   flexDirection: 'column',
-  gap: '0.8rem',
+  gap: '2rem',
 });
+
+export const fieldGroupClassName = Content.fieldGroupClassName;
 
 const fieldGridBaseClassName = style({
   display: 'grid',
@@ -83,7 +51,7 @@ const fieldGridBaseClassName = style({
 export const productInfoGridClassName = style([
   fieldGridBaseClassName,
   {
-    gridTemplateColumns: '31.9rem 13.4rem',
+    gridTemplateColumns: `${Content.editModalFieldWidth} ${categoryFieldWidth}`,
     columnGap: '4.8rem',
   },
 ]);
@@ -98,10 +66,10 @@ export const priceGridRecipe = recipe({
   variants: {
     variant: {
       eventDiscount: {
-        gridTemplateColumns: '31.9rem',
+        gridTemplateColumns: Content.editModalFieldWidth,
       },
       todaySpecial: {
-        gridTemplateColumns: 'repeat(2, 31.9rem)',
+        gridTemplateColumns: `repeat(2, ${Content.editModalFieldWidth})`,
       },
     },
   },
@@ -143,7 +111,7 @@ export const categoryDropdownClassName = style({
   top: '6.6rem',
   right: 0,
   zIndex: 1,
-  width: '100%',
+  width: categoryFieldWidth,
 });
 
 export const dateRowClassName = style({
@@ -154,43 +122,17 @@ export const dateRowClassName = style({
   gap: '1.2rem',
 });
 
-export const dateDividerClassName = style({
-  ...typography['title-2-semibold'],
-  flexShrink: 0,
-  color: atomic.neutral[70],
-});
+export const dateDividerClassName = Content.dateDividerClassName;
 
-export const dateFieldClassName = style({
-  width: '25rem',
-  flex: '0 1 25rem',
-  minWidth: 0,
-});
+export const dateFieldClassName = style([
+  Content.dateFieldLabelClassName,
+  {
+    width: Content.editModalFieldWidth,
+    flex: `0 0 ${Content.editModalFieldWidth}`,
+    minWidth: 0,
+  },
+]);
 
-globalStyle(`${dateFieldClassName} label`, {
-  height: '4rem',
-  padding: '1rem 1.6rem',
-});
-
-export const periodToggleButtonClassName = style({
-  flexShrink: 0,
-  width: '13.7rem',
-  minWidth: '13.7rem',
-  height: '4rem',
-  borderRadius: '10rem',
-  paddingRight: '1.6rem',
-  paddingLeft: '1.6rem',
-});
-
-export const footerClassName = style({
-  display: 'flex',
-  width: '100%',
-  minWidth: 0,
-  justifyContent: 'flex-end',
-  gap: '1.4rem',
-});
-
-export const footerButtonClassName = style({
-  width: '16rem',
-  minWidth: '16rem',
-  height: '4.4rem',
-});
+export const periodToggleButtonClassName = Content.periodToggleButtonClassName;
+export const footerClassName = Content.footerClassName;
+export const footerButtonClassName = Content.footerButtonClassName;
