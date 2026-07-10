@@ -51,7 +51,7 @@ const fieldGridBaseClassName = style({
 export const productInfoGridClassName = style([
   fieldGridBaseClassName,
   {
-    gridTemplateColumns: `${Content.editModalFieldWidth} ${categoryFieldWidth}`,
+    gridTemplateColumns: `minmax(0, ${Content.editModalFieldWidth}) minmax(0, ${categoryFieldWidth})`,
     columnGap: '4.8rem',
   },
 ]);
@@ -66,10 +66,10 @@ export const priceGridRecipe = recipe({
   variants: {
     variant: {
       eventDiscount: {
-        gridTemplateColumns: Content.editModalFieldWidth,
+        gridTemplateColumns: `minmax(0, ${Content.editModalFieldWidth})`,
       },
       todaySpecial: {
-        gridTemplateColumns: `repeat(2, ${Content.editModalFieldWidth})`,
+        gridTemplateColumns: `repeat(2, minmax(0, ${Content.editModalFieldWidth}))`,
       },
     },
   },
@@ -115,20 +115,21 @@ export const categoryDropdownClassName = style({
 });
 
 export const dateRowClassName = style({
-  display: 'flex',
+  display: 'grid',
   width: '100%',
   minWidth: 0,
   alignItems: 'center',
-  gap: '1.2rem',
+  gridTemplateColumns: 'minmax(0, 1fr) max-content',
+  columnGap: '0.8rem',
 });
 
+export const dateRangeClassName = Content.dateRangeClassName;
 export const dateDividerClassName = Content.dateDividerClassName;
 
 export const dateFieldClassName = style([
   Content.dateFieldLabelClassName,
   {
-    width: Content.editModalFieldWidth,
-    flex: `0 0 ${Content.editModalFieldWidth}`,
+    width: '100%',
     minWidth: 0,
   },
 ]);

@@ -247,20 +247,22 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
                 <div className={S.fieldGroupClassName}>
                   <span className={S.fieldLabelClassName}>행사 기간</span>
                   <div className={S.dateRowClassName}>
-                    <DateField
-                      ariaLabel='행사 시작일'
-                      className={S.dateFieldClassName}
-                      readOnly={isTodaySpecial}
-                      value={values.startDate}
-                      onChange={updateValue('startDate')}
-                    />
-                    <span className={S.dateDividerClassName}>~</span>
-                    <DateField
-                      ariaLabel='행사 종료일'
-                      className={S.dateFieldClassName}
-                      value={values.endDate}
-                      onChange={updateValue('endDate')}
-                    />
+                    <div className={S.dateRangeClassName}>
+                      <DateField
+                        ariaLabel='행사 시작일'
+                        className={S.dateFieldClassName}
+                        readOnly={isTodaySpecial}
+                        value={values.startDate}
+                        onChange={updateValue('startDate')}
+                      />
+                      <span className={S.dateDividerClassName}>~</span>
+                      <DateField
+                        ariaLabel='행사 종료일'
+                        className={S.dateFieldClassName}
+                        value={values.endDate}
+                        onChange={updateValue('endDate')}
+                      />
+                    </div>
                     {isTodaySpecial && (
                       <Button
                         className={S.periodToggleButtonClassName}

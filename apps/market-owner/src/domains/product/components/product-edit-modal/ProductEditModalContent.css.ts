@@ -5,12 +5,14 @@ import { atomic, shadow, typography } from '@dongchimi/design-system/tokens';
 export const editModalFieldWidth = '31.9rem';
 
 export const contentClassName = style({
+  boxSizing: 'border-box',
   width: '100.8rem',
   maxWidth: 'calc(100vw - 3.2rem)',
   maxHeight: 'calc(100dvh - 4.8rem)',
-  padding: '5.6rem 5.9rem',
+  padding: '5.6rem clamp(4rem, 5.85vw, 5.9rem)',
   borderRadius: '2.4rem',
   boxShadow: shadow.normal.medium,
+  overflowX: 'hidden',
   overflowY: 'auto',
   overscrollBehavior: 'contain',
 });
@@ -55,6 +57,15 @@ export const dateDividerClassName = style({
   ...typography['heading-1-semibold'],
   flexShrink: 0,
   color: atomic.neutral[40],
+});
+
+export const dateRangeClassName = style({
+  display: 'grid',
+  width: '100%',
+  minWidth: 0,
+  alignItems: 'center',
+  gridTemplateColumns: 'minmax(0, 1fr) max-content minmax(0, 1fr)',
+  columnGap: '1.4rem',
 });
 
 export const dateFieldLabelClassName = style({});

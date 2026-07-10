@@ -20,19 +20,21 @@ export const fieldGroupClassName = Content.fieldGroupClassName;
 export const fieldLabelClassName = Content.fieldLabelClassName;
 
 export const dateRowClassName = style({
-  display: 'flex',
+  display: 'grid',
   width: '100%',
   minWidth: 0,
   alignItems: 'center',
-  gap: '1.4rem',
+  gridTemplateColumns: 'minmax(0, 1fr) max-content',
+  columnGap: '0.8rem',
 });
 
+export const dateRangeClassName = Content.dateRangeClassName;
 export const dateDividerClassName = Content.dateDividerClassName;
 
 export const dateFieldClassName = style([
   Content.dateFieldLabelClassName,
   {
-    flex: '1 1 0',
+    width: '100%',
     minWidth: 0,
   },
 ]);

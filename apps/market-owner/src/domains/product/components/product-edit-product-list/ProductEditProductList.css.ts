@@ -24,6 +24,6 @@ export const categoryTitleClassName = style({
 
 export const productGridClassName = style({
   display: 'grid',
-  gridTemplateColumns: `repeat(4, minmax(0, ${productEditCardWidth}))`,
+  gridTemplateColumns: `repeat(auto-fit, minmax(${productEditCardWidth}, ${productEditCardWidth}))`,
   gap: '1.6rem 2rem',
 });
