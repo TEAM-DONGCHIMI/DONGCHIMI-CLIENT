@@ -1,0 +1,58 @@
+import { Flex, Grid, Stack } from '@dongchimi/design-system/components';
+
+import { QrDownloadModal, ShareLinkBox } from '../components';
+import * as S from './LeafletShareSection.css';
+
+export interface LeafletShareSectionProps {
+  isQrModalOpen: boolean;
+  qrImageLabel: string;
+  shareUrl: string;
+  onCloseQrModal: () => void;
+  onCopyLink: () => void;
+  onCopyLinkError: () => void;
+  onDownloadQrCode: () => void;
+  onGoHome: () => void;
+  onOpenQrModal: () => void;
+}
+
+export const LeafletShareSection = ({
+  isQrModalOpen,
+  qrImageLabel,
+  shareUrl,
+  onCloseQrModal,
+  onCopyLink,
+  onCopyLinkError,
+  onDownloadQrCode,
+  onGoHome,
+  onOpenQrModal,
+}: LeafletShareSectionProps) => {
+  return (
+    <Grid aria-labelledby='leaflet-share-title' as='section' className={S.sectionClassName}>
+      <Stack className={S.headingGroupClassName} gap='none'>
+        <h1 className={S.titleClassName} id='leaflet-share-title'>
+          오늘의 전단 공유
+        </h1>
+        <p className={S.descriptionClassName}>
+          공유 링크 또는 QR 코드로 손님들에게 전단을 전달해보세요.
+        </p>
+      </Stack>
+
+      <Flex align='start' justify='center'>
+        <ShareLinkBox
+          shareUrl={shareUrl}
+          onCopyLink={onCopyLink}
+          onCopyLinkError={onCopyLinkError}
+          onGoHome={onGoHome}
+          onOpenQrModal={onOpenQrModal}
+        />
+      </Flex>
+
+      <QrDownloadModal
+        imageLabel={qrImageLabel}
+        open={isQrModalOpen}
+        onClose={onCloseQrModal}
+        onDownload={onDownloadQrCode}
+      />
+    </Grid>
+  );
+};
