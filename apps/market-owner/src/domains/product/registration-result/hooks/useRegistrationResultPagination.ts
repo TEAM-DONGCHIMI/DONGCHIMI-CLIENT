@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 interface UseRegistrationResultPaginationParams<TItem> {
   items: readonly TItem[];
@@ -30,22 +30,19 @@ export const useRegistrationResultPagination = <TItem>({
   const rangeStart = rangeTotalCount > 0 ? pageStartIndex + 1 : 0;
   const rangeEnd = Math.min(pageEndIndex, rangeTotalCount);
 
-  const resetPage = useCallback(() => {
+  const resetPage = () => {
     setCurrentPage(1);
-  }, []);
+  };
 
-  const goToPage = useCallback(
-    (nextPage: number) => {
-      if (nextPage < 1 || nextPage > lastPage) {
-        return false;
-      }
+  const goToPage = (nextPage: number) => {
+    if (nextPage < 1 || nextPage > lastPage) {
+      return false;
+    }
 
-      setCurrentPage(nextPage);
+    setCurrentPage(nextPage);
 
-      return true;
-    },
-    [lastPage],
-  );
+    return true;
+  };
 
   return {
     currentPage: visiblePage,

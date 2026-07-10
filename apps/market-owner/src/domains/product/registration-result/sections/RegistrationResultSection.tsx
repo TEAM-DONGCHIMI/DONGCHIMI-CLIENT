@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useToast } from '@dongchimi/shared/toast';
 
 import {
@@ -119,58 +119,45 @@ export const RegistrationResultSection = ({
     visibleProducts: pageProducts,
   });
 
-  const resetTableInteraction = useCallback(() => {
+  const resetTableInteraction = () => {
     resetPage();
     clearSelection();
-  }, [clearSelection, resetPage]);
+  };
 
-  const handleSegmentChange = useCallback(
-    (nextSegment: UploadSegmentTypes) => {
-      setSelectedSegment(nextSegment);
-      resetTableInteraction();
-    },
-    [resetTableInteraction],
-  );
+  const handleSegmentChange = (nextSegment: UploadSegmentTypes) => {
+    setSelectedSegment(nextSegment);
+    resetTableInteraction();
+  };
 
-  const handleSearchValueChange = useCallback(
-    (nextSearchValue: string) => {
-      changeSearchValue(nextSearchValue);
-      resetTableInteraction();
-    },
-    [changeSearchValue, resetTableInteraction],
-  );
+  const handleSearchValueChange = (nextSearchValue: string) => {
+    changeSearchValue(nextSearchValue);
+    resetTableInteraction();
+  };
 
-  const handlePageChange = useCallback(
-    (nextPage: number) => {
-      if (!goToPage(nextPage)) {
-        return;
-      }
+  const handlePageChange = (nextPage: number) => {
+    if (!goToPage(nextPage)) {
+      return;
+    }
 
-      clearSelection();
-    },
-    [clearSelection, goToPage],
-  );
+    clearSelection();
+  };
 
-  const handleCategoryFilterChange = useCallback(
-    (nextSelectedCategories: ReadonlySet<ProductCategoryGroupTypes>) => {
-      changeSelectedCategories(nextSelectedCategories);
-      resetTableInteraction();
-    },
-    [changeSelectedCategories, resetTableInteraction],
-  );
+  const handleCategoryFilterChange = (
+    nextSelectedCategories: ReadonlySet<ProductCategoryGroupTypes>,
+  ) => {
+    changeSelectedCategories(nextSelectedCategories);
+    resetTableInteraction();
+  };
 
-  const handleProductCategoryChange = useCallback(
-    (productId: string, category: ProductCategoryGroupTypes) => {
-      setProductCategories((previousProductCategories) => {
-        const nextProductCategories = new Map(previousProductCategories);
+  const handleProductCategoryChange = (productId: string, category: ProductCategoryGroupTypes) => {
+    setProductCategories((previousProductCategories) => {
+      const nextProductCategories = new Map(previousProductCategories);
 
-        nextProductCategories.set(productId, category);
+      nextProductCategories.set(productId, category);
 
-        return nextProductCategories;
-      });
-    },
-    [],
-  );
+      return nextProductCategories;
+    });
+  };
 
   const {
     action: { openProductCategoryDropdown, toggleCategoryFilterDropdown },
@@ -188,7 +175,7 @@ export const RegistrationResultSection = ({
     };
   };
 
-  const handleDeleteSelected = useCallback(() => {
+  const handleDeleteSelected = () => {
     setRemovedIds((previousRemovedIds) => {
       const nextRemovedIds = new Set(previousRemovedIds);
 
@@ -199,7 +186,7 @@ export const RegistrationResultSection = ({
     deleteImagePreviews(selectedIds);
     clearSelection();
     resetPage();
-  }, [clearSelection, deleteImagePreviews, resetPage, selectedIds]);
+  };
 
   return (
     <RegistrationResultSectionLayout

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import type { UploadSegmentTypes } from '@/shared/components';
 import type { ProductCategoryGroupTypes } from '@/shared/constants/product-categories';
@@ -65,16 +65,15 @@ export const useRegistrationResultProductSearch = ({
     });
   }, [productCategories, products, searchValue, selectedCategories, selectedSegment]);
 
-  const changeSearchValue = useCallback((nextSearchValue: string) => {
+  const changeSearchValue = (nextSearchValue: string) => {
     setSearchValue(nextSearchValue);
-  }, []);
+  };
 
-  const changeSelectedCategories = useCallback(
-    (nextSelectedCategories: ReadonlySet<ProductCategoryGroupTypes>) => {
-      setSelectedCategories(nextSelectedCategories);
-    },
-    [],
-  );
+  const changeSelectedCategories = (
+    nextSelectedCategories: ReadonlySet<ProductCategoryGroupTypes>,
+  ) => {
+    setSelectedCategories(nextSelectedCategories);
+  };
 
   return {
     action: {

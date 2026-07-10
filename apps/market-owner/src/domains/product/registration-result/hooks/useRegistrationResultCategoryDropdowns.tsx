@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, type MouseEvent } from 'react';
+import { useEffect, useRef, type MouseEvent } from 'react';
 import { overlay, useOverlayData } from 'overlay-kit';
 
 import type { ProductCategoryGroupTypes } from '@/shared/constants/product-categories';
@@ -22,6 +22,20 @@ const getProductCategoryDropdownOverlayId = (productId: string) => {
   return `registration-result-category-dropdown-${productId}`;
 };
 
+const closeCategoryFilterDropdownOverlay = () => {
+  overlay.close(CATEGORY_FILTER_DROPDOWN_OVERLAY_ID);
+  overlay.unmount(CATEGORY_FILTER_DROPDOWN_OVERLAY_ID);
+};
+
+const closeProductCategoryDropdownOverlay = (overlayId: string | null) => {
+  if (overlayId == null) {
+    return;
+  }
+
+  overlay.close(overlayId);
+  overlay.unmount(overlayId);
+};
+
 export const useRegistrationResultCategoryDropdowns = ({
   productCategories,
   selectedCategoryFilters,
@@ -34,63 +48,44 @@ export const useRegistrationResultCategoryDropdowns = ({
     overlayData[CATEGORY_FILTER_DROPDOWN_OVERLAY_ID]?.isOpen,
   );
 
-  const closeCategoryFilterDropdown = useCallback(() => {
-    overlay.close(CATEGORY_FILTER_DROPDOWN_OVERLAY_ID);
-    overlay.unmount(CATEGORY_FILTER_DROPDOWN_OVERLAY_ID);
-  }, []);
+  const closeProductCategoryDropdown = (overlayId: string | null) => {
+    closeProductCategoryDropdownOverlay(overlayId);
+    if (productCategoryDropdownOverlayIdRef.current === overlayId) {
+      productCategoryDropdownOverlayIdRef.current = null;
+    }
+  };
 
-  const closeProductCategoryDropdown = useCallback((overlayId: string | null) => {
-    if (overlayId == null) {
+  const clearProductCategoryDropdownOverlayId = (overlayId: string) => {
+    if (productCategoryDropdownOverlayIdRef.current === overlayId) {
+      productCategoryDropdownOverlayIdRef.current = null;
+    }
+  };
+
+  const toggleCategoryFilterDropdown = (event: MouseEvent<HTMLButtonElement>) => {
+    if (isCategoryFilterDropdownOpen) {
+      closeCategoryFilterDropdownOverlay();
+
       return;
     }
 
-    overlay.close(overlayId);
-    overlay.unmount(overlayId);
+    const anchorRect = getAnchorRect(event.currentTarget);
 
-    if (productCategoryDropdownOverlayIdRef.current === overlayId) {
-      productCategoryDropdownOverlayIdRef.current = null;
-    }
-  }, []);
+    overlay.open(
+      ({ isOpen, close, unmount }) => (
+        <CategoryFilterDropdown
+          anchorRect={anchorRect}
+          close={close}
+          isOpen={isOpen}
+          selectedCategories={selectedCategoryFilters}
+          unmount={unmount}
+          onSelectionChange={onCategoryFilterChange}
+        />
+      ),
+      { overlayId: CATEGORY_FILTER_DROPDOWN_OVERLAY_ID },
+    );
+  };
 
-  const clearProductCategoryDropdownOverlayId = useCallback((overlayId: string) => {
-    if (productCategoryDropdownOverlayIdRef.current === overlayId) {
-      productCategoryDropdownOverlayIdRef.current = null;
-    }
-  }, []);
-
-  const toggleCategoryFilterDropdown = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
-      if (isCategoryFilterDropdownOpen) {
-        closeCategoryFilterDropdown();
-
-        return;
-      }
-
-      const anchorRect = getAnchorRect(event.currentTarget);
-
-      overlay.open(
-        ({ isOpen, close, unmount }) => (
-          <CategoryFilterDropdown
-            anchorRect={anchorRect}
-            close={close}
-            isOpen={isOpen}
-            selectedCategories={selectedCategoryFilters}
-            unmount={unmount}
-            onSelectionChange={onCategoryFilterChange}
-          />
-        ),
-        { overlayId: CATEGORY_FILTER_DROPDOWN_OVERLAY_ID },
-      );
-    },
-    [
-      closeCategoryFilterDropdown,
-      isCategoryFilterDropdownOpen,
-      onCategoryFilterChange,
-      selectedCategoryFilters,
-    ],
-  );
-
-  const openProductCategoryDropdown = useCallback(
+  const openProductCategoryDropdown =
     (product: RegistrationResultProduct) => (event: MouseEvent<HTMLButtonElement>) => {
       const anchorRect = getAnchorRect(event.currentTarget);
       const selectedCategory = productCategories.get(product.id) ?? product.category;
@@ -113,21 +108,14 @@ export const useRegistrationResultCategoryDropdowns = ({
         ),
         { overlayId },
       );
-    },
-    [
-      clearProductCategoryDropdownOverlayId,
-      closeProductCategoryDropdown,
-      onProductCategoryChange,
-      productCategories,
-    ],
-  );
+    };
 
   useEffect(() => {
     return () => {
-      closeCategoryFilterDropdown();
-      closeProductCategoryDropdown(productCategoryDropdownOverlayIdRef.current);
+      closeCategoryFilterDropdownOverlay();
+      closeProductCategoryDropdownOverlay(productCategoryDropdownOverlayIdRef.current);
     };
-  }, [closeCategoryFilterDropdown, closeProductCategoryDropdown]);
+  }, []);
 
   return {
     action: {

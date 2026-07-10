@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import type { RegistrationResultProduct } from '../fixtures';
 
@@ -17,11 +17,11 @@ export const useRegistrationResultSelection = ({
   const allVisibleSelected = visibleProducts.length > 0 && selectedCount === visibleProducts.length;
   const hasVisibleSelection = selectedCount > 0;
 
-  const clearSelection = useCallback(() => {
+  const clearSelection = () => {
     setSelectedIds(new Set());
-  }, []);
+  };
 
-  const toggleVisibleSelection = useCallback(() => {
+  const toggleVisibleSelection = () => {
     setSelectedIds((previousSelectedIds) => {
       const nextSelectedIds = new Set(previousSelectedIds);
 
@@ -35,9 +35,9 @@ export const useRegistrationResultSelection = ({
 
       return nextSelectedIds;
     });
-  }, [allVisibleSelected, visibleProducts]);
+  };
 
-  const changeRowChecked = useCallback((productId: string, checked: boolean) => {
+  const changeRowChecked = (productId: string, checked: boolean) => {
     setSelectedIds((previousSelectedIds) => {
       const nextSelectedIds = new Set(previousSelectedIds);
 
@@ -49,7 +49,7 @@ export const useRegistrationResultSelection = ({
 
       return nextSelectedIds;
     });
-  }, []);
+  };
 
   return {
     action: {
