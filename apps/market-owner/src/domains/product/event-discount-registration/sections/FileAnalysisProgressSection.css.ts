@@ -4,7 +4,7 @@ import { atomic, semantic, shadow, typography } from '@dongchimi/design-system/t
 
 export const cardClassName = style({
   width: 'min(67.2rem, 100%)',
-  height: '65.4rem',
+  minHeight: '65.4rem',
   alignSelf: 'center',
   boxSizing: 'border-box',
   gap: '3.9rem',
@@ -12,6 +12,13 @@ export const cardClassName = style({
   padding: '3.9rem',
   borderRadius: '2.4rem',
   backgroundColor: atomic.common[0],
+  '@media': {
+    'screen and (max-width: 640px)': {
+      minHeight: 'auto',
+      gap: '3.2rem',
+      padding: '3.2rem 2rem',
+    },
+  },
 });
 
 export const cardShadowClassNames = styleVariants({
@@ -50,14 +57,16 @@ export const progressStepListClassName = style({
 
 export const progressRowClassName = style({
   width: '100%',
+  minWidth: 0,
   justifyContent: 'space-between',
   gap: '0.6rem',
 });
 
 export const progressTrackClassName = style({
   position: 'relative',
-  width: '53.5rem',
-  flex: '0 0 53.5rem',
+  width: 'min(53.5rem, 100%)',
+  minWidth: 0,
+  flex: '1 1 0',
   height: '0.8rem',
   overflow: 'hidden',
   borderRadius: '7.2rem',
@@ -89,7 +98,9 @@ export const actionRowClassName = style({
 export const actionButtonClassName = style({
   ...typography['body-3-semibold'],
   width: '12rem',
+  maxWidth: '100%',
   minWidth: '12rem',
+  flex: '0 1 12rem',
   height: '4.4rem',
   padding: '1.2rem 2.4rem',
   letterSpacing: 0,

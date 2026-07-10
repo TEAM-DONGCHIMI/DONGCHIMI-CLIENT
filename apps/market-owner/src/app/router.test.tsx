@@ -184,6 +184,22 @@ describe('marketOwnerRoutes', () => {
     expect(screen.queryByRole('link', { name: '오늘의 전단 공유' })).not.toBeInTheDocument();
   });
 
+  it('centers sidebar-layout toasts over the content area', async () => {
+    const user = userEvent.setup();
+
+    renderRoute('/products/event-discount/new');
+
+    expect(await screen.findByRole('heading', { name: '상품 등록' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '엑셀 양식 다운로드' }));
+
+    expect(await screen.findByRole('status')).toHaveTextContent('엑셀 양식 다운로드 완료');
+    expect(screen.getByRole('region', { name: '토스트 알림' })).toHaveStyle({
+      '--toast-viewport-center-offset-x': '145px',
+      '--toast-viewport-offset-y': '2rem',
+    });
+  });
+
   it('navigates the today-special summary action to the edit page', async () => {
     const user = userEvent.setup();
 
@@ -319,7 +335,7 @@ describe('marketOwnerRoutes', () => {
 
   it.each([
     ['오늘의 특가 상품 등록하기', '오늘의 특가 상품을 등록하세요'],
-    ['행사 할인 상품 등록하기', '등록한 파일을 확인해주세요'],
+    ['행사 할인 상품 등록하기', '상품 등록'],
     ['상품 수정하러 가기', '오늘의 특가 상품 수정'],
   ])('navigates the %s hero action to its work page', async (buttonName, headingName) => {
     const user = userEvent.setup();

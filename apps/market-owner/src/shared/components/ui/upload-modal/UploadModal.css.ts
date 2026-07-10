@@ -105,6 +105,7 @@ export const labelRecipe = recipe({
     margin: 0,
     overflowWrap: 'anywhere',
     textAlign: 'center',
+    whiteSpace: 'pre-line',
   },
   variants: {
     state: {
@@ -134,11 +135,47 @@ export const fileInputClassName = style({
   whiteSpace: 'nowrap',
 });
 
+export const fileSelectControlClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '0.8rem',
+});
+
 export const fileSelectButtonClassName = style({
   boxSizing: 'border-box',
   width: '13.4rem',
   minWidth: '13.4rem',
   padding: '1.2rem 1.6rem',
+});
+
+export const fileSelectTooltipClassName = style({
+  ...typography['caption-2-medium'],
+  position: 'relative',
+  display: 'inline-flex',
+  minHeight: '2.6rem',
+  alignItems: 'center',
+  justifyContent: 'center',
+  boxSizing: 'border-box',
+  padding: '0.6rem 1rem',
+  borderRadius: '0.6rem',
+  backgroundColor: atomic.neutral[80],
+  color: atomic.common[0],
+  letterSpacing: 0,
+  whiteSpace: 'nowrap',
+  selectors: {
+    '&::before': {
+      position: 'absolute',
+      top: '-0.4rem',
+      left: '50%',
+      width: '0.8rem',
+      height: '0.8rem',
+      backgroundColor: atomic.neutral[80],
+      borderRadius: '0.1rem',
+      content: '""',
+      transform: 'translateX(-50%) rotate(45deg)',
+    },
+  },
 });
 
 export const footerClassName = style({
