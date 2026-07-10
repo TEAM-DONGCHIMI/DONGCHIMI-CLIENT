@@ -57,6 +57,13 @@ export const actionGroupClassName = style({
   gap: '0.8rem',
 });
 
+export const selectedProductCountClassName = style({
+  ...typography['body-3-medium'],
+  marginRight: '0.8rem',
+  color: atomic.neutral[70],
+  whiteSpace: 'nowrap',
+});
+
 const actionButtonBaseClassName = style({
   minWidth: '11.2rem',
   padding: '0.8rem 0',

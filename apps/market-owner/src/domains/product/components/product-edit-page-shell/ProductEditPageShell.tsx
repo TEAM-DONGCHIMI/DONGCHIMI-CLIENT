@@ -13,7 +13,6 @@ import {
 import { DesktopHeader } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { type ProductCategoryTypes } from '../../constants';
-import { openProductEditConfirmModal, openProductEditPeriodModal } from '../product-edit-modal';
 import { type ProductEditCardProps } from '../product-edit-product-list';
 
 import {
@@ -24,7 +23,11 @@ import {
 } from './ProductEditPageShell.constants';
 import * as S from './ProductEditPageShell.css';
 import { ProductEditCategoryDropdown } from './ProductEditCategoryDropdown';
-import { useProductEditFilter } from './hooks';
+import {
+  type ProductEditPageSelectionControls,
+  useProductEditBulkSelection,
+  useProductEditFilter,
+} from './hooks';
 
 export interface ProductEditPageShellProps {
   activeType: ProductEditTypeTypes;
@@ -33,17 +36,23 @@ export interface ProductEditPageShellProps {
     | ((
         selectedFilter: ProductEditFilterTypes,
         selectedCategory: ProductCategoryTypes | null,
+        selection: ProductEditPageSelectionControls,
       ) => ReactNode);
+  onDeleteProducts?: (productNames: string[]) => void;
   onResetProducts?: () => void;
   periodBaseProduct?: ProductEditCardProps;
 }
+
 export const ProductEditPageShell = ({
   activeType,
   children,
+  onDeleteProducts,
   onResetProducts,
   periodBaseProduct,
 }: ProductEditPageShellProps) => {
   const pageCopy = editPageCopyByType[activeType];
+
+  // 필터/드롭다운 상태
   const {
     categoryFilterRef,
     isCategoryDropdownOpen,
@@ -55,6 +64,21 @@ export const ProductEditPageShell = ({
     selectCategoryFilter,
     selectSortFilter,
   } = useProductEditFilter({ activeType });
+
+  // 일괄 작업 상태
+  const {
+    selectedProductCount,
+    selectionControls,
+    selectionMode,
+    openDeleteBulkAction,
+    openPeriodBulkAction,
+    openResetConfirm,
+  } = useProductEditBulkSelection({
+    activeType,
+    periodBaseProduct,
+    onDeleteProducts,
+    onResetProducts,
+  });
 
   return (
     <main className={S.pageClassName}>
@@ -88,18 +112,18 @@ export const ProductEditPageShell = ({
             </TabNav>
 
             <div aria-label='상품 관리 작업' className={S.actionGroupClassName} role='group'>
+              {selectionMode && (
+                <span className={S.selectedProductCountClassName}>
+                  선택된 상품 ({selectedProductCount})
+                </span>
+              )}
               <Button
                 className={S.actionButtonClassNames.primary}
                 color='primary'
                 leftIcon={<IcCalendarSizeXsmallColorPrimary aria-hidden='true' />}
                 size='xsmall'
                 variant='soft'
-                onClick={() =>
-                  openProductEditPeriodModal({
-                    initialPeriod: periodBaseProduct,
-                    variant: activeType,
-                  })
-                }
+                onClick={openPeriodBulkAction}
               >
                 기간 일괄 수정
               </Button>
@@ -109,7 +133,7 @@ export const ProductEditPageShell = ({
                 leftIcon={<IcTrashSizeSmallColorNegative aria-hidden='true' />}
                 size='xsmall'
                 variant='outlined'
-                onClick={() => openProductEditConfirmModal({ action: 'delete' })}
+                onClick={openDeleteBulkAction}
               >
                 일괄 삭제
               </Button>
@@ -119,12 +143,7 @@ export const ProductEditPageShell = ({
                 leftIcon={<IcResetSizeSmallColorNegative aria-hidden='true' />}
                 size='xsmall'
                 variant='outlined'
-                onClick={() =>
-                  openProductEditConfirmModal({
-                    action: 'reset',
-                    onConfirm: onResetProducts,
-                  })
-                }
+                onClick={openResetConfirm}
               >
                 초기화
               </Button>
@@ -179,7 +198,9 @@ export const ProductEditPageShell = ({
       </div>
 
       <div className={S.contentClassName}>
-        {typeof children === 'function' ? children(selectedFilter, selectedCategory) : children}
+        {typeof children === 'function'
+          ? children(selectedFilter, selectedCategory, selectionControls)
+          : children}
       </div>
     </main>
   );

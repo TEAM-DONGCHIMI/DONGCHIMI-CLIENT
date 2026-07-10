@@ -15,12 +15,21 @@ export const useProductEditProducts = <ProductTypes extends ProductEditMutablePr
     );
   };
 
+  const deleteProducts = (productNames: string[]) => {
+    const productNameSet = new Set(productNames);
+
+    setProducts((currentProducts) =>
+      currentProducts.filter((product) => !productNameSet.has(product.productName)),
+    );
+  };
+
   const resetProducts = () => {
     setProducts([]);
   };
 
   return {
     deleteProduct,
+    deleteProducts,
     products,
     resetProducts,
   };

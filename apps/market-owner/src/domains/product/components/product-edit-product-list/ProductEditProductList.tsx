@@ -15,7 +15,10 @@ interface ProductEditProductListProps {
   editModalVariant: ProductEditCardVariantTypes;
   groups: ProductEditProductGroup[];
   registrationHref: string;
+  selectedProductNames?: string[];
+  selectionMode?: boolean;
   onDeleteProduct?: (product: ProductEditCardProps) => void;
+  onToggleProductSelection?: (product: ProductEditCardProps) => void;
 }
 
 const hasProducts = (groups: ProductEditProductGroup[]) =>
@@ -29,8 +32,11 @@ export const ProductEditProductList = ({
   ariaLabel,
   editModalVariant,
   groups,
+  selectedProductNames = [],
+  selectionMode = false,
   registrationHref,
   onDeleteProduct,
+  onToggleProductSelection,
 }: ProductEditProductListProps) => {
   if (!hasProducts(groups)) {
     return <ProductEditEmptyView ariaLabel={ariaLabel} registrationHref={registrationHref} />;
@@ -48,6 +54,7 @@ export const ProductEditProductList = ({
 
     onDeleteProduct?.(product);
   };
+  const selectedProductNameSet = new Set(selectedProductNames);
 
   return (
     <section aria-label={ariaLabel} className={S.sectionListClassName}>
@@ -56,15 +63,30 @@ export const ProductEditProductList = ({
           <h2 className={S.categoryTitleClassName}>{title}</h2>
 
           <div className={S.productGridClassName}>
-            {products.map((product) => (
-              <ProductEditCardDesktop
-                key={`${title}-${product.productName}`}
-                {...product}
-                aria-label={product['aria-label'] ?? `${product.productName} 상품 수정 카드`}
-                onDeleteClick={() => deleteProduct(product)}
-                onEditClick={() => openProductEditModal({ product, variant: editModalVariant })}
-              />
-            ))}
+            {products.map((product) => {
+              const isSelected = selectedProductNameSet.has(product.productName);
+
+              return (
+                <ProductEditCardDesktop
+                  key={`${title}-${product.productName}`}
+                  {...product}
+                  actionsDisabled={selectionMode}
+                  aria-label={product['aria-label'] ?? `${product.productName} 상품 수정 카드`}
+                  selectionState={
+                    selectionMode ? (isSelected ? 'selected' : 'selectable') : 'default'
+                  }
+                  onDeleteClick={selectionMode ? undefined : () => deleteProduct(product)}
+                  onEditClick={
+                    selectionMode
+                      ? undefined
+                      : () => openProductEditModal({ product, variant: editModalVariant })
+                  }
+                  onSelectClick={
+                    selectionMode ? () => onToggleProductSelection?.(product) : undefined
+                  }
+                />
+              );
+            })}
           </div>
         </section>
       ))}

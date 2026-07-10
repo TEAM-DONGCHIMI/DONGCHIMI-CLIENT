@@ -5,18 +5,20 @@ import { eventDiscountEditProducts } from './fixtures';
 import { EventDiscountEditProductSection } from './sections/EventDiscountEditProductSection';
 
 export const EventDiscountEditPage = () => {
-  const { deleteProduct, products, resetProducts } =
+  const { deleteProduct, deleteProducts, products, resetProducts } =
     useProductEditProducts(eventDiscountEditProducts);
 
   return (
     <ProductEditPageShell
       activeType='eventDiscount'
       periodBaseProduct={products[0]}
+      onDeleteProducts={deleteProducts}
       onResetProducts={resetProducts}
     >
-      {(selectedFilter, selectedCategory) => (
+      {(selectedFilter, selectedCategory, selection) => (
         <EventDiscountEditProductSection
           products={products}
+          selection={selection}
           selectedCategory={selectedCategory}
           selectedFilter={selectedFilter}
           onDeleteProduct={deleteProduct}

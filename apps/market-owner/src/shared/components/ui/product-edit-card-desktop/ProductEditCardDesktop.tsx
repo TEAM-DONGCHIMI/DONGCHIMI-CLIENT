@@ -10,6 +10,7 @@ type NativeArticleProps = Omit<ComponentPropsWithoutRef<'article'>, 'children' |
 export type ProductEditCardDesktopSelectionStateTypes = 'default' | 'selectable' | 'selected';
 
 export interface ProductEditCardDesktopProps extends NativeArticleProps {
+  actionsDisabled?: boolean;
   categoryName?: string;
   deleteLabel?: string;
   editLabel?: string;
@@ -57,16 +58,19 @@ const CheckIcon = () => {
 const ProductActionButton = ({
   'aria-label': ariaLabel,
   children,
+  disabled,
   onClick,
 }: {
   'aria-label': string;
   children: ReactNode;
+  disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }) => {
   return (
     <button
       aria-label={ariaLabel}
       className={S.actionButtonClassName}
+      disabled={disabled}
       onClick={onClick}
       type='button'
     >
@@ -111,6 +115,7 @@ const ProductSelectionButton = ({
 
 export const ProductEditCardDesktop = ({
   'aria-label': ariaLabel,
+  actionsDisabled = false,
   categoryName = DEFAULT_CATEGORY_NAME,
   className,
   deleteLabel = DEFAULT_DELETE_LABEL,
@@ -163,11 +168,16 @@ export const ProductEditCardDesktop = ({
           </div>
 
           <div className={S.actionGroupClassName}>
-            <ProductActionButton aria-label={`${productName} ${editLabel}`} onClick={onEditClick}>
+            <ProductActionButton
+              aria-label={`${productName} ${editLabel}`}
+              disabled={actionsDisabled}
+              onClick={onEditClick}
+            >
               <IcWrite />
             </ProductActionButton>
             <ProductActionButton
               aria-label={`${productName} ${deleteLabel}`}
+              disabled={actionsDisabled}
               onClick={onDeleteClick}
             >
               <IcTrash />
