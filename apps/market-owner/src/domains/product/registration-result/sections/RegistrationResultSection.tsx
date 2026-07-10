@@ -1,27 +1,22 @@
-import { useMemo, useState, type MouseEvent } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useToast } from '@dongchimi/shared/toast';
-import { overlay } from 'overlay-kit';
 
 import {
   DesktopUploadHeader,
   PaginationFooter,
   type UploadSegmentTypes,
 } from '@/shared/components';
+import type { ProductCategoryGroupTypes } from '@/shared/constants/product-categories';
 
 import type { RegistrationResultProduct } from '../fixtures';
-import {
-  CATEGORY_FILTER_DROPDOWN_ID,
-  CATEGORY_FILTER_DROPDOWN_OVERLAY_ID,
-  CategoryFilterDropdown,
-  ProductCategoryDropdown,
-  getAnchorRect,
-  getProductMatchesCategoryFilter,
-  type CategoryOptionTypes,
-} from '../components/RegistrationResultDropdown';
+import { CATEGORY_FILTER_DROPDOWN_ID } from '../components/RegistrationResultDropdown';
 import { RegistrationResultSectionLayout } from '../components/RegistrationResultSectionLayout';
 import { RegistrationResultTable } from '../components/RegistrationResultTable';
+import { useRegistrationResultCategoryDropdowns } from '../hooks/useRegistrationResultCategoryDropdowns';
 import { useRegistrationResultImagePreviews } from '../hooks/useRegistrationResultImagePreviews';
 import { useRegistrationResultPagination } from '../hooks/useRegistrationResultPagination';
+import { useRegistrationResultProductSearch } from '../hooks/useRegistrationResultProductSearch';
+import { useRegistrationResultSelection } from '../hooks/useRegistrationResultSelection';
 
 interface RegistrationResultSummary {
   completedCount: number;
@@ -41,37 +36,6 @@ const SEGMENT_LABELS: Record<UploadSegmentTypes, string> = {
   completed: '등록 완료',
   needsEdit: '수정 필요',
   total: '총 상품',
-};
-
-const getProductMatchesSearch = (
-  product: RegistrationResultProduct,
-  searchValue: string,
-  category = product.category,
-) => {
-  const normalizedSearchValue = searchValue.trim().toLowerCase();
-
-  if (normalizedSearchValue.length === 0) {
-    return true;
-  }
-
-  return [product.productName, category, product.promotionText].some((value) =>
-    value.toLowerCase().includes(normalizedSearchValue),
-  );
-};
-
-const getProductMatchesSegment = (
-  product: RegistrationResultProduct,
-  selectedSegment: UploadSegmentTypes,
-) => {
-  if (selectedSegment === 'total') {
-    return true;
-  }
-
-  if (selectedSegment === 'completed') {
-    return product.status === 'completed';
-  }
-
-  return product.status === 'needsEdit';
 };
 
 const getVisibleTotalCount = ({
@@ -103,13 +67,7 @@ export const RegistrationResultSection = ({
   const [productCategories, setProductCategories] = useState<ReadonlyMap<string, string>>(
     new Map(),
   );
-  const [searchValue, setSearchValue] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState<ReadonlySet<CategoryOptionTypes>>(
-    new Set(),
-  );
-  const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(new Set());
   const [selectedSegment, setSelectedSegment] = useState<UploadSegmentTypes>('needsEdit');
-  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const { deleteImagePreviews, imagePreviews, setImagePreview } =
     useRegistrationResultImagePreviews({
       onPreviewCreateError: () => {
@@ -131,20 +89,14 @@ export const RegistrationResultSection = ({
   const currentSummary = { completedCount, needsEditCount, totalCount };
   const visibleTotalCount = getVisibleTotalCount({ ...currentSummary, selectedSegment });
   const registerDisabled = needsEditCount > 0;
-
-  const filteredProducts = useMemo(() => {
-    return currentProducts.filter((product) => {
-      const category = productCategories.get(product.id) ?? product.category;
-
-      return (
-        getProductMatchesSegment(product, selectedSegment) &&
-        getProductMatchesSearch(product, searchValue, category) &&
-        getProductMatchesCategoryFilter(category, selectedCategories)
-      );
-    });
-  }, [currentProducts, productCategories, searchValue, selectedCategories, selectedSegment]);
-
-  const hasActiveFilter = searchValue.trim().length > 0 || selectedCategories.size > 0;
+  const {
+    action: { changeSearchValue, changeSelectedCategories },
+    state: { filteredProducts, hasActiveFilter, searchValue, selectedCategories },
+  } = useRegistrationResultProductSearch({
+    productCategories,
+    products: currentProducts,
+    selectedSegment,
+  });
   const footerTotalCount = hasActiveFilter ? filteredProducts.length : visibleTotalCount;
   const {
     currentPage: visiblePage,
@@ -160,89 +112,75 @@ export const RegistrationResultSection = ({
     pageSize,
     rangeTotalCount: footerTotalCount,
   });
-  const selectedCount = pageProducts.filter((product) => selectedIds.has(product.id)).length;
-  const allVisibleSelected = pageProducts.length > 0 && selectedCount === pageProducts.length;
-  const hasVisibleSelection = selectedCount > 0;
+  const {
+    action: { changeRowChecked, clearSelection, toggleVisibleSelection },
+    state: { allVisibleSelected, hasVisibleSelection, selectedCount, selectedIds },
+  } = useRegistrationResultSelection({
+    visibleProducts: pageProducts,
+  });
 
-  const handleSegmentChange = (nextSegment: UploadSegmentTypes) => {
-    setSelectedSegment(nextSegment);
+  const resetTableInteraction = useCallback(() => {
     resetPage();
-    setSelectedIds(new Set());
-  };
+    clearSelection();
+  }, [clearSelection, resetPage]);
 
-  const handleSearchValueChange = (nextSearchValue: string) => {
-    setSearchValue(nextSearchValue);
-    resetPage();
-    setSelectedIds(new Set());
-  };
+  const handleSegmentChange = useCallback(
+    (nextSegment: UploadSegmentTypes) => {
+      setSelectedSegment(nextSegment);
+      resetTableInteraction();
+    },
+    [resetTableInteraction],
+  );
 
-  const handlePageChange = (nextPage: number) => {
-    if (!goToPage(nextPage)) {
-      return;
-    }
+  const handleSearchValueChange = useCallback(
+    (nextSearchValue: string) => {
+      changeSearchValue(nextSearchValue);
+      resetTableInteraction();
+    },
+    [changeSearchValue, resetTableInteraction],
+  );
 
-    setSelectedIds(new Set());
-  };
+  const handlePageChange = useCallback(
+    (nextPage: number) => {
+      if (!goToPage(nextPage)) {
+        return;
+      }
 
-  const handleSortClick = (event: MouseEvent<HTMLButtonElement>) => {
-    if (sortDropdownOpen) {
-      overlay.close(CATEGORY_FILTER_DROPDOWN_OVERLAY_ID);
-      overlay.unmount(CATEGORY_FILTER_DROPDOWN_OVERLAY_ID);
-      setSortDropdownOpen(false);
+      clearSelection();
+    },
+    [clearSelection, goToPage],
+  );
 
-      return;
-    }
+  const handleCategoryFilterChange = useCallback(
+    (nextSelectedCategories: ReadonlySet<ProductCategoryGroupTypes>) => {
+      changeSelectedCategories(nextSelectedCategories);
+      resetTableInteraction();
+    },
+    [changeSelectedCategories, resetTableInteraction],
+  );
 
-    const anchorRect = getAnchorRect(event.currentTarget);
+  const handleProductCategoryChange = useCallback(
+    (productId: string, category: ProductCategoryGroupTypes) => {
+      setProductCategories((previousProductCategories) => {
+        const nextProductCategories = new Map(previousProductCategories);
 
-    setSortDropdownOpen(true);
-    overlay.open(
-      ({ isOpen, close, unmount }) => (
-        <CategoryFilterDropdown
-          anchorRect={anchorRect}
-          close={close}
-          isOpen={isOpen}
-          selectedCategories={selectedCategories}
-          unmount={unmount}
-          onDismiss={() => setSortDropdownOpen(false)}
-          onSelectionChange={(nextSelectedCategories) => {
-            setSelectedCategories(nextSelectedCategories);
-            resetPage();
-            setSelectedIds(new Set());
-          }}
-        />
-      ),
-      { overlayId: CATEGORY_FILTER_DROPDOWN_OVERLAY_ID },
-    );
-  };
+        nextProductCategories.set(productId, category);
 
-  const handleProductCategoryClick =
-    (product: RegistrationResultProduct) => (event: MouseEvent<HTMLButtonElement>) => {
-      const anchorRect = getAnchorRect(event.currentTarget);
-      const selectedCategory = productCategories.get(product.id) ?? product.category;
+        return nextProductCategories;
+      });
+    },
+    [],
+  );
 
-      overlay.open(
-        ({ isOpen, close, unmount }) => (
-          <ProductCategoryDropdown
-            anchorRect={anchorRect}
-            close={close}
-            isOpen={isOpen}
-            selectedCategory={selectedCategory}
-            unmount={unmount}
-            onSelect={(category) =>
-              setProductCategories((previousProductCategories) => {
-                const nextProductCategories = new Map(previousProductCategories);
-
-                nextProductCategories.set(product.id, category);
-
-                return nextProductCategories;
-              })
-            }
-          />
-        ),
-        { overlayId: `registration-result-category-dropdown-${product.id}` },
-      );
-    };
+  const {
+    action: { openProductCategoryDropdown, toggleCategoryFilterDropdown },
+    state: { isCategoryFilterDropdownOpen },
+  } = useRegistrationResultCategoryDropdowns({
+    onCategoryFilterChange: handleCategoryFilterChange,
+    onProductCategoryChange: handleProductCategoryChange,
+    productCategories,
+    selectedCategoryFilters: selectedCategories,
+  });
 
   const handleImageFileChange = (productId: string) => {
     return (file: File) => {
@@ -250,7 +188,7 @@ export const RegistrationResultSection = ({
     };
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = useCallback(() => {
     setRemovedIds((previousRemovedIds) => {
       const nextRemovedIds = new Set(previousRemovedIds);
 
@@ -259,45 +197,9 @@ export const RegistrationResultSection = ({
       return nextRemovedIds;
     });
     deleteImagePreviews(selectedIds);
-    setSelectedIds(new Set());
+    clearSelection();
     resetPage();
-  };
-
-  const handleSelectAll = () => {
-    if (allVisibleSelected) {
-      setSelectedIds((previousSelectedIds) => {
-        const nextSelectedIds = new Set(previousSelectedIds);
-
-        pageProducts.forEach((product) => nextSelectedIds.delete(product.id));
-
-        return nextSelectedIds;
-      });
-
-      return;
-    }
-
-    setSelectedIds((previousSelectedIds) => {
-      const nextSelectedIds = new Set(previousSelectedIds);
-
-      pageProducts.forEach((product) => nextSelectedIds.add(product.id));
-
-      return nextSelectedIds;
-    });
-  };
-
-  const handleRowCheckedChange = (productId: string, checked: boolean) => {
-    setSelectedIds((previousSelectedIds) => {
-      const nextSelectedIds = new Set(previousSelectedIds);
-
-      if (checked) {
-        nextSelectedIds.add(productId);
-      } else {
-        nextSelectedIds.delete(productId);
-      }
-
-      return nextSelectedIds;
-    });
-  };
+  }, [clearSelection, deleteImagePreviews, resetPage, selectedIds]);
 
   return (
     <RegistrationResultSectionLayout
@@ -313,12 +215,12 @@ export const RegistrationResultSection = ({
         onSearch={handleSearchValueChange}
         onSearchValueChange={handleSearchValueChange}
         onSegmentChange={handleSegmentChange}
-        onSortClick={handleSortClick}
+        onSortClick={toggleCategoryFilterDropdown}
         searchValue={searchValue}
         selectedCount={selectedCount}
         selectedSegment={selectedSegment}
         sortDropdownId={CATEGORY_FILTER_DROPDOWN_ID}
-        sortOpen={sortDropdownOpen}
+        sortOpen={isCategoryFilterDropdownOpen}
         totalCount={totalCount}
       />
 
@@ -331,9 +233,9 @@ export const RegistrationResultSection = ({
         selectedIds={selectedIds}
         segmentLabel={SEGMENT_LABELS[selectedSegment]}
         onImageFileChange={handleImageFileChange}
-        onProductCategoryClick={handleProductCategoryClick}
-        onRowCheckedChange={handleRowCheckedChange}
-        onSelectAll={handleSelectAll}
+        onProductCategoryClick={openProductCategoryDropdown}
+        onRowCheckedChange={changeRowChecked}
+        onSelectAll={toggleVisibleSelection}
       >
         <PaginationFooter
           currentPage={visiblePage}

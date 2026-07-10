@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 
+import { Flex } from '@dongchimi/design-system/components';
 import { IcCircleExclamationFillSizeXsmallColorNegative } from '@dongchimi/design-system/icons';
 
 import * as S from './RegistrationResult.css';
@@ -20,8 +21,13 @@ export const RegistrationResultSectionLayout = ({
   onRegister,
 }: RegistrationResultSectionLayoutProps) => {
   return (
-    <section aria-labelledby='registration-result-title' className={S.sectionClassName}>
-      <div className={S.headingContainerClassName}>
+    <Flex
+      aria-labelledby='registration-result-title'
+      as='section'
+      className={S.sectionClassName}
+      direction='column'
+    >
+      <Flex className={S.headingContainerClassName} direction='column'>
         <h1 className={S.titleClassName} id='registration-result-title'>
           상품 결과 등록 확인
         </h1>
@@ -29,17 +35,19 @@ export const RegistrationResultSectionLayout = ({
           AI가 상품 정보를 분석했습니다. 등록 전 내용을 확인해주세요. (
           <span className={S.requiredMarkClassName}>*</span>) 표시는 필수 입력 사항입니다.
         </p>
-      </div>
+      </Flex>
 
-      <div className={S.tableContainerClassName}>{children}</div>
+      <Flex className={S.tableContainerClassName} direction='column'>
+        {children}
+      </Flex>
 
-      <div className={S.bottomBarClassName}>
+      <Flex align='center' className={S.bottomBarClassName} justify='between'>
         <p aria-live='polite' className={S.statusNoticeRecipe({ visible: registerDisabled })}>
           <IcCircleExclamationFillSizeXsmallColorNegative aria-hidden='true' />
           <span>확인이 필요한 상품이 있어요 ({needsEditCount})</span>
         </p>
 
-        <div className={S.actionGroupClassName}>
+        <Flex align='center' className={S.actionGroupClassName}>
           <button className={S.previousButtonClassName} onClick={onPrevious} type='button'>
             이전
           </button>
@@ -51,8 +59,8 @@ export const RegistrationResultSectionLayout = ({
           >
             등록 완료
           </button>
-        </div>
-      </div>
-    </section>
+        </Flex>
+      </Flex>
+    </Flex>
   );
 };

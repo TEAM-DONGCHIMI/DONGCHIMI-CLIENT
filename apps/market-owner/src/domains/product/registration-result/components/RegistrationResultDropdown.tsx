@@ -2,21 +2,16 @@ import { useEffect, useState, type KeyboardEventHandler } from 'react';
 
 import { Dropdown } from '@dongchimi/design-system/components';
 
+import {
+  PRODUCT_CATEGORY_ALL_OPTION,
+  PRODUCT_CATEGORY_FILTER_OPTIONS,
+  PRODUCT_CATEGORY_GROUP_OPTIONS,
+  type ProductCategoryFilterOptionTypes,
+  type ProductCategoryGroupTypes,
+} from '@/shared/constants/product-categories';
+
 import * as S from './RegistrationResult.css';
 
-const ALL_CATEGORY_OPTION = '전체';
-const CATEGORY_OPTIONS = [
-  '채소･과일',
-  '정육･달걀',
-  '수산',
-  '유제품',
-  '간편식',
-  '가공식품',
-  '음료･주류',
-  '생활용품',
-  '기타',
-] as const;
-const PRODUCT_CATEGORY_OPTIONS = [ALL_CATEGORY_OPTION, ...CATEGORY_OPTIONS] as const;
 const CATEGORY_DROPDOWN_WIDTH = 206;
 const CATEGORY_DROPDOWN_GAP = 8;
 const CATEGORY_DROPDOWN_SCREEN_MARGIN = 16;
@@ -27,23 +22,11 @@ export const CATEGORY_FILTER_DROPDOWN_ID = 'registration-result-category-filter-
 export const CATEGORY_FILTER_DROPDOWN_OVERLAY_ID =
   'registration-result-category-filter-dropdown-overlay';
 
-type ProductCategoryOptionTypes = (typeof PRODUCT_CATEGORY_OPTIONS)[number];
-export type CategoryOptionTypes = (typeof CATEGORY_OPTIONS)[number];
-
 export interface AnchorRect {
   bottom: number;
   left: number;
   top: number;
 }
-
-const productCategoryGroupMap: Record<string, CategoryOptionTypes> = {
-  김치: '가공식품',
-  '김치/반찬': '가공식품',
-  수산: '수산',
-  정육: '정육･달걀',
-  채소: '채소･과일',
-};
-const categoryOptionSet: ReadonlySet<string> = new Set(CATEGORY_OPTIONS);
 
 export const getAnchorRect = (element: HTMLElement): AnchorRect => {
   const rect = element.getBoundingClientRect();
@@ -87,30 +70,11 @@ const getDropdownPositionStyle = (anchorRect: AnchorRect, dropdownHeight: number
   return { left, top };
 };
 
-const getProductCategoryGroup = (category: string): CategoryOptionTypes => {
-  if (categoryOptionSet.has(category)) {
-    return category as CategoryOptionTypes;
-  }
-
-  return productCategoryGroupMap[category] ?? '기타';
-};
-
-export const getProductMatchesCategoryFilter = (
-  category: string,
-  selectedCategories: ReadonlySet<CategoryOptionTypes>,
-) => {
-  if (selectedCategories.size === 0) {
-    return true;
-  }
-
-  return selectedCategories.has(getProductCategoryGroup(category));
-};
-
 const getCategoryOptionSelected = (
-  option: ProductCategoryOptionTypes,
-  selectedCategories: ReadonlySet<CategoryOptionTypes>,
+  option: ProductCategoryFilterOptionTypes,
+  selectedCategories: ReadonlySet<ProductCategoryGroupTypes>,
 ) => {
-  if (option === ALL_CATEGORY_OPTION) {
+  if (option === PRODUCT_CATEGORY_ALL_OPTION) {
     return selectedCategories.size === 0;
   }
 
@@ -154,16 +118,14 @@ export const CategoryFilterDropdown = ({
   selectedCategories,
   close,
   unmount,
-  onDismiss,
   onSelectionChange,
 }: {
   anchorRect: AnchorRect;
   isOpen: boolean;
-  selectedCategories: ReadonlySet<CategoryOptionTypes>;
+  selectedCategories: ReadonlySet<ProductCategoryGroupTypes>;
   close: () => void;
   unmount: () => void;
-  onDismiss: () => void;
-  onSelectionChange: (selectedCategories: ReadonlySet<CategoryOptionTypes>) => void;
+  onSelectionChange: (selectedCategories: ReadonlySet<ProductCategoryGroupTypes>) => void;
 }) => {
   const [currentSelectedCategories, setCurrentSelectedCategories] = useState(
     () => new Set(selectedCategories),
@@ -171,7 +133,6 @@ export const CategoryFilterDropdown = ({
   const dismiss = () => {
     close();
     unmount();
-    onDismiss();
   };
   const handleBackdropKeyDown = getBackdropKeyDownHandler(dismiss);
 
@@ -181,11 +142,11 @@ export const CategoryFilterDropdown = ({
     return null;
   }
 
-  const handleOptionClick = (option: ProductCategoryOptionTypes) => {
-    let nextSelectedCategories: Set<CategoryOptionTypes>;
+  const handleOptionClick = (option: ProductCategoryFilterOptionTypes) => {
+    let nextSelectedCategories: Set<ProductCategoryGroupTypes>;
 
-    if (option === ALL_CATEGORY_OPTION) {
-      nextSelectedCategories = new Set<CategoryOptionTypes>();
+    if (option === PRODUCT_CATEGORY_ALL_OPTION) {
+      nextSelectedCategories = new Set<ProductCategoryGroupTypes>();
     } else {
       nextSelectedCategories = new Set(currentSelectedCategories);
 
@@ -217,7 +178,7 @@ export const CategoryFilterDropdown = ({
         role='group'
         style={positionStyle}
       >
-        {PRODUCT_CATEGORY_OPTIONS.map((option) => {
+        {PRODUCT_CATEGORY_FILTER_OPTIONS.map((option) => {
           const selected = getCategoryOptionSelected(option, currentSelectedCategories);
 
           return (
@@ -242,6 +203,7 @@ export const ProductCategoryDropdown = ({
   selectedCategory,
   close,
   unmount,
+  onDismiss,
   onSelect,
 }: {
   anchorRect: AnchorRect;
@@ -249,11 +211,13 @@ export const ProductCategoryDropdown = ({
   selectedCategory: string;
   close: () => void;
   unmount: () => void;
-  onSelect: (category: CategoryOptionTypes) => void;
+  onDismiss?: () => void;
+  onSelect: (category: ProductCategoryGroupTypes) => void;
 }) => {
   const dismiss = () => {
     close();
     unmount();
+    onDismiss?.();
   };
   const handleBackdropKeyDown = getBackdropKeyDownHandler(dismiss);
 
@@ -279,25 +243,19 @@ export const ProductCategoryDropdown = ({
         role='menu'
         style={positionStyle}
       >
-        {PRODUCT_CATEGORY_OPTIONS.map((option) => {
-          if (option === ALL_CATEGORY_OPTION) {
-            return null;
-          }
-
-          return (
-            <Dropdown.Item
-              color='primary'
-              key={option}
-              onClick={() => {
-                onSelect(option);
-                dismiss();
-              }}
-              selected={selectedCategory === option}
-            >
-              {option}
-            </Dropdown.Item>
-          );
-        })}
+        {PRODUCT_CATEGORY_GROUP_OPTIONS.map((option) => (
+          <Dropdown.Item
+            color='primary'
+            key={option}
+            onClick={() => {
+              onSelect(option);
+              dismiss();
+            }}
+            selected={selectedCategory === option}
+          >
+            {option}
+          </Dropdown.Item>
+        ))}
       </Dropdown>
     </div>
   );
