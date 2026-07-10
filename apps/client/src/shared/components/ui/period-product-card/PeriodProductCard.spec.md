@@ -49,8 +49,8 @@
 
 ## Styling Constraints
 
-- root width는 Figma 기준 `94px`에 맞춘 `9.4rem`입니다.
-- image frame은 `9.4rem x 9.4rem`, radius `12px`, cover object fit을 사용합니다.
+- root width는 부모 폭을 채우되 기본 `max-width: 9.4rem`을 유지합니다. 호출부는 `cardMaxWidthVar`로 최대 폭을 조정할 수 있습니다.
+- image frame은 root width를 채우고 `1 / 1` 비율을 유지합니다. 기본 root 기준 `9.4rem x 9.4rem`이며, 호출부가 root width를 줄이면 이미지도 함께 줄어듭니다.
 - product name은 `typography['caption-1-medium']`과 `atomic.neutral[70]`을 사용합니다.
 - price는 `typography['body-3-semibold']`와 `atomic.neutral[90]`을 사용합니다.
 - root는 부모 layout을 밀지 않도록 `minWidth: 0`과 고정된 카드 폭을 유지합니다.

@@ -2,6 +2,8 @@ import { style } from '@vanilla-extract/css';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
+import { cardMaxWidthVar as periodProductCardMaxWidthVar } from '@/shared/components/ui/period-product-card/PeriodProductCard.css';
+
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
 export const pageClassName = style({
@@ -195,7 +197,7 @@ export const cardSectionClassName = style([
   {
     border: `0.1rem solid ${atomic.neutral[20]}`,
     borderRadius: 12,
-    padding: '1.6rem',
+    padding: '1.92rem 1.8rem',
   },
 ]);
 
@@ -216,18 +218,20 @@ export const sectionTitleClassName = style({
 });
 
 export const sectionCountClassName = style({
-  ...typography['caption-1-regular'],
+  ...typography['body-3-medium'],
   flexShrink: 0,
   color: atomic.neutral[60],
 });
 
 export const popularListClassName = style({
   display: 'grid',
-  gridTemplateColumns: 'repeat(3, 10.6rem)',
-  justifyContent: 'space-between',
+  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+  gap: '0.8rem',
 });
 
 export const topProductLinkClassName = style({
+  display: 'block',
+  minWidth: 0,
   textDecoration: 'none',
   selectors: {
     '&:focus-visible': {
@@ -241,8 +245,8 @@ export const topProductLinkClassName = style({
 export const topProductCardClassName = style({
   position: 'relative',
   display: 'flex',
-  width: '10.6rem',
-  height: '10.6rem',
+  width: '100%',
+  aspectRatio: '1 / 1',
   flexDirection: 'column',
   justifyContent: 'flex-end',
   overflow: 'hidden',
@@ -305,7 +309,7 @@ export const discountChipClassName = style({
 export const todaySpecialCardClassName = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '0.6rem',
+  gap: '1.8rem',
   borderRadius: 12,
   padding: '1.8rem 1.8rem 1rem',
   backgroundColor: atomic.neutral[5],
@@ -445,18 +449,14 @@ export const moreCategoryButtonClassName = style([
 
 export const eventProductGridClassName = style({
   display: 'grid',
-  gridTemplateColumns: 'repeat(3, minmax(0, 9.4rem))',
+  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
   gap: '1.2rem',
-  justifyContent: 'space-between',
-  '@media': {
-    'screen and (max-width: 360px)': {
-      gridTemplateColumns: 'repeat(2, minmax(0, 9.4rem))',
-    },
-  },
 });
 
 export const eventProductCardClassName = style({
-  width: '100%',
+  vars: {
+    [periodProductCardMaxWidthVar]: 'none',
+  },
 });
 
 export const emptyTextClassName = style({

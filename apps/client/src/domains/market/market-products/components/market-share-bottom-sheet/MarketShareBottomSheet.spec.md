@@ -48,7 +48,7 @@
 
 ## Styling
 
-- Figma 기준 `375 x 430` 모바일 시트 형태를 따릅니다.
+- Figma 기준 `375 x 430` 모바일 시트 형태를 따르되, 실제 route에서는 bottom sheet가 viewport 하단을 채우도록 `width: 100%`를 사용합니다.
 - handle은 `40 x 4`, 상단 radius는 약 `27px` 기준입니다.
 - title은 `heading-3-semibold`, description/link는 `body-3`, action은 `body-2-semibold` 토큰을 사용합니다.
 - 링크 복사, 카카오톡 공유, QR 코드 보기는 각각 아이콘과 라벨을 함께 표시합니다.

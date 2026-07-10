@@ -30,10 +30,18 @@ export const sheetClassName = style({
   right: 'auto',
   bottom: 0,
   left: '50%',
+  width: '100%',
+  maxWidth: 'none',
   minHeight: '43rem',
   margin: 0,
   boxShadow: 'none',
   transform: 'translate3d(-50%, 0, 0)',
+  selectors: {
+    '&&': {
+      width: '100%',
+      maxWidth: 'none',
+    },
+  },
 });
 
 export const bodyClassName = style({

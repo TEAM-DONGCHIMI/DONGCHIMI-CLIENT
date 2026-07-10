@@ -93,6 +93,7 @@
 - scroll: page 전체 세로 스크롤
 - sticky/fixed: header는 상단 sticky
 - tablet/desktop: 모바일 폭을 기준으로 자연스럽게 늘어나되, 핵심 콘텐츠는 overflow 없이 유지합니다.
+- product grid: TOP3와 행사 할인 상품 grid는 3열을 유지하고, 작은 화면에서는 카드 이미지가 정사각 비율로 함께 줄어듭니다.
 
 ## Verification
 
