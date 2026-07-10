@@ -6,7 +6,7 @@ import { Map, MapInfoWindow, MapMarker, useKakaoLoader } from 'react-kakao-maps-
 
 import type { GeolocationErrorCodeTypes } from '@/shared/hooks';
 
-import { useNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-infinite-query';
+import { useGetNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-infinite-query';
 import * as S from '../NearbyMarketsPage.css';
 import { flattenNearbyMarketsPages } from '../utils/flatten-nearby-markets-pages';
 import {
@@ -53,7 +53,7 @@ export const NearbyMarketsMapSection = ({
     appkey: KAKAO_MAP_APP_KEY ?? '',
   });
 
-  const { data, isError: isMarketsError } = useNearbyMarketsInfiniteQuery({
+  const { data, isError: isMarketsError } = useGetNearbyMarketsInfiniteQuery({
     keyword,
     lat: marketSearchOrigin.lat,
     lng: marketSearchOrigin.lng,

@@ -28,7 +28,7 @@
 ## Props
 
 - `martName: string`: 마트 이름입니다.
-- `discountCount: number`: 할인 chip에 표시할 할인 개수입니다.
+- `discountCount: number`: 할인 chip에 표시할 오늘의 특가와 행사 할인 상품의 전체 개수입니다.
 - `isOpen: boolean`: 영업 상태입니다. `true`이면 `영업중`, `false`이면 `영업 종료` 텍스트를 표시합니다.
 - `profileImageSrc: string`: 마트 프로필 이미지 경로입니다.
 - `profileImageAlt: string`: 마트 프로필 이미지 대체 텍스트입니다.

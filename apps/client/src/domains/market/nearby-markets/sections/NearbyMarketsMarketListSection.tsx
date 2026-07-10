@@ -6,7 +6,7 @@ import { MartSummaryCard } from '@/shared/components';
 import { CLIENT_ROUTES } from '@/shared/constants';
 import { useIntersectionObserver } from '@/shared/hooks';
 
-import { useNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-infinite-query';
+import { useGetNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-infinite-query';
 import * as S from '../NearbyMarketsPage.css';
 import { flattenNearbyMarketsPages } from '../utils/flatten-nearby-markets-pages';
 
@@ -22,7 +22,7 @@ export const NearbyMarketsMarketListSection = ({
   const router = useRouter();
 
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isError, isPending } =
-    useNearbyMarketsInfiniteQuery({
+    useGetNearbyMarketsInfiniteQuery({
       keyword,
       lat: marketSearchOrigin.lat,
       lng: marketSearchOrigin.lng,

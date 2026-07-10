@@ -6,7 +6,7 @@ import { getNearbyMarkets, type NearbyMarketsListParamsTypes } from '../api/near
 import { mapNearbyMarketDtoToViewTypes } from '../model/nearby-market-mapper';
 import { nearbyMarketsQueryKeys } from '../query-keys';
 
-export const useNearbyMarketsInfiniteQuery = (params: NearbyMarketsListParamsTypes = {}) => {
+export const useGetNearbyMarketsInfiniteQuery = (params: NearbyMarketsListParamsTypes = {}) => {
   return useInfiniteQuery({
     queryKey: nearbyMarketsQueryKeys.list(params),
     queryFn: async ({ pageParam }) => {

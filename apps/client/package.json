@@ -27,7 +27,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-kakao-maps-sdk": "^1.2.1",
-    "zod": "^4.4.3"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@dongchimi/eslint-config": "workspace:*",

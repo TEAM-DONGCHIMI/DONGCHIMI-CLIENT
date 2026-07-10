@@ -39,25 +39,50 @@ export const useGeolocation = ({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isSubscribed = true;
+
+    const handleUnsupportedGeolocation = () => {
+      if (!isSubscribed) {
+        return;
+      }
+
+      setErrorCode('UNSUPPORTED');
+      setIsLoading(false);
+    };
+
     if (!navigator.geolocation) {
-      queueMicrotask(() => {
-        setErrorCode('UNSUPPORTED');
-        setIsLoading(false);
-      });
-      return;
+      handleUnsupportedGeolocation();
+
+      return () => {
+        isSubscribed = false;
+      };
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setCoordinates({ lat: position.coords.latitude, lng: position.coords.longitude });
-        setIsLoading(false);
+        if (isSubscribed) {
+          setCoordinates({ lat: position.coords.latitude, lng: position.coords.longitude });
+        }
+
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
       },
       (error) => {
-        setErrorCode(GEOLOCATION_ERROR_CODES[error.code] ?? 'POSITION_UNAVAILABLE');
-        setIsLoading(false);
+        if (isSubscribed) {
+          setErrorCode(GEOLOCATION_ERROR_CODES[error.code] ?? 'POSITION_UNAVAILABLE');
+        }
+
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
       },
       { enableHighAccuracy, timeout },
     );
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [enableHighAccuracy, timeout]);
 
   return { coordinates, errorCode, isLoading };

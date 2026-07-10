@@ -6,6 +6,7 @@ import type { NearbyMarketDtoTypes } from './nearby-markets-schema';
 export const mapNearbyMarketDtoToViewTypes = (dto: NearbyMarketDtoTypes): NearbyMarketTypes => {
   return {
     id: String(dto.marketId),
+    // productCount is the total count of today-special and event-discount products.
     discountCount: dto.productCount,
     isOpen: dto.isOpen,
     latitude: dto.latitude,

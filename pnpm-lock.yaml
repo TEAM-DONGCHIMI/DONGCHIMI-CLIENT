@@ -213,7 +213,7 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1(kakao.maps.d.ts@0.1.40)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       zod:
-        specifier: ^4.4.3
+        specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
       '@dongchimi/eslint-config':

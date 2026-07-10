@@ -11,10 +11,7 @@ export const MAP_LOADING_MESSAGE = '지도를 불러오는 중이에요';
 export const LOAD_ERROR_MESSAGE = '마트를 불러올 수 없어요';
 export const PERMISSION_DENIED_MESSAGE = '위치 검색 결과를 기준으로 마트를 보여드릴게요';
 
-const CURRENT_LOCATION_MARKER_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">' +
-  '<circle cx="8" cy="8" r="6" fill="#191F28" stroke="#FFFFFF" stroke-width="2"/>' +
-  '</svg>';
+const CURRENT_LOCATION_MARKER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><circle cx="8" cy="8" r="6" fill="#191F28" stroke="#FFFFFF" stroke-width="2"/></svg>`;
 
 export const CURRENT_LOCATION_MARKER_IMAGE = {
   src: `data:image/svg+xml;utf8,${encodeURIComponent(CURRENT_LOCATION_MARKER_SVG)}`,

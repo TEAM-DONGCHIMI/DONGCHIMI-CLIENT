@@ -70,7 +70,7 @@ export const locationSearchInputClassName = style({
   backgroundColor: 'transparent',
   color: atomic.neutral[60],
   letterSpacing: 0,
-  outline: 'none',
+  outline: 'transparent',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 
