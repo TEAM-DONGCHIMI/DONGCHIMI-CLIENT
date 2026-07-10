@@ -1,8 +1,8 @@
 import { MemoryRouter } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AppProviders } from '@/app/AppProviders';
-import { render, screen, userEvent } from '@/test';
+import { fireEvent, render, screen, userEvent } from '@/test';
 
 import { TodaySpecialRegistrationPage } from './TodaySpecialRegistrationPage';
 
@@ -17,10 +17,35 @@ const renderTodaySpecialRegistrationPage = () => {
 };
 
 describe('TodaySpecialRegistrationPage', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('keeps submit disabled while required fields are empty', () => {
     renderTodaySpecialRegistrationPage();
 
     expect(screen.getByRole('button', { name: '등록 완료' })).toBeDisabled();
+  });
+
+  it('sets today as the initial event period and minimum selectable date', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 11, 9));
+
+    renderTodaySpecialRegistrationPage();
+
+    expect(screen.getByLabelText('행사 시작일')).toHaveValue('2026-07-11');
+    expect(screen.getByLabelText('행사 시작일')).toHaveAttribute('min', '2026-07-11');
+  });
+
+  it('starts an added product draft from today as the event period', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 11, 9));
+
+    renderTodaySpecialRegistrationPage();
+
+    fireEvent.click(screen.getByRole('button', { name: '상품 계속 등록' }));
+
+    expect(screen.getByLabelText('행사 시작일')).toHaveValue('2026-07-11');
   });
 
   it('selects a category from the OverlayKit dropdown', async () => {

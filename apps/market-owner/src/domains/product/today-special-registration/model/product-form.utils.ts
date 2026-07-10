@@ -10,6 +10,34 @@ export {
 export const todaySpecialProductNameMaxLength = 15;
 export const todaySpecialProductDescriptionMaxLength = 25;
 
+export const formatDateInputValue = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+export const getTodayDateInputValue = () => {
+  return formatDateInputValue(new Date());
+};
+
+export const isTodaySpecialStartDateSelectable = (value: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false;
+  }
+
+  return value >= getTodayDateInputValue();
+};
+
+export const normalizeTodaySpecialStartDateInput = (value: string) => {
+  if (!value) {
+    return value;
+  }
+
+  return isTodaySpecialStartDateSelectable(value) ? value : getTodayDateInputValue();
+};
+
 // 빈 form 생성
 export const createEmptyTodaySpecialProductForm = (): TodaySpecialProductFormTypes => ({
   category: '',
@@ -19,7 +47,7 @@ export const createEmptyTodaySpecialProductForm = (): TodaySpecialProductFormTyp
   name: '',
   salePrice: '',
   specialPrice: '',
-  startDate: '',
+  startDate: getTodayDateInputValue(),
 });
 
 // 상품명 입력 중 15자 제한

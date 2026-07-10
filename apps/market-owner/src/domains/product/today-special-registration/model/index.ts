@@ -2,9 +2,11 @@
 export {
   createEmptyTodaySpecialProductForm,
   formatPriceInput,
+  getTodayDateInputValue,
   isValidTodaySpecialImageFile,
   limitProductDescriptionInput,
   limitProductNameInput,
+  normalizeTodaySpecialStartDateInput,
   sanitizeProductDescription,
   sanitizeProductName,
   todaySpecialImageInputAccept,

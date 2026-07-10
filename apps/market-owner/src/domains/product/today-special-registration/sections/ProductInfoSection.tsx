@@ -2,13 +2,12 @@ import type { ChangeEventHandler, FocusEventHandler, MouseEventHandler, RefObjec
 
 import { cn } from '@dongchimi/design-system/styles';
 import {
-  IcCamera,
   IcChevronDown,
   IcChevronUp,
   IcCircleExclamationSizeSmallColorNegative,
-  IcPlus,
 } from '@dongchimi/design-system/icons';
 
+import { ProductImageUploadField } from '../../components/product-image-upload-field';
 import { FieldGroup } from '../components/FieldGroup';
 import {
   todaySpecialImageInputAccept,
@@ -53,55 +52,21 @@ export const ProductInfoSection = ({
       </h2>
 
       <div className={S.sectionBodyClassName}>
-        <div className={S.imageFieldClassName}>
-          <div className={S.imageTextGroupClassName}>
-            <label className={S.fieldLabelClassName} htmlFor='today-special-product-image'>
-              상품 이미지
-            </label>
-            <p className={S.imageDescriptionClassName}>
+        <ProductImageUploadField
+          accept={todaySpecialImageInputAccept}
+          description={
+            <>
               권장 비율 4:3 1200 x 900px 이상을 권장해요.
               <br />
               이미지를 등록하지 않으면 기본 이미지가 사용돼요.
-            </p>
-          </div>
-
-          <label
-            className={cn(
-              S.imageUploadBoxClassName,
-              product.imagePreviewUrl && S.imageUploadBoxPreviewClassName,
-            )}
-            htmlFor='today-special-product-image'
-          >
-            {product.imagePreviewUrl ? (
-              <span className={S.imagePreviewContentClassName}>
-                <img
-                  alt='등록할 상품 이미지 미리보기'
-                  className={S.imagePreviewClassName}
-                  src={product.imagePreviewUrl}
-                />
-                <span className={S.cameraBadgeClassName} aria-hidden='true'>
-                  <IcCamera />
-                </span>
-              </span>
-            ) : (
-              <span className={S.emptyUploadContentClassName}>
-                <IcPlus className={S.emptyUploadIconClassName} aria-hidden='true' />
-                <span>
-                  상품 이미지를
-                  <br />
-                  추가하세요
-                </span>
-              </span>
-            )}
-          </label>
-          <input
-            accept={todaySpecialImageInputAccept}
-            className={S.fileInputClassName}
-            id='today-special-product-image'
-            onChange={onImageChange}
-            type='file'
-          />
-        </div>
+            </>
+          }
+          id='today-special-product-image'
+          label='상품 이미지'
+          previewAlt='등록할 상품 이미지 미리보기'
+          previewUrl={product.imagePreviewUrl}
+          onImageChange={onImageChange}
+        />
 
         <div className={S.twoColumnRowClassName}>
           <FieldGroup
