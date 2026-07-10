@@ -17,6 +17,15 @@ const renderMarketProductsPage = () => {
   return renderWithProviders(<MarketProductsPage marketId='mangwon-fresh' />);
 };
 
+const mockClipboardWriteText = (writeText: (text: string) => Promise<void>) => {
+  Object.defineProperty(navigator, 'clipboard', {
+    configurable: true,
+    value: {
+      writeText,
+    },
+  });
+};
+
 const getSectionQueries = (headingName: string) => {
   const section = screen.getByRole('heading', { name: headingName }).closest('section');
 
@@ -72,6 +81,26 @@ describe('MarketProductsPage', () => {
     await user.click(screen.getByRole('button', { name: '접기' }));
 
     expect(todaySection.getAllByRole('link')).toHaveLength(2);
+  });
+
+  it('shows a bottom-center toast when leaflet link copy succeeds', async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+
+    mockClipboardWriteText(writeText);
+    renderMarketProductsPage();
+
+    await user.click(screen.getByRole('button', { name: '공유하기' }));
+
+    const dialog = await screen.findByRole('dialog', { name: '전단 공유하기' });
+
+    await user.click(within(dialog).getByRole('button', { name: '링크 복사' }));
+
+    expect(writeText).toHaveBeenCalledWith('dongchimi.kr/mangwon-fresh');
+    expect(await within(dialog).findByRole('status')).toHaveTextContent(
+      '전단 링크가 복사되었습니다.',
+    );
+    expect(within(dialog).getByRole('region', { name: '토스트 알림' })).toBeInTheDocument();
   });
 
   it('filters event discount products by category', async () => {

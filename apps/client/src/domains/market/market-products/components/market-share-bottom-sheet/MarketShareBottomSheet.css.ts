@@ -75,8 +75,9 @@ export const linkCopyButtonClassName = style({
   border: 0,
   padding: 0,
   backgroundColor: 'transparent',
-  color: atomic.common[100],
   cursor: 'pointer',
+  fontSize: '1.6rem',
+  lineHeight: 0,
   selectors: {
     '&:focus-visible': {
       borderRadius: 8,
@@ -128,11 +129,14 @@ export const actionIconClassName = style({
   border: `0.1rem solid ${atomic.neutral[40]}`,
   borderRadius: '999rem',
   backgroundColor: atomic.common[0],
+  color: atomic.neutral[80],
+  fontSize: '2rem',
+  lineHeight: 0,
 });
 
-export const blankIconClassName = style({
+export const toastIconClassName = style({
+  display: 'block',
   width: '2rem',
   height: '2rem',
-  border: `0.3rem dashed ${atomic.common[100]}`,
-  borderRadius: 4,
+  fontSize: '2rem',
 });

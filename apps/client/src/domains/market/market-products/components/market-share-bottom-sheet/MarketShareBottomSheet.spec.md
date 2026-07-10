@@ -19,6 +19,7 @@
 - Figma: `APPJAM`, node `342:10904`
 - Component name: `Mobile Share Bottom Sheet`
 - Size reference: `375 x 430`
+- Share API draft: `{ marketId, marketName, slug, qrCode }`
 
 ## Inputs
 
@@ -32,20 +33,26 @@
   - `onOpenQrCode`: QR 코드 보기 액션을 호출부가 직접 처리해야 할 때 사용합니다. 전달되지 않으면 QR 버튼은 비활성화됩니다.
 - external state:
   - bottom sheet open state는 `BottomSheet` primitive가 관리합니다.
+  - 링크 복사 toast는 native dialog top-layer 위에 보이도록 bottom sheet dialog 내부의 local `ToastProvider`를 사용합니다.
+  - 공유 API 연동 시 호출부는 `slug`로 공유 URL을 만들고, `qrCode`는 QR 보기 UI가 확정된 뒤 `onOpenQrCode` 또는 별도 QR view props로 연결합니다.
 
 ## States
 
 - default: trigger를 누르면 공유 bottom sheet를 엽니다.
+- copied: 링크 복사 fallback이 성공하면 bottom-center completed toast를 표시합니다.
+- disabled: QR 보기 UI/handler가 없으면 QR 버튼은 비활성화하되 아이콘과 라벨은 유지합니다.
 - loading: 지원하지 않습니다. 공유 API 연결 시 호출부에서 액션 상태를 분리합니다.
 - empty: 지원하지 않습니다. `marketName`, `shareUrl`은 필수입니다.
-- error: 지원하지 않습니다. clipboard/share 실패 처리는 후속 toast 작업에서 다룹니다.
+- error: clipboard/share fallback 실패 시 bottom-center error toast를 표시합니다.
 
 ## Styling
 
 - Figma 기준 `375 x 430` 모바일 시트 형태를 따릅니다.
 - handle은 `40 x 4`, 상단 radius는 약 `27px` 기준입니다.
 - title은 `heading-3-semibold`, description/link는 `body-3`, action은 `body-2-semibold` 토큰을 사용합니다.
+- 링크 복사, 카카오톡 공유, QR 코드 보기는 각각 아이콘과 라벨을 함께 표시합니다.
 - 색상은 디자인시스템 `atomic`, `semantic` token을 사용합니다.
+- toast icon은 디자인시스템 `IcCircleCheckFillSizeSmall`, `IcCircleExclamationFillColor0`를 사용합니다.
 
 ## Accessibility
 

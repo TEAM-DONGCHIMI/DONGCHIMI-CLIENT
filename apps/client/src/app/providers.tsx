@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode } from 'react';
+import { ToastProvider } from '@dongchimi/shared/toast';
 import { OverlayProvider } from 'overlay-kit';
 
 import { QueryProvider } from '@/shared/query';
@@ -11,8 +12,10 @@ type AppProvidersProps = Readonly<{
 
 export const AppProviders = ({ children }: AppProvidersProps) => {
   return (
-    <OverlayProvider>
-      <QueryProvider>{children}</QueryProvider>
-    </OverlayProvider>
+    <QueryProvider>
+      <ToastProvider placement='bottom-center'>
+        <OverlayProvider>{children}</OverlayProvider>
+      </ToastProvider>
+    </QueryProvider>
   );
 };

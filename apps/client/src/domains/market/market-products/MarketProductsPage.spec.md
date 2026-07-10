@@ -61,7 +61,7 @@
 - navigation: 상품 카드는 `CLIENT_ROUTES.marketProduct(marketId, productId)`로 이동합니다.
 - back: header back button은 history가 있으면 `router.back()`, 없으면 `/markets`로 이동합니다.
 - call: 전화걸기 확인 modal에서 확인하면 대표 전화번호의 `tel:` URL로 이동합니다.
-- share: 공유하기 button은 `MarketShareBottomSheet`를 열고 링크 복사/브라우저 공유 fallback을 기존 컴포넌트에 위임합니다.
+- share: 공유하기 button은 `MarketShareBottomSheet`를 열고 링크 복사/브라우저 공유 fallback을 기존 컴포넌트에 위임합니다. 링크 복사 결과는 bottom-center toast로 피드백합니다.
 - today special: 기본 2개 노출, 전체보기 시 fixture 전체 노출, 접기 시 기본 노출로 복귀합니다.
 - category: 기본은 `전체` 선택, 기본 노출 chip은 `전체`와 일부 카테고리 및 `더보기`입니다. 더보기 클릭 시 나머지 카테고리를 보여줍니다.
 - API: 없음. API 연동은 후속 이슈에서 query hook으로 분리합니다.
