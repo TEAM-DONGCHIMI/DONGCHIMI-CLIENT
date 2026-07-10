@@ -408,6 +408,31 @@ export const inlineToggleButtonClassName = style({
 });
 
 export const categoryListClassName = style({
+  position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.4rem',
+});
+
+export const categoryMeasurementRowClassName = style({
+  position: 'absolute',
+  display: 'flex',
+  width: 'max-content',
+  height: 0,
+  gap: '0.4rem',
+  overflow: 'hidden',
+  pointerEvents: 'none',
+  visibility: 'hidden',
+});
+
+export const categoryPrimaryRowClassName = style({
+  display: 'flex',
+  minWidth: 0,
+  flexWrap: 'wrap',
+  gap: '0.4rem',
+});
+
+export const categoryExpandedGroupClassName = style({
   display: 'flex',
   flexWrap: 'wrap',
   gap: '0.4rem',

@@ -75,7 +75,7 @@
 - call: 전화걸기 확인 modal에서 확인하면 대표 전화번호의 `tel:` URL로 이동합니다.
 - share: 공유하기 button은 `MarketShareBottomSheet`를 열고 링크 복사는 컴포넌트에 위임합니다. 카카오톡 공유는 Kakao SDK 연동 전까지 준비중 toast로 피드백합니다.
 - today special: 기본 2개 노출, 전체보기 시 fixture 전체 노출, 접기 시 기본 노출로 복귀합니다.
-- category: 기본은 `전체` 선택, 기본 노출 chip은 `전체`와 일부 카테고리 및 `더보기`입니다. 더보기 클릭 시 나머지 카테고리를 보여줍니다.
+- category: 기본은 `전체` 선택, 기본 노출 chip은 사용 가능한 첫 줄 폭에 맞춰 계산합니다. 숨겨진 카테고리가 있으면 첫 줄에 `더보기`를 함께 배치하고, 더보기 클릭 시 나머지 카테고리를 보여줍니다.
 - API: 없음. API 연동은 후속 이슈에서 query hook으로 분리합니다.
 
 ## Accessibility

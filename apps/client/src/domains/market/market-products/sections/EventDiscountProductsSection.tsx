@@ -1,5 +1,6 @@
-import { IcChevronDown, IcChevronUp } from '@dongchimi/design-system/icons';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+import { IcChevronDown, IcChevronUp } from '@dongchimi/design-system/icons';
 import { PeriodProductCard } from '@/shared/components/ui/period-product-card';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
@@ -24,6 +25,53 @@ export const EVENT_DISCOUNT_ALL_CATEGORY_ID = 'all';
 
 const formatPrice = (price: number) => price.toLocaleString('ko-KR');
 
+type CategoryRowMeasurementTypes = Readonly<{
+  allCategoryWidth: number;
+  categoryWidths: readonly number[];
+  containerWidth: number;
+  gap: number;
+  moreCategoryWidth: number;
+}>;
+
+export const calculateFirstRowCategoryCount = ({
+  allCategoryWidth,
+  categoryWidths,
+  containerWidth,
+  gap,
+  moreCategoryWidth,
+}: CategoryRowMeasurementTypes) => {
+  const fullCategoryRowWidth = categoryWidths.reduce((totalWidth, categoryWidth) => {
+    return totalWidth + gap + categoryWidth;
+  }, allCategoryWidth);
+
+  if (fullCategoryRowWidth <= containerWidth) {
+    return categoryWidths.length;
+  }
+
+  let occupiedWidth = allCategoryWidth + gap + moreCategoryWidth;
+  let nextCategoryCount = 0;
+
+  for (const categoryWidth of categoryWidths) {
+    const nextWidth = occupiedWidth + gap + categoryWidth;
+
+    if (nextWidth > containerWidth) {
+      break;
+    }
+
+    occupiedWidth = nextWidth;
+    nextCategoryCount += 1;
+  }
+
+  return nextCategoryCount;
+};
+
+const getFlexGapPx = (element: HTMLElement) => {
+  const gap = window.getComputedStyle(element).columnGap;
+  const parsedGap = Number.parseFloat(gap);
+
+  return Number.isFinite(parsedGap) ? parsedGap : 0;
+};
+
 export const EventDiscountProductsSection = ({
   categories,
   isCategoryExpanded,
@@ -34,10 +82,81 @@ export const EventDiscountProductsSection = ({
   selectedCategoryId,
   visibleCategoryCount,
 }: EventDiscountProductsSectionProps) => {
-  const defaultVisibleCategories = categories.slice(0, visibleCategoryCount);
-  const hiddenCategories = categories.slice(visibleCategoryCount);
+  const categoryListRef = useRef<HTMLDivElement>(null);
+  const categoryMeasureRowRef = useRef<HTMLDivElement>(null);
+  const [firstRowCategoryCount, setFirstRowCategoryCount] = useState(visibleCategoryCount);
+  const categoryLayoutSignature = categories
+    .map((category) => `${category.categoryId}:${category.label}`)
+    .join('|');
+
+  const updateFirstRowCategoryCount = useCallback(() => {
+    const categoryListElement = categoryListRef.current;
+    const measureRowElement = categoryMeasureRowRef.current;
+
+    if (categoryListElement == null || measureRowElement == null) {
+      return;
+    }
+
+    const containerWidth = categoryListElement.clientWidth;
+
+    if (containerWidth <= 0) {
+      setFirstRowCategoryCount(visibleCategoryCount);
+      return;
+    }
+
+    const measuredItems = Array.from(measureRowElement.children) as HTMLElement[];
+    const allCategoryElement = measuredItems[0];
+    const moreCategoryElement = measuredItems[measuredItems.length - 1];
+
+    if (allCategoryElement == null || moreCategoryElement == null) {
+      return;
+    }
+
+    const gap = getFlexGapPx(measureRowElement);
+    const categoryItemElements = measuredItems.slice(1, -1);
+    const nextCategoryCount = calculateFirstRowCategoryCount({
+      allCategoryWidth: allCategoryElement.getBoundingClientRect().width,
+      categoryWidths: categoryItemElements.map((categoryItemElement) => {
+        return categoryItemElement.getBoundingClientRect().width;
+      }),
+      containerWidth,
+      gap,
+      moreCategoryWidth: moreCategoryElement.getBoundingClientRect().width,
+    });
+
+    setFirstRowCategoryCount((currentCount) => {
+      return currentCount === nextCategoryCount ? currentCount : nextCategoryCount;
+    });
+  }, [visibleCategoryCount]);
+
+  useLayoutEffect(() => {
+    updateFirstRowCategoryCount();
+  }, [categoryLayoutSignature, updateFirstRowCategoryCount]);
+
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined' || categoryListRef.current == null) {
+      window.addEventListener('resize', updateFirstRowCategoryCount);
+
+      return () => {
+        window.removeEventListener('resize', updateFirstRowCategoryCount);
+      };
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateFirstRowCategoryCount();
+    });
+
+    resizeObserver.observe(categoryListRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [updateFirstRowCategoryCount]);
+
+  const defaultVisibleCategories = categories.slice(0, firstRowCategoryCount);
+  const hiddenCategories = categories.slice(firstRowCategoryCount);
   const expandedCategories = isCategoryExpanded ? hiddenCategories : [];
-  const hasHiddenCategories = categories.length > visibleCategoryCount;
+  const hasHiddenCategories = hiddenCategories.length > 0;
   const MoreButtonIcon = isCategoryExpanded ? IcChevronUp : IcChevronDown;
 
   return (
@@ -46,48 +165,75 @@ export const EventDiscountProductsSection = ({
         행사 할인 상품
       </h2>
 
-      <div aria-label='행사 할인 상품 카테고리' className={S.categoryListClassName}>
-        <button
-          aria-pressed={selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID}
-          className={S.categoryButtonClassName}
-          onClick={() => onSelectCategory(EVENT_DISCOUNT_ALL_CATEGORY_ID)}
-          type='button'
+      <div
+        ref={categoryListRef}
+        aria-label='행사 할인 상품 카테고리'
+        className={S.categoryListClassName}
+      >
+        <div
+          ref={categoryMeasureRowRef}
+          aria-hidden='true'
+          className={S.categoryMeasurementRowClassName}
         >
-          전체
-        </button>
-        {defaultVisibleCategories.map((category) => (
-          <button
-            key={category.categoryId}
-            aria-pressed={selectedCategoryId === category.categoryId}
-            className={S.categoryButtonClassName}
-            onClick={() => onSelectCategory(category.categoryId)}
-            type='button'
-          >
-            {category.label}
-          </button>
-        ))}
-        {hasHiddenCategories ? (
-          <button
-            aria-expanded={isCategoryExpanded}
-            className={S.moreCategoryButtonClassName}
-            onClick={onToggleCategoryExpanded}
-            type='button'
-          >
+          <span className={S.categoryButtonClassName}>전체</span>
+          {categories.map((category) => (
+            <span key={category.categoryId} className={S.categoryButtonClassName}>
+              {category.label}
+            </span>
+          ))}
+          <span className={S.moreCategoryButtonClassName}>
             더보기
             <MoreButtonIcon aria-hidden='true' />
-          </button>
-        ) : null}
-        {expandedCategories.map((category) => (
+          </span>
+        </div>
+
+        <div className={S.categoryPrimaryRowClassName}>
           <button
-            key={category.categoryId}
-            aria-pressed={selectedCategoryId === category.categoryId}
+            aria-pressed={selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID}
             className={S.categoryButtonClassName}
-            onClick={() => onSelectCategory(category.categoryId)}
+            onClick={() => onSelectCategory(EVENT_DISCOUNT_ALL_CATEGORY_ID)}
             type='button'
           >
-            {category.label}
+            전체
           </button>
-        ))}
+          {defaultVisibleCategories.map((category) => (
+            <button
+              key={category.categoryId}
+              aria-pressed={selectedCategoryId === category.categoryId}
+              className={S.categoryButtonClassName}
+              onClick={() => onSelectCategory(category.categoryId)}
+              type='button'
+            >
+              {category.label}
+            </button>
+          ))}
+          {hasHiddenCategories ? (
+            <button
+              aria-expanded={isCategoryExpanded}
+              className={S.moreCategoryButtonClassName}
+              onClick={onToggleCategoryExpanded}
+              type='button'
+            >
+              더보기
+              <MoreButtonIcon aria-hidden='true' />
+            </button>
+          ) : null}
+        </div>
+        {expandedCategories.length > 0 ? (
+          <div className={S.categoryExpandedGroupClassName}>
+            {expandedCategories.map((category) => (
+              <button
+                key={category.categoryId}
+                aria-pressed={selectedCategoryId === category.categoryId}
+                className={S.categoryButtonClassName}
+                onClick={() => onSelectCategory(category.categoryId)}
+                type='button'
+              >
+                {category.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       {products.length > 0 ? (

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderWithProviders, screen, userEvent, within } from '@/test';
 
 import { MarketProductsPage } from './MarketProductsPage';
+import { calculateFirstRowCategoryCount } from './sections/EventDiscountProductsSection';
 
 const router = {
   back: vi.fn(),
@@ -143,5 +144,31 @@ describe('MarketProductsPage', () => {
 
     expect(eventSection.getAllByRole('link')).toHaveLength(1);
     expect(eventSection.getByText('손질 고등어 1팩')).toBeInTheDocument();
+  });
+});
+
+describe('calculateFirstRowCategoryCount', () => {
+  it('returns every category count when all category chips fit without the more chip', () => {
+    expect(
+      calculateFirstRowCategoryCount({
+        allCategoryWidth: 48,
+        categoryWidths: [64, 80, 72],
+        containerWidth: 280,
+        gap: 4,
+        moreCategoryWidth: 72,
+      }),
+    ).toBe(3);
+  });
+
+  it('reserves space for the more chip when categories overflow the first row', () => {
+    expect(
+      calculateFirstRowCategoryCount({
+        allCategoryWidth: 48,
+        categoryWidths: [64, 80, 72],
+        containerWidth: 220,
+        gap: 4,
+        moreCategoryWidth: 72,
+      }),
+    ).toBe(1);
   });
 });
