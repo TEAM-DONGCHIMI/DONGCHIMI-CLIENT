@@ -3,7 +3,7 @@ import { type ProductCardItemTypes, type ProductCardProps } from '@dongchimi/sha
 import { type ProductSearchPanelItemTypes } from '@/shared/components';
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
 
-interface HomeProductSectionFixtureTypes {
+export interface HomeProductSectionFixtureTypes {
   editRoute: MarketOwnerRouteTypes;
   id: string;
   itemVariant: NonNullable<ProductCardProps['itemVariant']>;
@@ -40,6 +40,13 @@ const periodicProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, i
   priceText: '5,000원',
   rank: index + 1,
 }));
+
+export const homeProductSummary = {
+  dailyCount: 20,
+  dailyProducts,
+  periodicCount: 35,
+  periodicProducts,
+} as const;
 
 export const homeSearchProducts: HomeSearchProductFixtureTypes[] = [
   {
@@ -98,17 +105,17 @@ export const homeProductSections: HomeProductSectionFixtureTypes[] = [
     editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
     id: 'daily',
     itemVariant: 'today',
-    items: dailyProducts,
+    items: homeProductSummary.dailyProducts,
     title: '오늘의 특가 상품',
-    totalCount: 20,
+    totalCount: homeProductSummary.dailyCount,
   },
   {
     editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
     id: 'periodic',
     itemVariant: 'period',
-    items: periodicProducts,
+    items: homeProductSummary.periodicProducts,
     title: '행사 할인 상품',
-    totalCount: 35,
+    totalCount: homeProductSummary.periodicCount,
   },
 ] satisfies HomeProductSectionFixtureTypes[];
 

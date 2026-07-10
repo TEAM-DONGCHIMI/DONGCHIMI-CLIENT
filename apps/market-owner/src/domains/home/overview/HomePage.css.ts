@@ -95,6 +95,33 @@ export const productCardClassName = style({
   overflow: 'hidden',
 });
 
+export const productCardContainerClassName = style({
+  position: 'relative',
+  minWidth: 0,
+});
+
+export const productCardEmptyOverlayClassName = style({
+  position: 'absolute',
+  zIndex: 1,
+  inset: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: '2rem',
+  padding: '2rem',
+  backgroundColor: semantic.overlay.dimmer,
+  color: atomic.common[0],
+  pointerEvents: 'auto',
+  textAlign: 'center',
+});
+
+export const productCardEmptyMessageClassName = style({
+  ...typography['heading-2-semibold'],
+  letterSpacing: '-0.044rem',
+  margin: 0,
+  whiteSpace: 'pre-line',
+});
+
 export const productCardActionButtonClassName = style({
   ...typography['body-3-semibold'],
   appearance: 'none',
@@ -108,6 +135,9 @@ export const productCardActionButtonClassName = style({
   color: semantic.primary.strong,
   cursor: 'pointer',
   selectors: {
+    '&:disabled': {
+      cursor: 'not-allowed',
+    },
     '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
       outlineOffset: 2,
