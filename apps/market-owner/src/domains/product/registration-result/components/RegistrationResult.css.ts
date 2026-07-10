@@ -116,9 +116,7 @@ export const headerCellClassName = style({
       paddingLeft: '2.8rem',
     },
     '&:nth-child(8)': {
-      justifyContent: 'center',
-      paddingRight: 0,
-      paddingLeft: 0,
+      paddingLeft: statusColumnHeaderInset,
       color: atomic.neutral[60],
     },
   },
