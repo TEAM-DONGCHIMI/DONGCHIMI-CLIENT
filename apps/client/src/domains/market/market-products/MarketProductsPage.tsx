@@ -69,7 +69,7 @@ export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
   const currentBusinessCloseTime = getCurrentBusinessCloseTime(market.businessHours);
   const callModalDescription =
     market.isOpenNow && currentBusinessCloseTime != null
-      ? `현재 영업중: ${currentBusinessCloseTime}까지`
+      ? `현재 영업중· ${currentBusinessCloseTime}까지`
       : '현재 영업 시간이 아니에요.';
 
   const visibleTodaySpecialProducts = isTodaySpecialExpanded
