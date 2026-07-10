@@ -2,7 +2,7 @@
 
 import { Chip } from '@dongchimi/design-system';
 
-import type { ProductDetailPromotionTypes } from '../fixtures/product-detail-fixtures';
+import type { ProductDetailPromotionTypes } from '../../model/product-detail';
 import * as S from '../ProductDetailPage.css';
 
 type ProductDetailPromotionChipsProps = Readonly<{

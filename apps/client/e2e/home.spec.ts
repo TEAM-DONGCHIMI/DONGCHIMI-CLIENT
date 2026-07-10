@@ -39,9 +39,8 @@ test('client market products route shell renders', async ({ page }) => {
 
 test('client product detail route shell renders', async ({ page }) => {
   await page.goto(productDetailPath);
-  await expect(page.getByRole('heading', { name: '오늘의 특가' })).toBeVisible({
+  await expect(page.getByRole('heading', { name: '상품 상세' })).toBeVisible({
     timeout: routeShellTimeout,
   });
-  await expect(page.getByRole('heading', { name: '삼겹살 500g' })).toBeVisible();
-  await expect(page.getByText('4,500원')).toBeVisible();
+  await expect(page.getByText('상품 정보를 불러오지 못했습니다')).toBeVisible();
 });

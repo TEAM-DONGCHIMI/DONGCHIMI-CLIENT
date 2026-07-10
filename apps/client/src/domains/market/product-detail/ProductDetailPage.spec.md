@@ -3,14 +3,15 @@
 ## Metadata
 
 - Jira: DCMCL-10
+- Related Jira: DCMCL-13
 - Screen ID: APPJAM `1972:129194` `상품 상세_[오늘의 특가 상품]`, APPJAM `1972:129231` `상품 상세_[행사 할인 상품]`
 - Route: `/markets/[marketId]/products/[productId]`
 - Owner: apps/client
-- Status: Implemented
+- Status: Implemented, API integrated by DCMCL-13
 
 ## Purpose
 
-- 특정 마트의 전단 상품 상세 정보를 모바일 웹 화면으로 확인합니다.
+- 특정 마트의 전단 상품 상세 정보를 모바일 웹 화면에서 사용자 상품 상세 조회 API로 확인합니다.
 - 오늘의 특가 상품과 행사 할인 상품은 같은 route shell을 공유하고, 상품 유형별 header title, chip, 가격 정보, 행사 기간 노출만 분기합니다.
 
 ## Source Of Truth
@@ -20,26 +21,28 @@
 - Target viewport: 375x812 mobile web frame, 390/414/430px wider mobile widths
 - FRS / SRS: 없음
 - Decision / Meeting note: 없음
-- Related Jira: DCMCL-10, DCMCL-8
+- API doc: Swagger Product 상품 조회 API `GET /v1/users/markets/{marketId}/products/{productId}`
+- Related Jira: DCMCL-10, DCMCL-8, DCMCL-13
 
 ## Scope
 
 - 기존 `/markets/[marketId]/products/[productId]` route entry는 Server Component로 유지합니다.
-- `ProductDetailPage`는 fixture 기반으로 오늘의 특가와 행사 할인 상품 variant를 렌더링합니다.
-- `ProductDetailPage`, `ProductDetailHeader`는 Server Component로 유지하고, 뒤로가기 interaction만 page-local Client Component로 분리합니다.
-- 디자인시스템 root barrel은 client-only 모듈도 함께 노출하므로 `Chip` 사용 영역은 작은 client island로 유지합니다.
+- `ProductDetailPage`는 TanStack Query hook으로 상품 상세 API를 호출하고, loading/error/empty/success 상태를 렌더링합니다.
+- `ProductDetailPage`는 Client Component로 API 상태를 소유하고, route entry는 Server Component shell로 유지합니다.
+- 디자인시스템 `Chip`은 client component인 `ProductDetailPage` 내부에서 사용합니다.
 - package public export surface는 상품 상세 구현에서 새로 확장하지 않습니다.
-- 상품 이미지가 없으면 기본 카테고리 이미지 제작 전까지 fallback surface를 노출합니다.
-- 점장 한마디가 없으면 comment card를 노출하지 않습니다.
-- 미등록 `productId`는 fallback 상품으로 숨기지 않고 404로 처리합니다.
+- API 응답의 `thumbnailUrl`이 있으면 상품 이미지를 렌더링하고, 없으면 기본 카테고리 이미지 제작 전까지 fallback surface를 노출합니다.
+- API 응답의 `promotionalPhrase`가 없으면 comment card를 노출하지 않습니다.
+- API 응답의 `data`가 `null`이면 상품 정보 없음 상태를 노출합니다.
 
 ## Out Of Scope
 
-- 상품 상세 API 조회
 - 실제 상품 이미지 asset 제작
 - iOS status bar, Safari browser bottom toolbar, home indicator 구현
 - 구매, 전화, 공유 action 구현
 - 새 디자인시스템 public component 또는 token contract 추가
+- 상품 목록 API 조회
+- market slug를 product API의 integer marketId로 resolve하는 선행 흐름
 
 ## Layout And Sections
 
@@ -70,9 +73,9 @@
 
 ## States
 
-- loading: API 연동 시 후속 처리
-- empty: 상품 이미지 없음은 fallback surface로 대체하고, 점장 한마디 없음은 card를 숨깁니다.
-- error: API 실패는 후속 처리
+- loading: 상품 상세 정보를 불러오는 중 상태 message를 노출합니다.
+- empty: `data: null`이면 상품 정보 없음 상태를 노출합니다. 상품 이미지 없음은 fallback surface로 대체하고, 점장 한마디 없음은 card를 숨깁니다.
+- error: API 실패 또는 설정 누락은 error state message와 retry 버튼을 노출합니다.
 - disabled: action 연동 시 후속 처리
 - selected / active: 없음
 
@@ -81,7 +84,10 @@
 - navigation: 뒤로가기 button은 `router.back()`을 우선하고 fallback으로 `/markets/[marketId]`로 이동합니다.
 - interaction: 상세 action은 후속 이슈에서 구현합니다.
 - form / validation: 없음
-- API: 없음. `productId` fixture로 variant를 선택하고, 미등록 fixture는 `notFound()`로 처리합니다.
+- API: `useProductDetailQuery({ marketId, productId })`로 상품 상세 API를 호출합니다.
+- query key: `['market', 'products', 'detail', { marketId, productId }]`
+- query options: `productDetailQueryOptions(params)`가 `queryKey`와 `queryFn` 계약을 소유하고, hook은 `enabled` 같은 사용 정책을 얹습니다.
+- retry: QueryClient 기본 정책을 따르되 auth/validation/response validation error는 retry하지 않습니다.
 
 ## Accessibility
 
@@ -112,10 +118,12 @@
 - [x] `pnpm --filter client lint`
 - [x] `pnpm --filter client typecheck`
 - [x] `pnpm --filter client build`
-- [x] browser route: `/markets/mangwon/products/samgyeopsal-500g` at 375px, 390px, 414px, 430px
-- [x] browser route: `/markets/mangwon/products/event-discount-samgyeopsal-500g` at 375px, 390px, 414px, 430px
+- [x] `pnpm --filter client test:unit`
+- [x] `pnpm e2e:smoke`
+- [ ] browser route: `/markets/[marketId]/products/[productId]` at 375px, 390px, 414px, 430px
 
 ## Open Questions
 
-- 실제 API field: 상품 유형, 할인율, 원가, 판매가, 행사 기간, 점장 한마디, 상품 이미지, 카테고리 fallback source
+- route의 `marketId`, `productId`가 현재 slug-like placeholder에서 Swagger 기준 integer id로 언제 전환되는지 확인이 필요합니다.
+- `dealType`은 현재 `DAILY`만 오늘의 특가로 매핑하고 그 외 값은 행사 할인 상품 UI로 매핑합니다. 최종 enum이 확정되면 schema를 좁힙니다.
 - 최종 상품 이미지 fallback asset 또는 카테고리별 fallback 정책

@@ -1,14 +1,15 @@
-import { notFound } from 'next/navigation';
+'use client';
 
+import type { ReactNode } from 'react';
+
+import { isApiError } from '@/shared/api';
 import { CardText } from '@/shared/components/ui/card-text';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
 import { ProductDetailHeader } from './components/ProductDetailHeader';
 import { ProductDetailPromotionChips } from './components/ProductDetailPromotionChips';
-import {
-  getProductDetailFixture,
-  type ProductDetailPromotionTypes,
-} from './fixtures/product-detail-fixtures';
+import { useProductDetailQuery } from '../hooks/use-product-detail-query';
+import type { ProductDetailPromotionTypes, ProductDetailTypes } from '../model/product-detail';
 import * as S from './ProductDetailPage.css';
 
 type ProductDetailPageProps = Readonly<{
@@ -16,7 +17,16 @@ type ProductDetailPageProps = Readonly<{
   productId: string;
 }>;
 
-const ProductDetailImage = ({ imageAlt }: { imageAlt: string }) => {
+const ProductDetailImage = ({ imageAlt, imageUrl }: { imageAlt: string; imageUrl?: string }) => {
+  if (imageUrl != null) {
+    return (
+      <section aria-label={imageAlt} className={S.imageSectionClassName}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- backend thumbnail hosts are API-managed and not finalized for next/image remotePatterns yet. */}
+        <img alt={imageAlt} className={S.imageClassName} src={imageUrl} />
+      </section>
+    );
+  }
+
   return (
     <section aria-label={imageAlt} className={S.imageSectionClassName}>
       <div aria-hidden='true' className={S.imageFallbackClassName} />
@@ -61,19 +71,46 @@ const MartCommentSection = ({ comment }: { comment?: string }) => {
   return <MartCommentCard comment={comment} />;
 };
 
-export const ProductDetailPage = ({ marketId, productId }: ProductDetailPageProps) => {
-  const productDetail = getProductDetailFixture(productId);
-  const marketProductsHref = CLIENT_ROUTES.market(marketId);
+const ProductDetailStateMessage = ({
+  action,
+  description,
+  role = 'status',
+  title,
+}: Readonly<{
+  action?: ReactNode;
+  description: string;
+  role?: 'alert' | 'status';
+  title: string;
+}>) => {
+  return (
+    <section
+      aria-live={role === 'alert' ? 'assertive' : 'polite'}
+      className={S.stateSectionClassName}
+      role={role}
+    >
+      <p className={S.stateTitleClassName}>{title}</p>
+      <p className={S.stateDescriptionClassName}>{description}</p>
+      {action}
+    </section>
+  );
+};
 
-  if (productDetail == null) {
-    notFound();
+const getErrorDescription = (error: Error) => {
+  if (isApiError(error) && error.type === 'configuration') {
+    return '상품 정보를 불러오기 위한 API 설정이 필요합니다.';
   }
 
-  return (
-    <main className={S.pageClassName}>
-      <ProductDetailHeader fallbackHref={marketProductsHref} title={productDetail.headerTitle} />
+  if (isApiError(error) && error.message.length > 0) {
+    return error.message;
+  }
 
-      <ProductDetailImage imageAlt={productDetail.imageAlt} />
+  return '잠시 후 다시 시도해주세요.';
+};
+
+const ProductDetailContent = ({ productDetail }: { productDetail: ProductDetailTypes }) => {
+  return (
+    <>
+      <ProductDetailImage imageAlt={productDetail.imageAlt} imageUrl={productDetail.imageUrl} />
 
       <section aria-labelledby='product-detail-product-title' className={S.contentSectionClassName}>
         <div className={S.productSummaryClassName}>
@@ -90,6 +127,57 @@ export const ProductDetailPage = ({ marketId, productId }: ProductDetailPageProp
 
         <MartCommentSection comment={productDetail.martComment} />
       </section>
+    </>
+  );
+};
+
+export const ProductDetailPage = ({ marketId, productId }: ProductDetailPageProps) => {
+  const marketProductsHref = CLIENT_ROUTES.market(marketId);
+  const productDetailQuery = useProductDetailQuery({ marketId, productId });
+  const productDetail = productDetailQuery.data;
+  const headerTitle = productDetail?.headerTitle ?? '상품 상세';
+  const isProductDetailEmpty = productDetailQuery.isSuccess && productDetail == null;
+  const hasProductDetail = productDetailQuery.isSuccess && productDetail != null;
+
+  return (
+    <main className={S.pageClassName}>
+      <ProductDetailHeader fallbackHref={marketProductsHref} title={headerTitle} />
+
+      {productDetailQuery.isPending && (
+        <ProductDetailStateMessage
+          description='상품 상세 정보를 불러오고 있습니다.'
+          title='상품 정보를 불러오는 중'
+        />
+      )}
+
+      {productDetailQuery.isError && (
+        <ProductDetailStateMessage
+          action={
+            <button
+              className={S.retryButtonClassName}
+              disabled={productDetailQuery.isFetching}
+              type='button'
+              onClick={() => {
+                void productDetailQuery.refetch();
+              }}
+            >
+              다시 시도
+            </button>
+          }
+          description={getErrorDescription(productDetailQuery.error)}
+          role='alert'
+          title='상품 정보를 불러오지 못했습니다'
+        />
+      )}
+
+      {isProductDetailEmpty && (
+        <ProductDetailStateMessage
+          description='판매 중인 상품이 아니거나 상품 정보가 삭제되었습니다.'
+          title='상품 정보를 찾을 수 없습니다'
+        />
+      )}
+
+      {hasProductDetail && <ProductDetailContent productDetail={productDetail} />}
     </main>
   );
 };
