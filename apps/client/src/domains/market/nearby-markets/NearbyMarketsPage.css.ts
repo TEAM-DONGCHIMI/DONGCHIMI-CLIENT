@@ -98,8 +98,6 @@ export const mapSectionClassName = style({
 export const mapAreaClassName = style({
   width: '100%',
   height: '314px',
-  border: '0.707px solid #e5e7eb',
-  backgroundColor: '#e8f0e4',
 });
 
 export const mapStatusClassName = style({
