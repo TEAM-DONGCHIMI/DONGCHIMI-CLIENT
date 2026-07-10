@@ -157,8 +157,8 @@ export const EventDiscountProductsSection = ({
 
   const defaultVisibleCategories = categories.slice(0, firstRowCategoryCount);
   const hiddenCategories = categories.slice(firstRowCategoryCount);
-  const expandedCategories = isCategoryExpanded ? hiddenCategories : [];
   const hasHiddenCategories = hiddenCategories.length > 0;
+  const hasExpandedCategories = isCategoryExpanded && hasHiddenCategories;
   const MoreButtonIcon = isCategoryExpanded ? IcChevronUp : IcChevronDown;
 
   return (
@@ -209,7 +209,7 @@ export const EventDiscountProductsSection = ({
               {category.label}
             </button>
           ))}
-          {hasHiddenCategories ? (
+          {hasHiddenCategories && (
             <button
               aria-expanded={isCategoryExpanded}
               className={S.moreCategoryButtonClassName}
@@ -219,11 +219,11 @@ export const EventDiscountProductsSection = ({
               더보기
               <MoreButtonIcon aria-hidden='true' />
             </button>
-          ) : null}
+          )}
         </div>
-        {expandedCategories.length > 0 ? (
+        {hasExpandedCategories && (
           <div className={S.categoryExpandedGroupClassName}>
-            {expandedCategories.map((category) => (
+            {hiddenCategories.map((category) => (
               <button
                 key={category.categoryId}
                 aria-pressed={selectedCategoryId === category.categoryId}
@@ -235,7 +235,7 @@ export const EventDiscountProductsSection = ({
               </button>
             ))}
           </div>
-        ) : null}
+        )}
       </div>
 
       {products.length > 0 ? (
