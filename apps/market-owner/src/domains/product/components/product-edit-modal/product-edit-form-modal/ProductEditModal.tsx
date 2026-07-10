@@ -28,7 +28,7 @@ import { DateField } from '../../date-field';
 import { ProductCategoryDropdown } from '../../product-category-dropdown';
 import { ProductImageUploadField } from '../../product-image-upload-field';
 import { useProductEditModalTitleFocus } from '../hooks/use-product-edit-modal-title-focus';
-import { openProductEditOverlay } from '../open-product-edit-overlay';
+import { keepProductEditDialogOpen, openProductEditOverlay } from '../open-product-edit-overlay';
 import * as S from './ProductEditModal.css';
 
 interface ProductEditModalProps {
@@ -146,7 +146,7 @@ export const ProductEditModal = ({ open, product, variant, onClose }: ProductEdi
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => undefined}>
+    <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
       <Dialog.Content className={S.contentClassName}>
         <div className={S.containerClassName}>
           <Dialog.Title ref={titleRef} className={S.titleClassName} tabIndex={-1}>

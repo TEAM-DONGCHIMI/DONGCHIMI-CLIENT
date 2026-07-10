@@ -5,6 +5,8 @@ interface OpenProductEditOverlayParams {
   render: (params: { closeOverlay: () => void; isOpen: boolean }) => ReactNode;
 }
 
+export const keepProductEditDialogOpen = () => undefined;
+
 export const openProductEditOverlay = ({ render }: OpenProductEditOverlayParams) => {
   overlay.open(({ isOpen, close, unmount }) => {
     const closeOverlay = () => {

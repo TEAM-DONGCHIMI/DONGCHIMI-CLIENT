@@ -10,7 +10,7 @@ import {
 import { DateField } from '../../date-field';
 import { type ProductEditTypeTypes } from '../../product-edit-page-shell';
 import { useProductEditModalTitleFocus } from '../hooks/use-product-edit-modal-title-focus';
-import { openProductEditOverlay } from '../open-product-edit-overlay';
+import { keepProductEditDialogOpen, openProductEditOverlay } from '../open-product-edit-overlay';
 import * as S from './ProductEditPeriodModal.css';
 
 interface ProductEditPeriodModalProps {
@@ -69,7 +69,7 @@ export const ProductEditPeriodModal = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => undefined}>
+    <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
       <Dialog.Content className={S.contentClassName}>
         <div className={S.containerClassName}>
           <Dialog.Title ref={titleRef} className={S.titleClassName} tabIndex={-1}>
