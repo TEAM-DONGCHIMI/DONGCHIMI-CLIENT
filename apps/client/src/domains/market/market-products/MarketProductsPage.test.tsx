@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { renderWithProviders, screen, userEvent, within } from '@/test';
+import { act, renderWithProviders, screen, userEvent, waitFor, within } from '@/test';
 
 import { getCurrentBusinessCloseTime, MarketProductsPage } from './MarketProductsPage';
 import type { BusinessHourTypes } from './fixtures/market-products.fixture';
@@ -11,6 +11,26 @@ const router = {
   back: vi.fn(),
   push: vi.fn(),
 };
+
+let intersectionObserverCallback: IntersectionObserverCallback | undefined;
+let intersectionObserverOptions: IntersectionObserverInit | undefined;
+
+class IntersectionObserverMock {
+  readonly root = null;
+  readonly rootMargin: string;
+  readonly thresholds = [0];
+
+  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+    intersectionObserverCallback = callback;
+    intersectionObserverOptions = options;
+    this.rootMargin = options?.rootMargin ?? '0px';
+  }
+
+  disconnect = vi.fn();
+  observe = vi.fn();
+  takeRecords = vi.fn(() => []);
+  unobserve = vi.fn();
+}
 
 vi.mock('next/navigation', () => ({
   useRouter: () => router,
@@ -41,6 +61,13 @@ describe('MarketProductsPage', () => {
   beforeEach(() => {
     router.back.mockClear();
     router.push.mockClear();
+    intersectionObserverCallback = undefined;
+    intersectionObserverOptions = undefined;
+    vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('renders market leaflet sections', () => {
@@ -146,6 +173,68 @@ describe('MarketProductsPage', () => {
 
     expect(eventSection.getAllByRole('link')).toHaveLength(1);
     expect(eventSection.getByText('손질 고등어 1팩')).toBeInTheDocument();
+  });
+
+  it('appends the next event discount page when the load-more sentinel intersects', async () => {
+    renderMarketProductsPage();
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+
+    expect(eventSection.getAllByRole('link')).toHaveLength(9);
+
+    await waitFor(() => {
+      expect(intersectionObserverCallback).toBeTypeOf('function');
+    });
+
+    expect(intersectionObserverOptions).toMatchObject({
+      rootMargin: '0px 0px 240px',
+    });
+
+    act(() => {
+      intersectionObserverCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+      intersectionObserverCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+
+    await waitFor(() => {
+      expect(eventSection.getAllByRole('link')).toHaveLength(18);
+    });
+
+    expect(eventSection.getByText('양배추 1통')).toBeInTheDocument();
+    expect(eventSection.getByText('주방 수세미')).toBeInTheDocument();
+  });
+
+  it('resets event discount pagination when the category changes', async () => {
+    const user = userEvent.setup();
+
+    renderMarketProductsPage();
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+
+    await waitFor(() => {
+      expect(intersectionObserverCallback).toBeTypeOf('function');
+    });
+
+    act(() => {
+      intersectionObserverCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+
+    await waitFor(() => {
+      expect(eventSection.getAllByRole('link')).toHaveLength(18);
+    });
+
+    await user.click(eventSection.getByRole('button', { name: '정육·달걀' }));
+
+    expect(eventSection.getAllByRole('link')).toHaveLength(3);
+    expect(eventSection.queryByText('특란 30구')).not.toBeInTheDocument();
   });
 });
 

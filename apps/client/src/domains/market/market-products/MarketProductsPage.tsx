@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -31,6 +31,8 @@ type MarketProductsPageProps = Readonly<{
 }>;
 
 type OpenBusinessHourTypes = Extract<BusinessHourTypes, { isOpen: true }>;
+
+const INITIAL_EVENT_DISCOUNT_PAGE_COUNT = 1;
 
 const getTelHref = (phoneNumber: string) => `tel:${phoneNumber.replaceAll('-', '')}`;
 const getShareUrl = (slug: string) => `dongchimi.kr/${slug}`;
@@ -108,6 +110,9 @@ export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
   const [isTodaySpecialExpanded, setIsTodaySpecialExpanded] = useState(false);
   const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(EVENT_DISCOUNT_ALL_CATEGORY_ID);
+  const [loadedEventDiscountPageCount, setLoadedEventDiscountPageCount] = useState(
+    INITIAL_EVENT_DISCOUNT_PAGE_COUNT,
+  );
 
   const { eventDiscount, market, share, todaySpecial } = marketProductsFixture;
   const shareUrl = getShareUrl(share.slug);
@@ -121,14 +126,44 @@ export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
   const visibleTodaySpecialProducts = isTodaySpecialExpanded
     ? todaySpecial.products
     : todaySpecial.products.slice(0, DEFAULT_TODAY_SPECIAL_VISIBLE_COUNT);
+  const lastLoadedEventDiscountPage = eventDiscount.pages[loadedEventDiscountPageCount - 1];
+  const hasNextEventDiscountPage =
+    lastLoadedEventDiscountPage?.hasNext === true && lastLoadedEventDiscountPage.nextCursor != null;
+  const nextEventDiscountCursor = hasNextEventDiscountPage
+    ? lastLoadedEventDiscountPage.nextCursor
+    : null;
 
   const eventDiscountProducts = useMemo(() => {
+    const loadedEventDiscountProducts = eventDiscount.pages
+      .slice(0, loadedEventDiscountPageCount)
+      .flatMap((page) => page.products);
+
     if (selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID) {
-      return eventDiscount.products;
+      return loadedEventDiscountProducts;
     }
 
-    return eventDiscount.products.filter((product) => product.categoryId === selectedCategoryId);
-  }, [eventDiscount.products, selectedCategoryId]);
+    return loadedEventDiscountProducts.filter(
+      (product) => product.categoryId === selectedCategoryId,
+    );
+  }, [eventDiscount.pages, loadedEventDiscountPageCount, selectedCategoryId]);
+
+  const handleLoadNextEventDiscountPage = useCallback(() => {
+    setLoadedEventDiscountPageCount((currentPageCount) => {
+      return Math.min(currentPageCount + 1, eventDiscount.pages.length);
+    });
+  }, [eventDiscount.pages.length]);
+
+  const handleSelectEventDiscountCategory = useCallback(
+    (categoryId: string) => {
+      if (categoryId === selectedCategoryId) {
+        return;
+      }
+
+      setSelectedCategoryId(categoryId);
+      setLoadedEventDiscountPageCount(INITIAL_EVENT_DISCOUNT_PAGE_COUNT);
+    },
+    [selectedCategoryId],
+  );
 
   const handleConfirmCall = () => {
     window.location.href = telHref;
@@ -162,9 +197,12 @@ export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
 
           <EventDiscountProductsSection
             categories={eventDiscount.categories}
+            hasNextPage={hasNextEventDiscountPage}
             isCategoryExpanded={isCategoryExpanded}
             marketId={marketId}
-            onSelectCategory={setSelectedCategoryId}
+            nextCursor={nextEventDiscountCursor}
+            onLoadNextPage={handleLoadNextEventDiscountPage}
+            onSelectCategory={handleSelectEventDiscountCategory}
             onToggleCategoryExpanded={() =>
               setIsCategoryExpanded((previousValue) => !previousValue)
             }

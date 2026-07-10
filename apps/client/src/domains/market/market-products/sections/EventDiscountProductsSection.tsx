@@ -12,8 +12,11 @@ import * as S from '../MarketProductsPage.css';
 
 interface EventDiscountProductsSectionProps {
   categories: EventDiscountCategoryFixtureTypes[];
+  hasNextPage: boolean;
   isCategoryExpanded: boolean;
   marketId: string;
+  nextCursor: number | null;
+  onLoadNextPage: () => void;
   onSelectCategory: (categoryId: string) => void;
   onToggleCategoryExpanded: () => void;
   products: EventDiscountProductFixtureTypes[];
@@ -74,10 +77,64 @@ const getFlexGapPx = (element: HTMLElement) => {
   return Number.isFinite(parsedGap) ? parsedGap : 0;
 };
 
+const EVENT_DISCOUNT_PRELOAD_ROOT_MARGIN = '0px 0px 240px';
+
+const useEventDiscountInfiniteScroll = ({
+  hasNextPage,
+  nextCursor,
+  onLoadNextPage,
+}: Pick<EventDiscountProductsSectionProps, 'hasNextPage' | 'nextCursor' | 'onLoadNextPage'>) => {
+  const loadMoreSentinelRef = useRef<HTMLDivElement>(null);
+  const hasRequestedNextPageRef = useRef(false);
+
+  useEffect(() => {
+    hasRequestedNextPageRef.current = false;
+  }, [nextCursor]);
+
+  useEffect(() => {
+    const loadMoreSentinelElement = loadMoreSentinelRef.current;
+
+    if (
+      !hasNextPage ||
+      loadMoreSentinelElement == null ||
+      typeof IntersectionObserver === 'undefined'
+    ) {
+      return;
+    }
+
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        const isLoadMoreSentinelVisible = entries.some((entry) => entry.isIntersecting);
+
+        if (!isLoadMoreSentinelVisible || hasRequestedNextPageRef.current) {
+          return;
+        }
+
+        hasRequestedNextPageRef.current = true;
+        onLoadNextPage();
+      },
+      {
+        rootMargin: EVENT_DISCOUNT_PRELOAD_ROOT_MARGIN,
+      },
+    );
+
+    intersectionObserver.observe(loadMoreSentinelElement);
+
+    return () => {
+      intersectionObserver.disconnect();
+    };
+  }, [hasNextPage, nextCursor, onLoadNextPage]);
+
+  return loadMoreSentinelRef;
+};
+
 export const EventDiscountProductsSection = ({
   categories,
+  hasNextPage,
   isCategoryExpanded,
   marketId,
+  nextCursor,
+  onLoadNextPage,
   onSelectCategory,
   onToggleCategoryExpanded,
   products,
@@ -86,6 +143,11 @@ export const EventDiscountProductsSection = ({
 }: EventDiscountProductsSectionProps) => {
   const categoryListRef = useRef<HTMLDivElement>(null);
   const categoryMeasureRowRef = useRef<HTMLDivElement>(null);
+  const loadMoreSentinelRef = useEventDiscountInfiniteScroll({
+    hasNextPage,
+    nextCursor,
+    onLoadNextPage,
+  });
   const [firstRowCategoryCount, setFirstRowCategoryCount] = useState(visibleCategoryCount);
   const categoryLayoutSignature = categories
     .map((category) => `${category.categoryId}:${category.label}`)
@@ -254,6 +316,13 @@ export const EventDiscountProductsSection = ({
         </div>
       ) : (
         <p className={S.emptyTextClassName}>해당 카테고리에 등록된 상품이 없어요.</p>
+      )}
+      {hasNextPage && (
+        <div
+          aria-hidden='true'
+          className={S.eventDiscountLoadMoreSentinelClassName}
+          ref={loadMoreSentinelRef}
+        />
       )}
     </section>
   );

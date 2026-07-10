@@ -477,6 +477,11 @@ export const eventProductCardClassName = style({
   },
 });
 
+export const eventDiscountLoadMoreSentinelClassName = style({
+  width: '100%',
+  height: '1px',
+});
+
 export const emptyTextClassName = style({
   ...typography['body-3-regular'],
   margin: 0,
