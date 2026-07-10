@@ -3,14 +3,17 @@ import { style, styleVariants } from '@vanilla-extract/css';
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 export const pageClassName = style({
-  minHeight: '100%',
+  display: 'flex',
+  height: '100%',
+  minHeight: 0,
+  flexDirection: 'column',
+  overflow: 'hidden',
   backgroundColor: atomic.neutral[5],
   color: atomic.neutral[90],
 });
 
 export const scrollFixedHeaderClassName = style({
-  position: 'sticky',
-  top: 0,
+  flexShrink: 0,
   zIndex: 10,
   backgroundColor: atomic.neutral[5],
 });
@@ -90,7 +93,11 @@ export const categoryFilterClassName = style({
 });
 
 export const contentClassName = style({
+  flex: 1,
+  minHeight: 0,
   padding: '0 4rem 5.6rem',
+  overflowY: 'auto',
+  overscrollBehavior: 'contain',
 });
 
 export const dropdownMenuClassName = style({

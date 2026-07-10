@@ -193,7 +193,7 @@ describe('marketOwnerRoutes', () => {
     await user.click(screen.getAllByRole('button', { name: '등록한 상품 전체보기' })[0]);
 
     expect(
-      await screen.findByRole('heading', { name: '오늘의 특가 상품 수정' }),
+      await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
     ).toBeInTheDocument();
   });
 
@@ -206,7 +206,7 @@ describe('marketOwnerRoutes', () => {
     await user.click(screen.getAllByRole('button', { name: '상품 보기: 풀무원 콩나물 500g' })[0]);
 
     expect(
-      await screen.findByRole('heading', { name: '오늘의 특가 상품 수정' }),
+      await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
     ).toBeInTheDocument();
   });
 
@@ -218,7 +218,9 @@ describe('marketOwnerRoutes', () => {
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.click(screen.getAllByRole('button', { name: '등록한 상품 전체보기' })[1]);
 
-    expect(await screen.findByRole('heading', { name: '행사 할인 상품 수정' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
+    ).toBeInTheDocument();
   });
 
   it('navigates an event-discount product row to the edit page', async () => {
@@ -229,7 +231,9 @@ describe('marketOwnerRoutes', () => {
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.click(screen.getByRole('button', { name: '1위 상품 보기: 풀무원 콩나물 500g' }));
 
-    expect(await screen.findByRole('heading', { name: '행사 할인 상품 수정' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
+    ).toBeInTheDocument();
   });
 
   it('shows a completed toast when leaflet link copy succeeds', async () => {
@@ -287,7 +291,7 @@ describe('marketOwnerRoutes', () => {
     await user.click(await screen.findByRole('button', { name: /풀무원 콩나물 100g/ }));
 
     expect(
-      await screen.findByRole('heading', { name: '오늘의 특가 상품 수정' }),
+      await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
     ).toBeInTheDocument();
   });
 
@@ -320,7 +324,7 @@ describe('marketOwnerRoutes', () => {
   it.each([
     ['오늘의 특가 상품 등록하기', '오늘의 특가 상품을 등록하세요'],
     ['행사 할인 상품 등록하기', '등록한 파일을 확인해주세요'],
-    ['상품 수정하러 가기', '오늘의 특가 상품 수정'],
+    ['상품 수정하러 가기', '오늘의 특가 상품을 수정하세요'],
   ])('navigates the %s hero action to its work page', async (buttonName, headingName) => {
     const user = userEvent.setup();
 
@@ -342,7 +346,9 @@ describe('marketOwnerRoutes', () => {
   it('syncs edit sidebar and tab navigation through route state', async () => {
     renderRoute('/products/event-discount/edit');
 
-    expect(await screen.findByRole('heading', { name: '행사 할인 상품 수정' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '행사 할인 상품 수정' })).toHaveAttribute(
       'aria-current',
       'page',
