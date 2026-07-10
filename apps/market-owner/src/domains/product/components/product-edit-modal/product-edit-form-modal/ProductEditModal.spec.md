@@ -49,5 +49,5 @@
 
 - [x] product card edit action opens dialog
 - [x] opened dialog renders selected product values
-- [ ] category dropdown changes selected category
+- [x] category dropdown changes selected category
 - [x] today special one-day extension updates end date and can restore today-only date

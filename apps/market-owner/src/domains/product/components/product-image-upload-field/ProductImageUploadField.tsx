@@ -76,7 +76,7 @@ export const ProductImageUploadField = ({
         ) : (
           <span className={S.labelRecipe({ variant })}>{label}</span>
         )}
-        {description ? <p className={S.descriptionClassName}>{description}</p> : null}
+        {description && <p className={S.descriptionClassName}>{description}</p>}
       </div>
 
       {hasFileInput ? (
