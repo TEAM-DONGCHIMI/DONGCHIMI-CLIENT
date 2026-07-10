@@ -3,8 +3,10 @@ import { style } from '@vanilla-extract/css';
 import { atomic, typography } from '@dongchimi/design-system/tokens';
 
 export const rootClassName = style({
+  boxSizing: 'border-box',
   display: 'flex',
   width: '100%',
+  height: '6.4rem',
   minWidth: 0,
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -16,7 +18,14 @@ export const rootClassName = style({
   borderBottomLeftRadius: '1.2rem',
   padding: '1.6rem 2.4rem',
   overflowX: 'auto',
+  scrollbarWidth: 'none',
+  msOverflowStyle: 'none',
   backgroundColor: atomic.common[0],
+  selectors: {
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
+  },
 });
 
 export const contentClassName = style({

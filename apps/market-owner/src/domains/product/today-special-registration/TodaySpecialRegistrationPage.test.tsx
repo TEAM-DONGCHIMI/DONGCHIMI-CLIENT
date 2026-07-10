@@ -29,9 +29,9 @@ describe('TodaySpecialRegistrationPage', () => {
     renderTodaySpecialRegistrationPage();
 
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('채소·과일'));
+    await user.click(await screen.findByText('채소･과일'));
 
-    expect(screen.getByRole('button', { name: '채소·과일' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '채소･과일' })).toBeInTheDocument();
   });
 
   it('moves between product drafts without losing field values', async () => {
