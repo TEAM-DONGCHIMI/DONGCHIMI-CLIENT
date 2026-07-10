@@ -8,6 +8,7 @@ export const pageRootClassName = style({
   width: '100%',
   minWidth: 'max-content',
   minHeight: '100vh',
+  backgroundColor: atomic.neutral[5],
 });
 
 export const formContentClassName = style({
@@ -195,15 +196,18 @@ export const categoryTriggerErrorClassName = style({
 });
 
 export const categoryDropdownOverlayClassName = style({
-  position: 'fixed',
-  top: 'var(--today-special-category-dropdown-top)',
-  left: 'var(--today-special-category-dropdown-left)',
+  position: 'absolute',
+  top: 'calc(100% + 0.8rem)',
+  left: 0,
   zIndex: 1,
 });
 
 export const categoryDropdownClassName = style({
   width: '20.6rem',
+  maxHeight: 'var(--today-special-category-dropdown-max-height)',
   border: 0,
+  overflowX: 'hidden',
+  overflowY: 'auto',
 });
 
 export const categoryDropdownItemClassName = style({

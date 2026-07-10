@@ -1,12 +1,13 @@
-import { type CSSProperties, useCallback, useEffect, useRef } from 'react';
+import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import type { UseFormSetValue } from 'react-hook-form';
 import { overlay, useOverlayData } from 'overlay-kit';
-
-import { CategoryDropdownOverlay } from '../components/CategoryDropdownOverlay';
 import type { TodaySpecialRegistrationFormTypes } from '../model';
 
 const categoryDropdownId = 'today-special-product-category-dropdown';
 const categoryOverlayId = 'today-special-product-category-dropdown-overlay';
+const categoryDropdownGapPx = 8;
+const categoryDropdownBottomMarginPx = 39;
+const categoryDropdownMinHeightPx = 40;
 
 interface UseCategoryDropdownParams {
   currentIndex: number;
@@ -22,6 +23,7 @@ export const useCategoryDropdown = ({
   const overlayData = useOverlayData();
   const categoryTriggerRef = useRef<HTMLButtonElement>(null);
   const isCategoryDropdownOpen = Boolean(overlayData[categoryOverlayId]?.isOpen);
+  const [categoryDropdownStyle, setCategoryDropdownStyle] = useState<CSSProperties>({});
 
   const handleCategorySelect = useCallback(
     (category: string) => {
@@ -34,16 +36,24 @@ export const useCategoryDropdown = ({
     [currentIndex, setValue],
   );
 
-  const getCategoryDropdownOverlayStyle = () => {
+  const updateCategoryDropdownStyle = useCallback(() => {
     const triggerRect = categoryTriggerRef.current?.getBoundingClientRect();
+    const maxHeight =
+      triggerRect == null
+        ? categoryDropdownMinHeightPx
+        : Math.max(
+            categoryDropdownMinHeightPx,
+            window.innerHeight -
+              triggerRect.bottom -
+              categoryDropdownGapPx -
+              categoryDropdownBottomMarginPx,
+          );
 
-    return {
-      '--today-special-category-dropdown-left': `${triggerRect?.left ?? 0}px`,
-      '--today-special-category-dropdown-top': `${(triggerRect?.bottom ?? 0) + 8}px`,
-    } as CSSProperties;
-  };
+    setCategoryDropdownStyle({
+      '--today-special-category-dropdown-max-height': `${maxHeight}px`,
+    } as CSSProperties);
+  }, []);
 
-  // OverlayKit에 등록한 카테고리 드롭다운을 닫고 필요하면 category를 touched 처리
   const closeCategoryDropdown = useCallback(
     (shouldTouchCategory = true) => {
       if (!isCategoryDropdownOpen) {
@@ -60,27 +70,9 @@ export const useCategoryDropdown = ({
     [handleCategorySelect, isCategoryDropdownOpen, selectedCategory],
   );
 
-  // Trigger 위치 기준으로 OverlayKit에 실제 Dropdown UI를 렌더링
   const openCategoryDropdown = () => {
-    overlay.open(
-      ({ close, unmount }) => {
-        const closeDropdown = () => {
-          close();
-          unmount();
-        };
-
-        return (
-          <CategoryDropdownOverlay
-            id={categoryDropdownId}
-            onClose={closeDropdown}
-            onSelect={handleCategorySelect}
-            selectedCategory={selectedCategory}
-            style={getCategoryDropdownOverlayStyle()}
-          />
-        );
-      },
-      { overlayId: categoryOverlayId },
-    );
+    updateCategoryDropdownStyle();
+    overlay.open(() => null, { overlayId: categoryOverlayId });
   };
 
   useEffect(() => {
@@ -107,12 +99,16 @@ export const useCategoryDropdown = ({
 
     document.addEventListener('pointerdown', closeCategoryDropdownOnPointerDown);
     document.addEventListener('keydown', closeCategoryDropdownOnEscape);
+    window.addEventListener('resize', updateCategoryDropdownStyle);
+    document.addEventListener('scroll', updateCategoryDropdownStyle, true);
 
     return () => {
       document.removeEventListener('pointerdown', closeCategoryDropdownOnPointerDown);
       document.removeEventListener('keydown', closeCategoryDropdownOnEscape);
+      window.removeEventListener('resize', updateCategoryDropdownStyle);
+      document.removeEventListener('scroll', updateCategoryDropdownStyle, true);
     };
-  }, [closeCategoryDropdown, isCategoryDropdownOpen]);
+  }, [closeCategoryDropdown, isCategoryDropdownOpen, updateCategoryDropdownStyle]);
 
   useEffect(() => {
     return () => {
@@ -121,7 +117,6 @@ export const useCategoryDropdown = ({
     };
   }, []);
 
-  // Trigger 클릭시 OverlayKit Dropdown을 열거나 닫기
   const handleCategoryTriggerClick = () => {
     if (isCategoryDropdownOpen) {
       closeCategoryDropdown();
@@ -135,8 +130,11 @@ export const useCategoryDropdown = ({
     closeCategoryDropdown,
     productCategoryProps: {
       categoryDropdownId,
+      categoryDropdownStyle,
       categoryTriggerRef,
       isCategoryDropdownOpen,
+      onCategorySelect: handleCategorySelect,
+      onCloseCategoryDropdown: () => closeCategoryDropdown(false),
       onCategoryTriggerClick: handleCategoryTriggerClick,
     },
   };

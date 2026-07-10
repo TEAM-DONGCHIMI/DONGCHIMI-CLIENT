@@ -9,7 +9,7 @@ interface CategoryDropdownOverlayProps {
   onClose: () => void;
   onSelect: (category: string) => void;
   selectedCategory: string;
-  style: CSSProperties;
+  style?: CSSProperties;
 }
 
 export const CategoryDropdownOverlay = ({

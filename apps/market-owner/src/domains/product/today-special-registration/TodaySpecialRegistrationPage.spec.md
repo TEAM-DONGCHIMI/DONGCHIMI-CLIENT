@@ -37,8 +37,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `hooks/useCurrentProductField.ts`
   - 현재 상품의 text/date/price field change, blur, formatting, error message 계산을 담당합니다.
 - `hooks/useCategoryDropdown.tsx`
-  - category dropdown을 `overlay.open(({ close, unmount }) => <CategoryDropdownOverlay />)` 형태로 엽니다.
-  - trigger 위치를 기준으로 overlay dropdown 좌표를 계산하고, 외부 click과 Escape close 동작을 담당합니다.
+  - category dropdown open/close 상태를 OverlayKit overlay id로 관리합니다.
+  - trigger 위치를 기준으로 dropdown max height를 계산하고, 외부 click과 Escape close 동작을 담당합니다.
 - `hooks/useProductDraftNavigation.ts`
   - 상품 draft 추가, 삭제, 이전, 다음 이동을 담당합니다.
 - `sections/RegistrationTitleSection.tsx`
@@ -53,7 +53,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - visible `YYYY-MM-DD` field와 투명 native `type=date` input overlay를 결합합니다.
   - native date icon/text는 숨기고, `showPicker()`로 date picker를 엽니다.
 - `components/CategoryDropdownOverlay.tsx`
-  - OverlayKit 내부에서 실제 `Dropdown`, `Dropdown.Item` UI를 렌더링합니다.
+  - trigger wrapper 안에서 실제 `Dropdown`, `Dropdown.Item` UI를 렌더링합니다.
 - `model/product-form.types.ts`
   - schema inference 기반 form value와 text field 타입을 정의합니다.
 - `model/product-form.schema.ts`
@@ -71,7 +71,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - selected image: object URL preview 위에 `status-dimmer-hover` overlay와 camera icon을 표시합니다.
 - category empty: trigger에 `카테고리` placeholder를 표시합니다.
 - category open: dropdown을 trigger 하단에 표시하고 현재 선택된 item을 selected 상태로 표시합니다.
-- category overlay: trigger 위치 기준으로 dropdown을 표시하고, 외부 click 또는 Escape로 닫습니다.
+- category overlay: trigger 바로 아래에 dropdown을 표시하고, 외부 click 또는 Escape로 닫습니다.
 - multi product: 상품이 2개 이상이면 title에 `(현재/전체)`, 이전/다음 button, 삭제 button을 표시합니다.
 - disabled submit: 필수값이 비어 있거나 form completion 조건을 만족하지 않으면 `등록 완료`를 disabled 처리합니다.
 - field error: blur 또는 submit validation 이후 필드 아래에 icon과 error message를 표시합니다.

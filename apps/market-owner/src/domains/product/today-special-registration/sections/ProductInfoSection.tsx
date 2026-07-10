@@ -1,4 +1,10 @@
-import type { ChangeEventHandler, FocusEventHandler, MouseEventHandler, RefObject } from 'react';
+import type {
+  ChangeEventHandler,
+  CSSProperties,
+  FocusEventHandler,
+  MouseEventHandler,
+  RefObject,
+} from 'react';
 
 import { cn } from '@dongchimi/design-system/styles';
 import {
@@ -10,6 +16,7 @@ import {
 import { imageUploadInputAccept } from '@/shared/utils/image-upload.utils';
 
 import { ProductImageUploadField } from '../../components/product-image-upload-field';
+import { CategoryDropdownOverlay } from '../components/CategoryDropdownOverlay';
 import { FieldGroup } from '../components/FieldGroup';
 import {
   type TodaySpecialProductErrorMessageTypes,
@@ -19,8 +26,11 @@ import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface ProductInfoSectionProps {
   categoryDropdownId: string;
+  categoryDropdownStyle: CSSProperties;
   categoryTriggerRef: RefObject<HTMLButtonElement | null>;
   isCategoryDropdownOpen: boolean;
+  onCategorySelect: (category: string) => void;
+  onCloseCategoryDropdown: () => void;
   onCategoryTriggerClick: MouseEventHandler<HTMLButtonElement>;
   onDescriptionBlur: FocusEventHandler<HTMLInputElement>;
   onDescriptionChange: ChangeEventHandler<HTMLInputElement>;
@@ -33,8 +43,11 @@ interface ProductInfoSectionProps {
 
 export const ProductInfoSection = ({
   categoryDropdownId,
+  categoryDropdownStyle,
   categoryTriggerRef,
   isCategoryDropdownOpen,
+  onCategorySelect,
+  onCloseCategoryDropdown,
   onCategoryTriggerClick,
   onDescriptionBlur,
   onDescriptionChange,
@@ -105,6 +118,16 @@ export const ProductInfoSection = ({
                   <IcChevronDown aria-hidden='true' />
                 )}
               </button>
+
+              {isCategoryDropdownOpen && (
+                <CategoryDropdownOverlay
+                  id={categoryDropdownId}
+                  onClose={onCloseCategoryDropdown}
+                  onSelect={onCategorySelect}
+                  selectedCategory={product.category}
+                  style={categoryDropdownStyle}
+                />
+              )}
             </div>
             {productErrorMessages.category && (
               <p className={S.fieldErrorMessageClassName} id={categoryErrorId}>
