@@ -1,4 +1,5 @@
 import { useMemo, useState, type MouseEvent } from 'react';
+import { useToast } from '@dongchimi/shared/toast';
 import { overlay } from 'overlay-kit';
 
 import {
@@ -9,16 +10,18 @@ import {
 
 import type { RegistrationResultProduct } from '../fixtures';
 import {
+  CATEGORY_FILTER_DROPDOWN_ID,
+  CATEGORY_FILTER_DROPDOWN_OVERLAY_ID,
   CategoryFilterDropdown,
   ProductCategoryDropdown,
-  SORT_DROPDOWN_ID,
-  SORT_DROPDOWN_OVERLAY_ID,
   getAnchorRect,
   getProductMatchesCategoryFilter,
   type CategoryOptionTypes,
 } from '../components/RegistrationResultDropdown';
 import { RegistrationResultSectionLayout } from '../components/RegistrationResultSectionLayout';
-import { RegistrationResultTable, type ImagePreview } from '../components/RegistrationResultTable';
+import { RegistrationResultTable } from '../components/RegistrationResultTable';
+import { useRegistrationResultImagePreviews } from '../hooks/useRegistrationResultImagePreviews';
+import { useRegistrationResultPagination } from '../hooks/useRegistrationResultPagination';
 
 interface RegistrationResultSummary {
   completedCount: number;
@@ -38,24 +41,6 @@ const SEGMENT_LABELS: Record<UploadSegmentTypes, string> = {
   completed: '등록 완료',
   needsEdit: '수정 필요',
   total: '총 상품',
-};
-
-const readFileAsDataUrl = (file: File) => {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.addEventListener('load', () => {
-      if (typeof reader.result === 'string') {
-        resolve(reader.result);
-
-        return;
-      }
-
-      reject(new Error('이미지 파일을 읽지 못했습니다.'));
-    });
-    reader.addEventListener('error', () => reject(reader.error));
-    reader.readAsDataURL(file);
-  });
 };
 
 const getProductMatchesSearch = (
@@ -106,12 +91,6 @@ const getVisibleTotalCount = ({
   return totalCount;
 };
 
-const getPaginationPages = (totalCount: number, pageSize: number) => {
-  const pageCount = Math.max(1, Math.ceil(totalCount / pageSize));
-
-  return Array.from({ length: Math.min(pageCount, 2) }, (_, index) => index + 1);
-};
-
 export const RegistrationResultSection = ({
   pageSize,
   products,
@@ -119,12 +98,11 @@ export const RegistrationResultSection = ({
   onPrevious,
   onRegister,
 }: RegistrationResultSectionProps) => {
+  const toast = useToast();
   const [removedIds, setRemovedIds] = useState<ReadonlySet<string>>(new Set());
-  const [imagePreviews, setImagePreviews] = useState<ReadonlyMap<string, ImagePreview>>(new Map());
   const [productCategories, setProductCategories] = useState<ReadonlyMap<string, string>>(
     new Map(),
   );
-  const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<ReadonlySet<CategoryOptionTypes>>(
     new Set(),
@@ -132,6 +110,12 @@ export const RegistrationResultSection = ({
   const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(new Set());
   const [selectedSegment, setSelectedSegment] = useState<UploadSegmentTypes>('needsEdit');
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  const { deleteImagePreviews, imagePreviews, setImagePreview } =
+    useRegistrationResultImagePreviews({
+      onPreviewCreateError: () => {
+        toast.error('이미지 미리보기를 생성하지 못했습니다. 다시 시도해주세요.');
+      },
+    });
   const currentProducts = useMemo(() => {
     return products.filter((product) => !removedIds.has(product.id));
   }, [products, removedIds]);
@@ -160,54 +144,50 @@ export const RegistrationResultSection = ({
     });
   }, [currentProducts, productCategories, searchValue, selectedCategories, selectedSegment]);
 
-  const pages = getPaginationPages(filteredProducts.length, pageSize);
-  const lastPage = pages[pages.length - 1] ?? 1;
-  const visiblePage = Math.min(currentPage, lastPage);
-  const pageStartIndex = (visiblePage - 1) * pageSize;
-  const pageEndIndex = pageStartIndex + pageSize;
-  const pageProducts = filteredProducts.slice(pageStartIndex, pageEndIndex);
+  const hasActiveFilter = searchValue.trim().length > 0 || selectedCategories.size > 0;
+  const footerTotalCount = hasActiveFilter ? filteredProducts.length : visibleTotalCount;
+  const {
+    currentPage: visiblePage,
+    goToPage,
+    lastPage,
+    pageItems: pageProducts,
+    pages,
+    rangeEnd,
+    rangeStart,
+    resetPage,
+  } = useRegistrationResultPagination({
+    items: filteredProducts,
+    pageSize,
+    rangeTotalCount: footerTotalCount,
+  });
   const selectedCount = pageProducts.filter((product) => selectedIds.has(product.id)).length;
   const allVisibleSelected = pageProducts.length > 0 && selectedCount === pageProducts.length;
   const hasVisibleSelection = selectedCount > 0;
-  let footerTotalCount = visibleTotalCount;
-  let rangeStart = 0;
-  const hasActiveFilter = searchValue.trim().length > 0 || selectedCategories.size > 0;
-
-  if (hasActiveFilter) {
-    footerTotalCount = filteredProducts.length;
-  }
-
-  if (footerTotalCount > 0) {
-    rangeStart = pageStartIndex + 1;
-  }
-
-  const rangeEnd = Math.min(pageEndIndex, footerTotalCount);
 
   const handleSegmentChange = (nextSegment: UploadSegmentTypes) => {
     setSelectedSegment(nextSegment);
-    setCurrentPage(1);
+    resetPage();
     setSelectedIds(new Set());
   };
 
   const handleSearchValueChange = (nextSearchValue: string) => {
     setSearchValue(nextSearchValue);
-    setCurrentPage(1);
+    resetPage();
     setSelectedIds(new Set());
   };
 
   const handlePageChange = (nextPage: number) => {
-    if (nextPage < 1 || nextPage > lastPage) {
+    if (!goToPage(nextPage)) {
       return;
     }
 
-    setCurrentPage(nextPage);
     setSelectedIds(new Set());
   };
 
   const handleSortClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (sortDropdownOpen) {
-      overlay.close(SORT_DROPDOWN_OVERLAY_ID);
-      overlay.unmount(SORT_DROPDOWN_OVERLAY_ID);
+      overlay.close(CATEGORY_FILTER_DROPDOWN_OVERLAY_ID);
+      overlay.unmount(CATEGORY_FILTER_DROPDOWN_OVERLAY_ID);
       setSortDropdownOpen(false);
 
       return;
@@ -227,12 +207,12 @@ export const RegistrationResultSection = ({
           onDismiss={() => setSortDropdownOpen(false)}
           onSelectionChange={(nextSelectedCategories) => {
             setSelectedCategories(nextSelectedCategories);
-            setCurrentPage(1);
+            resetPage();
             setSelectedIds(new Set());
           }}
         />
       ),
-      { overlayId: SORT_DROPDOWN_OVERLAY_ID },
+      { overlayId: CATEGORY_FILTER_DROPDOWN_OVERLAY_ID },
     );
   };
 
@@ -266,15 +246,7 @@ export const RegistrationResultSection = ({
 
   const handleImageFileChange = (productId: string) => {
     return (file: File) => {
-      void readFileAsDataUrl(file).then((src) => {
-        setImagePreviews((previousImagePreviews) => {
-          const nextImagePreviews = new Map(previousImagePreviews);
-
-          nextImagePreviews.set(productId, { alt: file.name, src });
-
-          return nextImagePreviews;
-        });
-      });
+      setImagePreview(productId, file);
     };
   };
 
@@ -286,8 +258,9 @@ export const RegistrationResultSection = ({
 
       return nextRemovedIds;
     });
+    deleteImagePreviews(selectedIds);
     setSelectedIds(new Set());
-    setCurrentPage(1);
+    resetPage();
   };
 
   const handleSelectAll = () => {
@@ -344,7 +317,7 @@ export const RegistrationResultSection = ({
         searchValue={searchValue}
         selectedCount={selectedCount}
         selectedSegment={selectedSegment}
-        sortDropdownId={SORT_DROPDOWN_ID}
+        sortDropdownId={CATEGORY_FILTER_DROPDOWN_ID}
         sortOpen={sortDropdownOpen}
         totalCount={totalCount}
       />

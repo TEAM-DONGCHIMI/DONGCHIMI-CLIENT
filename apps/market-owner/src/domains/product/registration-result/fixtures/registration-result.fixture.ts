@@ -73,6 +73,6 @@ export const registrationResultFixture = {
   summary: {
     completedCount: 112,
     needsEditCount: 12,
-    totalCount: 128,
+    totalCount: 124,
   },
 };

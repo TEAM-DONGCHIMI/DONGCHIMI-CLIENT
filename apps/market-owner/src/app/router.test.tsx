@@ -2,6 +2,7 @@ import { RouterProvider, createMemoryRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
 
 import { render, screen } from '../test';
+import { AppProviders } from './AppProviders';
 import { marketOwnerRoutes } from './router';
 
 const renderRoute = (path: string) => {
@@ -9,7 +10,11 @@ const renderRoute = (path: string) => {
     initialEntries: [path],
   });
 
-  return render(<RouterProvider router={router} />);
+  return render(
+    <AppProviders>
+      <RouterProvider router={router} />
+    </AppProviders>,
+  );
 };
 
 describe('marketOwnerRoutes', () => {

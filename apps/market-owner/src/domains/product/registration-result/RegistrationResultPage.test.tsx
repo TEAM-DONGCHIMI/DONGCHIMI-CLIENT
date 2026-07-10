@@ -1,6 +1,7 @@
 import { RouterProvider, createMemoryRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
 
+import { AppProviders } from '@/app/AppProviders';
 import { render, screen, userEvent, within } from '@/test';
 import { RegistrationResultPage } from './RegistrationResultPage';
 
@@ -21,7 +22,11 @@ const renderPage = () => {
     },
   );
 
-  render(<RouterProvider router={router} />);
+  render(
+    <AppProviders>
+      <RouterProvider router={router} />
+    </AppProviders>,
+  );
 };
 
 describe('RegistrationResultPage', () => {

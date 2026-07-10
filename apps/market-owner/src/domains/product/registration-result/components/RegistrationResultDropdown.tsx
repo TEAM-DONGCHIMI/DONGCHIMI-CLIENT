@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState, type KeyboardEventHandler } from 'react';
 
 import { Dropdown } from '@dongchimi/design-system/components';
 
@@ -20,9 +20,12 @@ const PRODUCT_CATEGORY_OPTIONS = [ALL_CATEGORY_OPTION, ...CATEGORY_OPTIONS] as c
 const CATEGORY_DROPDOWN_WIDTH = 206;
 const CATEGORY_DROPDOWN_GAP = 8;
 const CATEGORY_DROPDOWN_SCREEN_MARGIN = 16;
+const CATEGORY_FILTER_DROPDOWN_HEIGHT = 452;
+const PRODUCT_CATEGORY_DROPDOWN_HEIGHT = 408;
 
-export const SORT_DROPDOWN_ID = 'registration-result-category-filter-dropdown';
-export const SORT_DROPDOWN_OVERLAY_ID = 'registration-result-sort-dropdown-overlay';
+export const CATEGORY_FILTER_DROPDOWN_ID = 'registration-result-category-filter-dropdown';
+export const CATEGORY_FILTER_DROPDOWN_OVERLAY_ID =
+  'registration-result-category-filter-dropdown-overlay';
 
 type ProductCategoryOptionTypes = (typeof PRODUCT_CATEGORY_OPTIONS)[number];
 export type CategoryOptionTypes = (typeof CATEGORY_OPTIONS)[number];
@@ -40,6 +43,7 @@ const productCategoryGroupMap: Record<string, CategoryOptionTypes> = {
   정육: '정육･달걀',
   채소: '채소･과일',
 };
+const categoryOptionSet: ReadonlySet<string> = new Set(CATEGORY_OPTIONS);
 
 export const getAnchorRect = (element: HTMLElement): AnchorRect => {
   const rect = element.getBoundingClientRect();
@@ -84,6 +88,10 @@ const getDropdownPositionStyle = (anchorRect: AnchorRect, dropdownHeight: number
 };
 
 const getProductCategoryGroup = (category: string): CategoryOptionTypes => {
+  if (categoryOptionSet.has(category)) {
+    return category as CategoryOptionTypes;
+  }
+
   return productCategoryGroupMap[category] ?? '기타';
 };
 
@@ -109,6 +117,37 @@ const getCategoryOptionSelected = (
   return selectedCategories.has(option);
 };
 
+const useDismissOnEscape = (isOpen: boolean, dismiss: () => void) => {
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        dismiss();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [dismiss, isOpen]);
+};
+
+const getBackdropKeyDownHandler = (dismiss: () => void): KeyboardEventHandler<HTMLDivElement> => {
+  return (event) => {
+    if (event.key !== 'Escape') {
+      return;
+    }
+
+    event.stopPropagation();
+    dismiss();
+  };
+};
+
 export const CategoryFilterDropdown = ({
   anchorRect,
   isOpen,
@@ -129,49 +168,51 @@ export const CategoryFilterDropdown = ({
   const [currentSelectedCategories, setCurrentSelectedCategories] = useState(
     () => new Set(selectedCategories),
   );
-
-  if (!isOpen) {
-    return null;
-  }
-
   const dismiss = () => {
     close();
     unmount();
     onDismiss();
   };
+  const handleBackdropKeyDown = getBackdropKeyDownHandler(dismiss);
+
+  useDismissOnEscape(isOpen, dismiss);
+
+  if (!isOpen) {
+    return null;
+  }
 
   const handleOptionClick = (option: ProductCategoryOptionTypes) => {
-    setCurrentSelectedCategories((previousSelectedCategories) => {
-      if (option === ALL_CATEGORY_OPTION) {
-        const nextSelectedCategories = new Set<CategoryOptionTypes>();
+    let nextSelectedCategories: Set<CategoryOptionTypes>;
 
-        onSelectionChange(nextSelectedCategories);
-
-        return nextSelectedCategories;
-      }
-
-      const nextSelectedCategories = new Set(previousSelectedCategories);
+    if (option === ALL_CATEGORY_OPTION) {
+      nextSelectedCategories = new Set<CategoryOptionTypes>();
+    } else {
+      nextSelectedCategories = new Set(currentSelectedCategories);
 
       if (nextSelectedCategories.has(option)) {
         nextSelectedCategories.delete(option);
       } else {
         nextSelectedCategories.add(option);
       }
+    }
 
-      onSelectionChange(nextSelectedCategories);
-
-      return nextSelectedCategories;
-    });
+    setCurrentSelectedCategories(nextSelectedCategories);
+    onSelectionChange(nextSelectedCategories);
   };
 
-  const positionStyle = getDropdownPositionStyle(anchorRect, 452);
+  const positionStyle = getDropdownPositionStyle(anchorRect, CATEGORY_FILTER_DROPDOWN_HEIGHT);
 
   return (
-    <div className={S.dropdownBackdropClassName} onClick={dismiss} role='presentation'>
+    <div
+      className={S.dropdownBackdropClassName}
+      onClick={dismiss}
+      onKeyDown={handleBackdropKeyDown}
+      role='presentation'
+    >
       <Dropdown
         aria-label='카테고리 정렬'
         className={S.dropdownPanelClassName}
-        id={SORT_DROPDOWN_ID}
+        id={CATEGORY_FILTER_DROPDOWN_ID}
         onClick={(event) => event.stopPropagation()}
         role='group'
         style={positionStyle}
@@ -210,18 +251,27 @@ export const ProductCategoryDropdown = ({
   unmount: () => void;
   onSelect: (category: CategoryOptionTypes) => void;
 }) => {
-  if (!isOpen) {
-    return null;
-  }
-
   const dismiss = () => {
     close();
     unmount();
   };
-  const positionStyle = getDropdownPositionStyle(anchorRect, 408);
+  const handleBackdropKeyDown = getBackdropKeyDownHandler(dismiss);
+
+  useDismissOnEscape(isOpen, dismiss);
+
+  if (!isOpen) {
+    return null;
+  }
+
+  const positionStyle = getDropdownPositionStyle(anchorRect, PRODUCT_CATEGORY_DROPDOWN_HEIGHT);
 
   return (
-    <div className={S.dropdownBackdropClassName} onClick={dismiss} role='presentation'>
+    <div
+      className={S.dropdownBackdropClassName}
+      onClick={dismiss}
+      onKeyDown={handleBackdropKeyDown}
+      role='presentation'
+    >
       <Dropdown
         aria-label='상품 카테고리'
         className={S.dropdownPanelClassName}

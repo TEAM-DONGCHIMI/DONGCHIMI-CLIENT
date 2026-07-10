@@ -30,13 +30,13 @@ export const headingContainerClassName = style({
 export const titleClassName = style({
   ...typography['heading-1-semibold'],
   margin: 0,
-  color: '#101828',
+  color: atomic.neutral[90],
 });
 
 export const descriptionClassName = style({
   ...typography['body-3-medium'],
   margin: 0,
-  color: '#6A7282',
+  color: atomic.neutral[60],
 });
 
 export const requiredMarkClassName = style({
@@ -115,7 +115,7 @@ export const headerCellClassName = style({
     },
     '&:nth-child(8)': {
       paddingLeft: '3.9rem',
-      color: '#6B7280',
+      color: atomic.neutral[60],
     },
   },
 });

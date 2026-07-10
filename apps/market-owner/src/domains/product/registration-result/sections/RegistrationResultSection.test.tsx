@@ -1,24 +1,30 @@
+import { ToastProvider } from '@dongchimi/shared/toast';
 import { OverlayProvider, overlay } from 'overlay-kit';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent, within } from '@/test';
 import { registrationResultFixture } from '../fixtures';
-import { RegistrationResultSection } from './RegistrationResultSection';
+import {
+  RegistrationResultSection,
+  type RegistrationResultSectionProps,
+} from './RegistrationResultSection';
 
-const renderSection = () => {
+const renderSection = (props: Partial<RegistrationResultSectionProps> = {}) => {
   const handlePrevious = vi.fn();
   const handleRegister = vi.fn();
 
   render(
-    <OverlayProvider>
-      <RegistrationResultSection
-        pageSize={registrationResultFixture.pageSize}
-        products={registrationResultFixture.products}
-        summary={registrationResultFixture.summary}
-        onPrevious={handlePrevious}
-        onRegister={handleRegister}
-      />
-    </OverlayProvider>,
+    <ToastProvider>
+      <OverlayProvider>
+        <RegistrationResultSection
+          pageSize={props.pageSize ?? registrationResultFixture.pageSize}
+          products={props.products ?? registrationResultFixture.products}
+          summary={props.summary ?? registrationResultFixture.summary}
+          onPrevious={handlePrevious}
+          onRegister={handleRegister}
+        />
+      </OverlayProvider>
+    </ToastProvider>,
   );
 
   return { handlePrevious, handleRegister };
@@ -34,7 +40,7 @@ describe('RegistrationResultSection', () => {
 
     expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
     expect(screen.getByText(/AI가 상품 정보를 분석했습니다/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '총 상품 128' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '총 상품 124' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '등록 완료 112' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '수정 필요 12' })).toHaveAttribute(
       'aria-current',
@@ -130,6 +136,51 @@ describe('RegistrationResultSection', () => {
 
     expect(sortButton).toHaveAttribute('aria-expanded', 'false');
     expect(screen.queryByRole('group', { name: '카테고리 정렬' })).not.toBeInTheDocument();
+  });
+
+  it('closes category filter dropdown with Escape', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    const sortButton = screen.getByRole('button', { name: '정렬' });
+
+    await user.click(sortButton);
+
+    expect(await screen.findByRole('group', { name: '카테고리 정렬' })).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+
+    expect(sortButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('group', { name: '카테고리 정렬' })).not.toBeInTheDocument();
+  });
+
+  it('renders every available pagination page without capping the list at two pages', () => {
+    const additionalNeedsEditProducts = Array.from({ length: 9 }, (_, index) => {
+      const productNumber = index + 13;
+
+      return {
+        category: '김치/반찬',
+        discountPeriod: '',
+        id: `needs-edit-${String(productNumber).padStart(3, '0')}`,
+        price: '',
+        productName: '',
+        promotionText: '',
+        status: 'needsEdit' as const,
+        statusReason: '판매가격 미입력',
+      };
+    });
+
+    renderSection({
+      products: [...registrationResultFixture.products, ...additionalNeedsEditProducts],
+      summary: {
+        completedCount: 112,
+        needsEditCount: 21,
+        totalCount: 133,
+      },
+    });
+
+    expect(screen.getByRole('button', { name: '3 페이지' })).toBeInTheDocument();
   });
 
   it('opens product category dropdown and updates the row category', async () => {
