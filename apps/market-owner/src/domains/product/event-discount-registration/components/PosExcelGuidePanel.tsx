@@ -1,21 +1,16 @@
 import { IcClose } from '@dongchimi/design-system/icons';
 
-import type { registrationMethodFixture } from '../fixtures';
+import { usePosGuideModalBehavior } from '../hooks/usePosGuideModalBehavior';
 import * as S from './PosExcelGuidePanel.css';
-import { usePosGuideModalBehavior } from './usePosGuideModalBehavior';
-
-type PosGuideFixtureTypes = typeof registrationMethodFixture.posGuide;
 
 export interface PosExcelGuidePanelProps {
-  open: boolean;
-  posGuide: PosGuideFixtureTypes;
   onClose: () => void;
+  open: boolean;
 }
 
 const POS_GUIDE_TITLE_ID = 'pos-excel-guide-title';
-const GUIDE_IMAGE_SIZE_KEYS = ['large', 'medium', 'small'] as const;
 
-export const PosExcelGuidePanel = ({ open, posGuide, onClose }: PosExcelGuidePanelProps) => {
+export const PosExcelGuidePanel = ({ open, onClose }: PosExcelGuidePanelProps) => {
   const { dialogRef, initialFocusRef, overlayRef } = usePosGuideModalBehavior({ open, onClose });
 
   if (!open) {
@@ -44,25 +39,34 @@ export const PosExcelGuidePanel = ({ open, posGuide, onClose }: PosExcelGuidePan
 
         <div className={S.contentClassName}>
           <h2 className={S.titleClassName} id={POS_GUIDE_TITLE_ID}>
-            {posGuide.title}
+            {'POS에서 엑셀 파일을\n이렇게 다운 받으시면 돼요.'}
           </h2>
 
           <div className={S.imageListClassName}>
-            {posGuide.steps.map((step, index) => {
-              const imageSizeKey = GUIDE_IMAGE_SIZE_KEYS[index] ?? 'small';
-
-              return (
-                <span
-                  aria-label={`${step.title}: ${step.description}`}
-                  className={[
-                    S.guideImagePlaceholderClassName,
-                    S.guideImagePlaceholderHeightClassNames[imageSizeKey],
-                  ].join(' ')}
-                  key={step.title}
-                  role='img'
-                />
-              );
-            })}
+            <span
+              aria-label='POS에서 엑셀 파일 다운로드: 상품관리 또는 판매관리 화면에서 엑셀/CSV 추출 메뉴를 선택해주세요.'
+              className={[
+                S.guideImagePlaceholderClassName,
+                S.guideImagePlaceholderHeightClassNames.large,
+              ].join(' ')}
+              role='img'
+            />
+            <span
+              aria-label='CSV 또는 엑셀 파일 저장: 다운로드한 파일을 .xlsx 또는 .csv 형식으로 저장해주세요.'
+              className={[
+                S.guideImagePlaceholderClassName,
+                S.guideImagePlaceholderHeightClassNames.medium,
+              ].join(' ')}
+              role='img'
+            />
+            <span
+              aria-label='동치미에 파일 업로드: 저장한 파일을 행사 할인 상품 등록 홈에서 업로드해주세요.'
+              className={[
+                S.guideImagePlaceholderClassName,
+                S.guideImagePlaceholderHeightClassNames.small,
+              ].join(' ')}
+              role='img'
+            />
           </div>
         </div>
       </div>

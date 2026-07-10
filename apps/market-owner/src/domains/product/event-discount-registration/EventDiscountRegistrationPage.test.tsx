@@ -3,7 +3,6 @@ import { ToastProvider } from '@dongchimi/shared/toast';
 import { describe, expect, it } from 'vitest';
 
 import { EventDiscountRegistrationPage } from './EventDiscountRegistrationPage';
-import { registrationMethodFixture } from './fixtures';
 
 const posGuideDialogName = /POS에서 엑셀 파일을\s+이렇게 다운 받으시면 돼요\./;
 
@@ -81,6 +80,27 @@ describe('EventDiscountRegistrationPage', () => {
     expect(screen.getByRole('button', { name: '파일 업로드' })).toBeEnabled();
   });
 
+  it('clears the uploaded file when file confirmation is canceled', async () => {
+    const user = userEvent.setup();
+    const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderEventDiscountRegistrationPage();
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    await user.upload(screen.getByLabelText('파일 선택'), excelFile);
+    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    expect(screen.getByRole('heading', { name: '상품 등록' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+
+    expect(screen.getByRole('button', { name: '파일 업로드' })).toBeDisabled();
+    expect(screen.getByText('지원 파일은 .xlsx, .csv예요.')).toBeInTheDocument();
+  });
+
   it('renders toast feedback and POS guide panel from method actions', async () => {
     const user = userEvent.setup();
 
@@ -90,7 +110,7 @@ describe('EventDiscountRegistrationPage', () => {
 
     const successToast = screen.getByRole('status');
 
-    expect(successToast).toHaveTextContent(registrationMethodFixture.toast.downloadSuccess);
+    expect(successToast).toHaveTextContent('엑셀 양식 다운로드 완료');
     expect(successToast.querySelector('svg')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'POS에서 엑셀 파일 받는 방법 보기' }));

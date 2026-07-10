@@ -1,24 +1,18 @@
-import { useState, type ChangeEventHandler, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { IcCircleCheckFill, IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader, UploadModal } from '@/shared/components';
 
 import { PosExcelGuidePanel } from './components';
-import {
-  fileAnalysisConfirmFixture,
-  fileAnalysisProgressFixtures,
-  registrationMethodFixture,
-} from './fixtures';
+import { fileAnalysisConfirmFixture, fileAnalysisProgressFixtures } from './fixtures';
+import { useExcelUploadFlow } from './hooks/useExcelUploadFlow';
 import {
   FileAnalysisConfirmSection,
   FileAnalysisProgressSection,
   RegistrationMethodSection,
 } from './sections';
 import * as S from './EventDiscountRegistrationPage.css';
-
-type EventDiscountRegistrationViewTypes = 'method' | 'confirm' | 'progress';
-type ExcelUploadStateTypes = 'default' | 'upload';
 
 const EXCEL_UPLOAD_ACCEPT = '.xlsx,.csv';
 const ACTION_FEEDBACK_TOAST_ID = 'event-discount-registration-action-feedback';
@@ -31,80 +25,39 @@ const toastIconProps = {
 
 export const EventDiscountRegistrationPage = () => {
   const toast = useToast();
-  const [registrationView, setRegistrationView] =
-    useState<EventDiscountRegistrationViewTypes>('method');
-  const [isExcelUploadModalOpen, setIsExcelUploadModalOpen] = useState(false);
-  const [excelUploadState, setExcelUploadState] = useState<ExcelUploadStateTypes>('default');
-  const [selectedExcelFileName, setSelectedExcelFileName] = useState<string>();
-  const [uploadedExcelFileName, setUploadedExcelFileName] = useState<string>();
   const [isPosGuideOpen, setIsPosGuideOpen] = useState(false);
-  const shouldShowMethod =
-    registrationView === 'method' ||
-    (registrationView === 'confirm' && uploadedExcelFileName == null);
-  const shouldShowProgress = registrationView === 'progress';
-  const headerLabels = shouldShowMethod
-    ? {
-        currentLabel: '행사 할인 상품 등록',
-        parentLabel: '홈',
-      }
-    : {
-        currentLabel: '등록 파일 분석',
-        parentLabel: '행사 할인 상품 등록',
-      };
-
-  const resetExcelUploadModal = () => {
-    setExcelUploadState('default');
-    setSelectedExcelFileName(undefined);
-  };
-
-  const closeExcelUploadModal = () => {
-    setIsExcelUploadModalOpen(false);
-    resetExcelUploadModal();
-  };
-
-  const handleExcelUploadModalOpenChange = (open: boolean) => {
-    setIsExcelUploadModalOpen(open);
-
-    if (!open) {
-      resetExcelUploadModal();
-    }
-  };
-
-  const handleOpenExcelUpload = () => {
-    resetExcelUploadModal();
-    setIsExcelUploadModalOpen(true);
-  };
-
-  const handleExcelFileChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    const file = event.currentTarget.files?.[0];
-
-    if (file == null) {
-      return;
-    }
-
-    setSelectedExcelFileName(file.name);
-    setExcelUploadState('upload');
-  };
-
-  const handleUploadExcelFile = () => {
-    if (excelUploadState !== 'upload' || selectedExcelFileName == null) {
-      return;
-    }
-
-    setUploadedExcelFileName(selectedExcelFileName);
-    closeExcelUploadModal();
-    setRegistrationView('confirm');
-  };
+  const {
+    cancelFileAnalysisConfirmation,
+    cancelFileAnalysisProgress,
+    excelUploadModal,
+    handleExcelFileChange,
+    handleExcelUploadModalOpenChange,
+    openExcelUpload,
+    registrationView,
+    startFileAnalysis,
+    uploadExcelFile,
+    uploadedExcelFileName,
+  } = useExcelUploadFlow();
+  const headerLabels =
+    registrationView === 'method'
+      ? {
+          currentLabel: '행사 할인 상품 등록',
+          parentLabel: '홈',
+        }
+      : {
+          currentLabel: '등록 파일 분석',
+          parentLabel: '행사 할인 상품 등록',
+        };
 
   const handleDownloadExcelTemplate = () => {
-    toast.completed(registrationMethodFixture.toast.downloadSuccess, {
+    toast.completed('엑셀 양식 다운로드 완료', {
       id: ACTION_FEEDBACK_TOAST_ID,
       icon: <IcCircleCheckFill {...toastIconProps} />,
     });
   };
 
   const handleUploadLeaflet = () => {
-    toast.error(registrationMethodFixture.toast.leafletUnavailable, {
+    toast.error('아직 준비중인 기능이에요.', {
       id: ACTION_FEEDBACK_TOAST_ID,
       icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
     });
@@ -112,20 +65,19 @@ export const EventDiscountRegistrationPage = () => {
 
   let registrationContent: ReactNode = null;
 
-  if (shouldShowMethod) {
+  if (registrationView === 'method') {
     registrationContent = (
       <RegistrationMethodSection
-        fixture={registrationMethodFixture}
         onDownloadExcelTemplate={handleDownloadExcelTemplate}
-        onOpenExcelUpload={handleOpenExcelUpload}
+        onOpenExcelUpload={openExcelUpload}
         onOpenPosGuide={() => setIsPosGuideOpen(true)}
         onUploadLeaflet={handleUploadLeaflet}
       />
     );
-  } else if (shouldShowProgress) {
+  } else if (registrationView === 'progress') {
     registrationContent = (
       <FileAnalysisProgressSection
-        onCancel={() => setRegistrationView('confirm')}
+        onCancel={cancelFileAnalysisProgress}
         progressPercentage={fileAnalysisProgressFixtures.processing.progressPercentage}
         steps={fileAnalysisProgressFixtures.processing.steps}
       />
@@ -135,8 +87,8 @@ export const EventDiscountRegistrationPage = () => {
       <FileAnalysisConfirmSection
         analysisItems={fileAnalysisConfirmFixture.analysisItems}
         fileName={uploadedExcelFileName}
-        onCancel={() => setRegistrationView('method')}
-        onStartAnalysis={() => setRegistrationView('progress')}
+        onCancel={cancelFileAnalysisConfirmation}
+        onStartAnalysis={startFileAnalysis}
       />
     );
   }
@@ -154,33 +106,21 @@ export const EventDiscountRegistrationPage = () => {
       <UploadModal
         accept={EXCEL_UPLOAD_ACCEPT}
         className={S.excelUploadModalClassName}
-        description={
-          excelUploadState === 'upload'
-            ? registrationMethodFixture.excelUploadModal.description
-            : undefined
-        }
-        heading={registrationMethodFixture.excelUploadModal.heading}
+        description={excelUploadModal.state === 'upload' ? '선택한 파일' : undefined}
+        heading='엑셀 파일 업로드'
         fileSelectTooltipLabel={
-          excelUploadState === 'default'
-            ? registrationMethodFixture.excelUploadModal.fileSelectTooltipLabel
-            : undefined
+          excelUploadModal.state === 'default' ? '지원 파일은 .xlsx, .csv예요.' : undefined
         }
-        label={registrationMethodFixture.excelUploadModal.defaultLabel}
+        label={'상품이 등록된 엑셀 파일을 선택해주세요.\n업로드하면 상품이 자동으로 등록됩니다.'}
         onFileChange={handleExcelFileChange}
         onOpenChange={handleExcelUploadModalOpenChange}
-        onUpload={handleUploadExcelFile}
-        open={isExcelUploadModalOpen}
-        selectedFileText={
-          selectedExcelFileName ?? registrationMethodFixture.excelUploadModal.selectedFileFallback
-        }
-        state={excelUploadState}
+        onUpload={uploadExcelFile}
+        open={excelUploadModal.open}
+        selectedFileText={excelUploadModal.selectedFileName ?? '선택된 파일이 없습니다.'}
+        state={excelUploadModal.state}
       />
 
-      <PosExcelGuidePanel
-        onClose={() => setIsPosGuideOpen(false)}
-        open={isPosGuideOpen}
-        posGuide={registrationMethodFixture.posGuide}
-      />
+      <PosExcelGuidePanel onClose={() => setIsPosGuideOpen(false)} open={isPosGuideOpen} />
     </main>
   );
 };

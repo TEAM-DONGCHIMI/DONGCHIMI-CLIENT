@@ -1,13 +1,11 @@
 import { render, screen, userEvent, within } from '@/test';
 import { describe, expect, it, vi } from 'vitest';
 
-import { registrationMethodFixture } from '../fixtures';
 import { PosExcelGuidePanel } from './PosExcelGuidePanel';
 
 const defaultProps = {
   onClose: vi.fn(),
   open: true,
-  posGuide: registrationMethodFixture.posGuide,
 };
 
 const renderPosExcelGuidePanel = (
@@ -35,14 +33,22 @@ describe('PosExcelGuidePanel', () => {
     expect(within(panel).getByRole('heading', { name: /POS에서 엑셀 파일을/ })).toHaveTextContent(
       'POS에서 엑셀 파일을 이렇게 다운 받으시면 돼요.',
     );
-    expect(within(panel).getAllByRole('img')).toHaveLength(
-      registrationMethodFixture.posGuide.steps.length,
-    );
-    registrationMethodFixture.posGuide.steps.forEach((step) => {
-      expect(
-        within(panel).getByRole('img', { name: `${step.title}: ${step.description}` }),
-      ).toBeInTheDocument();
-    });
+    expect(within(panel).getAllByRole('img')).toHaveLength(3);
+    expect(
+      within(panel).getByRole('img', {
+        name: 'POS에서 엑셀 파일 다운로드: 상품관리 또는 판매관리 화면에서 엑셀/CSV 추출 메뉴를 선택해주세요.',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(panel).getByRole('img', {
+        name: 'CSV 또는 엑셀 파일 저장: 다운로드한 파일을 .xlsx 또는 .csv 형식으로 저장해주세요.',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(panel).getByRole('img', {
+        name: '동치미에 파일 업로드: 저장한 파일을 행사 할인 상품 등록 홈에서 업로드해주세요.',
+      }),
+    ).toBeInTheDocument();
   });
 
   it('moves focus to the close button when opened', () => {

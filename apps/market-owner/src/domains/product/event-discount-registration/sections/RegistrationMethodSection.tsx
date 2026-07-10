@@ -1,13 +1,9 @@
 import { Button, Flex, LineButton } from '@dongchimi/design-system/components';
 import { IcDownload, IcUploadSizeSmallColor0 } from '@dongchimi/design-system/icons';
 
-import type { registrationMethodFixture } from '../fixtures';
 import * as S from './RegistrationMethodSection.css';
 
-type RegistrationMethodFixtureTypes = typeof registrationMethodFixture;
-
 export interface RegistrationMethodSectionProps {
-  fixture: Pick<RegistrationMethodFixtureTypes, 'excel' | 'leaflet'>;
   onDownloadExcelTemplate: () => void;
   onOpenExcelUpload: () => void;
   onOpenPosGuide: () => void;
@@ -18,25 +14,12 @@ const registrationMethodTitleId = 'registration-method-title';
 const registrationMethodExcelTitleId = 'registration-method-excel-title';
 const registrationMethodLeafletTitleId = 'registration-method-leaflet-title';
 
-const DescriptionLines = ({ lines }: { lines: readonly string[] }) => (
-  <>
-    {lines.map((line) => (
-      <span className={S.descriptionLineClassName} key={line}>
-        {line}
-      </span>
-    ))}
-  </>
-);
-
 export const RegistrationMethodSection = ({
-  fixture,
   onDownloadExcelTemplate,
   onOpenExcelUpload,
   onOpenPosGuide,
   onUploadLeaflet,
 }: RegistrationMethodSectionProps) => {
-  const { excel, leaflet } = fixture;
-
   return (
     <Flex
       as='section'
@@ -61,10 +44,13 @@ export const RegistrationMethodSection = ({
           <span aria-hidden='true' className={S.imagePlaceholderClassName} />
           <Flex align='center' className={S.cardTextGroupClassName} direction='column'>
             <h2 className={S.cardTitleClassName} id={registrationMethodExcelTitleId}>
-              {excel.title}
+              엑셀 파일 업로드
             </h2>
             <p className={S.cardDescriptionClassName}>
-              <DescriptionLines lines={excel.descriptionLines} />
+              <span className={S.descriptionLineClassName}>엑셀 파일 업로드를 통해</span>
+              <span className={S.descriptionLineClassName}>
+                여러 상품을 한 번에 등록할 수 있어요.
+              </span>
             </p>
           </Flex>
 
@@ -76,7 +62,7 @@ export const RegistrationMethodSection = ({
                 onClick={onOpenExcelUpload}
                 size='small'
               >
-                {excel.uploadButtonLabel}
+                엑셀 업로드
               </Button>
               <Button
                 className={S.secondaryActionButtonClassName}
@@ -86,17 +72,19 @@ export const RegistrationMethodSection = ({
                 size='small'
                 variant='outlined'
               >
-                {excel.downloadButtonLabel}
+                엑셀 양식 다운로드
               </Button>
               <LineButton className={S.guideLineButtonClassName} onClick={onOpenPosGuide}>
-                {excel.guideLinkLabel}
+                POS에서 엑셀 파일 받는 방법 보기
               </LineButton>
             </Flex>
           </Flex>
 
           <Flex align='center' className={S.supportGroupClassName} direction='column'>
-            <span className={S.supportTextClassName}>{excel.supportedFormat}</span>
-            <span className={S.helperTextClassName}>{excel.helperText}</span>
+            <span className={S.supportTextClassName}>지원 형식: .xlsx, .csv</span>
+            <span className={S.helperTextClassName}>
+              *아래 양식에 맞춘 순서대로 상품이 등록됩니다.
+            </span>
           </Flex>
         </Flex>
 
@@ -111,10 +99,13 @@ export const RegistrationMethodSection = ({
           <span aria-hidden='true' className={S.imagePlaceholderClassName} />
           <Flex align='center' className={S.cardTextGroupClassName} direction='column'>
             <h2 className={S.cardTitleClassName} id={registrationMethodLeafletTitleId}>
-              {leaflet.title}
+              전단지 업로드
             </h2>
             <p className={S.cardDescriptionClassName}>
-              <DescriptionLines lines={leaflet.descriptionLines} />
+              <span className={S.descriptionLineClassName}>전단 이미지를 업로드하면</span>
+              <span className={S.descriptionLineClassName}>
+                AI가 상품 정보를 자동으로 등록해드려요.
+              </span>
             </p>
           </Flex>
 
@@ -125,12 +116,12 @@ export const RegistrationMethodSection = ({
               onClick={onUploadLeaflet}
               size='small'
             >
-              {leaflet.uploadButtonLabel}
+              전단지 업로드
             </Button>
           </Flex>
 
           <Flex align='center' className={S.supportGroupClassName} direction='column'>
-            <span className={S.supportTextClassName}>{leaflet.supportedFormat}</span>
+            <span className={S.supportTextClassName}>지원 형식: jpg, jpeg, png</span>
           </Flex>
         </Flex>
       </Flex>

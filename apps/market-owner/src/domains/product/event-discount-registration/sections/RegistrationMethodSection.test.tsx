@@ -1,11 +1,9 @@
 import { render, screen, userEvent } from '@/test';
 import { describe, expect, it, vi } from 'vitest';
 
-import { registrationMethodFixture } from '../fixtures';
 import { RegistrationMethodSection } from './RegistrationMethodSection';
 
 const defaultProps = {
-  fixture: registrationMethodFixture,
   onDownloadExcelTemplate: vi.fn(),
   onOpenExcelUpload: vi.fn(),
   onOpenPosGuide: vi.fn(),
@@ -19,19 +17,15 @@ const renderRegistrationMethodSection = (
 };
 
 describe('RegistrationMethodSection', () => {
-  it('renders registration method cards from fixture copy', () => {
+  it('renders registration method cards', () => {
     renderRegistrationMethodSection();
 
     expect(screen.getByRole('heading', { name: '상품 등록' })).toBeInTheDocument();
     expect(screen.getByText('상품을 등록할 방식을 선택해주세요.')).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: registrationMethodFixture.excel.title }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: registrationMethodFixture.leaflet.title }),
-    ).toBeInTheDocument();
-    expect(screen.getByText(registrationMethodFixture.excel.supportedFormat)).toBeInTheDocument();
-    expect(screen.getByText(registrationMethodFixture.leaflet.supportedFormat)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '전단지 업로드' })).toBeInTheDocument();
+    expect(screen.getByText('지원 형식: .xlsx, .csv')).toBeInTheDocument();
+    expect(screen.getByText('지원 형식: jpg, jpeg, png')).toBeInTheDocument();
   });
 
   it('calls entry point callbacks from each action', async () => {
@@ -48,18 +42,10 @@ describe('RegistrationMethodSection', () => {
       onUploadLeaflet: handleUploadLeaflet,
     });
 
-    await user.click(
-      screen.getByRole('button', { name: registrationMethodFixture.excel.uploadButtonLabel }),
-    );
-    await user.click(
-      screen.getByRole('button', { name: registrationMethodFixture.excel.downloadButtonLabel }),
-    );
-    await user.click(
-      screen.getByRole('button', { name: registrationMethodFixture.excel.guideLinkLabel }),
-    );
-    await user.click(
-      screen.getByRole('button', { name: registrationMethodFixture.leaflet.uploadButtonLabel }),
-    );
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    await user.click(screen.getByRole('button', { name: '엑셀 양식 다운로드' }));
+    await user.click(screen.getByRole('button', { name: 'POS에서 엑셀 파일 받는 방법 보기' }));
+    await user.click(screen.getByRole('button', { name: '전단지 업로드' }));
 
     expect(handleOpenExcelUpload).toHaveBeenCalledTimes(1);
     expect(handleDownloadExcelTemplate).toHaveBeenCalledTimes(1);

@@ -31,6 +31,7 @@
 - `RegistrationMethodSection` is page-local because upload method copy, CTA behavior, POS guide entry, and toast feedback are tied to this registration flow.
 - `PosExcelGuidePanel` is page-local because its title and image-only placeholder surfaces are specific to the event discount registration upload guide.
 - `usePosGuideModalBehavior` stays page-local because the POS guide is an event discount registration specific modal with its own drawer positioning and modal behavior contract.
+- `useExcelUploadFlow` stays page-local because it owns only the excel upload modal and file-analysis view transitions for this route.
 - App-shared `UploadModal` is reused for the excel upload modal default/upload states.
 - Shared `ToastProvider`/`useToast` runtime is reused for action feedback while design-system `Toast` remains the rendered UI.
 - `FileAnalysisConfirmSection` and `FileAnalysisProgressSection` remain page-local flow steps for the uploaded file confirmation and AI analysis progress.
@@ -65,9 +66,9 @@
 - query: none
 - mutation: none
 - fixture:
-  - `registrationMethodFixture`
   - `fileAnalysisConfirmFixture`
   - `fileAnalysisProgressFixtures`
+- static registration-method, upload-modal, POS guide, and toast copy is colocated with the component that renders or triggers it.
 - accepted excel extensions shown to users: `.xlsx`, `.csv`
 - model: none
 
@@ -82,7 +83,7 @@
 - The page does not perform client-side extension blocking in this publishing issue. Any selected local file moves the modal to upload state so the user can confirm the selected file name.
 - File format validation and server/API upload failure mapping are follow-up integration concerns.
 - Upload success is UI-only until API integration: clicking enabled `파일 업로드` stores the selected file name and switches to confirmation.
-- Confirmation `취소` returns to the method view.
+- Confirmation `취소` clears the uploaded file state and returns to the method view.
 - `분석 시작` switches to progress view.
 - Progress `취소` returns to confirmation view.
 - `엑셀 양식 다운로드` shows the success toast. Actual file download/API failure mapping is out of scope.
