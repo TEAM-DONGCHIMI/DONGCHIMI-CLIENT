@@ -74,6 +74,7 @@ export const linkTextClassName = style({
 });
 
 export const linkCopyButtonClassName = style({
+  ...typography['body-2-regular'],
   display: 'inline-flex',
   width: '2.4rem',
   height: '2.4rem',
@@ -84,7 +85,6 @@ export const linkCopyButtonClassName = style({
   padding: 0,
   backgroundColor: 'transparent',
   cursor: 'pointer',
-  fontSize: '1.6rem',
   lineHeight: 0,
   selectors: {
     '&:focus-visible': {
@@ -128,6 +128,7 @@ export const actionButtonClassName = style({
 });
 
 export const actionIconClassName = style({
+  ...typography['heading-3-regular'],
   display: 'inline-flex',
   width: '4rem',
   height: '4rem',
@@ -138,13 +139,12 @@ export const actionIconClassName = style({
   borderRadius: '999rem',
   backgroundColor: atomic.common[0],
   color: atomic.neutral[80],
-  fontSize: '2rem',
   lineHeight: 0,
 });
 
 export const toastIconClassName = style({
+  ...typography['heading-3-regular'],
   display: 'block',
   width: '2rem',
   height: '2rem',
-  fontSize: '2rem',
 });
