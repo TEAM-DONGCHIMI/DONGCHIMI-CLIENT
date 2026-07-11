@@ -4,7 +4,7 @@ import type { UploadSegmentTypes } from '@/shared/components';
 import type { ProductCategoryGroupTypes } from '@/shared/constants/product-categories';
 import { getProductMatchesCategoryFilter } from '@/shared/utils/product-category.utils';
 
-import type { RegistrationResultProduct } from '../fixtures';
+import type { RegistrationResultProduct } from '../fixtures/registration-result.fixture';
 import {
   getRegistrationResultProductFieldValue,
   type RegistrationResultProductDraftMapTypes,

@@ -10,7 +10,7 @@ import {
 } from '@/domains/product/components/product-edit-page-shell';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
-import { type TodaySpecialEditProductTypes } from '../fixtures';
+import { type TodaySpecialEditProductTypes } from '../fixtures/today-special-edit.fixture';
 
 interface TodaySpecialEditProductSectionProps {
   products: TodaySpecialEditProductTypes[];

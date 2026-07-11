@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import type { RegistrationResultProduct } from '../fixtures';
+import type { RegistrationResultProduct } from '../fixtures/registration-result.fixture';
 
 export type RegistrationResultEditableProductFieldTypes =
   | 'category'

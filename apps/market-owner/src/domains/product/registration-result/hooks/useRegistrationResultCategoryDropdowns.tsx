@@ -9,7 +9,7 @@ import {
   ProductCategoryDropdown,
   getAnchorRect,
 } from '../components/RegistrationResultDropdown';
-import type { RegistrationResultProduct } from '../fixtures';
+import type { RegistrationResultProduct } from '../fixtures/registration-result.fixture';
 import {
   getRegistrationResultProductFieldValue,
   type RegistrationResultProductDraftMapTypes,

@@ -3,7 +3,7 @@ import { OverlayProvider, overlay } from 'overlay-kit';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent, within } from '@/test';
-import { registrationResultFixture } from '../fixtures';
+import { registrationResultFixture } from '../fixtures/registration-result.fixture';
 import {
   RegistrationResultSection,
   type RegistrationResultSectionProps,

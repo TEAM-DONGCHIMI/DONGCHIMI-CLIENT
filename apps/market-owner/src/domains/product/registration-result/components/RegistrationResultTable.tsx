@@ -1,6 +1,6 @@
 import { type MouseEvent, type ReactNode } from 'react';
 
-import type { RegistrationResultProduct } from '../fixtures';
+import type { RegistrationResultProduct } from '../fixtures/registration-result.fixture';
 import {
   getRegistrationResultProductFieldValue,
   type RegistrationResultEditableProductFieldTypes,

@@ -339,7 +339,7 @@ describe('marketOwnerRoutes', () => {
 
   it.each([
     ['오늘의 특가 상품 등록하기', '오늘의 특가 상품을 등록하세요'],
-    ['행사 할인 상품 등록하기', '등록한 파일을 확인해주세요'],
+    ['행사 할인 상품 등록하기', '상품 등록'],
     ['상품 수정하러 가기', '오늘의 특가 상품을 수정하세요'],
   ])('navigates the %s hero action to its work page', async (buttonName, headingName) => {
     const user = userEvent.setup();

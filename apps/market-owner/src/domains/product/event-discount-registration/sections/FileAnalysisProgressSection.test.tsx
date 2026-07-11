@@ -1,7 +1,7 @@
 import { render, screen, userEvent, within } from '@/test';
 import { describe, expect, it, vi } from 'vitest';
 
-import { fileAnalysisProgressFixtures } from '../fixtures';
+import { fileAnalysisProgressFixtures } from '../fixtures/file-analysis-progress.fixture';
 import { FileAnalysisProgressSection } from './FileAnalysisProgressSection';
 
 const defaultProps = {

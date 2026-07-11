@@ -4,14 +4,13 @@ import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader, UploadModal } from '@/shared/components';
 
-import { PosExcelGuidePanel } from './components';
-import { fileAnalysisConfirmFixture, fileAnalysisProgressFixtures } from './fixtures';
+import { PosExcelGuidePanel } from './components/PosExcelGuidePanel';
+import { fileAnalysisConfirmFixture } from './fixtures/file-analysis-confirm.fixture';
+import { fileAnalysisProgressFixtures } from './fixtures/file-analysis-progress.fixture';
 import { useExcelUploadFlow } from './hooks/useExcelUploadFlow';
-import {
-  FileAnalysisConfirmSection,
-  FileAnalysisProgressSection,
-  RegistrationMethodSection,
-} from './sections';
+import { FileAnalysisConfirmSection } from './sections/FileAnalysisConfirmSection';
+import { FileAnalysisProgressSection } from './sections/FileAnalysisProgressSection';
+import { RegistrationMethodSection } from './sections/RegistrationMethodSection';
 import * as S from './EventDiscountRegistrationPage.css';
 
 const EXCEL_UPLOAD_ACCEPT = '.xlsx,.csv';

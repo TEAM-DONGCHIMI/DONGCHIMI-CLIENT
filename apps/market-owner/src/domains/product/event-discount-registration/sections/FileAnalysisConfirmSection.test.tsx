@@ -1,7 +1,7 @@
 import { render, screen, userEvent, within } from '@/test';
 import { describe, expect, it, vi } from 'vitest';
 
-import { fileAnalysisConfirmFixture } from '../fixtures';
+import { fileAnalysisConfirmFixture } from '../fixtures/file-analysis-confirm.fixture';
 import { FileAnalysisConfirmSection } from './FileAnalysisConfirmSection';
 
 const defaultProps = {
