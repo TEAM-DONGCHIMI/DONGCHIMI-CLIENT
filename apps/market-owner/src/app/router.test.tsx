@@ -12,12 +12,13 @@ const renderRoute = (path: string) => {
   const router = createMemoryRouter(marketOwnerRoutes, {
     initialEntries: [path],
   });
-
-  return render(
+  const renderResult = render(
     <AppProviders>
       <RouterProvider router={router} />
     </AppProviders>,
   );
+
+  return { ...renderResult, router };
 };
 
 const fillSignupForm = async (
@@ -325,7 +326,7 @@ describe('marketOwnerRoutes', () => {
   it('navigates a loaded search result to the product edit page', async () => {
     const user = userEvent.setup();
 
-    renderRoute('/');
+    const { router } = renderRoute('/');
 
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '콩나물 100g');
@@ -334,6 +335,39 @@ describe('marketOwnerRoutes', () => {
     expect(
       await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
     ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.todaySpecialEdit);
+    expect(router.state.location.search).toBe('?productId=124');
+    expect(
+      await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('상품명')).toHaveValue('풀무원 콩나물 100g');
+
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    await waitFor(() => expect(router.state.location.search).toBe(''));
+    expect(
+      screen.queryByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('navigates an event-discount search result to the product edit modal', async () => {
+    const user = userEvent.setup();
+
+    const { router } = renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '풀숲');
+    await user.click(await screen.findByRole('button', { name: /풀숲/ }));
+
+    expect(
+      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.eventDiscountEdit);
+    expect(router.state.location.search).toBe('?productId=125');
+    expect(
+      await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('상품명')).toHaveValue('풀숲');
   });
 
   it('shows pending feedback before debounced search results are applied', async () => {
