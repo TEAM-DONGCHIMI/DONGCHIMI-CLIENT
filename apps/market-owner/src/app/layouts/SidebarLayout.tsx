@@ -1,14 +1,18 @@
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 
 import {
   IcCircleQuestion,
   IcHome,
   IcRangeSaleEditDefault,
+  IcRangeSaleEditHover,
   IcRangeSaleUploadDefault,
+  IcRangeSaleUploadHover,
   IcSetting,
   IcTodaySaleEditDefalut,
+  IcTodaySaleEditHover,
   IcTodaySaleUploadDefault,
+  IcTodaySaleUploadHover,
 } from '@dongchimi/design-system/icons';
 import { ToastProvider } from '@dongchimi/shared/toast';
 
@@ -48,6 +52,19 @@ const createSidebarItem = ({
   };
 };
 
+const SidebarStateIcon = ({
+  defaultIcon,
+  hoverIcon,
+}: {
+  defaultIcon: ReactNode;
+  hoverIcon: ReactNode;
+}) => (
+  <span className={S.sidebarStateIconClassName}>
+    <span className={S.sidebarStateIconDefaultClassName}>{defaultIcon}</span>
+    <span className={S.sidebarStateIconHoverClassName}>{hoverIcon}</span>
+  </span>
+);
+
 const sidebarSections: SidebarSection[] = [
   {
     id: 'home',
@@ -63,22 +80,42 @@ const sidebarSections: SidebarSection[] = [
     id: 'product',
     items: [
       createSidebarItem({
-        icon: <IcTodaySaleUploadDefault aria-hidden='true' />,
+        icon: (
+          <SidebarStateIcon
+            defaultIcon={<IcTodaySaleUploadDefault aria-hidden='true' />}
+            hoverIcon={<IcTodaySaleUploadHover aria-hidden='true' />}
+          />
+        ),
         id: 'todaySpecialRegistration',
         label: '오늘의 특가 상품 등록',
       }),
       createSidebarItem({
-        icon: <IcRangeSaleUploadDefault aria-hidden='true' />,
+        icon: (
+          <SidebarStateIcon
+            defaultIcon={<IcRangeSaleUploadDefault aria-hidden='true' />}
+            hoverIcon={<IcRangeSaleUploadHover aria-hidden='true' />}
+          />
+        ),
         id: 'eventDiscountRegistration',
         label: '행사 할인 상품 등록',
       }),
       createSidebarItem({
-        icon: <IcTodaySaleEditDefalut aria-hidden='true' />,
+        icon: (
+          <SidebarStateIcon
+            defaultIcon={<IcTodaySaleEditDefalut aria-hidden='true' />}
+            hoverIcon={<IcTodaySaleEditHover aria-hidden='true' />}
+          />
+        ),
         id: 'todaySpecialEdit',
         label: '오늘의 특가 상품 수정',
       }),
       createSidebarItem({
-        icon: <IcRangeSaleEditDefault aria-hidden='true' />,
+        icon: (
+          <SidebarStateIcon
+            defaultIcon={<IcRangeSaleEditDefault aria-hidden='true' />}
+            hoverIcon={<IcRangeSaleEditHover aria-hidden='true' />}
+          />
+        ),
         id: 'eventDiscountEdit',
         label: '행사 할인 상품 수정',
       }),

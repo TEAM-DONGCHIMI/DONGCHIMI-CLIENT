@@ -61,6 +61,42 @@ export const profileAvatarClassName = style({
   ...typography['caption-1-medium'],
 });
 
+export const sidebarStateIconClassName = style({
+  position: 'relative',
+  display: 'inline-flex',
+  width: '2.4rem',
+  height: '2.4rem',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+export const sidebarStateIconDefaultClassName = style({
+  position: 'absolute',
+  inset: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  selectors: {
+    ':where(a:hover, button:hover, a[aria-current="page"], button[aria-current="page"]) &': {
+      opacity: 0,
+    },
+  },
+});
+
+export const sidebarStateIconHoverClassName = style({
+  position: 'absolute',
+  inset: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  opacity: 0,
+  selectors: {
+    ':where(a:hover, button:hover, a[aria-current="page"], button[aria-current="page"]) &': {
+      opacity: 1,
+    },
+  },
+});
+
 export const helpCardClassName = style({
   display: 'grid',
   gap: '1rem',
