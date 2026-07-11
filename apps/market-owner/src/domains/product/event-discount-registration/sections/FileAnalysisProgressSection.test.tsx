@@ -4,6 +4,31 @@ import { describe, expect, it, vi } from 'vitest';
 import { fileAnalysisProgressFixtures } from '../fixtures';
 import { FileAnalysisProgressSection } from './FileAnalysisProgressSection';
 
+vi.mock('@lottiefiles/dotlottie-react', () => ({
+  DotLottieReact: ({
+    'aria-hidden': ariaHidden,
+    autoplay,
+    className,
+    loop,
+    src,
+  }: {
+    'aria-hidden'?: boolean | 'true' | 'false';
+    autoplay?: boolean;
+    className?: string;
+    loop?: boolean;
+    src?: string;
+  }) => (
+    <span
+      aria-hidden={ariaHidden}
+      className={className}
+      data-autoplay={autoplay}
+      data-loop={loop}
+      data-src={src}
+      data-testid='file-analysis-spinner'
+    />
+  ),
+}));
+
 const defaultProps = {
   onCancel: vi.fn(),
   progressPercentage: fileAnalysisProgressFixtures.processing.progressPercentage,
@@ -47,6 +72,18 @@ describe('FileAnalysisProgressSection', () => {
     );
   });
 
+  it('plays the decorative spinner Lottie for the processing step', () => {
+    renderFileAnalysisProgressSection();
+
+    expect(screen.getByTestId('file-analysis-spinner')).toHaveAttribute(
+      'data-src',
+      '/lottie/spinner.lottie',
+    );
+    expect(screen.getByTestId('file-analysis-spinner')).toHaveAttribute('data-autoplay', 'true');
+    expect(screen.getByTestId('file-analysis-spinner')).toHaveAttribute('data-loop', 'true');
+    expect(screen.getByTestId('file-analysis-spinner')).toHaveAttribute('aria-hidden', 'true');
+  });
+
   it('calls cancel before the analysis is completed', async () => {
     const user = userEvent.setup();
     const handleCancel = vi.fn();
@@ -68,6 +105,7 @@ describe('FileAnalysisProgressSection', () => {
 
     expect(screen.getByText('100%')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '취소' })).toBeDisabled();
+    expect(screen.queryByTestId('file-analysis-spinner')).not.toBeInTheDocument();
   });
 
   it('keeps cancel available when only the displayed progress rounds to 100', () => {

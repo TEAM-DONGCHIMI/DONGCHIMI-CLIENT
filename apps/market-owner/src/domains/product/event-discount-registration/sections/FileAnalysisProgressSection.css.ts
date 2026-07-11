@@ -55,6 +55,12 @@ export const progressStepListClassName = style({
   flexShrink: 0,
 });
 
+export const processingIconClassName = style({
+  display: 'block',
+  width: '2.4rem',
+  height: '2.4rem',
+});
+
 export const progressRowClassName = style({
   width: '100%',
   minWidth: 0,

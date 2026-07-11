@@ -1,2 +1,5 @@
 export { fileAnalysisConfirmFixture } from './file-analysis-confirm.fixture';
-export { fileAnalysisProgressFixtures } from './file-analysis-progress.fixture';
+export {
+  fileAnalysisProgressFixtures,
+  fileAnalysisSimulationFrames,
+} from './file-analysis-progress.fixture';

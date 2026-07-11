@@ -75,6 +75,7 @@ DefaultErrorFallback
 ### Route usage
 
 기본 라우트 페이지는 `src/app/create-lazy-route.tsx`의 `createLazyRoute` helper가 자동으로 `AsyncBoundary`를 적용합니다.
+Route helper는 `loadingFallback={null}`을 전달해 lazy import 대기 중 별도 로딩 패널을 표시하지 않고, render/query error fallback은 유지합니다.
 새 lazy route를 추가할 때는 기존 route와 동일하게 `createLazyRoute(() => import(...), 'ExportName')`를 사용합니다.
 
 ```tsx
@@ -151,13 +152,13 @@ export const ProductDetailSection = ({ productId }: ProductDetailSectionProps) =
 
 ## Variants
 
-- default route fallback: route lazy loading과 route render error를 처리합니다.
+- default route fallback: route lazy loading은 `null`로 처리하고 route render error에는 기본 error fallback을 표시합니다.
 - section fallback: table, preview, chart처럼 독립 복구가 가능한 UI 영역에 적용합니다.
 - custom fallback: caller가 `loadingFallback` 또는 `errorFallback`을 주입해 section 크기에 맞는 UI를 제공합니다.
 
 ## States
 
-- loading: route component import 또는 하위 UI가 suspend되면 기본 로딩 fallback을 렌더링합니다.
+- loading: `AsyncBoundary`를 직접 사용하면 기본 로딩 fallback을 렌더링하며, `createLazyRoute`를 통한 route import 대기 중에는 `null` fallback을 렌더링합니다.
 - error: 하위 route/section render 중 throw된 error는 기본 error fallback으로 전환합니다.
 - query error: `queries.throwOnError` 기본값으로 `AsyncBoundary`까지 전파하고, mutation error는 사용자 상호작용 흐름을 끊지 않도록 `AsyncBoundary`로 전파하지 않습니다.
 - reset: 기본 retry 버튼 또는 custom fallback의 `resetErrorBoundary`가 ErrorBoundary와 TanStack Query error reset을 함께 실행합니다.
