@@ -1,4 +1,4 @@
-import { globalStyle, style } from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
 
 import { semantic, typography } from '../../../tokens';
 
@@ -33,8 +33,4 @@ export const tooltipClassName = style({
       visibility: 'visible',
     },
   },
-});
-
-globalStyle(`.${tooltipClassName} span`, {
-  maxWidth: 'none',
 });
