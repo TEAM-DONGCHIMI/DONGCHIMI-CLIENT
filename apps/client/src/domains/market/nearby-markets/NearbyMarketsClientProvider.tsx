@@ -77,7 +77,7 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
   } = useGetNearbyMarketsInfiniteQuery(nearbyMarketsParams);
   const { data: markerMarkets = [], isError: isMarkerMarketsError } =
     useGetNearbyMarketMarkersQuery(nearbyMarketsParams);
-  const markets = flattenNearbyMarketsPages(data);
+  const markets = useMemo(() => flattenNearbyMarketsPages(data), [data]);
 
   useEffect(() => {
     if (errorCode === null) {
