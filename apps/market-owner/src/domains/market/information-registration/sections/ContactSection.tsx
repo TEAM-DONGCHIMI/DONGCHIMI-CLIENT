@@ -2,7 +2,13 @@ import { useState, type ChangeEvent } from 'react';
 
 import { type UseFormRegisterReturn } from 'react-hook-form';
 
-import { AddableField, Chip, RequiredMark, Stack } from '@dongchimi/design-system/components';
+import {
+  AddableField,
+  Chip,
+  RequiredMark,
+  Stack,
+  TextInput,
+} from '@dongchimi/design-system/components';
 import {
   IcCircleExclamationSizeSmallColorNegative,
   IcLineHorizontalSizeSmall,
@@ -10,16 +16,10 @@ import {
   IcPlusSizeSmallColor60,
 } from '@dongchimi/design-system/icons';
 
-import {
-  formatMarketPhoneNumber,
-  formatMobilePhoneNumber,
-  isValidMarketPhone,
-  isValidOwnerPhone,
-} from '../model';
+import { formatMarketPhoneNumber, isValidMarketPhone } from '../model';
 import * as S from './ContactSection.css';
 
 const additionalMarketPhoneErrorMessage = '올바른 전화번호를 입력해주세요.';
-const additionalOwnerPhoneErrorMessage = '올바른 휴대전화 번호를 입력해주세요.';
 
 export interface ContactSectionProps {
   marketPhone1: string;
@@ -41,26 +41,15 @@ export const ContactSection = ({
   ownerPhoneField,
 }: ContactSectionProps) => {
   const [isAdditionalMarketPhoneVisible, setIsAdditionalMarketPhoneVisible] = useState(false);
-  const [isAdditionalOwnerPhoneVisible, setIsAdditionalOwnerPhoneVisible] = useState(false);
   const [additionalMarketPhone, setAdditionalMarketPhone] = useState('');
-  const [additionalOwnerPhone, setAdditionalOwnerPhone] = useState('');
 
   const handleRemoveAdditionalMarketPhone = () => {
     setIsAdditionalMarketPhoneVisible(false);
     setAdditionalMarketPhone('');
   };
 
-  const handleRemoveAdditionalOwnerPhone = () => {
-    setIsAdditionalOwnerPhoneVisible(false);
-    setAdditionalOwnerPhone('');
-  };
-
   const handleAdditionalMarketPhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
     setAdditionalMarketPhone(formatMarketPhoneNumber(event.currentTarget.value));
-  };
-
-  const handleAdditionalOwnerPhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setAdditionalOwnerPhone(formatMobilePhoneNumber(event.currentTarget.value));
   };
 
   const additionalMarketPhoneStatusProps =
@@ -68,14 +57,6 @@ export const ContactSection = ({
       ? ({
           errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
           errorMessage: additionalMarketPhoneErrorMessage,
-          status: 'error',
-        } as const)
-      : {};
-  const additionalOwnerPhoneStatusProps =
-    additionalOwnerPhone.length > 0 && !isValidOwnerPhone(additionalOwnerPhone)
-      ? ({
-          errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
-          errorMessage: additionalOwnerPhoneErrorMessage,
           status: 'error',
         } as const)
       : {};
@@ -88,7 +69,6 @@ export const ContactSection = ({
     : {};
   const ownerPhoneStatusProps = ownerPhoneErrorMessage
     ? ({
-        errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
         errorMessage: ownerPhoneErrorMessage,
         status: 'error',
       } as const)
@@ -149,39 +129,18 @@ export const ContactSection = ({
           <RequiredMark />
         </span>
         <div className={S.ownerPhoneRowsClassName}>
-          <AddableField
+          <TextInput
             aria-label='점주 번호'
             className={S.addableFieldClassName}
             inputMode='numeric'
-            leadingIcon={<IcPhoneSizeSmallColor60 />}
             placeholder='점주 번호를 입력해주세요.'
             required
-            trailingActionLabel='점주 번호 추가'
-            trailingIcon={<IcPlusSizeSmallColor60 />}
             type='tel'
             {...ownerPhoneField}
             value={ownerPhone}
             onChange={onInputChange}
-            onTrailingAction={() => setIsAdditionalOwnerPhoneVisible(true)}
             {...ownerPhoneStatusProps}
           />
-          {isAdditionalOwnerPhoneVisible && (
-            <AddableField
-              aria-label='추가 점주 번호'
-              className={S.addableFieldClassName}
-              inputMode='numeric'
-              leadingIcon={<IcPhoneSizeSmallColor60 />}
-              name='additionalOwnerPhone'
-              placeholder='점주 번호를 입력해주세요.'
-              trailingActionLabel='추가 점주 번호 제거'
-              trailingIcon={<IcLineHorizontalSizeSmall />}
-              type='tel'
-              value={additionalOwnerPhone}
-              onChange={handleAdditionalOwnerPhoneChange}
-              onTrailingAction={handleRemoveAdditionalOwnerPhone}
-              {...additionalOwnerPhoneStatusProps}
-            />
-          )}
         </div>
       </div>
     </Stack>
