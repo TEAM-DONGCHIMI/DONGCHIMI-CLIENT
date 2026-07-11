@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useToast } from '@dongchimi/shared/toast';
 import { MobileHeader } from '@/shared/components';
@@ -12,6 +12,7 @@ import {
   DEFAULT_LOCATION_ADDRESS_TEXT,
   LOCATION_PERMISSION_DENIED_PLACEHOLDER,
 } from './NearbyMarketsPage.constants';
+import { useDaumPostcodeSearch } from './hooks/use-daum-postcode-search';
 import * as S from './NearbyMarketsPage.css';
 import {
   NearbyMarketsMapSection,
@@ -21,6 +22,8 @@ import {
 import { flattenNearbyMarketsPages } from './utils/flatten-nearby-markets-pages';
 
 const LOCATION_PERMISSION_ERROR_TOAST_ID = 'nearby-markets-location-permission-error';
+const POSTCODE_SEARCH_ERROR_TOAST_ID = 'nearby-markets-postcode-search-error';
+const POSTCODE_SEARCH_ERROR_MESSAGE = '우편번호 검색을 불러오지 못했어요';
 const LOCATION_PERMISSION_ERROR_MESSAGE = '위치 접근 허용에 실패했어요';
 
 export const NearbyMarketsContent = () => {
@@ -29,6 +32,7 @@ export const NearbyMarketsContent = () => {
   const [hasEditedKeyword, setHasEditedKeyword] = useState(false);
   const debouncedKeyword = useDebouncedValue(keyword);
   const { coordinates, errorCode } = useGeolocation();
+  const shouldOpenPostcodeSearch = errorCode === 'PERMISSION_DENIED';
   const nearbyMarketsParams = {
     keyword: debouncedKeyword,
     lat: coordinates?.lat,
@@ -63,6 +67,23 @@ export const NearbyMarketsContent = () => {
     setKeyword(value);
   };
 
+  const handlePostcodeSearchError = useCallback(() => {
+    toast.error(POSTCODE_SEARCH_ERROR_MESSAGE, {
+      id: POSTCODE_SEARCH_ERROR_TOAST_ID,
+    });
+  }, [toast]);
+
+  const handleAdministrativeAddressSelect = useCallback((address: string) => {
+    setHasEditedKeyword(true);
+    setKeyword(address);
+  }, []);
+
+  const openPostcodeSearch = useDaumPostcodeSearch({
+    enabled: shouldOpenPostcodeSearch,
+    onError: handlePostcodeSearchError,
+    onSelectAdministrativeAddress: handleAdministrativeAddressSelect,
+  });
+
   const displayValue =
     !hasEditedKeyword && coordinates != null ? DEFAULT_LOCATION_ADDRESS_TEXT : keyword;
 
@@ -76,8 +97,10 @@ export const NearbyMarketsContent = () => {
 
       <NearbyMarketsSearchSection
         keyword={displayValue}
+        onKeywordClick={shouldOpenPostcodeSearch ? openPostcodeSearch : undefined}
         onKeywordChange={handleKeywordChange}
         placeholder={LOCATION_PERMISSION_DENIED_PLACEHOLDER}
+        readOnly={shouldOpenPostcodeSearch}
       />
       <NearbyMarketsMapSection
         coordinates={coordinates}

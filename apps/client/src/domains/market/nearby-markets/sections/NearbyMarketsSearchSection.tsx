@@ -3,14 +3,18 @@ import * as S from '../NearbyMarketsPage.css';
 
 export interface NearbyMarketsSearchSectionProps {
   keyword: string;
+  onKeywordClick?: () => void;
   onKeywordChange: (keyword: string) => void;
   placeholder: string;
+  readOnly?: boolean;
 }
 
 export const NearbyMarketsSearchSection = ({
   keyword,
+  onKeywordClick,
   onKeywordChange,
   placeholder,
+  readOnly = false,
 }: NearbyMarketsSearchSectionProps) => {
   return (
     <section aria-labelledby='nearby-markets-title' className={S.searchSectionClassName}>
@@ -21,8 +25,10 @@ export const NearbyMarketsSearchSection = ({
       </h1>
 
       <NearbyMarketsLocationSearchInput
+        onClick={onKeywordClick}
         onValueChange={onKeywordChange}
         placeholder={placeholder}
+        readOnly={readOnly}
         value={keyword}
       />
     </section>
