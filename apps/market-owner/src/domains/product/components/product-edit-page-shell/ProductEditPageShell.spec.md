@@ -5,6 +5,7 @@
 `ProductEditPageShell`은 사장님 상품 수정 페이지의 공통 상단 영역을 담당합니다.
 오늘의 특가 수정과 행사 할인 수정 페이지가 같은 헤더, route tab, 일괄 작업 버튼, 정렬 필터를 공유하되, 실제 상품 목록 영역은 각 페이지가 children으로 소유합니다.
 행사 할인 수정 페이지는 추가로 카테고리 필터를 제공합니다.
+헤더 상품 검색에서 진입한 개별 상품 수정 대상은 각 page가 `productId` search param으로 소비하고, shell은 layout과 필터 UI만 담당합니다.
 
 ## Ownership
 
@@ -55,6 +56,7 @@
 - bulk action을 바꾸면 selection mode는 새 action 기준으로 다시 시작하고 선택 상품은 초기화합니다.
 - 초기화 버튼을 누르면 `openProductEditConfirmModal`로 `ProductEditConfirmModal action="reset"`을 엽니다.
 - 초기화 확인 modal의 확인 버튼을 누르면 `onResetProducts`를 호출하고 selection mode도 종료합니다.
+- `productId` search param 기반 개별 수정 modal open/close는 children 영역의 상품 목록 컴포넌트가 담당합니다.
 
 ## Accessibility
 

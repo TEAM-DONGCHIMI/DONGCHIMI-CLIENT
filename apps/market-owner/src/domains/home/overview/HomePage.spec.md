@@ -8,7 +8,7 @@
 - Route: `/`
 - Path: `apps/market-owner/src/domains/home/overview/HomePage.tsx`
 - Jira: DCMSM-27
-- Related Jira: DCMSM-32 홈 상품 0건 딤드 상태 UI
+- Related Jira: DCMSM-32 홈 상품 0건 딤드 상태 UI, DCMSM-38 헤더 상품 검색 공통화
 - Related Jira: DCMSM-15 route scaffold
 - Status: Implemented
 
@@ -41,14 +41,14 @@
 - Home-only hero/checkerboard stays page-local until reuse and final desktop design are confirmed.
 - Home header uses the `market-owner` app-shared `DesktopHeader` with `variant="onlyHome"` and
   `showSearchBar={true}`.
-- Header product search uses the `market-owner` app-shared `ProductSearchPanel` through
+- Header product search uses the `market-owner` app-shared `ProductHeaderSearch` through
   `DesktopHeader.searchSlot`.
 - Leaflet share card UI uses the `market-owner` app-shared `LeafletShareCard`.
 
 ## Scope
 
 - 홈 상단 checkerboard/hero visual 영역을 구성합니다.
-- `DesktopHeader`의 상품 검색 영역에 `ProductSearchPanel`을 배치합니다.
+- `DesktopHeader`의 상품 검색 영역에 `ProductHeaderSearch`를 배치합니다.
 - hero checkerboard 영역 안에 quick action 카드 3개를 배치합니다.
 - 오늘의 특가 상품 카드와 행사 할인 상품 카드를 `@dongchimi/shared` `ProductCard`와 page-local fixture
   데이터로 렌더링하고, 각 등록 건수가 0이면 홈 전용 딤드 상태를 표시합니다.
@@ -61,7 +61,7 @@
 
 - 실제 상품 API, query key, cache invalidation
 - 실제 검색 결과 API
-- 상품 수정 페이지에서 `location.state.productId`를 소비해 특정 상품 form/modal을 여는 상세 동작
+- 상품 수정 페이지에서 `productId` search param을 소비해 특정 상품 form/modal을 여는 상세 동작
 - QR 코드 실제 생성 또는 QR modal 구현
 - 카카오/문자 실제 공유 연동
 - 실시간 매장/계정 데이터 연동
@@ -74,7 +74,7 @@
 ```text
 HomePage(main)
   h1("동치미 홈", visually hidden)
-  DesktopHeader(variant=onlyHome, showSearchBar=true, searchSlot=ProductSearchPanel)
+  DesktopHeader(variant=onlyHome, showSearchBar=true, searchSlot=ProductHeaderSearch)
   HomeHeroSection          // checkerboard visual
     HomeQuickButton * 3
   HomeDashboardSection
@@ -85,13 +85,11 @@ HomePage(main)
       LeafletShareCard
 ```
 
-- `DesktopHeader`: app-shared header를 `onlyHome` 모드로 소비하고 상품 검색 slot에 `ProductSearchPanel`을
+- `DesktopHeader`: app-shared header를 `onlyHome` 모드로 소비하고 상품 검색 slot에 `ProductHeaderSearch`를
   노출합니다.
   page heading은 시각적으로 숨긴 `h1`으로 유지합니다.
-- `ProductSearchPanel`: 한 글자 이상 입력 시 검색 dropdown을 열고, 결과 item 선택 시 상품 수정 route로
-  이동할 수 있도록 page handler를 호출합니다.
-- `HomeSearchPanel`: `DesktopHeader.searchSlot`에 주입되는 page-local component입니다. 검색 결과 선택 후
-  이동과 상품 정보 load 실패 toast를 홈 flow에 연결합니다.
+- `ProductHeaderSearch`: 한 글자 이상 입력 시 검색 dropdown을 열고, 결과 item 선택 시 `dealType`에 맞는
+  상품 수정 route로 `productId` search param을 붙여 이동합니다.
 - `HomeHeroSection`: radius 20px checkerboard hero surface와 quick action 카드를 담당합니다.
   - quick action의 오른쪽 mint 영역은 icon/PNG asset 확정 전 placeholder slot으로 유지합니다.
 - `HomeQuickButton`: Figma `button_home quick` node `2403:69244` 기준의 312x74 quick button입니다.
@@ -108,7 +106,8 @@ HomePage(main)
   - `IconButton`, `Button`, generated icons는 공유 카드 액션에 맞으면 사용합니다.
 - app shared components:
   - `DesktopHeader`
-  - `ProductSearchPanel` via `DesktopHeader.searchSlot`
+  - `ProductHeaderSearch` via `DesktopHeader.searchSlot`
+  - `ProductSearchPanel` via `ProductHeaderSearch`
   - `SearchBar` via `ProductSearchPanel`
   - `Sidebar` and `SidebarLayout`
   - `LeafletShareCard`
@@ -117,7 +116,6 @@ HomePage(main)
 - package shared components:
   - `ProductCard`
 - page-local components:
-  - `HomeSearchPanel`
   - `HomeQuickButton`
 - page-local sections:
   - `HomeHeroSection`
@@ -155,7 +153,7 @@ HomePage(main)
   - 오늘의 특가 상품 카드와 행사 할인 상품 카드에 들어갈 상품 목록
   - 홈 응답의 `dailyCount`, `dailyProducts`, `periodicCount`, `periodicProducts`를 카드별
     `itemVariant`, `totalCount`, edit route로 매핑
-  - 검색 dropdown에 사용할 상품명, 구분 label, 등록일, edit route, 상품 정보 load 가능 여부
+- 검색 dropdown에 사용할 상품명, `dealType`, `productId`, 상품 정보 load 가능 여부
   - hero quick action title, description, route
   - 전단 공유 링크와 공유 설명 copy, `flyer` 존재 여부
 - model: none
@@ -164,8 +162,7 @@ HomePage(main)
 
 - `/` route가 protected sidebar layout 안에서 홈 UI를 렌더링합니다.
 - hero quick action은 오늘의 특가 등록, 행사 할인 등록, 상품 수정 route로 이동합니다.
-- 상품 카드 row를 클릭하면 해당 카드 종류의 수정 route로 이동하고, route state에 `productId`를 전달합니다.
-  수정 페이지에서 이 state를 실제 row focus/form open에 사용하는 동작은 후속 수정 페이지 범위입니다.
+- 상품 카드 row를 클릭하면 해당 카드 종류의 수정 route로 이동합니다.
 - `등록한 상품 전체보기` action은 `ProductCard`의 desktop actionSlot으로 주입하고, 오늘의 특가 상품
   카드는 `[오늘의 특가 상품] 수정하기` route, 행사 할인 상품 카드는 `[행사 할인 상품] 수정하기` route로
   이동합니다.
@@ -185,7 +182,8 @@ HomePage(main)
 - 검색 dropdown은 4개 기본 노출, 4개 초과 시 scroll 영역으로 전환하며 최대 10개까지만 렌더링합니다.
 - 검색 dropdown 외부 영역을 클릭하면 dropdown을 닫습니다.
 - 검색 결과 item을 클릭하면 상품 정보 load 가능 여부를 확인합니다.
-- 상품 정보를 불러올 수 있으면 해당 fixture의 edit route로 즉시 이동하고, route state에 `productId`를 전달합니다.
+- 상품 정보를 불러올 수 있으면 `dealType`에 맞는 edit route로 즉시 이동하고, URL search param에
+  `productId`를 전달합니다. 예: `/products/today-special/edit?productId=124`
 - 상품 정보를 불러오지 못하면 route 이동 없이 `상품 정보를 불러오지 못했어요.` error toast를 표시합니다.
 
 ## Accessibility
@@ -252,7 +250,8 @@ HomePage(main)
 - [x] search input is keyboard/focus accessible
 - [x] search dropdown opens after one or more characters
 - [x] search dropdown closes on outside click
-- [x] search result click navigates to product edit route
+- [x] search result click navigates to product edit route with `productId` search param
+- [x] search result target edit page opens product edit modal
 - [x] search result product load failure shows error toast
 - [x] `git diff --check`
 - [x] `pnpm --filter market-owner lint`
@@ -262,7 +261,6 @@ HomePage(main)
 
 ## Open Questions
 
-- 수정 페이지에서 `location.state.productId`를 소비하는 방식
 - 실제 상품 검색 API와 상품 정보 load 실패 처리 위치
 - QR 보기 실제 API와 modal 또는 route 연결 방식
 - Figma URL 또는 Screen ID
