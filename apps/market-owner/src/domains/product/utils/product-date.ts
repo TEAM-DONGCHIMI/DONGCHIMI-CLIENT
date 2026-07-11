@@ -53,7 +53,7 @@ const startOfToday = () => {
   return today;
 };
 
-export const getTodayProductDateInputValue = () => {
+export const getTodayDateInputValue = () => {
   const today = startOfToday();
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -63,7 +63,7 @@ export const getTodayProductDateInputValue = () => {
 };
 
 export const getProductDateMinimum = (date?: string) => {
-  const today = getTodayProductDateInputValue();
+  const today = getTodayDateInputValue();
   const normalizedDate = formatProductEditDateForInput(date);
 
   return normalizedDate >= today ? normalizedDate : today;
