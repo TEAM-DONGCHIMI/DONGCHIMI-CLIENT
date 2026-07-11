@@ -162,8 +162,12 @@ export const ProductEditPageShell = ({
 
             <div aria-label='상품 관리 작업' className={S.actionGroupClassName} role='group'>
               {selectionMode && (
-                <span className={S.selectedProductCountClassName}>
-                  선택된 상품 ({selectedProductCount})
+                <span
+                  aria-label={`선택된 상품 (${selectedProductCount})`}
+                  className={S.selectedProductCountClassName}
+                >
+                  선택된 상품 (
+                  <span className={S.selectedProductNumberClassName}>{selectedProductCount}</span>)
                 </span>
               )}
               <Button {...periodButtonProps} size='xsmall' onClick={openPeriodBulkAction}>
