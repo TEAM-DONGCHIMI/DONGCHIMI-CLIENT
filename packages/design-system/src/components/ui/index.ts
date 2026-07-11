@@ -59,3 +59,5 @@ export type {
 } from './dialog';
 export { InlineField } from './inline-field';
 export type { InlineFieldProps } from './inline-field';
+export { RequiredMark } from './required-mark';
+export type { RequiredMarkProps } from './required-mark';
