@@ -1,5 +1,27 @@
-import { NearbyMarketsContent } from './NearbyMarketsContent';
+import { MobileHeader } from '@/shared/components';
+
+import { NearbyMarketsClientProvider } from './NearbyMarketsClientProvider';
+import * as S from './NearbyMarketsPage.css';
+import {
+  NearbyMarketsMapSection,
+  NearbyMarketsMarketListSection,
+  NearbyMarketsSearchSection,
+} from './sections';
 
 export const NearbyMarketsPage = () => {
-  return <NearbyMarketsContent />;
+  return (
+    <main className={S.pageClassName}>
+      <MobileHeader aria-label='mobile header'>
+        <MobileHeader.Logo>
+          <div aria-label='logo' className={S.logoPlaceholderClassName} role='img' />
+        </MobileHeader.Logo>
+      </MobileHeader>
+
+      <NearbyMarketsClientProvider>
+        <NearbyMarketsSearchSection />
+        <NearbyMarketsMapSection />
+        <NearbyMarketsMarketListSection />
+      </NearbyMarketsClientProvider>
+    </main>
+  );
 };
