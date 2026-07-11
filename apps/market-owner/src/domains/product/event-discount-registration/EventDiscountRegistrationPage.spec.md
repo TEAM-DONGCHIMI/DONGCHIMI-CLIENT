@@ -58,7 +58,7 @@
 - completed: original analysis progress at 100% or all completed steps disable the progress cancel action.
 - toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback with the completed status icon.
 - toast/error: the page can render error toast feedback with the error status icon; `전단지 업로드` currently shows Figma error-style feedback because the actual upload API is out of scope.
-- panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel with the two-line title (`POS에서 엑셀 파일을` / `이렇게 다운 받으시면 돼요.`) and three stacked guide image placeholders; Escape, backdrop click, or the close button hides it and restores focus.
+- panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel with a right-to-left slide-in animation, the two-line title (`POS에서 엑셀 파일을` / `이렇게 다운 받으시면 돼요.`), and three stacked guide image placeholders; Escape, backdrop click, or the close button hides it and restores focus.
 - route error: unknown route is handled by the existing router fallback.
 
 ## Data
@@ -93,6 +93,7 @@
 - Toast feedback uses the shared toast runtime. The page passes the Figma status icon through the toast `icon` slot and uses a stable toast id for registration action feedback so triggering a new toast replaces the visible toast and resets the runtime timer.
 - The page does not own toast viewport positioning or sidebar-width correction.
 - The POS guide panel behaves as a modal dialog through `usePosGuideModalBehavior`: Escape and backdrop click close it, focus moves to the close button on open and returns to the previously focused trigger on close, Tab focus is kept inside the panel, and body scroll is locked while open.
+- The POS guide panel uses a CSS-only open animation from `translateX(100%)` to `translateX(0)` and disables the animation for `prefers-reduced-motion: reduce`.
 - POS guide image areas are 36rem-wide placeholder surfaces until real guide image assets are provided; the fixed heights are 27.4rem, 24.1rem, and 17.5rem, and step copy stays in accessible image labels instead of visible text.
 - Analysis items are read-only static labels until repeated reuse or API mapping is confirmed.
 - Analysis progress value is clamped and rounded for display while completion checks use original progress or step status.
