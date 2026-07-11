@@ -1,16 +1,26 @@
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AppProviders } from '@/app/AppProviders';
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { fireEvent, render, screen, userEvent } from '@/test';
 
 import { TodaySpecialRegistrationPage } from './TodaySpecialRegistrationPage';
 
 const renderTodaySpecialRegistrationPage = () => {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[MARKET_OWNER_ROUTES.todaySpecialRegistration]}>
       <AppProviders>
-        <TodaySpecialRegistrationPage />
+        <Routes>
+          <Route
+            element={<TodaySpecialRegistrationPage />}
+            path={MARKET_OWNER_ROUTES.todaySpecialRegistration}
+          />
+          <Route
+            element={<div>오늘의 특가 상품 수정 페이지</div>}
+            path={MARKET_OWNER_ROUTES.todaySpecialEdit}
+          />
+        </Routes>
       </AppProviders>
     </MemoryRouter>,
   );
@@ -25,6 +35,39 @@ describe('TodaySpecialRegistrationPage', () => {
     renderTodaySpecialRegistrationPage();
 
     expect(screen.getByRole('button', { name: '등록 완료' })).toBeDisabled();
+  });
+
+  it('navigates to today special edit after registration completes', async () => {
+    const user = userEvent.setup();
+
+    renderTodaySpecialRegistrationPage();
+
+    await user.type(screen.getByLabelText('상품명'), '딸기');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('채소･과일'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '4500');
+    await user.type(screen.getByLabelText('판매가'), '5000');
+    await user.click(screen.getByRole('button', { name: '등록 완료' }));
+
+    expect(screen.getByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
+  });
+
+  it('limits product text fields including spaces', async () => {
+    const user = userEvent.setup();
+
+    renderTodaySpecialRegistrationPage();
+
+    const productNameInput = screen.getByLabelText('상품명');
+    const promotionTextInput = screen.getByLabelText('상품 한줄 홍보문구');
+
+    expect(productNameInput).toHaveAttribute('maxlength', '15');
+    expect(promotionTextInput).toHaveAttribute('maxlength', '25');
+
+    await user.type(productNameInput, '12345 7890123456');
+    await user.type(promotionTextInput, '1234567890 1234567890 12345');
+
+    expect(productNameInput).toHaveValue('12345 789012345');
+    expect(promotionTextInput).toHaveValue('1234567890 1234567890 123');
   });
 
   it('sets today as the initial event period and minimum selectable date', () => {
@@ -54,9 +97,32 @@ describe('TodaySpecialRegistrationPage', () => {
     renderTodaySpecialRegistrationPage();
 
     await user.click(screen.getByRole('button', { name: '카테고리' }));
+
+    const dropdown = await screen.findByRole('group', { name: '상품 구분 선택' });
+    const categoryOptions = Array.from(dropdown.querySelectorAll('button')).map(
+      (option) => option.textContent,
+    );
+    expect(categoryOptions.slice(0, 2)).toEqual(['전체', '채소･과일']);
+
     await user.click(await screen.findByText('채소･과일'));
 
     expect(screen.getByRole('button', { name: '채소･과일' })).toBeInTheDocument();
+  });
+
+  it('keeps category dropdown open while its list or page scrolls', async () => {
+    const user = userEvent.setup();
+
+    renderTodaySpecialRegistrationPage();
+
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+
+    const dropdown = await screen.findByRole('group', { name: '상품 구분 선택' });
+
+    fireEvent.scroll(dropdown);
+    expect(dropdown).toBeInTheDocument();
+
+    fireEvent.scroll(document);
+    expect(dropdown).toBeInTheDocument();
   });
 
   it('moves between product drafts without losing field values', async () => {
