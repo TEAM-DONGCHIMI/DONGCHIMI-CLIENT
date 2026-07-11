@@ -116,7 +116,6 @@ export const dashboardCardEmptyOverlayClassName = style({
 
 export const dashboardCardEmptyMessageClassName = style({
   ...typography['heading-2-semibold'],
-  letterSpacing: '-0.044rem',
   margin: 0,
   whiteSpace: 'pre-line',
 });
