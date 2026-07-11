@@ -1,12 +1,15 @@
-import { useState, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
+import { useNavigate } from 'react-router';
 import { IcCircleCheckFill, IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader, UploadModal } from '@/shared/components';
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 import { PosExcelGuidePanel } from './components';
-import { fileAnalysisConfirmFixture, fileAnalysisProgressFixtures } from './fixtures';
+import { fileAnalysisConfirmFixture } from './fixtures';
 import { useExcelUploadFlow } from './hooks/useExcelUploadFlow';
+import { useFileAnalysisSimulation } from './hooks/useFileAnalysisSimulation';
 import {
   FileAnalysisConfirmSection,
   FileAnalysisProgressSection,
@@ -23,7 +26,26 @@ const toastIconProps = {
   width: TOAST_ICON_SIZE,
 } as const;
 
+const SimulatedFileAnalysisProgressSection = ({
+  onCancel,
+  onComplete,
+}: {
+  onCancel: () => void;
+  onComplete: () => void;
+}) => {
+  const { progressPercentage, steps } = useFileAnalysisSimulation({ onComplete });
+
+  return (
+    <FileAnalysisProgressSection
+      onCancel={onCancel}
+      progressPercentage={progressPercentage}
+      steps={steps}
+    />
+  );
+};
+
 export const EventDiscountRegistrationPage = () => {
+  const navigate = useNavigate();
   const toast = useToast();
   const [isPosGuideOpen, setIsPosGuideOpen] = useState(false);
   const {
@@ -63,6 +85,10 @@ export const EventDiscountRegistrationPage = () => {
     });
   };
 
+  const handleFileAnalysisComplete = useCallback(() => {
+    navigate(MARKET_OWNER_ROUTES.registrationResult);
+  }, [navigate]);
+
   let registrationContent: ReactNode = null;
 
   if (registrationView === 'method') {
@@ -76,10 +102,9 @@ export const EventDiscountRegistrationPage = () => {
     );
   } else if (registrationView === 'progress') {
     registrationContent = (
-      <FileAnalysisProgressSection
+      <SimulatedFileAnalysisProgressSection
         onCancel={cancelFileAnalysisProgress}
-        progressPercentage={fileAnalysisProgressFixtures.processing.progressPercentage}
-        steps={fileAnalysisProgressFixtures.processing.steps}
+        onComplete={handleFileAnalysisComplete}
       />
     );
   } else if (uploadedExcelFileName != null) {

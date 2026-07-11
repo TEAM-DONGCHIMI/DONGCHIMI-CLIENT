@@ -1,17 +1,41 @@
+import { RouterProvider, createMemoryRouter } from 'react-router';
 import { fireEvent, render, screen, userEvent } from '@/test';
 import { ToastProvider } from '@dongchimi/shared/toast';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 import { EventDiscountRegistrationPage } from './EventDiscountRegistrationPage';
+
+vi.mock('@lottiefiles/dotlottie-react', () => ({
+  DotLottieReact: () => <span aria-hidden='true' data-testid='file-analysis-spinner' />,
+}));
 
 const posGuideDialogName = /POS에서 엑셀 파일을\s+이렇게 다운 받으시면 돼요\./;
 
 const renderEventDiscountRegistrationPage = () => {
-  return render(
+  const router = createMemoryRouter(
+    [
+      {
+        path: MARKET_OWNER_ROUTES.eventDiscountRegistration,
+        element: <EventDiscountRegistrationPage />,
+      },
+      {
+        path: MARKET_OWNER_ROUTES.registrationResult,
+        element: <h1>상품 결과 등록 확인</h1>,
+      },
+    ],
+    {
+      initialEntries: [MARKET_OWNER_ROUTES.eventDiscountRegistration],
+    },
+  );
+  const renderResult = render(
     <ToastProvider defaultDurationMs={null}>
-      <EventDiscountRegistrationPage />
+      <RouterProvider router={router} />
     </ToastProvider>,
   );
+
+  return { ...renderResult, router };
 };
 
 describe('EventDiscountRegistrationPage', () => {
@@ -60,6 +84,30 @@ describe('EventDiscountRegistrationPage', () => {
 
     expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
   });
+
+  it('navigates to the registration result page after fixture analysis completes', async () => {
+    const user = userEvent.setup();
+    const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    const { router } = renderEventDiscountRegistrationPage();
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    await user.upload(screen.getByLabelText('파일 선택'), excelFile);
+    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+    await user.click(screen.getByRole('button', { name: '분석 시작' }));
+
+    expect(screen.getByRole('progressbar', { name: 'AI 분석 진행률' })).toHaveAttribute(
+      'aria-valuenow',
+      '24',
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: '상품 결과 등록 확인' }, { timeout: 6_500 }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.registrationResult);
+  }, 7_000);
 
   it('keeps the modal open with selected file state regardless of local extension', async () => {
     const user = userEvent.setup();
