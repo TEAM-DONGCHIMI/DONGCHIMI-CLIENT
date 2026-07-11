@@ -28,25 +28,11 @@ export const contentSlotClassName = style({
   overflowY: 'auto',
 });
 
-export const brandClassName = style({
-  display: 'inline-flex',
+export const brandImageClassName = style({
+  display: 'block',
   width: '9.2rem',
   height: '3.2rem',
-  alignItems: 'center',
-  gap: '0.8rem',
-  color: atomic.neutral[90],
-});
-
-export const brandLogoClassName = style({
-  display: 'inline-flex',
-  width: '3.2rem',
-  height: '3.2rem',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '0.8rem',
-  backgroundColor: atomic.neutral[90],
-  color: atomic.common[0],
-  ...typography['caption-1-medium'],
+  flexShrink: 0,
 });
 
 export const profileAvatarClassName = style({
@@ -59,6 +45,42 @@ export const profileAvatarClassName = style({
   backgroundColor: atomic.neutral[20],
   color: atomic.neutral[70],
   ...typography['caption-1-medium'],
+});
+
+export const sidebarStateIconClassName = style({
+  position: 'relative',
+  display: 'inline-flex',
+  width: '2.4rem',
+  height: '2.4rem',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+export const sidebarStateIconDefaultClassName = style({
+  position: 'absolute',
+  inset: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  selectors: {
+    ':where(a:hover, button:hover, a[aria-current="page"], button[aria-current="page"]) &': {
+      opacity: 0,
+    },
+  },
+});
+
+export const sidebarStateIconHoverClassName = style({
+  position: 'absolute',
+  inset: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  opacity: 0,
+  selectors: {
+    ':where(a:hover, button:hover, a[aria-current="page"], button[aria-current="page"]) &': {
+      opacity: 1,
+    },
+  },
 });
 
 export const helpCardClassName = style({
