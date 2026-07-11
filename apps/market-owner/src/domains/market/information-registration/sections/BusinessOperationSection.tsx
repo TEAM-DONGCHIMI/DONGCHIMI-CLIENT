@@ -36,7 +36,9 @@ interface BusinessHoursProps<TFieldName extends 'businessTime' | 'additionalBusi
 }
 
 interface AdditionalBusinessHoursProps extends BusinessHoursProps<'additionalBusinessTime'> {
+  onAdd: () => void;
   onRemove: () => void;
+  visible: boolean;
 }
 
 interface HolidaySelectionProps {
@@ -82,11 +84,13 @@ export const BusinessOperationSection = ({
   const {
     day: additionalBusinessDay,
     errorMessage: additionalBusinessOperationErrorMessage,
+    onAdd: onAdditionalBusinessTimeAdd,
     onDayChange: onAdditionalBusinessDayChange,
     onRemove: onAdditionalBusinessTimeRemove,
     onTimeChange: onAdditionalBusinessTimeChange,
     time: additionalBusinessTime,
     timeField: additionalBusinessTimeField,
+    visible: isAdditionalBusinessTimeEnabled,
   } = additionalBusinessHours;
   const { onChange: onHolidayChange, value: holiday } = holidaySelection;
   const businessDayDropdownRef = useRef<HTMLDivElement>(null);
@@ -103,6 +107,7 @@ export const BusinessOperationSection = ({
   const isAdditionalBusinessTimeVisible = Boolean(overlayData[additionalBusinessTimeId]?.isOpen);
   const shouldShowAdditionalBusinessTime =
     isAdditionalBusinessTimeVisible ||
+    isAdditionalBusinessTimeEnabled ||
     additionalBusinessDay.length > 0 ||
     additionalBusinessTime.length > 0;
   const selectedBusinessDays = businessDay.length > 0 ? businessDay.split(', ') : [];
@@ -222,6 +227,11 @@ export const BusinessOperationSection = ({
     closeOverlay(additionalBusinessDayMenuId);
   };
 
+  const handleAddAdditionalBusinessTime = () => {
+    onAdditionalBusinessTimeAdd();
+    openOverlay(additionalBusinessTimeId);
+  };
+
   const handleBusinessHoursBlur = (event: FocusEvent<HTMLDivElement>) => {
     const nextFocusedElement = event.relatedTarget;
 
@@ -288,7 +298,7 @@ export const BusinessOperationSection = ({
                 {...businessTimeField}
                 value={businessTime}
                 onChange={onBusinessTimeChange}
-                onTrailingAction={() => openOverlay(additionalBusinessTimeId)}
+                onTrailingAction={handleAddAdditionalBusinessTime}
               />
             </div>
             {businessOperationErrorMessage && (

@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react';
+import { type ChangeEvent } from 'react';
 
 import { type UseFormRegisterReturn } from 'react-hook-form';
 
@@ -16,15 +16,18 @@ import {
   IcPlusSizeSmallColor60,
 } from '@dongchimi/design-system/icons';
 
-import { formatMarketPhoneNumber, isValidMarketPhone } from '../model';
 import * as S from './ContactSection.css';
 
-const additionalMarketPhoneErrorMessage = '올바른 전화번호를 입력해주세요.';
-
 export interface ContactSectionProps {
+  additionalMarketPhone: string;
+  additionalMarketPhoneErrorMessage?: string;
+  additionalMarketPhoneField: UseFormRegisterReturn<'marketPhone2'>;
+  isAdditionalMarketPhoneVisible: boolean;
   marketPhone1: string;
   marketPhone1ErrorMessage?: string;
   marketPhone1Field: UseFormRegisterReturn<'marketPhone1'>;
+  onAdditionalMarketPhoneAdd: () => void;
+  onAdditionalMarketPhoneRemove: () => void;
   onInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
   ownerPhone: string;
   ownerPhoneErrorMessage?: string;
@@ -32,34 +35,27 @@ export interface ContactSectionProps {
 }
 
 export const ContactSection = ({
+  additionalMarketPhone,
+  additionalMarketPhoneErrorMessage,
+  additionalMarketPhoneField,
+  isAdditionalMarketPhoneVisible,
   marketPhone1,
   marketPhone1ErrorMessage,
   marketPhone1Field,
+  onAdditionalMarketPhoneAdd,
+  onAdditionalMarketPhoneRemove,
   onInputChange,
   ownerPhone,
   ownerPhoneErrorMessage,
   ownerPhoneField,
 }: ContactSectionProps) => {
-  const [isAdditionalMarketPhoneVisible, setIsAdditionalMarketPhoneVisible] = useState(false);
-  const [additionalMarketPhone, setAdditionalMarketPhone] = useState('');
-
-  const handleRemoveAdditionalMarketPhone = () => {
-    setIsAdditionalMarketPhoneVisible(false);
-    setAdditionalMarketPhone('');
-  };
-
-  const handleAdditionalMarketPhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setAdditionalMarketPhone(formatMarketPhoneNumber(event.currentTarget.value));
-  };
-
-  const additionalMarketPhoneStatusProps =
-    additionalMarketPhone.length > 0 && !isValidMarketPhone(additionalMarketPhone)
-      ? ({
-          errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
-          errorMessage: additionalMarketPhoneErrorMessage,
-          status: 'error',
-        } as const)
-      : {};
+  const additionalMarketPhoneStatusProps = additionalMarketPhoneErrorMessage
+    ? ({
+        errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
+        errorMessage: additionalMarketPhoneErrorMessage,
+        status: 'error',
+      } as const)
+    : {};
   const marketPhone1StatusProps = marketPhone1ErrorMessage
     ? ({
         errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
@@ -101,7 +97,7 @@ export const ContactSection = ({
             {...marketPhone1Field}
             value={marketPhone1}
             onChange={onInputChange}
-            onTrailingAction={() => setIsAdditionalMarketPhoneVisible(true)}
+            onTrailingAction={onAdditionalMarketPhoneAdd}
             {...marketPhone1StatusProps}
           />
           {isAdditionalMarketPhoneVisible && (
@@ -109,14 +105,14 @@ export const ContactSection = ({
               aria-label='추가 마트 번호'
               className={S.addableFieldClassName}
               leadingIcon={<IcPhoneSizeSmallColor60 />}
-              name='additionalMarketPhone'
               placeholder='마트 번호를 입력해주세요.'
               trailingActionLabel='추가 마트 번호 제거'
               trailingIcon={<IcLineHorizontalSizeSmall />}
               type='tel'
+              {...additionalMarketPhoneField}
               value={additionalMarketPhone}
-              onChange={handleAdditionalMarketPhoneChange}
-              onTrailingAction={handleRemoveAdditionalMarketPhone}
+              onChange={onInputChange}
+              onTrailingAction={onAdditionalMarketPhoneRemove}
               {...additionalMarketPhoneStatusProps}
             />
           )}

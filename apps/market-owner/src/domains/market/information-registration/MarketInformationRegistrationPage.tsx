@@ -100,7 +100,7 @@ const getNextFormValue = (name: string, value: string) => {
     return formatMobilePhoneNumber(value);
   }
 
-  if (name === 'marketPhone1') {
+  if (name === 'marketPhone1' || name === 'marketPhone2') {
     return formatMarketPhoneNumber(value);
   }
 
@@ -140,6 +140,16 @@ const MarketInformationRegistrationPageContent = ({
     const { name, value } = event.currentTarget;
     const nextValue = getNextFormValue(name, value);
 
+    if (name === 'marketPhone2') {
+      setValue('marketPhone2', nextValue, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: false,
+      });
+
+      return;
+    }
+
     if (
       name === 'brn' ||
       name === 'businessTime' ||
@@ -160,8 +170,34 @@ const MarketInformationRegistrationPageContent = ({
   };
 
   const handleAdditionalBusinessTimeRemove = () => {
+    setValue('hasAdditionalBusinessHours', false, { shouldValidate: true });
     setFormValue('additionalBusinessDay', '');
     setFormValue('additionalBusinessTime', '');
+  };
+
+  const handleAdditionalBusinessTimeAdd = () => {
+    setValue('hasAdditionalBusinessHours', true, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: false,
+    });
+  };
+
+  const handleAdditionalMarketPhoneAdd = () => {
+    setValue('hasAdditionalMarketPhone', true, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: false,
+    });
+  };
+
+  const handleAdditionalMarketPhoneRemove = () => {
+    setValue('hasAdditionalMarketPhone', false, { shouldValidate: true });
+    setValue('marketPhone2', null, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
   };
 
   const handleBusinessHoursBlur = () => {
@@ -247,11 +283,13 @@ const MarketInformationRegistrationPageContent = ({
                       errorMessage:
                         errors.additionalBusinessTime?.message ??
                         errors.additionalBusinessDay?.message,
+                      onAdd: handleAdditionalBusinessTimeAdd,
                       onDayChange: handleAdditionalBusinessDayChange,
                       onRemove: handleAdditionalBusinessTimeRemove,
                       onTimeChange: handleFormattedInputChange,
                       time: form.additionalBusinessTime,
                       timeField: register('additionalBusinessTime'),
+                      visible: form.hasAdditionalBusinessHours,
                     }}
                     businessHours={{
                       day: form.businessDay,
@@ -268,12 +306,18 @@ const MarketInformationRegistrationPageContent = ({
                     }}
                   />
                   <ContactSection
+                    additionalMarketPhone={form.marketPhone2 ?? ''}
+                    additionalMarketPhoneErrorMessage={errors.marketPhone2?.message}
+                    additionalMarketPhoneField={register('marketPhone2')}
+                    isAdditionalMarketPhoneVisible={form.hasAdditionalMarketPhone}
                     marketPhone1={form.marketPhone1}
                     marketPhone1ErrorMessage={errors.marketPhone1?.message}
                     marketPhone1Field={register('marketPhone1')}
                     ownerPhone={form.ownerPhone}
                     ownerPhoneErrorMessage={errors.ownerPhone?.message}
                     ownerPhoneField={register('ownerPhone')}
+                    onAdditionalMarketPhoneAdd={handleAdditionalMarketPhoneAdd}
+                    onAdditionalMarketPhoneRemove={handleAdditionalMarketPhoneRemove}
                     onInputChange={handleFormattedInputChange}
                   />
                 </div>

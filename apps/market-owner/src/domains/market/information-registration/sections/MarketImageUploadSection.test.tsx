@@ -3,13 +3,14 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MarketImageUploadSection } from './MarketImageUploadSection';
+import type { MarketImageUploadErrorTypes } from './MarketImageUploadSection';
 
 const renderSection = ({
-  onImageError = vi.fn(),
-  onImageSelect = vi.fn(),
+  onImageError = vi.fn<(error: MarketImageUploadErrorTypes) => void>(),
+  onImageSelect = vi.fn<(file: File) => Promise<void> | void>(),
 }: {
-  onImageError?: ReturnType<typeof vi.fn>;
-  onImageSelect?: ReturnType<typeof vi.fn>;
+  onImageError?: (error: MarketImageUploadErrorTypes) => void;
+  onImageSelect?: (file: File) => Promise<void> | void;
 } = {}) => {
   render(<MarketImageUploadSection onImageError={onImageError} onImageSelect={onImageSelect} />);
 

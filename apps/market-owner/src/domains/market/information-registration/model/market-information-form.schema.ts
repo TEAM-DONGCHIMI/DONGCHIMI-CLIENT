@@ -50,6 +50,8 @@ export const marketInformationRegistrationSchema = z
       },
     ),
     detailAddress: requiredString(addressDetailErrorMessage).max(20, addressDetailErrorMessage),
+    hasAdditionalBusinessHours: z.boolean(),
+    hasAdditionalMarketPhone: z.boolean(),
     holiday: z.string(),
     latitude: z.number(),
     longitude: z.number(),
@@ -68,15 +70,18 @@ export const marketInformationRegistrationSchema = z
     }),
     thumbnailUrl: z.string().nullable(),
   })
-  .superRefine(({ additionalBusinessDay, additionalBusinessTime }, context) => {
+  .superRefine((form, context) => {
+    const {
+      additionalBusinessDay,
+      additionalBusinessTime,
+      hasAdditionalBusinessHours,
+      hasAdditionalMarketPhone,
+      marketPhone2,
+    } = form;
     const hasAdditionalBusinessDay = additionalBusinessDay.trim().length > 0;
     const hasAdditionalBusinessTime = additionalBusinessTime.trim().length > 0;
 
-    if (!hasAdditionalBusinessDay && !hasAdditionalBusinessTime) {
-      return;
-    }
-
-    if (!hasAdditionalBusinessDay) {
+    if (hasAdditionalBusinessHours && !hasAdditionalBusinessDay) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message: businessOperationErrorMessages.empty,
@@ -84,21 +89,35 @@ export const marketInformationRegistrationSchema = z
       });
     }
 
-    if (!hasAdditionalBusinessTime) {
+    if (hasAdditionalBusinessHours && !hasAdditionalBusinessTime) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message: businessOperationErrorMessages.empty,
         path: ['additionalBusinessTime'],
       });
-
-      return;
-    }
-
-    if (!isValidBusinessTime(additionalBusinessTime)) {
+    } else if (hasAdditionalBusinessHours && !isValidBusinessTime(additionalBusinessTime)) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message: businessOperationErrorMessages.invalidTime,
         path: ['additionalBusinessTime'],
+      });
+    }
+
+    if (hasAdditionalMarketPhone && (marketPhone2 === null || marketPhone2.trim().length === 0)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: marketPhoneErrorMessages.empty,
+        path: ['marketPhone2'],
+      });
+    } else if (
+      hasAdditionalMarketPhone &&
+      marketPhone2 !== null &&
+      !isValidMarketPhone(marketPhone2)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: marketPhoneErrorMessages.invalid,
+        path: ['marketPhone2'],
       });
     }
   });
