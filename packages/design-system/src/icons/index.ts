@@ -84,6 +84,8 @@ export { default as IcPlusSizeSmall } from './generated/IcPlusSizeSmall';
 export { default as IcPlus } from './generated/IcPlus';
 export { default as IcProgressFill } from './generated/IcProgressFill';
 export { default as IcProgress } from './generated/IcProgress';
+export { default as IcRangeSaleEditDefault } from './generated/IcRangeSaleEditDefault';
+export { default as IcRangeSaleUploadDefault } from './generated/IcRangeSaleUploadDefault';
 export { default as IcResetSizeSmallColorNegative } from './generated/IcResetSizeSmallColorNegative';
 export { default as IcReset } from './generated/IcReset';
 export { default as IcSearchSizeSmall } from './generated/IcSearchSizeSmall';
@@ -97,6 +99,8 @@ export { default as IcShareIosStateSmallColorPrimary } from './generated/IcShare
 export { default as IcShareIos } from './generated/IcShareIos';
 export { default as IcShareSizeXsmall } from './generated/IcShareSizeXsmall';
 export { default as IcShare } from './generated/IcShare';
+export { default as IcTodaySaleEditDefalut } from './generated/IcTodaySaleEditDefalut';
+export { default as IcTodaySaleUploadDefault } from './generated/IcTodaySaleUploadDefault';
 export { default as IcTrashSizeSmallColorNegativeStrong } from './generated/IcTrashSizeSmallColorNegativeStrong';
 export { default as IcTrashSizeSmallColorNegative } from './generated/IcTrashSizeSmallColorNegative';
 export { default as IcTrash } from './generated/IcTrash';
