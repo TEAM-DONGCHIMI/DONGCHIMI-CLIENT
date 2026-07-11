@@ -26,9 +26,9 @@ import { flattenNearbyMarketsPages } from './utils/flatten-nearby-markets-pages'
 const LOCATION_PERMISSION_ERROR_TOAST_ID = 'nearby-markets-location-permission-error';
 const POSTCODE_SEARCH_ERROR_TOAST_ID = 'nearby-markets-postcode-search-error';
 const POSTCODE_SEARCH_ERROR_MESSAGE = '우편번호 검색을 불러오지 못했어요';
-const LOCATION_PERMISSION_ERROR_MESSAGE = '위치 접근 허용에 실패했어요';
 
 type MapCoordinatesTypes = Readonly<{ lat: number; lng: number }>;
+const LOCATION_PERMISSION_ERROR_MESSAGE = '위치 접근 허용에 실패했어요.';
 
 type NearbyMarketsListQueryTypes = Pick<
   ReturnType<typeof useGetNearbyMarketsInfiniteQuery>,
@@ -41,6 +41,8 @@ type NearbyMarketsClientContextValueTypes = Readonly<{
     errorCode: ReturnType<typeof useGeolocation>['errorCode'];
     isMarketsError: boolean;
     markets: NearbyMarketDtoTypes[];
+    onSelectedCoordinatesChange: (coordinates: MapCoordinatesTypes | null) => void;
+    selectedMapAddress: string | null;
   };
   marketList: NearbyMarketsListQueryTypes & {
     keyword?: string;
@@ -65,13 +67,17 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
   const toast = useToast();
   const [keyword, setKeyword] = useState('');
   const [hasEditedKeyword, setHasEditedKeyword] = useState(false);
+  const [selectedMapAddress, setSelectedMapAddress] = useState<string | null>(null);
+  const [selectedCoordinates, setSelectedCoordinates] = useState<MapCoordinatesTypes | null>(null);
   const debouncedKeyword = useDebouncedValue(keyword);
   const { coordinates, errorCode } = useGeolocation();
   const shouldOpenPostcodeSearch = errorCode === 'PERMISSION_DENIED';
+  const searchCoordinates = selectedCoordinates ?? coordinates;
+  const marketSearchKeyword = selectedMapAddress == null ? debouncedKeyword : undefined;
   const nearbyMarketsParams = {
-    keyword: debouncedKeyword,
-    lat: coordinates?.lat,
-    lng: coordinates?.lng,
+    keyword: marketSearchKeyword,
+    lat: searchCoordinates?.lat,
+    lng: searchCoordinates?.lng,
   };
 
   const {
@@ -99,6 +105,8 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
 
   const handleKeywordChange = useCallback((value: string) => {
     setHasEditedKeyword(true);
+    setSelectedMapAddress(null);
+    setSelectedCoordinates(null);
     setKeyword(value);
   }, []);
 
@@ -108,15 +116,20 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
     });
   }, [toast]);
 
-  const handleAdministrativeAddressSelect = useCallback((address: string) => {
-    setHasEditedKeyword(true);
-    setKeyword(address);
-  }, []);
+  const handlePostcodeAddressSelect = useCallback(
+    (address: { mapAddress: string; searchKeyword: string }) => {
+      setHasEditedKeyword(true);
+      setSelectedMapAddress(address.mapAddress);
+      setSelectedCoordinates(null);
+      setKeyword(address.searchKeyword);
+    },
+    [],
+  );
 
   const openPostcodeSearch = useDaumPostcodeSearch({
     enabled: shouldOpenPostcodeSearch,
     onError: handlePostcodeSearchError,
-    onSelectAdministrativeAddress: handleAdministrativeAddressSelect,
+    onSelectAddress: handlePostcodeAddressSelect,
   });
 
   const displayValue =
@@ -128,8 +141,10 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
       errorCode,
       isMarketsError: isMarkerMarketsError,
       markets: markerMarkets,
+      onSelectedCoordinatesChange: setSelectedCoordinates,
+      selectedMapAddress,
     }),
-    [coordinates, errorCode, isMarkerMarketsError, markerMarkets],
+    [coordinates, errorCode, isMarkerMarketsError, markerMarkets, selectedMapAddress],
   );
 
   const marketListValue = useMemo<NearbyMarketsClientContextValueTypes['marketList']>(
@@ -140,17 +155,17 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
       isError: isMarketsError,
       isFetchingNextPage,
       isPending: isMarketsPending,
-      keyword: debouncedKeyword,
+      keyword: marketSearchKeyword,
       markets,
     }),
     [
-      debouncedKeyword,
       error,
       fetchNextPage,
       hasNextPage,
       isFetchingNextPage,
       isMarketsError,
       isMarketsPending,
+      marketSearchKeyword,
       markets,
     ],
   );

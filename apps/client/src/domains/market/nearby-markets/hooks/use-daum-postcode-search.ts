@@ -5,6 +5,8 @@ import { useCallback, useEffect } from 'react';
 type DaumPostcodeCompleteDataTypes = Readonly<{
   address: string;
   bname: string;
+  jibunAddress: string;
+  roadAddress: string;
   sido: string;
   sigungu: string;
 }>;
@@ -35,6 +37,14 @@ export const formatDaumPostcodeAdministrativeAddress = ({
   sigungu,
 }: DaumPostcodeCompleteDataTypes) => {
   return [sido, sigungu, bname].filter(Boolean).join(' ') || address;
+};
+
+export const resolveDaumPostcodeMapAddress = ({
+  address,
+  jibunAddress,
+  roadAddress,
+}: DaumPostcodeCompleteDataTypes) => {
+  return roadAddress || address || jibunAddress;
 };
 
 export const loadDaumPostcodeScript = () => {
@@ -86,13 +96,13 @@ export const loadDaumPostcodeScript = () => {
 type UseDaumPostcodeSearchOptionsTypes = Readonly<{
   enabled: boolean;
   onError?: () => void;
-  onSelectAdministrativeAddress: (address: string) => void;
+  onSelectAddress: (address: { mapAddress: string; searchKeyword: string }) => void;
 }>;
 
 export const useDaumPostcodeSearch = ({
   enabled,
   onError,
-  onSelectAdministrativeAddress,
+  onSelectAddress,
 }: UseDaumPostcodeSearchOptionsTypes) => {
   useEffect(() => {
     if (!enabled) {
@@ -119,10 +129,13 @@ export const useDaumPostcodeSearch = ({
 
         new Postcode({
           oncomplete: (data) => {
-            onSelectAdministrativeAddress(formatDaumPostcodeAdministrativeAddress(data));
+            onSelectAddress({
+              mapAddress: resolveDaumPostcodeMapAddress(data),
+              searchKeyword: formatDaumPostcodeAdministrativeAddress(data),
+            });
           },
         }).open();
       })
       .catch(onError);
-  }, [enabled, onError, onSelectAdministrativeAddress]);
+  }, [enabled, onError, onSelectAddress]);
 };
