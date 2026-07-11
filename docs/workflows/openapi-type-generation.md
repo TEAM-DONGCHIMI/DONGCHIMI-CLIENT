@@ -13,6 +13,7 @@ pnpm api:generate
 이 명령은 `.env`, `.env.local`, shell environment에서 actor별 Swagger URL을 읽습니다.
 
 ```env
+COMMON_SWAGGER_URL=
 USER_SWAGGER_URL=
 OWNER_SWAGGER_URL=
 ```
@@ -24,16 +25,18 @@ OWNER_SWAGGER_URL=
 생성된 API contract 타입은 아래 경로에 둡니다.
 
 ```text
-packages/shared/src/api/__generated__/user/data-contracts.ts
-packages/shared/src/api/__generated__/owner/data-contracts.ts
+packages/shared/src/api/__generated__/common/data-contracts.ts
+apps/client/src/shared/api/__generated__/data-contracts.ts
+apps/market-owner/src/shared/api/__generated__/data-contracts.ts
 ```
 
 `__generated__` 디렉터리의 파일은 직접 수정하지 않습니다. API contract가 바뀌면 Swagger 기준으로 다시 생성합니다.
 
 ## 경계
 
-- `packages/shared`는 생성된 request/response contract 타입만 소유합니다.
-- Swagger definition이 actor별로 나뉘어 있으므로 사용자 API와 점주 API contract는 분리해서 생성합니다.
+- `packages/shared`는 양쪽 앱에서 재사용하는 공통 API contract 타입만 소유합니다.
+- 사용자 API contract는 `apps/client`, 점주 API contract는 `apps/market-owner`가 소유합니다.
+- Swagger definition별 출력 위치는 `scripts/gen-api.mjs`의 `API_DEFINITIONS`에서 명시적으로 설정합니다.
 - `apps/client`와 `apps/market-owner`는 각 app의 `shared/api/http-client.ts`를 계속 사용합니다.
 - API helper 함수는 app-local `httpClient`를 호출합니다.
 - TanStack Query key, cache 동작, invalidation, retry, loading/error 처리는 app/domain 코드에서 관리합니다.
