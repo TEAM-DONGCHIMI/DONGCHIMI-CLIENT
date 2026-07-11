@@ -1,11 +1,12 @@
 # API Contract
 
-`@dongchimi/shared/api`는 OpenAPI에서 생성한 request/response 타입과 API path contract를 노출합니다.
+`@dongchimi/shared/api`는 공통 OpenAPI 문서에서 생성한 request/response 타입과 API path contract를 노출합니다.
 실제 HTTP 요청, query key, cache, mutation side effect는 각 앱의 domain API helper와 TanStack Query hook이 소유합니다.
+사용자와 점주 전용 OpenAPI 타입은 각각 owning app의 `src/shared/api/__generated__`가 소유합니다.
 
 ## Scope
 
-- OpenAPI generated type export
+- 공통 OpenAPI generated type을 `CommonApiTypes` namespace로 export
 - user / owner / common endpoint path 상수
 - endpoint path parameter 인코딩
 - query string 조립 helper

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  isTodaySpecialStartDateSelectable,
   parsePriceInput,
   todaySpecialProductDescriptionMaxLength,
   todaySpecialProductNameMaxLength,
@@ -42,7 +43,9 @@ export const todaySpecialProductFormSchema = z
     name: productNameSchema,
     salePrice: createPriceInputSchema('판매가를 입력해주세요.'),
     specialPrice: createPriceInputSchema('오늘의 특가를 입력해주세요.'),
-    startDate: z.iso.date('행사 시작일을 선택해주세요.'),
+    startDate: z.iso.date('행사 시작일을 선택해주세요.').refine(isTodaySpecialStartDateSelectable, {
+      message: '오늘 이후 날짜를 선택해주세요.',
+    }),
   })
   .superRefine((product, context) => {
     const salePrice = parsePriceInput(product.salePrice);

@@ -53,6 +53,7 @@ const EVENT_DISCOUNT_PRODUCT_DETAIL = {
 } satisfies ProductDetailFixtureTypes;
 
 const PRODUCT_DETAIL_FIXTURE_BY_ID: Record<string, ProductDetailFixtureTypes> = {
+  '101': TODAY_SPECIAL_PRODUCT_DETAIL,
   'event-discount-samgyeopsal-500g': EVENT_DISCOUNT_PRODUCT_DETAIL,
   'event-sale-samgyeopsal-500g': EVENT_DISCOUNT_PRODUCT_DETAIL,
   'samgyeopsal-500g': TODAY_SPECIAL_PRODUCT_DETAIL,

@@ -11,8 +11,7 @@ export type {
   UserMarketLocationSearchParamsTypes,
   UserPeriodicProductsSearchParamsTypes,
 } from './api-endpoints';
-export type * as OwnerApiTypes from './__generated__/owner/data-contracts';
-export type * as UserApiTypes from './__generated__/user/data-contracts';
+export type * as CommonApiTypes from './__generated__/common/data-contracts';
 export {
   ApiResponseValidationError,
   createApiResponseValidator,

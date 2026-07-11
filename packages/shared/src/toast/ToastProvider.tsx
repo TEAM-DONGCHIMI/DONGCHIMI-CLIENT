@@ -51,6 +51,7 @@ export interface ToastProviderProps {
   maxVisibleCount?: number;
   offset?: ToastViewportOffsetTypes;
   placement?: ToastPlacementTypes;
+  portalContainer?: Element | DocumentFragment | null;
 }
 
 interface ToastEntry {
@@ -196,7 +197,11 @@ const getToastViewportStyle = (offset: ToastViewportOffsetTypes | undefined) => 
   return style;
 };
 
-const getPortalContainer = () => {
+const getPortalContainer = (portalContainer: ToastProviderProps['portalContainer']) => {
+  if (portalContainer !== undefined) {
+    return portalContainer;
+  }
+
   if (typeof document === 'undefined') {
     return null;
   }
@@ -258,11 +263,12 @@ export const ToastProvider = ({
   maxVisibleCount = TOAST_DEFAULT_MAX_VISIBLE_COUNT,
   offset,
   placement = 'bottom-center',
+  portalContainer: customPortalContainer,
 }: ToastProviderProps) => {
   const [toasts, dispatch] = useReducer(toastReducer, []);
   const nextToastIdRef = useRef(0);
   const nextToastRevisionRef = useRef(0);
-  const portalContainer = getPortalContainer();
+  const portalContainer = getPortalContainer(customPortalContainer);
 
   const dismiss = useCallback((id: ToastIdTypes) => {
     dispatch({ id, type: 'dismiss' });

@@ -1,27 +1,54 @@
-import Link from 'next/link';
-
+import { MobileHeader } from '@/shared/components/ui/mobile-header';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
-const SAMPLE_PRODUCT_ID = 'samgyeopsal-500g';
+import {
+  DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT,
+  DEFAULT_TODAY_SPECIAL_VISIBLE_COUNT,
+  marketProductsFixture,
+} from './fixtures/market-products.fixture';
+import * as S from './MarketProductsPage.css';
+import { MarketProductsBackButton } from './components/MarketProductsBackButton';
+import { EventDiscountProductsSection } from './sections/EventDiscountProductsSection';
+import { MarketOverviewSection } from './sections/MarketOverviewSection';
+import { PopularProductsSection } from './sections/PopularProductsSection';
+import { TodaySpecialProductsSection } from './sections/TodaySpecialProductsSection';
+import { getShareUrl } from './utils/market-actions';
 
 type MarketProductsPageProps = Readonly<{
   marketId: string;
 }>;
 
 export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
-  return (
-    <main>
-      <section aria-labelledby='market-products-title'>
-        <p>마트 ID: {marketId}</p>
-        <h1 id='market-products-title'>마트 전단 상품</h1>
-        <p>오늘의 특가와 기간 할인 상품을 목록으로 확인하는 화면입니다.</p>
+  const { eventDiscount, market, share, todaySpecial } = marketProductsFixture;
+  const shareUrl = getShareUrl(share.slug);
 
-        <nav aria-label='상품 탐색'>
-          <Link href={CLIENT_ROUTES.marketProduct(marketId, SAMPLE_PRODUCT_ID)}>
-            삼겹살 500g 상세 보기
-          </Link>
-        </nav>
-      </section>
+  return (
+    <main className={S.pageClassName}>
+      <MobileHeader className={S.headerClassName}>
+        <MarketProductsBackButton fallbackHref={CLIENT_ROUTES.markets} />
+        <MobileHeader.Title>전단보기</MobileHeader.Title>
+      </MobileHeader>
+
+      <div className={S.contentClassName}>
+        <MarketOverviewSection market={market} shareUrl={shareUrl} />
+
+        <div className={S.productSectionsFrameClassName}>
+          <PopularProductsSection marketId={marketId} products={market.top3} />
+
+          <TodaySpecialProductsSection
+            initialVisibleCount={DEFAULT_TODAY_SPECIAL_VISIBLE_COUNT}
+            marketId={marketId}
+            products={todaySpecial.products}
+            totalCount={todaySpecial.totalCount}
+          />
+
+          <EventDiscountProductsSection
+            eventDiscount={eventDiscount}
+            marketId={marketId}
+            visibleCategoryCount={DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT}
+          />
+        </div>
+      </div>
     </main>
   );
 };

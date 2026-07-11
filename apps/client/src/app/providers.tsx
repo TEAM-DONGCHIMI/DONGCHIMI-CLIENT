@@ -12,10 +12,10 @@ type AppProvidersProps = Readonly<{
 
 export const AppProviders = ({ children }: AppProvidersProps) => {
   return (
-    <OverlayProvider>
-      <ToastProvider placement='top-center'>
-        <QueryProvider>{children}</QueryProvider>
+    <QueryProvider>
+      <ToastProvider placement='bottom-center'>
+        <OverlayProvider>{children}</OverlayProvider>
       </ToastProvider>
-    </OverlayProvider>
+    </QueryProvider>
   );
 };
