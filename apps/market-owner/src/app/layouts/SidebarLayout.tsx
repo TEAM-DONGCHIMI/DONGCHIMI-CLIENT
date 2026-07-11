@@ -4,9 +4,11 @@ import { Outlet, useLocation, useNavigate } from 'react-router';
 import {
   IcCircleQuestion,
   IcHome,
-  IcPlus,
+  IcRangeSaleEditDefault,
+  IcRangeSaleUploadDefault,
   IcSetting,
-  IcWrite,
+  IcTodaySaleEditDefalut,
+  IcTodaySaleUploadDefault,
 } from '@dongchimi/design-system/icons';
 import { ToastProvider } from '@dongchimi/shared/toast';
 
@@ -61,22 +63,22 @@ const sidebarSections: SidebarSection[] = [
     id: 'product',
     items: [
       createSidebarItem({
-        icon: <IcPlus aria-hidden='true' />,
+        icon: <IcTodaySaleUploadDefault aria-hidden='true' />,
         id: 'todaySpecialRegistration',
         label: '오늘의 특가 상품 등록',
       }),
       createSidebarItem({
-        icon: <IcPlus aria-hidden='true' />,
+        icon: <IcRangeSaleUploadDefault aria-hidden='true' />,
         id: 'eventDiscountRegistration',
         label: '행사 할인 상품 등록',
       }),
       createSidebarItem({
-        icon: <IcWrite aria-hidden='true' />,
+        icon: <IcTodaySaleEditDefalut aria-hidden='true' />,
         id: 'todaySpecialEdit',
         label: '오늘의 특가 상품 수정',
       }),
       createSidebarItem({
-        icon: <IcWrite aria-hidden='true' />,
+        icon: <IcRangeSaleEditDefault aria-hidden='true' />,
         id: 'eventDiscountEdit',
         label: '행사 할인 상품 수정',
       }),
