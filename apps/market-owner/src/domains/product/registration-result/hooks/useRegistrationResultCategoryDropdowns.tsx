@@ -2,12 +2,12 @@ import { useEffect, useRef, type MouseEvent } from 'react';
 import { overlay, useOverlayData } from 'overlay-kit';
 
 import type { ProductCategoryGroupTypes } from '@/shared/constants/product-categories';
+import { getProductCategoryGroup } from '@/shared/utils/product-category.utils';
 
 import {
   CATEGORY_FILTER_DROPDOWN_OVERLAY_ID,
   CategoryFilterDropdown,
   ProductCategoryDropdown,
-  getAnchorRect,
 } from '../components/RegistrationResultDropdown';
 import type { RegistrationResultProduct } from '../fixtures';
 import {
@@ -72,12 +72,12 @@ export const useRegistrationResultCategoryDropdowns = ({
       return;
     }
 
-    const anchorRect = getAnchorRect(event.currentTarget);
+    const anchorElement = event.currentTarget;
 
     overlay.open(
       ({ isOpen, close, unmount }) => (
         <CategoryFilterDropdown
-          anchorRect={anchorRect}
+          anchorElement={anchorElement}
           close={close}
           isOpen={isOpen}
           selectedCategories={selectedCategoryFilters}
@@ -91,12 +91,13 @@ export const useRegistrationResultCategoryDropdowns = ({
 
   const openProductCategoryDropdown =
     (product: RegistrationResultProduct) => (event: MouseEvent<HTMLButtonElement>) => {
-      const anchorRect = getAnchorRect(event.currentTarget);
-      const selectedCategory = getRegistrationResultProductFieldValue(
+      const anchorElement = event.currentTarget;
+      const selectedCategoryValue = getRegistrationResultProductFieldValue(
         product,
         productDrafts,
         'category',
       );
+      const selectedCategory = getProductCategoryGroup(selectedCategoryValue);
       const overlayId = getProductCategoryDropdownOverlayId(product.id);
 
       closeProductCategoryDropdown(productCategoryDropdownOverlayIdRef.current);
@@ -105,7 +106,7 @@ export const useRegistrationResultCategoryDropdowns = ({
       overlay.open(
         ({ isOpen, close, unmount }) => (
           <ProductCategoryDropdown
-            anchorRect={anchorRect}
+            anchorElement={anchorElement}
             close={close}
             isOpen={isOpen}
             selectedCategory={selectedCategory}

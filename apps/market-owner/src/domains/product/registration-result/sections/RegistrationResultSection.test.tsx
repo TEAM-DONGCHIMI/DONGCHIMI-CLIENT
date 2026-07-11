@@ -2,8 +2,8 @@ import { ToastProvider } from '@dongchimi/shared/toast';
 import { OverlayProvider, overlay } from 'overlay-kit';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { render, screen, userEvent, within } from '@/test';
-import { registrationResultFixture } from '../fixtures';
+import { fireEvent, render, screen, userEvent, waitFor, within } from '@/test';
+import { registrationResultFixture, type RegistrationResultProduct } from '../fixtures';
 import {
   RegistrationResultSection,
   type RegistrationResultSectionProps,
@@ -28,6 +28,30 @@ const renderSection = (props: Partial<RegistrationResultSectionProps> = {}) => {
   );
 
   return { handlePrevious, handleRegister };
+};
+
+const createDomRect = ({
+  height,
+  left,
+  top,
+  width,
+}: {
+  height: number;
+  left: number;
+  top: number;
+  width: number;
+}): DOMRect => {
+  return {
+    bottom: top + height,
+    height,
+    left,
+    right: left + width,
+    top,
+    width,
+    x: left,
+    y: top,
+    toJSON: () => ({}),
+  } as DOMRect;
 };
 
 afterEach(() => {
@@ -160,7 +184,7 @@ describe('RegistrationResultSection', () => {
       const productNumber = index + 13;
 
       return {
-        category: '김치/반찬',
+        category: '가공식품',
         discountPeriod: '',
         id: `needs-edit-${String(productNumber).padStart(3, '0')}`,
         price: '',
@@ -190,6 +214,8 @@ describe('RegistrationResultSection', () => {
 
     const [categoryButton] = screen.getAllByRole('button', { name: '상품 카테고리 선택' });
 
+    expect(categoryButton).toHaveTextContent('가공식품');
+
     await user.click(categoryButton);
 
     const dropdown = await screen.findByRole('group', { name: '상품 카테고리' });
@@ -197,6 +223,53 @@ describe('RegistrationResultSection', () => {
     await user.click(within(dropdown).getByRole('button', { name: '수산' }));
 
     expect(categoryButton).toHaveTextContent('수산');
+  });
+
+  it('keeps the product category dropdown anchored while scrolling', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    const [categoryButton] = screen.getAllByRole('button', { name: '상품 카테고리 선택' });
+    const getBoundingClientRectSpy = vi
+      .spyOn(categoryButton, 'getBoundingClientRect')
+      .mockReturnValue(createDomRect({ height: 40, left: 200, top: 100, width: 206 }));
+
+    await user.click(categoryButton);
+
+    const dropdown = await screen.findByRole('group', { name: '상품 카테고리' });
+
+    expect(dropdown).toHaveStyle({ left: '200px', top: '148px' });
+
+    getBoundingClientRectSpy.mockReturnValue(
+      createDomRect({ height: 40, left: 200, top: 40, width: 206 }),
+    );
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(dropdown).toHaveStyle({ left: '200px', top: '88px' });
+    });
+
+    getBoundingClientRectSpy.mockReturnValue(
+      createDomRect({ height: 40, left: 200, top: -60, width: 206 }),
+    );
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('group', { name: '상품 카테고리' })).not.toBeInTheDocument();
+    });
+  });
+
+  it('formats discount period while typing date digits', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    const [discountPeriodInput] = screen.getAllByRole('textbox', { name: '상품 할인 기간 입력' });
+
+    await user.type(discountPeriodInput, '2026063020260702');
+
+    expect(discountPeriodInput).toHaveValue('2026-06-30 ~ 2026-07-02');
   });
 
   it('keeps edited product field values in the result row', async () => {
@@ -226,6 +299,54 @@ describe('RegistrationResultSection', () => {
 
     expect(await screen.findByRole('img', { name: 'preview.png' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '상품 이미지 변경' })).toBeInTheDocument();
+  });
+
+  it('replaces an existing product image from the uploaded image button', async () => {
+    const user = userEvent.setup();
+    const replacementImage = new File(['replacement'], 'replacement.png', { type: 'image/png' });
+    const productWithExistingImage: RegistrationResultProduct = {
+      category: '가공식품',
+      discountPeriod: '',
+      id: 'needs-edit-with-image',
+      imageAlt: '기존 상품 이미지',
+      imageUrl: 'https://example.com/product.png',
+      price: '',
+      productName: '기존 이미지 상품',
+      promotionText: '',
+      status: 'needsEdit',
+      statusReason: '판매가격 미입력',
+    };
+
+    renderSection({
+      products: [productWithExistingImage],
+      summary: {
+        completedCount: 0,
+        needsEditCount: 1,
+        totalCount: 1,
+      },
+    });
+
+    expect(screen.getByRole('img', { name: '기존 상품 이미지' })).toBeInTheDocument();
+
+    const changeImageButton = screen.getByRole('button', {
+      name: '기존 이미지 상품 이미지 변경',
+    });
+    const imageInputClickSpy = vi
+      .spyOn(HTMLInputElement.prototype, 'click')
+      .mockImplementation(() => undefined);
+
+    try {
+      await user.click(changeImageButton);
+
+      expect(imageInputClickSpy).toHaveBeenCalledTimes(1);
+    } finally {
+      imageInputClickSpy.mockRestore();
+    }
+
+    await user.upload(screen.getByLabelText('기존 이미지 상품 이미지 파일 선택'), replacementImage);
+
+    expect(await screen.findByRole('img', { name: 'replacement.png' })).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: '기존 상품 이미지' })).not.toBeInTheDocument();
   });
 
   it('filters products by search value', async () => {

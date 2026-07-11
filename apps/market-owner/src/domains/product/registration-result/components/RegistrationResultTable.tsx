@@ -1,5 +1,7 @@
 import { type MouseEvent, type ReactNode } from 'react';
 
+import { getProductCategoryGroup } from '@/shared/utils/product-category.utils';
+
 import type { RegistrationResultProduct } from '../fixtures';
 import {
   getRegistrationResultProductFieldValue,
@@ -43,8 +45,10 @@ const getProductFieldValues = (
   product: RegistrationResultProduct,
   productDrafts: RegistrationResultProductDraftMapTypes,
 ): RegistrationResultProductFieldValues => {
+  const category = getRegistrationResultProductFieldValue(product, productDrafts, 'category');
+
   return {
-    category: getRegistrationResultProductFieldValue(product, productDrafts, 'category'),
+    category: getProductCategoryGroup(category),
     discountPeriod: getRegistrationResultProductFieldValue(
       product,
       productDrafts,
