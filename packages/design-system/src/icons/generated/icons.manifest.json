@@ -419,6 +419,26 @@
     "generatedFingerprint": "777b92db7e9d041b65d52e079e52dc73168045cd732dbd060e3e2a077e5c29ca",
     "sourceFingerprint": "71592469c5ff95e284011c26d3b7625e8cc65d2b57da484c9a5afd05631d884b"
   },
+  "ic-range-sale-edit-default.svg": {
+    "generatedFile": "IcRangeSaleEditDefault.tsx",
+    "generatedFingerprint": "196dadd509646b95421d172470b161aa590681daaa34280ecc5399ad697c6786",
+    "sourceFingerprint": "0b19d99cf58498924c507673486f7e534700cd804b4212d4686a376ca97341bf"
+  },
+  "ic-range-sale-edit-hover.svg": {
+    "generatedFile": "IcRangeSaleEditHover.tsx",
+    "generatedFingerprint": "e93890378a5517a049e9354e4097b0ade4ec9cfc99baf2ea7f15f1eaccd17d18",
+    "sourceFingerprint": "d9e0485643657bfe4bfc8c63159251ba46af3eb4418bac6645540098dc62af3c"
+  },
+  "ic-range-sale-upload-default.svg": {
+    "generatedFile": "IcRangeSaleUploadDefault.tsx",
+    "generatedFingerprint": "91d846763a73a95103abaf938a287c7a128db501066abfec66b4a9306385bfc8",
+    "sourceFingerprint": "458d57348a847fdd17081cbd92b31352a92cdc518bdf63b1ab39908a77d55554"
+  },
+  "ic-range-sale-upload-hover.svg": {
+    "generatedFile": "IcRangeSaleUploadHover.tsx",
+    "generatedFingerprint": "e05e66c9a5bcc8467177d6a0c69ffad3b9ad21a3325d53ca193b376dc2b06d71",
+    "sourceFingerprint": "b9cc58ee8df2af628d54aa93f62e2f39a02ebf841543e8faa4869930bb4e204f"
+  },
   "ic-reset-size-small-color-negative.svg": {
     "generatedFile": "IcResetSizeSmallColorNegative.tsx",
     "generatedFingerprint": "9549caf8d11fd84457b53b1ce5e20fa2814ec0f7677c9817741d5a1acda786cd",
@@ -483,6 +503,26 @@
     "generatedFile": "IcShare.tsx",
     "generatedFingerprint": "0ac72246b7fdef93962296b8ad1c0a7294a62c395b061fa705a55bd1c26eacaf",
     "sourceFingerprint": "480f3b5a01497bf45c1248083f1b0d96d16ff1f15ca77aea9bd07717db61e62d"
+  },
+  "ic-today-sale-edit-default.svg": {
+    "generatedFile": "IcTodaySaleEditDefault.tsx",
+    "generatedFingerprint": "2e2e4c089290786dbe41d0b5e9db28b62ddf9f652b71de821388d61e7ff5bca2",
+    "sourceFingerprint": "22bd8e6b58cb6b2831ca32b75b6ca727368193a9eb092b1b1f71099fc75b0876"
+  },
+  "ic-today-sale-edit-hover.svg": {
+    "generatedFile": "IcTodaySaleEditHover.tsx",
+    "generatedFingerprint": "6f94dea57c6f31180189eb3abe12ff327d126bba3334c21c8430c738ca994394",
+    "sourceFingerprint": "03cf6ea83a0198d7ad14f97049375f61ffaea34ededa94fc4eea03e66d562543"
+  },
+  "ic-today-sale-upload-default.svg": {
+    "generatedFile": "IcTodaySaleUploadDefault.tsx",
+    "generatedFingerprint": "4d5dac6db3b92243e3da7c520b2e695c25df8a01a6dced4209d3a21da8ce618b",
+    "sourceFingerprint": "d62950faffa820d7f18e19b5879167cb6b823ef03361e03afe7f7dc567f7f649"
+  },
+  "ic-today-sale-upload-hover.svg": {
+    "generatedFile": "IcTodaySaleUploadHover.tsx",
+    "generatedFingerprint": "2852f7767bfb16c2f604627b7ac30df5a037ca3b209b403fb1e31e83aa8978af",
+    "sourceFingerprint": "50a5951c0d5601875b7befc450fa52efb21cf726dc13f6a8d951130166315461"
   },
   "ic-trash-size-small-color-negative-strong.svg": {
     "generatedFile": "IcTrashSizeSmallColorNegativeStrong.tsx",
