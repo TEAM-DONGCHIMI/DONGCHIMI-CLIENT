@@ -41,6 +41,7 @@ interface ProductEditModalProps {
 
 interface OpenProductEditModalParams {
   product: ProductEditCardProps;
+  onClose?: () => void;
   onSubmit?: (product: ProductEditCardProps) => void;
   variant: ProductEditCardVariantTypes;
 }
@@ -337,6 +338,7 @@ export const ProductEditModal = ({
 export const openProductEditModal = ({
   product,
   variant,
+  onClose,
   onSubmit,
 }: OpenProductEditModalParams) => {
   openProductEditOverlay({
@@ -345,7 +347,10 @@ export const openProductEditModal = ({
         open={isOpen}
         product={product}
         variant={variant}
-        onClose={closeOverlay}
+        onClose={() => {
+          closeOverlay();
+          onClose?.();
+        }}
         onSubmit={onSubmit}
       />
     ),

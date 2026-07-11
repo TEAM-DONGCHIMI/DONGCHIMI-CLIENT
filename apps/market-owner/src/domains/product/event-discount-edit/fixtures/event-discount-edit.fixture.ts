@@ -2,6 +2,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '채소･과일',
     endDate: '2026. 8. 16',
+    productId: 201,
     productName: '햇감자 1kg',
     registeredDateLabel: '2026년 8월 15일',
     salePrice: '3,900',
@@ -11,6 +12,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '채소･과일',
     endDate: '2026. 8. 16',
+    productId: 202,
     productName: '대추방울토마토 750g',
     registeredDateLabel: '2026년 8월 15일',
     salePrice: '6,900',
@@ -20,6 +22,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '채소･과일',
     endDate: '2026. 8. 16',
+    productId: 203,
     productName: '청상추 200g',
     registeredDateLabel: '2026년 8월 15일',
     salePrice: '1,980',
@@ -29,6 +32,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '채소･과일',
     endDate: '2026. 8. 16',
+    productId: 204,
     productName: '제주 감귤 1.5kg',
     registeredDateLabel: '2026년 8월 15일',
     salePrice: '8,900',
@@ -38,6 +42,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '채소･과일',
     endDate: '2026. 8. 16',
+    productId: 205,
     productName: '깐마늘 300g',
     registeredDateLabel: '2026년 8월 15일',
     salePrice: '4,500',
@@ -47,6 +52,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '채소･과일',
     endDate: '2026. 8. 16',
+    productId: 206,
     productName: '애호박 1개',
     registeredDateLabel: '2026년 8월 14일',
     salePrice: '1,490',
@@ -56,6 +62,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '채소･과일',
     endDate: '2026. 8. 16',
+    productId: 207,
     productName: '사과 4입',
     registeredDateLabel: '2026년 8월 14일',
     salePrice: '9,900',
@@ -65,6 +72,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '정육･달걀',
     endDate: '2026. 8. 16',
+    productId: 208,
     productName: '삼겹살 500g',
     registeredDateLabel: '2026년 8월 15일',
     salePrice: '4,500',
@@ -74,6 +82,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '정육･달걀',
     endDate: '2026. 8. 16',
+    productId: 209,
     productName: '한우 불고기 300g',
     registeredDateLabel: '2026년 8월 14일',
     salePrice: '12,900',
@@ -83,6 +92,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '정육･달걀',
     endDate: '2026. 8. 16',
+    productId: 210,
     productName: '닭볶음탕용 닭 1kg',
     registeredDateLabel: '2026년 8월 14일',
     salePrice: '7,900',
@@ -92,6 +102,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '정육･달걀',
     endDate: '2026. 8. 16',
+    productId: 211,
     productName: '대란 30구',
     registeredDateLabel: '2026년 8월 14일',
     salePrice: '6,500',
@@ -101,6 +112,7 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '정육･달걀',
     endDate: '2026. 8. 16',
+    productId: 212,
     productName: '목살 구이용 500g',
     registeredDateLabel: '2026년 8월 14일',
     salePrice: '8,900',
@@ -110,11 +122,42 @@ export const eventDiscountEditProducts = [
   {
     categoryName: '정육･달걀',
     endDate: '2026. 8. 16',
+    productId: 213,
     productName: '훈제오리 400g',
     registeredDateLabel: '2026년 8월 14일',
     salePrice: '9,900',
     startDate: '2026. 8. 12',
     viewCount: 88,
+  },
+  {
+    categoryName: '채소･과일',
+    endDate: '2026. 8. 16',
+    productId: 125,
+    productName: '풀숲',
+    registeredDateLabel: '2026년 8월 15일',
+    salePrice: '2,900',
+    startDate: '2026. 8. 12',
+    viewCount: 77,
+  },
+  {
+    categoryName: '가공식품',
+    endDate: '2026. 8. 16',
+    productId: 126,
+    productName: '풀풀풀',
+    registeredDateLabel: '2026년 8월 15일',
+    salePrice: '3,500',
+    startDate: '2026. 8. 12',
+    viewCount: 72,
+  },
+  {
+    categoryName: '간편식',
+    endDate: '2026. 8. 16',
+    productId: 128,
+    productName: '풀무원 두부 세트',
+    registeredDateLabel: '2026년 8월 15일',
+    salePrice: '6,900',
+    startDate: '2026. 8. 12',
+    viewCount: 69,
   },
 ] as const;
 

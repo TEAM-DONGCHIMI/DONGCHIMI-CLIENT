@@ -1,6 +1,6 @@
 import { type ProductCardItemTypes, type ProductCardProps } from '@dongchimi/shared';
 
-import { type ProductSearchPanelItemTypes } from '@/shared/components';
+import { type ProductHeaderSearchProductTypes } from '@/shared/components';
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
 
 export interface HomeProductSectionFixtureTypes {
@@ -19,10 +19,7 @@ interface HomeHeroActionFixtureTypes {
   title: string;
 }
 
-interface HomeSearchProductFixtureTypes extends ProductSearchPanelItemTypes {
-  editRoute: MarketOwnerRouteTypes;
-  isProductInfoLoadable?: boolean;
-}
+type HomeSearchProductFixtureTypes = ProductHeaderSearchProductTypes;
 
 interface HomeFlyerFixtureTypes {
   flyerId: number;
@@ -38,6 +35,11 @@ export interface HomeShareFixtureTypes {
 }
 
 const normalizeSearchText = (value: string) => value.toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
+
+const homeSearchDealTypeLabels = {
+  DAILY: '오늘의 특가',
+  PERIODIC: '행사 할인',
+} satisfies Record<HomeSearchProductFixtureTypes['dealType'], string>;
 
 const dailyProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
   discountRate: 10,
@@ -63,40 +65,34 @@ export const homeProductSummary = {
 
 export const homeSearchProducts: HomeSearchProductFixtureTypes[] = [
   {
-    editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
-    id: 'search-daily-tofu',
+    dealType: 'DAILY',
     isProductInfoLoadable: false,
-    label: '오늘의 특가',
+    productId: 123,
     name: '풀무원 두부 1팩',
   },
   {
-    editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
-    id: 'search-daily-bean-sprout',
-    label: '오늘의 특가',
+    dealType: 'DAILY',
+    productId: 124,
     name: '풀무원 콩나물 100g',
   },
   {
-    editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
-    id: 'search-periodic-pool-forest',
-    label: '행사 할인',
+    dealType: 'PERIODIC',
+    productId: 125,
     name: '풀숲',
   },
   {
-    editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
-    id: 'search-periodic-pool',
-    label: '행사 할인',
+    dealType: 'PERIODIC',
+    productId: 126,
     name: '풀풀풀',
   },
   {
-    editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
-    id: 'search-daily-soft-tofu',
-    label: '오늘의 특가',
+    dealType: 'DAILY',
+    productId: 127,
     name: '풀무원 순두부 350g',
   },
   {
-    editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
-    id: 'search-periodic-tofu-set',
-    label: '행사 할인',
+    dealType: 'PERIODIC',
+    productId: 128,
     name: '풀무원 두부 세트',
   },
 ] satisfies HomeSearchProductFixtureTypes[];
@@ -109,7 +105,9 @@ export const getHomeSearchProductsByQuery = (query: string) => {
   }
 
   return homeSearchProducts.filter((product) =>
-    normalizeSearchText(`${product.label}${product.name}`).includes(normalizedQuery),
+    normalizeSearchText(`${homeSearchDealTypeLabels[product.dealType]}${product.name}`).includes(
+      normalizedQuery,
+    ),
   );
 };
 

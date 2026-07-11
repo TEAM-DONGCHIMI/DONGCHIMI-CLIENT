@@ -4,10 +4,10 @@ import {
   IcCircleExclamationFillColor0,
 } from '@dongchimi/design-system/icons';
 
-import { DesktopHeader } from '@/shared/components';
+import { DesktopHeader, ProductHeaderSearch } from '@/shared/components';
 
-import { HomeSearchPanel } from './components/home-search-panel';
 import * as S from './HomePage.css';
+import { getHomeSearchProductsByQuery, homeSearchProducts } from './fixtures';
 import { HomeDashboardSection, HomeHeroSection } from './sections';
 
 const HOME_TOAST_DISMISS_MS = 2500;
@@ -63,7 +63,13 @@ export const HomePage = () => {
       <DesktopHeader
         className={S.pageHeaderClassName}
         homeLabel='동치미 홈'
-        searchSlot={<HomeSearchPanel onProductLoadError={handleProductLoadError} />}
+        searchSlot={
+          <ProductHeaderSearch
+            getProductsByQuery={getHomeSearchProductsByQuery}
+            products={homeSearchProducts}
+            onProductLoadError={handleProductLoadError}
+          />
+        }
         showSearchBar
         variant='onlyHome'
       />
