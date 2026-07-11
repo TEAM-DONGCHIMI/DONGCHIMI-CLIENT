@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { globalStyle, style } from '@vanilla-extract/css';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
@@ -405,6 +405,12 @@ export const categoryListClassName = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '0.4rem',
+});
+
+// Keep selected and outlined category chips the same width for stable wrapping.
+globalStyle(`${categoryListClassName} button[aria-pressed="true"]`, {
+  borderColor: 'transparent',
+  borderWidth: 1,
 });
 
 export const categoryMeasurementRowClassName = style({
