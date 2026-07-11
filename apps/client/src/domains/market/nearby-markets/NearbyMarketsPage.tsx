@@ -6,6 +6,7 @@ import { useToast } from '@dongchimi/shared/toast';
 import { MobileHeader } from '@/shared/components';
 import { useDebouncedValue, useGeolocation } from '@/shared/hooks';
 
+import { useGetNearbyMarketsInfiniteQuery } from '../hooks/use-nearby-markets-infinite-query';
 import {
   DEFAULT_LOCATION_ADDRESS_TEXT,
   LOCATION_PERMISSION_DENIED_PLACEHOLDER,
@@ -16,6 +17,7 @@ import {
   NearbyMarketsMarketListSection,
   NearbyMarketsSearchSection,
 } from './sections';
+import { flattenNearbyMarketsPages } from './utils/flatten-nearby-markets-pages';
 
 const LOCATION_PERMISSION_ERROR_TOAST_ID = 'nearby-markets-location-permission-error';
 const LOCATION_PERMISSION_ERROR_MESSAGE = '위치 접근 허용에 실패했어요';
@@ -26,6 +28,21 @@ export const NearbyMarketsPage = () => {
   const [hasEditedKeyword, setHasEditedKeyword] = useState(false);
   const debouncedKeyword = useDebouncedValue(keyword);
   const { coordinates, errorCode } = useGeolocation();
+
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isError: isMarketsError,
+    isFetchingNextPage,
+    isPending: isMarketsPending,
+  } = useGetNearbyMarketsInfiniteQuery({
+    keyword: debouncedKeyword,
+    lat: coordinates?.lat,
+    lng: coordinates?.lng,
+  });
+  const markets = flattenNearbyMarketsPages(data);
 
   useEffect(() => {
     if (errorCode === null) {
@@ -61,12 +78,18 @@ export const NearbyMarketsPage = () => {
       <NearbyMarketsMapSection
         coordinates={coordinates}
         errorCode={errorCode}
-        keyword={debouncedKeyword}
-        marketSearchOrigin={coordinates ?? undefined}
+        isMarketsError={isMarketsError}
+        markets={markets}
       />
       <NearbyMarketsMarketListSection
+        error={error}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isError={isMarketsError}
+        isFetchingNextPage={isFetchingNextPage}
+        isPending={isMarketsPending}
         keyword={debouncedKeyword}
-        marketSearchOrigin={coordinates ?? undefined}
+        markets={markets}
       />
     </main>
   );

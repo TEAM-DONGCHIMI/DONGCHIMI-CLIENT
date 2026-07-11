@@ -7,32 +7,35 @@ import { useToast } from '@dongchimi/shared/toast';
 import { MartSummaryCard } from '@/shared/components';
 import { CLIENT_ROUTES } from '@/shared/constants';
 import { useIntersectionObserver } from '@/shared/hooks';
+import { formatWon } from '@/shared/utils';
 
-import { useGetNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-infinite-query';
+import type { useGetNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-infinite-query';
+import type { NearbyMarketDtoTypes } from '../../model/nearby-markets-schema';
 import * as S from '../NearbyMarketsPage.css';
-import { flattenNearbyMarketsPages } from '../utils/flatten-nearby-markets-pages';
 
 const NEARBY_MARKETS_LOAD_ERROR_TOAST_ID = 'nearby-markets-load-error';
 const NEARBY_MARKETS_LOAD_ERROR_MESSAGE = '위치 접근 허용에 실패했어요';
 
-export interface NearbyMarketsMarketListSectionProps {
+export interface NearbyMarketsMarketListSectionProps extends Pick<
+  ReturnType<typeof useGetNearbyMarketsInfiniteQuery>,
+  'error' | 'fetchNextPage' | 'hasNextPage' | 'isError' | 'isFetchingNextPage' | 'isPending'
+> {
   keyword?: string;
-  marketSearchOrigin?: { lat: number; lng: number };
+  markets: NearbyMarketDtoTypes[];
 }
 
 export const NearbyMarketsMarketListSection = ({
+  error,
+  fetchNextPage,
+  hasNextPage,
+  isError,
+  isFetchingNextPage,
+  isPending,
   keyword,
-  marketSearchOrigin,
+  markets,
 }: NearbyMarketsMarketListSectionProps) => {
   const router = useRouter();
   const toast = useToast();
-
-  const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isError, isPending } =
-    useGetNearbyMarketsInfiniteQuery({
-      keyword,
-      lat: marketSearchOrigin?.lat,
-      lng: marketSearchOrigin?.lng,
-    });
 
   useEffect(() => {
     if (!isError) {
@@ -63,13 +66,11 @@ export const NearbyMarketsMarketListSection = ({
     return (
       <section aria-label='주변 마트 목록' className={S.marketListSectionClassName}>
         <p className={S.marketListStatusClassName} role='alert'>
-          {error instanceof Error ? error.message : '주변 마트를 불러오지 못했어요.'}
+          {error?.message ?? '주변 마트를 불러오지 못했어요.'}
         </p>
       </section>
     );
   }
-
-  const markets = flattenNearbyMarketsPages(data);
 
   if (markets.length === 0) {
     return (
@@ -85,14 +86,25 @@ export const NearbyMarketsMarketListSection = ({
     <section aria-label='주변 마트 목록' className={S.marketListSectionClassName}>
       {markets.map((market) => (
         <MartSummaryCard
-          key={market.id}
-          discountCount={market.discountCount}
+          key={market.marketId}
+          discountCount={market.productCount}
           isOpen={market.isOpen}
-          martName={market.martName}
-          onActionClick={() => router.push(CLIENT_ROUTES.market(market.id))}
-          products={market.products}
-          profileImageAlt={market.profileImageAlt}
-          profileImageSrc={market.profileImageSrc}
+          martName={market.name}
+          onActionClick={() => router.push(CLIENT_ROUTES.market(String(market.marketId)))}
+          products={market.previewProducts.map((product) => {
+            const isDiscounted = product.discountRate > 0;
+
+            return {
+              hasSaleChip: isDiscounted,
+              imageAlt: product.name,
+              imageSrc: product.thumbnailUrl,
+              price: formatWon(product.discountedPrice),
+              productName: product.name,
+              ...(isDiscounted ? { saleChipLabel: `${product.discountRate}%` } : {}),
+            };
+          })}
+          profileImageAlt={market.name}
+          profileImageSrc={market.thumbnailUrl}
         />
       ))}
       {hasNextPage && (

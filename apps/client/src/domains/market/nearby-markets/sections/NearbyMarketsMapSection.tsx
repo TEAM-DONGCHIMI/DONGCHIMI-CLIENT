@@ -6,9 +6,8 @@ import { Map, MapInfoWindow, MapMarker, useKakaoLoader } from 'react-kakao-maps-
 
 import type { GeolocationErrorCodeTypes } from '@/shared/hooks';
 
-import { useGetNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-infinite-query';
+import type { NearbyMarketDtoTypes } from '../../model/nearby-markets-schema';
 import * as S from '../NearbyMarketsPage.css';
-import { flattenNearbyMarketsPages } from '../utils/flatten-nearby-markets-pages';
 import {
   CURRENT_LOCATION_ARIA_LABEL,
   CURRENT_LOCATION_MARKER_IMAGE,
@@ -24,8 +23,8 @@ import {
 export interface NearbyMarketsMapSectionProps {
   coordinates: { lat: number; lng: number } | null;
   errorCode: GeolocationErrorCodeTypes | null;
-  keyword?: string;
-  marketSearchOrigin?: { lat: number; lng: number };
+  isMarketsError: boolean;
+  markets: NearbyMarketDtoTypes[];
 }
 
 const resolveStatusMessage = (
@@ -46,19 +45,14 @@ const resolveStatusMessage = (
 export const NearbyMarketsMapSection = ({
   coordinates,
   errorCode,
-  keyword,
-  marketSearchOrigin,
+  isMarketsError,
+  markets,
 }: NearbyMarketsMapSectionProps) => {
   const [loading, error] = useKakaoLoader({
     appkey: KAKAO_MAP_APP_KEY ?? '',
   });
 
-  const { data, isError: isMarketsError } = useGetNearbyMarketsInfiniteQuery({
-    keyword,
-    lat: marketSearchOrigin?.lat,
-    lng: marketSearchOrigin?.lng,
-  });
-  const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
+  const [selectedMarketId, setSelectedMarketId] = useState<number | null>(null);
 
   if (loading) {
     return (
@@ -79,8 +73,7 @@ export const NearbyMarketsMapSection = ({
     );
   }
 
-  const markets = flattenNearbyMarketsPages(data);
-  const selectedMarket = markets.find((market) => market.id === selectedMarketId) ?? null;
+  const selectedMarket = markets.find((market) => market.marketId === selectedMarketId) ?? null;
   const statusMessage = resolveStatusMessage(errorCode, isMarketsError);
 
   return (
@@ -101,18 +94,20 @@ export const NearbyMarketsMapSection = ({
 
         {markets.map((market) => (
           <MapMarker
-            key={market.id}
+            key={market.marketId}
             position={{ lat: market.latitude, lng: market.longitude }}
-            title={market.martName}
+            title={market.name}
             onClick={() =>
-              setSelectedMarketId((current) => (current === market.id ? null : market.id))
+              setSelectedMarketId((current) =>
+                current === market.marketId ? null : market.marketId,
+              )
             }
           />
         ))}
 
         {selectedMarket && (
           <MapInfoWindow position={{ lat: selectedMarket.latitude, lng: selectedMarket.longitude }}>
-            <span className={S.marketInfoWindowClassName}>{selectedMarket.martName}</span>
+            <span className={S.marketInfoWindowClassName}>{selectedMarket.name}</span>
           </MapInfoWindow>
         )}
       </Map>
