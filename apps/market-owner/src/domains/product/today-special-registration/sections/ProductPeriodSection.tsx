@@ -1,8 +1,12 @@
 import type { ChangeEventHandler, FocusEventHandler } from 'react';
 
-import { DateField } from '../components/DateField';
+import { DateField } from '../../components/date-field';
 import { FieldGroup } from '../components/FieldGroup';
-import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductFormTypes } from '../model';
+import {
+  getTodayDateInputValue,
+  type TodaySpecialProductErrorMessageTypes,
+  type TodaySpecialProductFormTypes,
+} from '../model';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface ProductPeriodSectionProps {
@@ -30,6 +34,7 @@ export const ProductPeriodSection = ({
             ariaLabel='행사 시작일'
             errorMessage={productErrorMessages.startDate}
             hasError={Boolean(productErrorMessages.startDate)}
+            min={getTodayDateInputValue()}
             onBlur={onStartDateBlur}
             onChange={onStartDateChange}
             value={product.startDate}

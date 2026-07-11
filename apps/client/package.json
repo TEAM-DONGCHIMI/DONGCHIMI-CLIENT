@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@dongchimi/design-system": "workspace:*",
+    "@dongchimi/shared": "workspace:*",
     "@sentry/nextjs": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@vanilla-extract/css": "catalog:",

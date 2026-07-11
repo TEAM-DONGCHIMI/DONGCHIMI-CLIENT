@@ -1,5 +1,6 @@
 import { type ComponentPropsWithoutRef, type MouseEventHandler, type ReactNode } from 'react';
 
+import { IcTrash, IcWrite } from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
 import * as S from './ProductEditCardDesktop.css';
@@ -9,6 +10,7 @@ type NativeArticleProps = Omit<ComponentPropsWithoutRef<'article'>, 'children' |
 export type ProductEditCardDesktopSelectionStateTypes = 'default' | 'selectable' | 'selected';
 
 export interface ProductEditCardDesktopProps extends NativeArticleProps {
+  actionsDisabled?: boolean;
   categoryName?: string;
   deleteLabel?: string;
   editLabel?: string;
@@ -17,6 +19,7 @@ export interface ProductEditCardDesktopProps extends NativeArticleProps {
   periodDiscountDate?: boolean;
   priceUnit?: string;
   productName: string;
+  promotionText?: string;
   salePercent?: string;
   salePercentUnit?: string;
   salePrice: string;
@@ -38,48 +41,37 @@ const DEFAULT_SALE_PERCENT_UNIT = '%';
 const DEFAULT_EDIT_LABEL = '상품 수정';
 const DEFAULT_DELETE_LABEL = '상품 삭제';
 const DEFAULT_SELECT_LABEL = '상품 선택';
+const THOUSAND_VIEW_COUNT = 1_000;
+const TEN_THOUSAND_VIEW_COUNT = 10_000;
 
-const WriteIcon = () => {
-  return (
-    <svg fill='none' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
-      <path
-        d='M13.5 5.5H5.75C4.78 5.5 4 6.28 4 7.25v11c0 .97.78 1.75 1.75 1.75h11c.97 0 1.75-.78 1.75-1.75V10.5'
-        stroke='currentColor'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth='2'
-      />
-      <path
-        d='m10 14 1.2-3.4L17.8 4a1.56 1.56 0 0 1 2.2 2.2l-6.6 6.6L10 14Z'
-        stroke='currentColor'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth='2'
-      />
-    </svg>
-  );
+const formatDisplayDate = (date: string) => {
+  const match = date.match(/(\d{4})[.-]\s*(\d{1,2})[.-]\s*(\d{1,2})/);
+
+  if (match == null) {
+    return date;
+  }
+
+  const [, year, month, day] = match;
+
+  return `${year}. ${Number(month)}. ${Number(day)}`;
 };
 
-const TrashIcon = () => {
-  return (
-    <svg fill='none' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
-      <path d='M4 7h16' stroke='currentColor' strokeLinecap='round' strokeWidth='2' />
-      <path
-        d='M9 7V5.75C9 4.78 9.78 4 10.75 4h2.5C14.22 4 15 4.78 15 5.75V7'
-        stroke='currentColor'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth='2'
-      />
-      <path
-        d='m6.5 7 .72 11.52A1.6 1.6 0 0 0 8.82 20h6.36a1.6 1.6 0 0 0 1.6-1.48L17.5 7'
-        stroke='currentColor'
-        strokeLinejoin='round'
-        strokeWidth='2'
-      />
-      <path d='M10 10.5v6M14 10.5v6' stroke='currentColor' strokeLinecap='round' strokeWidth='2' />
-    </svg>
-  );
+const formatViewCount = (viewCount: number | string | undefined) => {
+  const numericViewCount = Number(viewCount ?? 0);
+
+  if (!Number.isFinite(numericViewCount)) {
+    return viewCount ?? '0';
+  }
+
+  if (numericViewCount >= TEN_THOUSAND_VIEW_COUNT) {
+    return `${Math.floor(numericViewCount / TEN_THOUSAND_VIEW_COUNT)}만`;
+  }
+
+  if (numericViewCount >= THOUSAND_VIEW_COUNT) {
+    return `${Math.floor(numericViewCount / 100) / 10}천`;
+  }
+
+  return String(numericViewCount);
 };
 
 const CheckIcon = () => {
@@ -99,16 +91,19 @@ const CheckIcon = () => {
 const ProductActionButton = ({
   'aria-label': ariaLabel,
   children,
+  disabled,
   onClick,
 }: {
   'aria-label': string;
   children: ReactNode;
+  disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }) => {
   return (
     <button
       aria-label={ariaLabel}
       className={S.actionButtonClassName}
+      disabled={disabled}
       onClick={onClick}
       type='button'
     >
@@ -153,6 +148,7 @@ const ProductSelectionButton = ({
 
 export const ProductEditCardDesktop = ({
   'aria-label': ariaLabel,
+  actionsDisabled = false,
   categoryName = DEFAULT_CATEGORY_NAME,
   className,
   deleteLabel = DEFAULT_DELETE_LABEL,
@@ -181,8 +177,12 @@ export const ProductEditCardDesktop = ({
   const shouldShowSalePercent = todayDiscountPrice && salePercent != null;
   const shouldShowDate = endDate != null;
   const shouldShowStartDate = periodDiscountDate && startDate != null;
+  const formattedStartDate =
+    shouldShowStartDate && startDate != null ? formatDisplayDate(startDate) : undefined;
+  const formattedEndDate = endDate != null ? formatDisplayDate(endDate) : undefined;
+  const formattedViewCount = formatViewCount(viewCount);
   const dateText = shouldShowDate
-    ? `${shouldShowStartDate ? `${startDate}~` : ''}${endDate}일까지`
+    ? `${formattedStartDate != null ? `${formattedStartDate}~` : ''}${formattedEndDate}일까지`
     : undefined;
   const cardLabel = ariaLabel ?? `${productName} 상품 수정 카드`;
 
@@ -196,23 +196,26 @@ export const ProductEditCardDesktop = ({
         <header className={S.headerClassName}>
           <div className={S.metaClassName}>
             <span className={S.categoryChipClassName}>{categoryName}</span>
-            {viewCount != null && (
-              <span className={S.viewChipClassName}>
-                <span>{viewCount}</span>
-                <span>{viewCountLabel}</span>
-              </span>
-            )}
+            <span className={S.viewChipClassName}>
+              <span>{formattedViewCount}</span>
+              <span>{viewCountLabel}</span>
+            </span>
           </div>
 
           <div className={S.actionGroupClassName}>
-            <ProductActionButton aria-label={`${productName} ${editLabel}`} onClick={onEditClick}>
-              <WriteIcon />
+            <ProductActionButton
+              aria-label={`${productName} ${editLabel}`}
+              disabled={actionsDisabled}
+              onClick={onEditClick}
+            >
+              <IcWrite />
             </ProductActionButton>
             <ProductActionButton
               aria-label={`${productName} ${deleteLabel}`}
+              disabled={actionsDisabled}
               onClick={onDeleteClick}
             >
-              <TrashIcon />
+              <IcTrash />
             </ProductActionButton>
           </div>
         </header>

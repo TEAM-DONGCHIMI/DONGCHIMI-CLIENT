@@ -37,8 +37,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `hooks/useCurrentProductField.ts`
   - 현재 상품의 text/date/price field change, blur, formatting, error message 계산을 담당합니다.
 - `hooks/useCategoryDropdown.tsx`
-  - category dropdown을 `overlay.open(({ close, unmount }) => <CategoryDropdownOverlay />)` 형태로 엽니다.
-  - trigger 위치를 기준으로 overlay dropdown 좌표를 계산하고, 외부 click과 Escape close 동작을 담당합니다.
+  - category dropdown open/close 상태를 OverlayKit overlay id로 관리합니다.
+  - trigger 위치를 기준으로 dropdown max height를 계산하고, 외부 click과 Escape close 동작을 담당합니다.
 - `hooks/useProductDraftNavigation.ts`
   - 상품 draft 추가, 삭제, 이전, 다음 이동을 담당합니다.
 - `sections/RegistrationTitleSection.tsx`
@@ -49,11 +49,11 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 오늘의 특가, 판매가 input을 렌더링합니다.
 - `sections/ProductPeriodSection.tsx`
   - 행사 시작일 field를 배치합니다.
-- `components/DateField.tsx`
+- `../components/date-field/DateField.tsx`
   - visible `YYYY-MM-DD` field와 투명 native `type=date` input overlay를 결합합니다.
   - native date icon/text는 숨기고, `showPicker()`로 date picker를 엽니다.
 - `components/CategoryDropdownOverlay.tsx`
-  - OverlayKit 내부에서 실제 `Dropdown`, `Dropdown.Item` UI를 렌더링합니다.
+  - trigger wrapper 안에서 실제 `Dropdown`, `Dropdown.Item` UI를 렌더링합니다.
 - `model/product-form.types.ts`
   - schema inference 기반 form value와 text field 타입을 정의합니다.
 - `model/product-form.schema.ts`
@@ -71,7 +71,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - selected image: object URL preview 위에 `status-dimmer-hover` overlay와 camera icon을 표시합니다.
 - category empty: trigger에 `카테고리` placeholder를 표시합니다.
 - category open: dropdown을 trigger 하단에 표시하고 현재 선택된 item을 selected 상태로 표시합니다.
-- category overlay: trigger 위치 기준으로 dropdown을 표시하고, 외부 click 또는 Escape로 닫습니다.
+- category overlay: trigger 바로 아래에 dropdown을 표시하고, 외부 click 또는 Escape로 닫습니다.
 - multi product: 상품이 2개 이상이면 title에 `(현재/전체)`, 이전/다음 button, 삭제 button을 표시합니다.
 - disabled submit: 필수값이 비어 있거나 form completion 조건을 만족하지 않으면 `등록 완료`를 disabled 처리합니다.
 - field error: blur 또는 submit validation 이후 필드 아래에 icon과 error message를 표시합니다.
@@ -113,7 +113,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 우측 `원` unit은 `InlineField` unit으로 표시합니다.
 - 행사 기간
   - 시작일은 date picker로 선택합니다.
-  - 시작일은 필수 입력입니다.
+  - 시작일은 오늘 날짜가 기본값입니다.
+  - 시작일은 필수 입력이며, 오늘보다 이전 날짜는 선택할 수 없습니다.
   - visible text는 `YYYY-MM-DD` 형식입니다.
 
 ## Field Error Messages
@@ -136,6 +137,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 오늘의 특가보다 낮은 경우: `판매가는 오늘의 특가 이상으로 입력해주세요.`
 - 행사 시작일
   - 미선택한 경우: `행사 시작일을 선택해주세요.`
+  - 오늘보다 이전 날짜인 경우: `오늘 이후 날짜를 선택해주세요.`
 
 ## Behavior
 
@@ -170,7 +172,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 ## Design / Component Notes
 
 - Design system components: `Button`, `IconButton`, `InlineField`, `Dropdown`, generated icon components.
-- Page-local components: `DateField`, `CategoryDropdownOverlay`.
+- Product domain components: `DateField`, `ProductImageUploadField`
+- Page-local components: `CategoryDropdownOverlay`.
 - Page-local hooks: `useTodaySpecialForm`, `useCurrentProductField`, `useCategoryDropdown`, `useProductDraftNavigation`.
 - Page-local sections: title, product info, price, period.
 - App shared form util: touched/submitted 기준으로 visible error message를 계산합니다.
@@ -178,6 +181,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - OverlayKit: category dropdown open/close controller로 사용합니다.
 - Title count는 title text 바로 뒤에 표시하고, count와 chevron group 사이 간격은 `0.8rem`입니다.
 - `DateField`는 native date input의 브라우저 기본 icon/text를 노출하지 않기 위해 visible field와 transparent native input overlay를 사용합니다.
+- 오늘의 특가 등록 시작일은 오늘 날짜를 기본값과 `min`으로 사용해 이전 날짜 선택을 막습니다.
+- 상품명 error message가 표시되면 error message 아래와 `상품 한줄 홍보문구` label 사이 간격은 `0.9rem`입니다.
 - Layout은 desktop Figma frame 기준으로 sidebar layout 내부 no-scroll form 화면을 목표로 합니다.
 
 ## Non-Goals / Follow-Ups
@@ -207,7 +212,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - [ ] invalid fields render icon and error messages below each field after validation
 - [ ] price fields accept digits only and display comma-formatted values with `원` unit
 - [ ] submit stays disabled when sale price is lower than today special price
-- [ ] DateField displays `YYYY-MM-DD` placeholder without browser date icon text
+- [ ] DateField displays today as the initial start date without browser date icon text
+- [ ] DateField prevents selecting a date before today
 - [ ] clicking DateField opens native date picker
 - [ ] pressing Enter or Space on DateField opens native date picker
 - [ ] `상품 계속 등록` stays enabled and opens a fresh product draft

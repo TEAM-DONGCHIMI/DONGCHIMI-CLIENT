@@ -84,4 +84,19 @@ describe('ProductEditCardDesktop', () => {
     expect(screen.getByText('4,500원')).toBeInTheDocument();
     expect(screen.getByText('2026. 8. 16일까지')).toBeInTheDocument();
   });
+
+  it('formats view count and uses 0 when view count is missing', () => {
+    const { rerender } = renderCard({ viewCount: 1200 });
+
+    expect(screen.getByText('1.2천')).toBeInTheDocument();
+    expect(screen.getByText('조회')).toBeInTheDocument();
+
+    rerender(<ProductEditCardDesktop {...defaultProps} viewCount={10000} />);
+
+    expect(screen.getByText('1만')).toBeInTheDocument();
+
+    rerender(<ProductEditCardDesktop {...defaultProps} viewCount={undefined} />);
+
+    expect(screen.getByText('0')).toBeInTheDocument();
+  });
 });

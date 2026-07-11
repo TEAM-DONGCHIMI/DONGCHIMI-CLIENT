@@ -8,6 +8,7 @@ export const pageRootClassName = style({
   width: '100%',
   minWidth: 'max-content',
   minHeight: '100vh',
+  backgroundColor: atomic.neutral[5],
 });
 
 export const formContentClassName = style({
@@ -105,119 +106,16 @@ export const sectionBodyClassName = style({
   minWidth: 0,
 });
 
-export const imageFieldClassName = style({
+export const productInfoFieldRowsClassName = style({
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'flex-start',
   gap: '0.9rem',
-});
-
-export const imageTextGroupClassName = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.5rem',
+  minWidth: 0,
 });
 
 export const fieldLabelClassName = style({
   ...typography['body-3-medium'],
   color: atomic.neutral[70],
-});
-
-export const imageDescriptionClassName = style({
-  ...typography['caption-1-medium'],
-  margin: 0,
-  color: atomic.neutral[50],
-});
-
-export const imageUploadBoxClassName = style({
-  position: 'relative',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  boxSizing: 'border-box',
-  width: '11.2rem',
-  height: '11.2rem',
-  overflow: 'hidden',
-  border: `1px dashed ${atomic.neutral[40]}`,
-  borderRadius: '1.2rem',
-  backgroundColor: atomic.neutral[20],
-  color: atomic.neutral[60],
-  cursor: 'pointer',
-  transition: 'border-color 160ms ease, outline-color 160ms ease',
-  selectors: {
-    '&:focus-within': {
-      outline: `0.3rem solid ${focusOutlineColor}`,
-      outlineOffset: '0.2rem',
-    },
-  },
-});
-
-export const imageUploadBoxPreviewClassName = style({
-  border: 0,
-  selectors: {
-    '&::after': {
-      position: 'absolute',
-      inset: 0,
-      content: '',
-      background: `linear-gradient(0deg, ${semantic.status.dimmer.hover} 0%, ${semantic.status.dimmer.hover} 100%)`,
-    },
-  },
-});
-
-export const emptyUploadContentClassName = style({
-  ...typography['body-3-medium'],
-  display: 'inline-flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '0.6rem',
-  textAlign: 'center',
-});
-
-export const emptyUploadIconClassName = style({
-  width: '2.4rem',
-  height: '2.4rem',
-});
-
-export const imagePreviewContentClassName = style({
-  width: '100%',
-  height: '100%',
-});
-
-export const imagePreviewClassName = style({
-  display: 'block',
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover',
-});
-
-export const cameraBadgeClassName = style({
-  position: 'absolute',
-  top: '0.7rem',
-  right: '0.7rem',
-  zIndex: 1,
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  boxSizing: 'border-box',
-  width: '4rem',
-  height: '4rem',
-  border: `1px solid ${atomic.neutral[40]}`,
-  borderRadius: '10rem',
-  backgroundColor: atomic.common[0],
-  color: atomic.common[100],
-  fontSize: '2rem',
-});
-
-export const fileInputClassName = style({
-  position: 'absolute',
-  width: '0.1rem',
-  height: '0.1rem',
-  margin: '-0.1rem',
-  padding: 0,
-  overflow: 'hidden',
-  clip: 'rect(0 0 0 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
 });
 
 export const twoColumnRowClassName = style({
@@ -305,15 +203,18 @@ export const categoryTriggerErrorClassName = style({
 });
 
 export const categoryDropdownOverlayClassName = style({
-  position: 'fixed',
-  top: 'var(--today-special-category-dropdown-top)',
-  left: 'var(--today-special-category-dropdown-left)',
+  position: 'absolute',
+  top: 'calc(100% + 0.8rem)',
+  left: 0,
   zIndex: 1,
 });
 
 export const categoryDropdownClassName = style({
   width: '20.6rem',
+  maxHeight: 'var(--today-special-category-dropdown-max-height)',
   border: 0,
+  overflowX: 'hidden',
+  overflowY: 'auto',
 });
 
 export const categoryDropdownItemClassName = style({
@@ -322,69 +223,6 @@ export const categoryDropdownItemClassName = style({
 
 export const dateSingleFieldClassName = style({
   width: 'calc((100% - 4.4rem) / 2)',
-});
-
-export const dateFieldRootClassName = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.8rem',
-  minWidth: 0,
-});
-
-export const datePickerFieldClassName = style({
-  ...typography['body-3-medium'],
-  position: 'relative',
-  boxSizing: 'border-box',
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%',
-  height: '4rem',
-  minWidth: 0,
-  padding: '1rem 1.6rem',
-  overflow: 'hidden',
-  border: `0.1rem solid ${atomic.neutral[20]}`,
-  borderRadius: '0.4rem',
-  backgroundColor: atomic.common[0],
-  cursor: 'pointer',
-  transition: 'border-color 160ms ease, outline-color 160ms ease',
-  selectors: {
-    '&:hover': {
-      borderColor: atomic.neutral[80],
-    },
-    '&:focus-within': {
-      borderColor: atomic.neutral[80],
-    },
-  },
-});
-
-export const datePickerFieldErrorClassName = style({
-  borderColor: semantic.status.negativeLight,
-  selectors: {
-    '&:hover': {
-      borderColor: semantic.status.negativeLight,
-    },
-    '&:focus-within': {
-      borderColor: semantic.status.negativeLight,
-    },
-  },
-});
-
-export const dateValueClassName = style({
-  color: atomic.neutral[90],
-});
-
-export const datePlaceholderClassName = style({
-  color: atomic.neutral[60],
-});
-
-export const dateNativeInputClassName = style({
-  position: 'absolute',
-  inset: 0,
-  zIndex: 1,
-  width: '100%',
-  height: '100%',
-  opacity: 0,
-  cursor: 'pointer',
 });
 
 export const actionSectionClassName = style({

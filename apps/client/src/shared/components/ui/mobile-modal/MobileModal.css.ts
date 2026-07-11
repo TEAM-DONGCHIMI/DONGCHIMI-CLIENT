@@ -84,19 +84,32 @@ export const actionButtonClassName = style({
   height: '4.4rem',
   padding: '1.2rem',
   ...typography['body-3-semibold'],
+  selectors: {
+    '&&': {
+      width: '100%',
+      minWidth: 0,
+      height: '4.4rem',
+      padding: '1.2rem',
+      ...typography['body-3-semibold'],
+    },
+  },
 });
 
 export const cancelButtonClassName = style({
   backgroundColor: atomic.neutral[30],
   color: atomic.common[0],
   selectors: {
-    '&:not(:disabled):hover': {
+    '&&': {
+      backgroundColor: atomic.neutral[30],
+      color: atomic.common[0],
+    },
+    '&&:not(:disabled):hover': {
       backgroundColor: atomic.neutral[40],
     },
-    '&:not(:disabled):active': {
+    '&&:not(:disabled):active': {
       backgroundColor: atomic.neutral[50],
     },
-    '&:focus-visible': {
+    '&&:focus-visible': {
       outlineColor: `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`,
     },
   },

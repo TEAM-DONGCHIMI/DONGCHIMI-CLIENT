@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ToastProvider, useToast, type ToastIdTypes } from './ToastProvider';
@@ -170,6 +170,27 @@ describe('ToastProvider', () => {
       '--toast-viewport-offset-x': '145px',
       '--toast-viewport-offset-y': '2rem',
     });
+  });
+
+  it('renders toast into a custom portal container', () => {
+    const portalContainer = document.createElement('section');
+    document.body.appendChild(portalContainer);
+
+    const { unmount } = render(
+      <ToastProvider portalContainer={portalContainer}>
+        <CompletedToastLauncher />
+      </ToastProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '완료 토스트 열기' }));
+
+    expect(
+      within(portalContainer).getByRole('region', { name: '토스트 알림' }),
+    ).toBeInTheDocument();
+    expect(within(portalContainer).getByRole('status')).toHaveTextContent('저장되었어요');
+
+    unmount();
+    portalContainer.remove();
   });
 
   it('auto dismisses toast after the default duration', () => {

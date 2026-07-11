@@ -1,8 +1,7 @@
 import type { CSSProperties } from 'react';
 
-import { Dropdown } from '@dongchimi/design-system/components';
-
-import { todaySpecialCategoryOptions } from '../fixtures';
+import { productSelectableCategoryOptions } from '../../constants';
+import { ProductCategoryDropdown } from '../../components/product-category-dropdown';
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface CategoryDropdownOverlayProps {
@@ -10,7 +9,7 @@ interface CategoryDropdownOverlayProps {
   onClose: () => void;
   onSelect: (category: string) => void;
   selectedCategory: string;
-  style: CSSProperties;
+  style?: CSSProperties;
 }
 
 export const CategoryDropdownOverlay = ({
@@ -26,23 +25,18 @@ export const CategoryDropdownOverlay = ({
       data-today-special-category-overlay
       style={style}
     >
-      <Dropdown className={S.categoryDropdownClassName} id={id}>
-        {todaySpecialCategoryOptions.map((category) => (
-          <Dropdown.Item
-            checkbox={false}
-            className={S.categoryDropdownItemClassName}
-            color='primary'
-            key={category}
-            onClick={() => {
-              onSelect(category);
-              onClose();
-            }}
-            selected={category === selectedCategory}
-          >
-            {category}
-          </Dropdown.Item>
-        ))}
-      </Dropdown>
+      <ProductCategoryDropdown
+        ariaLabel='상품 구분 선택'
+        className={S.categoryDropdownClassName}
+        id={id}
+        itemClassName={S.categoryDropdownItemClassName}
+        options={productSelectableCategoryOptions}
+        selectedCategory={selectedCategory}
+        onSelect={(category) => {
+          onSelect(category);
+          onClose();
+        }}
+      />
     </div>
   );
 };

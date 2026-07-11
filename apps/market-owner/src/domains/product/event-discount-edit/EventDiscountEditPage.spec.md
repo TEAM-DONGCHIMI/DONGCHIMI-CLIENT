@@ -12,44 +12,61 @@
 
 ## Purpose
 
-행사 할인 상품 수정 page가 protected sidebar layout 안에서 진입되고, 수정하기 tab과 sidebar active state가 같은 route를 바라보는지 확인합니다.
+행사 할인 상품 수정 page가 protected sidebar layout 안에서 진입되고, 상품 수정 업무의 행사 할인 탭 화면을 제공합니다.
+상단 헤더와 수정 유형 route tab, 일괄 작업 버튼, 카테고리/정렬 필터는 `ProductEditPageShell`을 공유하고, 행사 할인 상품 카드 영역은 이 페이지의 section이 소유합니다.
 
 ## Ownership
 
 - Route-independent page composition lives in this domain page.
 - React Router route object imports this page from `src/app/router.tsx`.
-- Page-local components, sections, hooks, fixtures, and utils stay under this page folder.
-- Edit tab route ownership stays with the page, while sidebar active state stays in `SidebarLayout`.
+- Product edit fixed controls live in `domains/product/components/product-edit-page-shell`.
+- Event discount product list/card content stays under this page folder.
+- Sidebar active state stays in `SidebarLayout`.
 
 ## UI States
 
 - loading: 이번 범위에서 다루지 않습니다.
-- empty: 이번 범위에서 다루지 않습니다.
+- empty: 등록된 상품이 없으면 `ProductEditProductList`가 empty image, 안내 문구, `/products/event-discount/new` 등록 link를 표시합니다.
 - error: 알 수 없는 route는 router fallback에서 처리합니다.
-- success: `/products/event-discount/edit` route가 `행사 할인 상품 수정` heading을 렌더링합니다.
+- success: `/products/event-discount/edit` route가 `행사 할인 상품을 수정하세요` heading과 행사 할인 상품 수정 카드 section을 렌더링합니다.
 
 ## Data
 
 - query: none
 - mutation: none
-- fixture: none
+- fixture: `fixtures/event-discount-edit.fixture.ts`
 - model: none
 
 ## Behavior
 
 - `행사 할인` tab은 selected/current 상태입니다.
-- `오늘의 특가` tab은 `/products/today-special/edit`으로 이동합니다.
-- 수정 table, 기간 filter, pagination, mutation은 후속 이슈 범위입니다.
+- `오늘의 특가` tab은 `/products/today-special/edit`으로 route 이동합니다.
+- 행사 할인 수정 페이지의 기본 filter는 `카테고리별`입니다.
+- page content는 선택된 filter에 따라 행사 할인 샘플 상품 수정 카드를 카테고리별, 등록일별, 조회수순으로 표시합니다.
+- 표시할 상품이 없으면 `상품 등록하러 가기` link로 행사 할인 상품 등록 화면에 이동합니다.
+- `카테고리별` filter는 shared shell에서 dropdown으로 열립니다.
+- `카테고리별` trigger 클릭만으로는 목록 grouping이 바뀌지 않고, dropdown option 선택 후 카테고리별 섹션을 표시합니다.
+- `상품 등록 순` filter는 등록일별 섹션을 표시합니다.
+- `조회수 순` filter는 조회수 높은 순 단일 섹션을 표시합니다.
+- 개별 상품 카드의 수정 버튼을 누르면 행사 할인 variant의 판매 정보 수정 modal을 엽니다.
+- 일괄 기간 수정, 일괄 삭제 버튼은 shared shell에서 레이아웃 button으로 렌더링합니다.
+- 초기화 버튼은 shared shell에서 초기화 확인 modal을 열고, 확인하면 행사 할인 상품 목록을 비웁니다.
+- 개별 상품 카드의 삭제 버튼은 행사 기간이 남았으면 삭제 확인 modal 확인 후 해당 카드를 목록에서 제거하고, 기간이 지났으면 바로 제거합니다.
+- 실제 상품 목록 query, mutation, selection, pagination, table/list 확장은 후속 이슈 범위입니다.
 
 ## Accessibility
 
-- heading order: page root는 visible `h1`으로 `행사 할인 상품 수정`을 제공합니다.
-- keyboard: sidebar item과 tab link는 native keyboard navigation을 사용합니다.
+- heading order: page root는 visible `h1`으로 `행사 할인 상품을 수정하세요`를 제공합니다.
+- keyboard: sidebar item과 route tab은 native link keyboard navigation을 사용합니다.
 - focus: focus-visible 스타일을 제거하지 않습니다.
 - current state: sidebar item과 selected tab은 `aria-current="page"`를 적용합니다.
+- category dropdown: trigger는 open state를 `aria-expanded`로 제공하고, dropdown option은 selected state를 제공합니다.
 
 ## Verification
 
-- [ ] `/products/event-discount/edit` route renders `행사 할인 상품 수정`
+- [ ] `/products/event-discount/edit` route renders `행사 할인 상품을 수정하세요`
 - [ ] sidebar `행사 할인 상품 수정` link has `aria-current="page"`
 - [ ] `행사 할인` tab link has `aria-current="page"`
+- [ ] `오늘의 특가` tab navigates to `/products/today-special/edit`
+- [ ] category filter opens overlay dropdown
+- [x] empty product list renders registration link to `/products/event-discount/new`

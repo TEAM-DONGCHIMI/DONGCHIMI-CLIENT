@@ -1,26 +1,41 @@
-import { Link } from 'react-router';
+import { ProductEditPageShell } from '@/domains/product/components/product-edit-page-shell';
+import { useProductEditProducts } from '@/domains/product/hooks';
 
-import { TabNav } from '@dongchimi/design-system/components';
-
-import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { eventDiscountEditProducts } from '../event-discount-edit/fixtures';
+import { todaySpecialEditProducts } from './fixtures';
+import { TodaySpecialEditProductSection } from './sections/TodaySpecialEditProductSection';
 
 export const TodaySpecialEditPage = () => {
+  const {
+    deleteProduct,
+    deleteProducts,
+    products,
+    resetProducts,
+    updateProduct,
+    updateProductPeriods,
+  } = useProductEditProducts(todaySpecialEditProducts);
+
   return (
-    <main>
-      <p>상품 수정</p>
-      <h1>오늘의 특가 상품 수정</h1>
-      <p>사이드바의 오늘의 특가 상품 수정 메뉴와 상단 탭이 같은 route 상태를 가리킵니다.</p>
-      <TabNav aria-label='상품 수정 유형'>
-        <TabNav.List>
-          <TabNav.Item as={Link} selected to={MARKET_OWNER_ROUTES.todaySpecialEdit}>
-            오늘의 특가
-          </TabNav.Item>
-          <TabNav.Item as={Link} to={MARKET_OWNER_ROUTES.eventDiscountEdit}>
-            행사 할인
-          </TabNav.Item>
-        </TabNav.List>
-      </TabNav>
-      <p>오늘의 특가 상품 수정 table, selection, pagination, API 연동은 후속 이슈 범위입니다.</p>
-    </main>
+    <ProductEditPageShell
+      activeType='todaySpecial'
+      periodBaseProduct={products[0]}
+      productCounts={{
+        eventDiscount: eventDiscountEditProducts.length,
+        todaySpecial: products.length,
+      }}
+      onDeleteProducts={deleteProducts}
+      onResetProducts={resetProducts}
+      onUpdateProductPeriods={updateProductPeriods}
+    >
+      {(selectedFilter, _selectedCategory, selection) => (
+        <TodaySpecialEditProductSection
+          products={products}
+          selection={selection}
+          selectedFilter={selectedFilter}
+          onDeleteProduct={deleteProduct}
+          onUpdateProduct={updateProduct}
+        />
+      )}
+    </ProductEditPageShell>
   );
 };

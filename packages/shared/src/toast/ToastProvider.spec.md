@@ -27,6 +27,7 @@
   - `offset?: string | { x?: string; y?: string }`
   - `defaultDurationMs?: number | null`
   - `maxVisibleCount?: number`
+  - `portalContainer?: Element | DocumentFragment | null`
 - `useToast`
   - `show({ message, status, icon, durationMs, id })`
   - `completed(message, options)`
@@ -73,7 +74,7 @@
 - cancellation: provider unmount 또는 toast dismiss 시 timer를 정리합니다.
 - accessibility impact: DS `Toast`의 `role`과 `aria-live` 기본값을 유지합니다.
 - viewport accessibility: viewport는 `role='region'`과 `aria-label`로 영역 이름을 제공합니다.
-- app wiring: 이번 구현은 `apps/market-owner`에만 연결하고 `apps/client`는 후속 작업으로 둡니다.
+- app wiring: `apps/market-owner`와 `apps/client`는 각 app provider에서 placement 정책을 지정합니다.
 
 ## Verification
 

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 const routeShellTimeout = 30_000;
 const marketProductsPath = '/markets/mangwon-fresh';
-const productDetailPath = `${marketProductsPath}/products/samgyeopsal-500g`;
+const productDetailPath = `${marketProductsPath}/products/101`;
 
 test('client root route redirects to login', async ({ page }) => {
   await page.goto('/');
@@ -28,13 +28,12 @@ test('client market list route shell renders', async ({ page }) => {
 
 test('client market products route shell renders', async ({ page }) => {
   await page.goto(marketProductsPath);
-  await expect(page.getByRole('heading', { name: '마트 전단 상품' })).toBeVisible({
+  await expect(page.getByRole('heading', { name: '전단보기' })).toBeVisible({
     timeout: routeShellTimeout,
   });
-  await expect(page.getByRole('link', { name: '삼겹살 500g 상세 보기' })).toHaveAttribute(
-    'href',
-    productDetailPath,
-  );
+  await expect(
+    page.getByRole('link', { name: '삼겹살 500g 6,900원 상품 보기' }).first(),
+  ).toHaveAttribute('href', productDetailPath);
 });
 
 test('client product detail route shell renders', async ({ page }) => {

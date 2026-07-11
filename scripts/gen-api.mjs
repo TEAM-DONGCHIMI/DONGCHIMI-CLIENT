@@ -4,15 +4,6 @@ import { spawnSync } from 'node:child_process';
 import process from 'node:process';
 
 const ROOT_DIR = process.cwd();
-const GENERATED_API_ROOT_DIR = path.join(
-  ROOT_DIR,
-  'packages',
-  'shared',
-  'src',
-  'api',
-  '__generated__',
-);
-
 const SWAGGER_TYPESCRIPT_API_CLI = path.join(
   ROOT_DIR,
   'node_modules',
@@ -39,16 +30,20 @@ loadEnvFile('.env.local');
 
 const API_DEFINITIONS = [
   {
+    envName: 'COMMON_SWAGGER_URL',
+    outputDir: path.join(ROOT_DIR, 'packages', 'shared', 'src', 'api', '__generated__', 'common'),
+  },
+  {
     envName: 'USER_SWAGGER_URL',
-    outputDirName: 'user',
+    outputDir: path.join(ROOT_DIR, 'apps', 'client', 'src', 'shared', 'api', '__generated__'),
   },
   {
     envName: 'OWNER_SWAGGER_URL',
-    outputDirName: 'owner',
+    outputDir: path.join(ROOT_DIR, 'apps', 'market-owner', 'src', 'shared', 'api', '__generated__'),
   },
 ];
 
-const generateApiContracts = ({ envName, outputDirName }) => {
+const generateApiContracts = ({ envName, outputDir }) => {
   const swaggerUrl = process.env[envName];
 
   if (!swaggerUrl) {
@@ -56,8 +51,6 @@ const generateApiContracts = ({ envName, outputDirName }) => {
       `${envName} is required. Add it to .env or pass it as an environment variable.`,
     );
   }
-
-  const outputDir = path.join(GENERATED_API_ROOT_DIR, outputDirName);
 
   mkdirSync(outputDir, { recursive: true });
 
