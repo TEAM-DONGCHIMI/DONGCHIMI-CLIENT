@@ -82,3 +82,5 @@ export { TextButton } from './components/ui/text-button';
 export type { TextButtonProps } from './components/ui/text-button';
 export { LineButton } from './components/ui/line-button';
 export type { LineButtonProps } from './components/ui/line-button';
+export { RequiredMark } from './components/ui/required-mark';
+export type { RequiredMarkProps } from './components/ui/required-mark';

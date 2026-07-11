@@ -30,6 +30,7 @@ describe('AddableField', () => {
     const input = screen.getByRole('textbox', { name: '주제' });
 
     expect(input).toBeRequired();
+    expect(screen.getByRole('tooltip')).toHaveTextContent('* 표시는 필수로 입력해야 해요.');
     expect(screen.getByTestId('leading-icon').closest('[aria-hidden="true"]')).toBeInTheDocument();
     expect(screen.getByTestId('trailing-icon').closest('[aria-hidden="true"]')).toBeInTheDocument();
   });
