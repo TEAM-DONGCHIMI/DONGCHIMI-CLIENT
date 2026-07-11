@@ -2,7 +2,7 @@ import { useState, type ChangeEvent } from 'react';
 
 import { type UseFormRegisterReturn } from 'react-hook-form';
 
-import { AddableField, Chip, Stack } from '@dongchimi/design-system/components';
+import { AddableField, Chip, RequiredMark, Stack } from '@dongchimi/design-system/components';
 import {
   IcCircleExclamationSizeSmallColorNegative,
   IcLineHorizontalSizeSmall,
@@ -10,7 +10,6 @@ import {
   IcPlusSizeSmallColor60,
 } from '@dongchimi/design-system/icons';
 
-import { RequiredMark } from '../components/RequiredMark';
 import {
   formatMarketPhoneNumber,
   formatMobilePhoneNumber,
