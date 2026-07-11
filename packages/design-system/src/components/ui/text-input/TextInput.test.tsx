@@ -4,6 +4,13 @@ import { render, screen } from '../../../test';
 import { TextInput } from './TextInput';
 
 describe('TextInput', () => {
+  it('renders the shared required mark and preserves the native required attribute', () => {
+    render(<TextInput label='주제' required />);
+
+    expect(screen.getByRole('textbox', { name: '주제' })).toBeRequired();
+    expect(screen.getByRole('tooltip')).toHaveTextContent('* 표시는 필수로 입력해야 해요.');
+  });
+
   it('renders the Figma error icon with an error message', () => {
     render(<TextInput errorMessage='에러메시지를 나타냅니다' label='주제' status='error' />);
 

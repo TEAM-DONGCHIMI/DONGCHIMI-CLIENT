@@ -27,12 +27,6 @@ export const label = style({
   color: atomic.neutral[90],
 });
 
-export const requiredMark = style({
-  ...typography['body-2-regular'],
-  flexShrink: 0,
-  color: semantic.primary.strong,
-});
-
 export const field = recipe({
   base: {
     display: 'flex',
