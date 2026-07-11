@@ -50,7 +50,8 @@ apps/{app}/src/domains/{domain}/query-keys.ts
 
 ## API Contract Helpers
 
-OpenAPI generated type, endpoint path 상수, zod 응답 검증 helper는 `@dongchimi/shared/api`에서 제공합니다.
+공통 OpenAPI generated type, endpoint path 상수, zod 응답 검증 helper는 `@dongchimi/shared/api`에서 제공합니다.
+사용자와 점주 전용 OpenAPI generated type은 각각 owning app의 `src/shared/api/__generated__`에서 제공합니다.
 이 helper들은 API contract를 표현할 뿐, 앱별 transport 정책을 소유하지 않습니다.
 
 - endpoint path: `API_ENDPOINTS`
