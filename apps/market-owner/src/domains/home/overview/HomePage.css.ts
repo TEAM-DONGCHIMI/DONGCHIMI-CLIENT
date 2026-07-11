@@ -2,7 +2,6 @@ import { style } from '@vanilla-extract/css';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
-const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 const cardShadow = '0 1.6rem 3.6rem rgba(25, 33, 46, 0.08)';
 const checkerboardColor = 'rgba(229, 232, 235, 0.68)';
 const dashboardCardHeight = '38.6rem';
@@ -124,23 +123,12 @@ export const dashboardCardEmptyMessageClassName = style({
 
 export const productCardActionButtonClassName = style({
   ...typography['body-3-semibold'],
-  appearance: 'none',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  border: 0,
-  borderRadius: '1.2rem',
+  height: 'auto',
   padding: '0.4rem 0.8rem',
-  backgroundColor: 'transparent',
   color: semantic.primary.strong,
-  cursor: 'pointer',
   selectors: {
     '&:disabled': {
-      cursor: 'not-allowed',
-    },
-    '&:focus-visible': {
-      outline: `3px solid ${focusOutlineColor}`,
-      outlineOffset: 2,
+      color: semantic.primary.strong,
     },
   },
 });

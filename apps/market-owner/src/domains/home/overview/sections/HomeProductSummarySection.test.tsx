@@ -46,6 +46,8 @@ describe('HomeProductSummarySection', () => {
     const periodicCard = screen.getByRole('region', { name: '행사 할인 상품' });
 
     expect(within(todayCard).getByLabelText('총 0건')).toBeInTheDocument();
+    expect(todayCard).toHaveAttribute('aria-describedby', 'daily-empty-message');
+    expect(periodicCard).not.toHaveAttribute('aria-describedby');
     expect(screen.getByText(EMPTY_PRODUCT_MESSAGE_PATTERN)).toBeInTheDocument();
     expect(within(todayCard).getByRole('button', { name: '등록한 상품 전체보기' })).toBeDisabled();
     expect(
@@ -62,6 +64,7 @@ describe('HomeProductSummarySection', () => {
     const periodicCard = screen.getByRole('region', { name: '행사 할인 상품' });
 
     expect(within(periodicCard).getByLabelText('총 0건')).toBeInTheDocument();
+    expect(periodicCard).toHaveAttribute('aria-describedby', 'periodic-empty-message');
     expect(screen.getByText(EMPTY_PRODUCT_MESSAGE_PATTERN)).toBeInTheDocument();
     expect(
       within(periodicCard).getByRole('button', { name: '등록한 상품 전체보기' }),
