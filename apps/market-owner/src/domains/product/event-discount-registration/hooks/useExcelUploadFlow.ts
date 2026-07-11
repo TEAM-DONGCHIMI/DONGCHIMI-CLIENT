@@ -1,5 +1,7 @@
 import { useReducer, type ChangeEventHandler } from 'react';
 
+import { useFileDrop } from '../../hooks';
+
 export type EventDiscountRegistrationViewTypes = 'method' | 'confirm' | 'progress';
 
 type ExcelUploadModalStateTypes = 'default' | 'upload' | 'error';
@@ -139,9 +141,11 @@ export const useExcelUploadFlow = () => {
   const handleExcelFileChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     selectExcelFile(event.currentTarget.files?.[0]);
   };
-  const handleExcelFileDrop = (files: FileList) => {
-    selectExcelFile(files[0]);
-  };
+  const { handleFilesDrop: handleExcelFileDrop } = useFileDrop({
+    onFilesDrop: (files) => {
+      selectExcelFile(files[0]);
+    },
+  });
 
   const excelUploadModalState = getExcelUploadModalState(state);
 
