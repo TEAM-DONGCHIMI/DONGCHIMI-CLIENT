@@ -1,5 +1,6 @@
-import { type ChangeEventHandler, type ReactNode } from 'react';
+import { useRef, type ChangeEventHandler, type ReactNode } from 'react';
 
+import { IconButton } from '@dongchimi/design-system/components';
 import { IcCamera, IcPlus } from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
@@ -38,11 +39,40 @@ export const ProductImageUploadField = ({
   previewUrl,
   variant = 'registration',
 }: ProductImageUploadFieldProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const hasFileInput = id != null && onImageChange != null;
+  const shouldRenderEmptyIconButton = hasFileInput && !previewUrl && variant === 'editModal';
   const imageBoxClassName = cn(
     S.imageBoxRecipe({ variant }),
     hasFileInput && S.uploadTriggerClassName,
     previewUrl && S.imageBoxPreviewRecipe({ variant }),
+  );
+  const openFilePicker = () => {
+    fileInputRef.current?.click();
+  };
+  const fileInput = hasFileInput && (
+    <input
+      ref={fileInputRef}
+      accept={accept}
+      className={S.fileInputClassName}
+      id={id}
+      onChange={onImageChange}
+      type='file'
+    />
+  );
+  const emptyEditModalCamera = hasFileInput ? (
+    <IconButton
+      aria-label={`${label} 추가`}
+      className={S.cameraBadgeRecipe({ variant })}
+      color='assistive'
+      icon={<IcCamera />}
+      rounded
+      onClick={openFilePicker}
+    />
+  ) : (
+    <span className={S.cameraBadgeRecipe({ variant })} aria-hidden='true'>
+      <IcCamera />
+    </span>
   );
   const imageBoxContent = previewUrl ? (
     <span className={S.previewContentClassName}>
@@ -59,12 +89,18 @@ export const ProductImageUploadField = ({
           <span>{EMPTY_IMAGE_COPY}</span>
         </>
       ) : (
-        <span className={S.cameraBadgeRecipe({ variant })} aria-hidden='true'>
-          <IcCamera />
-        </span>
+        emptyEditModalCamera
       )}
     </span>
   );
+  const imageUploadFrame =
+    hasFileInput && !shouldRenderEmptyIconButton ? (
+      <label className={imageBoxClassName} htmlFor={id}>
+        {imageBoxContent}
+      </label>
+    ) : (
+      <div className={imageBoxClassName}>{imageBoxContent}</div>
+    );
 
   return (
     <div className={cn(S.rootRecipe({ variant }), className)}>
@@ -79,22 +115,8 @@ export const ProductImageUploadField = ({
         {description && <p className={S.descriptionClassName}>{description}</p>}
       </div>
 
-      {hasFileInput ? (
-        <>
-          <label className={imageBoxClassName} htmlFor={id}>
-            {imageBoxContent}
-          </label>
-          <input
-            accept={accept}
-            className={S.fileInputClassName}
-            id={id}
-            onChange={onImageChange}
-            type='file'
-          />
-        </>
-      ) : (
-        <div className={imageBoxClassName}>{imageBoxContent}</div>
-      )}
+      {imageUploadFrame}
+      {fileInput}
     </div>
   );
 };
