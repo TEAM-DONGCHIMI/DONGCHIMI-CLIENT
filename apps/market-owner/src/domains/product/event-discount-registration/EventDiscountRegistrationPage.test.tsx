@@ -109,7 +109,7 @@ describe('EventDiscountRegistrationPage', () => {
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.registrationResult);
   }, 7_000);
 
-  it('keeps the modal open with selected file state regardless of local extension', async () => {
+  it('shows an error state when an unsupported file is selected', async () => {
     const user = userEvent.setup();
     const file = new File(['image'], 'leaflet.png', { type: 'image/png' });
 
@@ -123,9 +123,48 @@ describe('EventDiscountRegistrationPage', () => {
     });
 
     expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
+    expect(screen.getByText('파일을 선택하지 못했습니다. 다시 선택해주세요.')).toBeInTheDocument();
+    expect(screen.queryByText('leaflet.png')).toBeNull();
+    expect(screen.getByRole('button', { name: '파일 업로드' })).toBeDisabled();
+  });
+
+  it('selects an excel file through drag and drop', async () => {
+    const user = userEvent.setup();
+    const excelFile = new File(['name,price'], '상품목록_드롭.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderEventDiscountRegistrationPage();
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    fireEvent.drop(screen.getByText(/상품이 등록된 엑셀 파일을 선택해주세요/), {
+      dataTransfer: {
+        files: [excelFile],
+      },
+    });
+
+    expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
     expect(screen.getByText('선택한 파일')).toBeInTheDocument();
-    expect(screen.getByText('leaflet.png')).toBeInTheDocument();
+    expect(screen.getByText('상품목록_드롭.xlsx')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '파일 업로드' })).toBeEnabled();
+  });
+
+  it('shows an error state when an unsupported file is dropped', async () => {
+    const user = userEvent.setup();
+    const invalidFile = new File(['image'], 'leaflet.png', { type: 'image/png' });
+
+    renderEventDiscountRegistrationPage();
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    fireEvent.drop(screen.getByText(/상품이 등록된 엑셀 파일을 선택해주세요/), {
+      dataTransfer: {
+        files: [invalidFile],
+      },
+    });
+
+    expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
+    expect(screen.getByText('파일을 선택하지 못했습니다. 다시 선택해주세요.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '파일 업로드' })).toBeDisabled();
   });
 
   it('clears the uploaded file when file confirmation is canceled', async () => {

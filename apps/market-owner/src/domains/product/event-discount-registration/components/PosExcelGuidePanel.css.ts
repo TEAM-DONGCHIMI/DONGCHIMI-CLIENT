@@ -1,6 +1,15 @@
-import { style, styleVariants } from '@vanilla-extract/css';
+import { keyframes, style, styleVariants } from '@vanilla-extract/css';
 
 import { atomic, semantic, shadow, typography } from '@dongchimi/design-system/tokens';
+
+const panelSlideInKeyframes = keyframes({
+  from: {
+    transform: 'translateX(100%)',
+  },
+  to: {
+    transform: 'translateX(0)',
+  },
+});
 
 export const overlayClassName = style({
   position: 'fixed',
@@ -15,10 +24,16 @@ export const panelClassName = style({
   boxSizing: 'border-box',
   width: 'min(41rem, 100vw)',
   height: '100dvh',
+  animation: `${panelSlideInKeyframes} 240ms ease-out`,
   overflowY: 'auto',
   backgroundColor: atomic.common[0],
   boxShadow: shadow.normal.medium,
   color: atomic.neutral[90],
+  '@media': {
+    '(prefers-reduced-motion: reduce)': {
+      animation: 'none',
+    },
+  },
 });
 
 export const closeButtonClassName = style({
