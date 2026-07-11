@@ -17,6 +17,8 @@ import * as S from './EventDiscountRegistrationPage.css';
 const EXCEL_UPLOAD_ACCEPT = '.xlsx,.csv';
 const ACTION_FEEDBACK_TOAST_ID = 'event-discount-registration-action-feedback';
 const TOAST_ICON_SIZE = '2.4rem';
+const EXCEL_UPLOAD_DEFAULT_LABEL =
+  '상품이 등록된 엑셀 파일을 선택해주세요.\n업로드하면 상품이 자동으로 등록됩니다.';
 
 const toastIconProps = {
   height: TOAST_ICON_SIZE,
@@ -31,6 +33,7 @@ export const EventDiscountRegistrationPage = () => {
     cancelFileAnalysisProgress,
     excelUploadModal,
     handleExcelFileChange,
+    handleExcelFileDrop,
     handleExcelUploadModalOpenChange,
     openExcelUpload,
     registrationView,
@@ -111,8 +114,9 @@ export const EventDiscountRegistrationPage = () => {
         fileSelectTooltipLabel={
           excelUploadModal.state === 'default' ? '지원 파일은 .xlsx, .csv예요.' : undefined
         }
-        label={'상품이 등록된 엑셀 파일을 선택해주세요.\n업로드하면 상품이 자동으로 등록됩니다.'}
+        label={excelUploadModal.errorMessage ?? EXCEL_UPLOAD_DEFAULT_LABEL}
         onFileChange={handleExcelFileChange}
+        onFileDrop={handleExcelFileDrop}
         onOpenChange={handleExcelUploadModalOpenChange}
         onUpload={uploadExcelFile}
         open={excelUploadModal.open}

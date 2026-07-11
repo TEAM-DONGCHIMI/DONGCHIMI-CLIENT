@@ -2,9 +2,10 @@ import { useReducer, type ChangeEventHandler } from 'react';
 
 export type EventDiscountRegistrationViewTypes = 'method' | 'confirm' | 'progress';
 
-type ExcelUploadModalStateTypes = 'default' | 'upload';
+type ExcelUploadModalStateTypes = 'default' | 'upload' | 'error';
 
 interface ExcelUploadFlowState {
+  excelUploadErrorMessage?: string;
   isExcelUploadModalOpen: boolean;
   registrationView: EventDiscountRegistrationViewTypes;
   selectedExcelFileName?: string;
@@ -15,10 +16,14 @@ type ExcelUploadFlowActionTypes =
   | { type: 'OPEN_EXCEL_UPLOAD_MODAL' }
   | { open: boolean; type: 'SET_EXCEL_UPLOAD_MODAL_OPEN' }
   | { fileName: string; type: 'SELECT_EXCEL_FILE' }
+  | { errorMessage: string; type: 'REJECT_EXCEL_FILE' }
   | { type: 'UPLOAD_EXCEL_FILE' }
   | { type: 'CANCEL_FILE_ANALYSIS_CONFIRMATION' }
   | { type: 'START_FILE_ANALYSIS' }
   | { type: 'CANCEL_FILE_ANALYSIS_PROGRESS' };
+
+const EXCEL_UPLOAD_ACCEPTED_EXTENSIONS = ['.xlsx', '.csv'] as const;
+const EXCEL_UPLOAD_FILE_FORMAT_ERROR_MESSAGE = '파일을 선택하지 못했습니다. 다시 선택해주세요.';
 
 const initialExcelUploadFlowState: ExcelUploadFlowState = {
   isExcelUploadModalOpen: false,
@@ -28,9 +33,28 @@ const initialExcelUploadFlowState: ExcelUploadFlowState = {
 const resetExcelUploadModal = (state: ExcelUploadFlowState): ExcelUploadFlowState => {
   return {
     ...state,
+    excelUploadErrorMessage: undefined,
     isExcelUploadModalOpen: false,
     selectedExcelFileName: undefined,
   };
+};
+
+const isAcceptedExcelUploadFile = (file: File) => {
+  const fileName = file.name.trim().toLowerCase();
+
+  return EXCEL_UPLOAD_ACCEPTED_EXTENSIONS.some((extension) => fileName.endsWith(extension));
+};
+
+const getExcelUploadModalState = (state: ExcelUploadFlowState): ExcelUploadModalStateTypes => {
+  if (state.selectedExcelFileName != null) {
+    return 'upload';
+  }
+
+  if (state.excelUploadErrorMessage != null) {
+    return 'error';
+  }
+
+  return 'default';
 };
 
 const excelUploadFlowReducer = (
@@ -41,6 +65,7 @@ const excelUploadFlowReducer = (
     case 'OPEN_EXCEL_UPLOAD_MODAL':
       return {
         ...state,
+        excelUploadErrorMessage: undefined,
         isExcelUploadModalOpen: true,
         selectedExcelFileName: undefined,
       };
@@ -54,7 +79,14 @@ const excelUploadFlowReducer = (
     case 'SELECT_EXCEL_FILE':
       return {
         ...state,
+        excelUploadErrorMessage: undefined,
         selectedExcelFileName: action.fileName,
+      };
+    case 'REJECT_EXCEL_FILE':
+      return {
+        ...state,
+        excelUploadErrorMessage: action.errorMessage,
+        selectedExcelFileName: undefined,
       };
     case 'UPLOAD_EXCEL_FILE':
       if (state.selectedExcelFileName == null) {
@@ -89,16 +121,29 @@ const excelUploadFlowReducer = (
 export const useExcelUploadFlow = () => {
   const [state, dispatch] = useReducer(excelUploadFlowReducer, initialExcelUploadFlowState);
 
-  const handleExcelFileChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    const file = event.currentTarget.files?.[0];
-
-    if (file != null) {
-      dispatch({ fileName: file.name, type: 'SELECT_EXCEL_FILE' });
+  const selectExcelFile = (file?: File) => {
+    if (file == null) {
+      return;
     }
+
+    if (!isAcceptedExcelUploadFile(file)) {
+      dispatch({
+        errorMessage: EXCEL_UPLOAD_FILE_FORMAT_ERROR_MESSAGE,
+        type: 'REJECT_EXCEL_FILE',
+      });
+      return;
+    }
+
+    dispatch({ fileName: file.name, type: 'SELECT_EXCEL_FILE' });
+  };
+  const handleExcelFileChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    selectExcelFile(event.currentTarget.files?.[0]);
+  };
+  const handleExcelFileDrop = (files: FileList) => {
+    selectExcelFile(files[0]);
   };
 
-  const excelUploadModalState: ExcelUploadModalStateTypes =
-    state.selectedExcelFileName == null ? 'default' : 'upload';
+  const excelUploadModalState = getExcelUploadModalState(state);
 
   return {
     cancelFileAnalysisConfirmation: () => {
@@ -108,11 +153,13 @@ export const useExcelUploadFlow = () => {
       dispatch({ type: 'CANCEL_FILE_ANALYSIS_PROGRESS' });
     },
     excelUploadModal: {
+      errorMessage: state.excelUploadErrorMessage,
       open: state.isExcelUploadModalOpen,
       selectedFileName: state.selectedExcelFileName,
       state: excelUploadModalState,
     },
     handleExcelFileChange,
+    handleExcelFileDrop,
     handleExcelUploadModalOpenChange: (open: boolean) => {
       dispatch({ open, type: 'SET_EXCEL_UPLOAD_MODAL_OPEN' });
     },
