@@ -1,3 +1,5 @@
 import config from '@dongchimi/eslint-config/react';
 
-export default config;
+const marketOwnerConfig = [...config, { ignores: ['src/shared/api/__generated__/**'] }];
+
+export default marketOwnerConfig;
