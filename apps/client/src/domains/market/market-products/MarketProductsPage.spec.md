@@ -24,6 +24,7 @@
 - `/markets/[marketId]` route의 placeholder `MarketProductsPage`를 실제 모바일 전단보기 화면으로 교체합니다.
 - API 연동 전까지 page-local fixture로 마트 정보, 인기 상품 TOP3, 오늘의 특가, 행사 할인 상품 페이지, 공유 정보를 제공합니다.
 - fixture shape은 API draft 필드명과 최대한 맞춰 후속 query 연동 시 page/section props 변경을 줄입니다.
+- `MarketProductsPage`는 정적 레이아웃과 fixture/API 조립을 담당하는 Server Component로 유지합니다. 뒤로가기, 공유/전화, 오늘의 특가 토글, 행사 할인 카테고리 및 무한스크롤은 page-local Client Component로 분리합니다.
 - 공유하기는 기존 page-local `MarketShareBottomSheet`를 재사용합니다.
 - 전화걸기는 확인 modal 후 `tel:` URL로 이동합니다.
 - 상품 카드는 `/markets/[marketId]/products/[productId]` 상세 route로 이동합니다.
