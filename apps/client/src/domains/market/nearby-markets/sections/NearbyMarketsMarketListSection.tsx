@@ -14,7 +14,7 @@ import type { NearbyMarketDtoTypes } from '../../model/nearby-markets-schema';
 import * as S from '../NearbyMarketsPage.css';
 
 const NEARBY_MARKETS_LOAD_ERROR_TOAST_ID = 'nearby-markets-load-error';
-const NEARBY_MARKETS_LOAD_ERROR_MESSAGE = '위치 접근 허용에 실패했어요';
+const NEARBY_MARKETS_LOAD_ERROR_MESSAGE = '마트를 불러올 수 없어요';
 
 export interface NearbyMarketsMarketListSectionProps extends Pick<
   ReturnType<typeof useGetNearbyMarketsInfiniteQuery>,
