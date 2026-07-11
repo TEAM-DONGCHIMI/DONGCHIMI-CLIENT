@@ -33,6 +33,11 @@ export const businessHourRowsClassName = style({
   gap: '1.2rem',
 });
 
+export const businessHourRowGroupClassName = style({
+  display: 'grid',
+  gap: '0.4rem',
+});
+
 export const businessTimeErrorMessageClassName = style({
   display: 'inline-flex',
   minWidth: 0,

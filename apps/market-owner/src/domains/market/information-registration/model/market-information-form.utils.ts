@@ -110,7 +110,7 @@ export const isValidBusinessRegistrationNumber = (businessRegistrationNumber: st
 };
 
 export const isValidBusinessDay = (businessDay: string) => {
-  const businessDays = businessDay.length > 0 ? businessDay.split(', ') : [];
+  const businessDays = businessDay.trim().length > 0 ? businessDay.split(', ') : [];
 
   return businessDays.length > 0;
 };

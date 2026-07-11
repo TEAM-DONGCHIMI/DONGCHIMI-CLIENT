@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useRef, type ChangeEvent } from 'react';
+import { useCallback, useEffect, useId, useRef, type ChangeEvent, type FocusEvent } from 'react';
 
 import { overlay, useOverlayData } from 'overlay-kit';
 import { type UseFormRegisterReturn } from 'react-hook-form';
@@ -48,6 +48,7 @@ export interface BusinessOperationSectionProps {
   additionalBusinessHours: AdditionalBusinessHoursProps;
   businessHours: BusinessHoursProps<'businessTime'>;
   holidaySelection: HolidaySelectionProps;
+  onBlur: () => void;
 }
 
 interface BusinessTimeErrorMessageProps {
@@ -68,6 +69,7 @@ export const BusinessOperationSection = ({
   additionalBusinessHours,
   businessHours,
   holidaySelection,
+  onBlur,
 }: BusinessOperationSectionProps) => {
   const {
     day: businessDay,
@@ -220,6 +222,16 @@ export const BusinessOperationSection = ({
     closeOverlay(additionalBusinessDayMenuId);
   };
 
+  const handleBusinessHoursBlur = (event: FocusEvent<HTMLDivElement>) => {
+    const nextFocusedElement = event.relatedTarget;
+
+    if (nextFocusedElement instanceof Node && event.currentTarget.contains(nextFocusedElement)) {
+      return;
+    }
+
+    onBlur();
+  };
+
   return (
     <Stack gap='2xl'>
       <div className={S.inlineFieldClassName}>
@@ -227,62 +239,64 @@ export const BusinessOperationSection = ({
           영업 시간
           <RequiredMark />
         </span>
-        <div className={S.businessHourRowsClassName}>
-          {/* 기본 영업 시간 */}
-          <div className={S.businessHourControlClassName}>
-            <div ref={businessDayDropdownRef} className={S.dropdownFieldClassName}>
-              <button
-                aria-controls={isBusinessDayMenuOpen ? businessDayMenuId : undefined}
-                aria-expanded={isBusinessDayMenuOpen}
-                aria-haspopup='true'
-                className={S.dropdownTriggerClassName}
-                type='button'
-                onClick={() => toggleOverlay(businessDayMenuId, isBusinessDayMenuOpen)}
-              >
-                {businessDayTriggerLabel}
-                {isBusinessDayMenuOpen ? (
-                  <IcChevronUp aria-hidden='true' className={S.dropdownTriggerIconClassName} />
-                ) : (
-                  <IcChevronDown aria-hidden='true' className={S.dropdownTriggerIconClassName} />
+        <div className={S.businessHourRowsClassName} onBlur={handleBusinessHoursBlur}>
+          <div className={S.businessHourRowGroupClassName}>
+            {/* 기본 영업 시간 */}
+            <div className={S.businessHourControlClassName}>
+              <div ref={businessDayDropdownRef} className={S.dropdownFieldClassName}>
+                <button
+                  aria-controls={isBusinessDayMenuOpen ? businessDayMenuId : undefined}
+                  aria-expanded={isBusinessDayMenuOpen}
+                  aria-haspopup='true'
+                  className={S.dropdownTriggerClassName}
+                  type='button'
+                  onClick={() => toggleOverlay(businessDayMenuId, isBusinessDayMenuOpen)}
+                >
+                  {businessDayTriggerLabel}
+                  {isBusinessDayMenuOpen ? (
+                    <IcChevronUp aria-hidden='true' className={S.dropdownTriggerIconClassName} />
+                  ) : (
+                    <IcChevronDown aria-hidden='true' className={S.dropdownTriggerIconClassName} />
+                  )}
+                </button>
+                {isBusinessDayMenuOpen && (
+                  <div className={S.dropdownPopoverClassName}>
+                    <Dropdown aria-label='영업 요일' id={businessDayMenuId} role='group'>
+                      {businessDayOptions.map((businessDay) => (
+                        <Dropdown.Item
+                          checkbox
+                          key={businessDay}
+                          selected={selectedBusinessDays.includes(businessDay)}
+                          onClick={() => handleBusinessDayOptionClick(businessDay)}
+                        >
+                          {businessDay}
+                        </Dropdown.Item>
+                      ))}
+                    </Dropdown>
+                  </div>
                 )}
-              </button>
-              {isBusinessDayMenuOpen && (
-                <div className={S.dropdownPopoverClassName}>
-                  <Dropdown aria-label='영업 요일' id={businessDayMenuId} role='group'>
-                    {businessDayOptions.map((businessDay) => (
-                      <Dropdown.Item
-                        checkbox
-                        key={businessDay}
-                        selected={selectedBusinessDays.includes(businessDay)}
-                        onClick={() => handleBusinessDayOptionClick(businessDay)}
-                      >
-                        {businessDay}
-                      </Dropdown.Item>
-                    ))}
-                  </Dropdown>
-                </div>
-              )}
+              </div>
+              <AddableField
+                aria-label='영업 시간'
+                inputMode='numeric'
+                leadingIcon={<IcClockSizeSmallColor60 />}
+                placeholder='00:00 - 00:00'
+                required
+                type='tel'
+                trailingActionLabel='영업 시간 추가'
+                trailingIcon={<IcPlusSizeSmallColor60 />}
+                {...businessTimeField}
+                value={businessTime}
+                onChange={onBusinessTimeChange}
+                onTrailingAction={() => openOverlay(additionalBusinessTimeId)}
+              />
             </div>
-            <AddableField
-              aria-label='영업 시간'
-              inputMode='numeric'
-              leadingIcon={<IcClockSizeSmallColor60 />}
-              placeholder='00:00 - 00:00'
-              required
-              type='tel'
-              trailingActionLabel='영업 시간 추가'
-              trailingIcon={<IcPlusSizeSmallColor60 />}
-              {...businessTimeField}
-              value={businessTime}
-              onChange={onBusinessTimeChange}
-              onTrailingAction={() => openOverlay(additionalBusinessTimeId)}
-            />
+            {businessOperationErrorMessage && (
+              <BusinessTimeErrorMessage message={businessOperationErrorMessage} />
+            )}
           </div>
-          {businessOperationErrorMessage && (
-            <BusinessTimeErrorMessage message={businessOperationErrorMessage} />
-          )}
           {shouldShowAdditionalBusinessTime && (
-            <>
+            <div className={S.businessHourRowGroupClassName}>
               {/* 추가 영업 시간 */}
               <div className={S.businessHourControlClassName}>
                 <div ref={additionalBusinessDayDropdownRef} className={S.dropdownFieldClassName}>
@@ -346,7 +360,7 @@ export const BusinessOperationSection = ({
               {additionalBusinessOperationErrorMessage && (
                 <BusinessTimeErrorMessage message={additionalBusinessOperationErrorMessage} />
               )}
-            </>
+            </div>
           )}
         </div>
       </div>

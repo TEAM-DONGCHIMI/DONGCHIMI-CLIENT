@@ -60,10 +60,12 @@ export const MarketInformationRegistrationPage = () => {
     handleSubmit,
     register,
     setValue,
+    trigger,
     watch,
   } = useForm<MarketInformationFormTypes>({
     defaultValues: marketInformationRegistrationFixture.initialForm,
-    mode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
     resolver: zodResolver(marketInformationRegistrationSchema),
   });
   const form = watch();
@@ -72,7 +74,7 @@ export const MarketInformationRegistrationPage = () => {
     setValue(name, value, {
       shouldDirty: true,
       shouldTouch: true,
-      shouldValidate: true,
+      shouldValidate: false,
     });
   };
 
@@ -104,6 +106,15 @@ export const MarketInformationRegistrationPage = () => {
     setFormValue('additionalBusinessTime', '');
   };
 
+  const handleBusinessHoursBlur = () => {
+    void trigger([
+      'businessDay',
+      'businessTime',
+      'additionalBusinessDay',
+      'additionalBusinessTime',
+    ]);
+  };
+
   const handleHolidayChange = (holiday: string) => {
     setFormValue('holiday', holiday);
   };
@@ -127,7 +138,7 @@ export const MarketInformationRegistrationPage = () => {
             <p className={S.descriptionClassName}>점주님의 마트 정보를 등록해주세요.</p>
           </Stack>
 
-          <form className={S.formClassName} onSubmit={handleMarketInformationSubmit}>
+          <form noValidate className={S.formClassName} onSubmit={handleMarketInformationSubmit}>
             <Flex align='start' className={S.formContentClassName}>
               <MarketImageUploadSection onImageSelect={() => undefined} />
 
@@ -170,6 +181,7 @@ export const MarketInformationRegistrationPage = () => {
                       time: form.businessTime,
                       timeField: register('businessTime'),
                     }}
+                    onBlur={handleBusinessHoursBlur}
                     holidaySelection={{
                       onChange: handleHolidayChange,
                       value: form.holiday,

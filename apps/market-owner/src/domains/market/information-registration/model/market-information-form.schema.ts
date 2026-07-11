@@ -16,7 +16,10 @@ const marketNameErrorMessages = {
 const businessRegistrationNumberErrorMessage = '올바른 사업자등록번호를 입력해주세요.';
 const addressErrorMessage = '주소를 입력해주세요.';
 const addressDetailErrorMessage = '상세 주소를 입력해주세요.';
-const businessOperationErrorMessage = '올바른 형식으로 입력 해주세요.';
+const businessOperationErrorMessages = {
+  empty: '영업 요일과 영업시간을 입력해주세요.',
+  invalidTime: '올바른 시간을 입력해주세요.',
+} as const;
 const marketPhoneErrorMessages = {
   empty: '대표 전화번호를 입력해주세요.',
   invalid: '올바른 전화번호를 입력해주세요.',
@@ -38,11 +41,14 @@ export const marketInformationRegistrationSchema = z
       message: businessRegistrationNumberErrorMessage,
     }),
     businessDay: z.string().refine(isValidBusinessDay, {
-      message: businessOperationErrorMessage,
+      message: businessOperationErrorMessages.empty,
     }),
-    businessTime: z.string().refine(isValidBusinessTime, {
-      message: businessOperationErrorMessage,
-    }),
+    businessTime: requiredString(businessOperationErrorMessages.empty).refine(
+      (businessTime) => businessTime.trim().length === 0 || isValidBusinessTime(businessTime),
+      {
+        message: businessOperationErrorMessages.invalidTime,
+      },
+    ),
     detailAddress: requiredString(addressDetailErrorMessage).max(20, addressDetailErrorMessage),
     holiday: z.string(),
     latitude: z.number(),
@@ -70,18 +76,28 @@ export const marketInformationRegistrationSchema = z
       return;
     }
 
-    if (!hasAdditionalBusinessDay || !isValidBusinessDay(additionalBusinessDay)) {
+    if (!hasAdditionalBusinessDay) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
-        message: businessOperationErrorMessage,
+        message: businessOperationErrorMessages.empty,
         path: ['additionalBusinessDay'],
       });
     }
 
-    if (!hasAdditionalBusinessTime || !isValidBusinessTime(additionalBusinessTime)) {
+    if (!hasAdditionalBusinessTime) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
-        message: businessOperationErrorMessage,
+        message: businessOperationErrorMessages.empty,
+        path: ['additionalBusinessTime'],
+      });
+
+      return;
+    }
+
+    if (!isValidBusinessTime(additionalBusinessTime)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: businessOperationErrorMessages.invalidTime,
         path: ['additionalBusinessTime'],
       });
     }
