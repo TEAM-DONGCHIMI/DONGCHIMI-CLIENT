@@ -101,7 +101,7 @@ export { default as IcShareIosStateSmallColorPrimary } from './generated/IcShare
 export { default as IcShareIos } from './generated/IcShareIos';
 export { default as IcShareSizeXsmall } from './generated/IcShareSizeXsmall';
 export { default as IcShare } from './generated/IcShare';
-export { default as IcTodaySaleEditDefalut } from './generated/IcTodaySaleEditDefalut';
+export { default as IcTodaySaleEditDefault } from './generated/IcTodaySaleEditDefault';
 export { default as IcTodaySaleEditHover } from './generated/IcTodaySaleEditHover';
 export { default as IcTodaySaleUploadDefault } from './generated/IcTodaySaleUploadDefault';
 export { default as IcTodaySaleUploadHover } from './generated/IcTodaySaleUploadHover';

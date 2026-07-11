@@ -9,7 +9,7 @@ import {
   IcRangeSaleUploadDefault,
   IcRangeSaleUploadHover,
   IcSetting,
-  IcTodaySaleEditDefalut,
+  IcTodaySaleEditDefault,
   IcTodaySaleEditHover,
   IcTodaySaleUploadDefault,
   IcTodaySaleUploadHover,
@@ -102,7 +102,7 @@ const sidebarSections: SidebarSection[] = [
       createSidebarItem({
         icon: (
           <SidebarStateIcon
-            defaultIcon={<IcTodaySaleEditDefalut aria-hidden='true' />}
+            defaultIcon={<IcTodaySaleEditDefault aria-hidden='true' />}
             hoverIcon={<IcTodaySaleEditHover aria-hidden='true' />}
           />
         ),

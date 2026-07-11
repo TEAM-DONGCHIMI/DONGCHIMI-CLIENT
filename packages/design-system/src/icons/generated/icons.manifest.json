@@ -504,9 +504,9 @@
     "generatedFingerprint": "0ac72246b7fdef93962296b8ad1c0a7294a62c395b061fa705a55bd1c26eacaf",
     "sourceFingerprint": "480f3b5a01497bf45c1248083f1b0d96d16ff1f15ca77aea9bd07717db61e62d"
   },
-  "ic-today-sale-edit-defalut.svg": {
-    "generatedFile": "IcTodaySaleEditDefalut.tsx",
-    "generatedFingerprint": "6f4de72789cb62f037a7e05d209e35414a238c9013edddc55cf5876ae618c573",
+  "ic-today-sale-edit-default.svg": {
+    "generatedFile": "IcTodaySaleEditDefault.tsx",
+    "generatedFingerprint": "2e2e4c089290786dbe41d0b5e9db28b62ddf9f652b71de821388d61e7ff5bca2",
     "sourceFingerprint": "22bd8e6b58cb6b2831ca32b75b6ca727368193a9eb092b1b1f71099fc75b0876"
   },
   "ic-today-sale-edit-hover.svg": {

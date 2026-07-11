@@ -1,5 +1,5 @@
 import { forwardRef, memo, type Ref, type SVGProps } from 'react';
-const SvgIcTodaySaleEditDefalut = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>) => (
+const SvgIcTodaySaleEditDefault = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     width='1em'
@@ -22,6 +22,6 @@ const SvgIcTodaySaleEditDefalut = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGS
     />
   </svg>
 );
-const ForwardRef = forwardRef(SvgIcTodaySaleEditDefalut);
+const ForwardRef = forwardRef(SvgIcTodaySaleEditDefault);
 const Memo = memo(ForwardRef);
 export default Memo;
