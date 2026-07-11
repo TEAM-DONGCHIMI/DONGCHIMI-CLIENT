@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen } from '@/test';
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { AppProviders } from './AppProviders';
 import { marketOwnerRoutes } from './router';
 
@@ -182,6 +183,26 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('button', { name: '링크 복사' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '매장 고유 QR코드 보기' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '오늘의 전단 공유' })).not.toBeInTheDocument();
+  });
+
+  it('navigates the sidebar market information link to the registration page', async () => {
+    const user = userEvent.setup();
+
+    renderRoute(MARKET_OWNER_ROUTES.home);
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+
+    const marketInformationLink = screen.getByRole('link', { name: '마트 정보 관리' });
+
+    expect(marketInformationLink).toHaveAttribute(
+      'href',
+      MARKET_OWNER_ROUTES.marketInformationRegistration,
+    );
+
+    await user.click(marketInformationLink);
+
+    expect(await screen.findByRole('heading', { name: '마트 정보 등록' })).toBeInTheDocument();
+    expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   });
 
   it('centers sidebar-layout toasts over the content area', async () => {
