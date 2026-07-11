@@ -1,4 +1,4 @@
-import { paginateByCursor, wait } from '@/shared/utils';
+import { paginateByCursor } from '@/shared/utils';
 
 import {
   resolveNearbyMarketsParams,
@@ -17,6 +17,10 @@ const MOCK_NETWORK_DELAY_MS = 400;
 const MOCK_SUCCESS_CODE = 'SUCCESS';
 const MOCK_SUCCESS_MESSAGE = '요청에 성공했습니다.';
 const EARTH_RADIUS_METERS = 6371000;
+
+const delay = (delayMs: number) => {
+  return new Promise<void>((resolve) => setTimeout(resolve, delayMs));
+};
 
 const filterMarketsByKeyword = (
   markets: readonly NearbyMarketDtoTypes[],
@@ -73,7 +77,7 @@ export const getNearbyMarkets = async (
     size = DEFAULT_PAGE_SIZE,
   } = resolveNearbyMarketsParams(rawParams);
 
-  await wait(MOCK_NETWORK_DELAY_MS);
+  await delay(MOCK_NETWORK_DELAY_MS);
 
   const filteredMarkets = filterMarketsByKeyword(MOCK_NEARBY_MARKETS, keyword);
   const sortedMarkets =
