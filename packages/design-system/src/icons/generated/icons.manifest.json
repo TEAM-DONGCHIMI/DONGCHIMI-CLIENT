@@ -34,6 +34,11 @@
     "generatedFingerprint": "a3129d38375d89386921e736dcf30602ebc7faec0fbc2d37969ba6911633c9ec",
     "sourceFingerprint": "388e7ee8c224e2086aea49e0814e1f8f91c5bcd18b0ff2f26d0ffa38719fe53d"
   },
+  "ic-camera-default.svg": {
+    "generatedFile": "IcCameraDefault.tsx",
+    "generatedFingerprint": "9161b8d2a2daf1326be3432e7cd11a7da7fdba57b737df45c58e4683d4087d04",
+    "sourceFingerprint": "0867d0982b01d8b524e54b3862273d909279cfbe468762055a410cb3a1bd50e3"
+  },
   "ic-camera.svg": {
     "generatedFile": "IcCamera.tsx",
     "generatedFingerprint": "5f0c9356444338397584a408c23e043ec566a8ede2932b3cce6f15e986b5db42",
