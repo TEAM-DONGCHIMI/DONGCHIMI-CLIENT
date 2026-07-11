@@ -6,6 +6,7 @@ import { useToast } from '@dongchimi/shared/toast';
 import { MobileHeader } from '@/shared/components';
 import { useDebouncedValue, useGeolocation } from '@/shared/hooks';
 
+import { useGetNearbyMarketMarkersQuery } from '../hooks/use-nearby-market-markers-query';
 import { useGetNearbyMarketsInfiniteQuery } from '../hooks/use-nearby-markets-infinite-query';
 import {
   DEFAULT_LOCATION_ADDRESS_TEXT,
@@ -28,6 +29,11 @@ export const NearbyMarketsContent = () => {
   const [hasEditedKeyword, setHasEditedKeyword] = useState(false);
   const debouncedKeyword = useDebouncedValue(keyword);
   const { coordinates, errorCode } = useGeolocation();
+  const nearbyMarketsParams = {
+    keyword: debouncedKeyword,
+    lat: coordinates?.lat,
+    lng: coordinates?.lng,
+  };
 
   const {
     data,
@@ -37,11 +43,9 @@ export const NearbyMarketsContent = () => {
     isError: isMarketsError,
     isFetchingNextPage,
     isPending: isMarketsPending,
-  } = useGetNearbyMarketsInfiniteQuery({
-    keyword: debouncedKeyword,
-    lat: coordinates?.lat,
-    lng: coordinates?.lng,
-  });
+  } = useGetNearbyMarketsInfiniteQuery(nearbyMarketsParams);
+  const { data: markerMarkets = [], isError: isMarkerMarketsError } =
+    useGetNearbyMarketMarkersQuery(nearbyMarketsParams);
   const markets = flattenNearbyMarketsPages(data);
 
   useEffect(() => {
@@ -78,8 +82,8 @@ export const NearbyMarketsContent = () => {
       <NearbyMarketsMapSection
         coordinates={coordinates}
         errorCode={errorCode}
-        isMarketsError={isMarketsError}
-        markets={markets}
+        isMarketsError={isMarkerMarketsError}
+        markets={markerMarkets}
       />
       <NearbyMarketsMarketListSection
         error={error}

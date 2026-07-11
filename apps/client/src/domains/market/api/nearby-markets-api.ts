@@ -97,3 +97,28 @@ export const getNearbyMarkets = async (
     success: true,
   });
 };
+
+export const getNearbyMarketMarkers = async (
+  rawParams: NearbyMarketsListParamsTypes,
+): Promise<NearbyMarketsResponseDataTypes> => {
+  const { keyword, lat, lng } = resolveNearbyMarketsParams(rawParams);
+
+  await delay(MOCK_NETWORK_DELAY_MS);
+
+  const filteredMarkets = filterMarketsByKeyword(MOCK_NEARBY_MARKETS, keyword);
+  const sortedMarkets =
+    lat === undefined || lng === undefined
+      ? filteredMarkets
+      : sortMarketsByDistance(filteredMarkets, { lat, lng });
+
+  return resolveNearbyMarketsResponse({
+    code: MOCK_SUCCESS_CODE,
+    data: {
+      contents: sortedMarkets,
+      hasNext: false,
+      nextCursor: null,
+    },
+    message: MOCK_SUCCESS_MESSAGE,
+    success: true,
+  });
+};
