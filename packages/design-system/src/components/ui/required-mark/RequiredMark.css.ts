@@ -12,7 +12,7 @@ export const rootClassName = style({
 
 export const markClassName = style({
   ...typography['body-2-regular'],
-  color: semantic.primary.strong,
+  color: semantic.status.negative,
 });
 
 export const tooltipClassName = style({

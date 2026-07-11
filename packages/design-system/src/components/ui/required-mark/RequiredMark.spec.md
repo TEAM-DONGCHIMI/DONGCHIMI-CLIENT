@@ -53,7 +53,7 @@ RequiredMark (span)
 
 ## Styling
 
-- mark: `typography['body-2-regular']`, `semantic.primary.strong`
+- mark: `typography['body-2-regular']`, `semantic.status.negative`
 - layout: inline-flex, shrink 방지, mark 기준 relative positioning
 - tooltip: mark 중심 정렬, `bottom: calc(100% + 4px)`, 한 줄 표시
 - hover transition: opacity `120ms ease`
