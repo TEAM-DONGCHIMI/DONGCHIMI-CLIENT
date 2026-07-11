@@ -8,7 +8,6 @@ import {
 const businessRegistrationNumberDigitPattern = /\D/g;
 const businessTimeDigitPattern = /\D/g;
 const phoneDigitPattern = /\D/g;
-const maxSelectedBusinessDayCount = 2;
 const businessHourDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 const businessDayToApiDayMap: Record<string, BusinessHourDayTypes> = {
   월요일: 'mon',
@@ -113,7 +112,7 @@ export const isValidBusinessRegistrationNumber = (businessRegistrationNumber: st
 export const isValidBusinessDay = (businessDay: string) => {
   const businessDays = businessDay.length > 0 ? businessDay.split(', ') : [];
 
-  return 1 <= businessDays.length && businessDays.length <= maxSelectedBusinessDayCount;
+  return businessDays.length > 0;
 };
 
 export const isValidBusinessTime = (businessTime: string) => {

@@ -17,7 +17,6 @@ import { holidayOptions, marketInformationRegistrationFixture } from '../fixture
 import * as S from './BusinessOperationSection.css';
 
 const businessDayOptions = marketInformationRegistrationFixture.businessDays;
-const maxSelectedBusinessDayCount = 2;
 
 const getBusinessDayDisplayLabel = (businessDay: string) => {
   return businessDay.replace('요일', '');
@@ -200,10 +199,7 @@ export const BusinessOperationSection = ({
       return;
     }
 
-    const nextSelectedBusinessDays = [...selectedBusinessDays, businessDay].slice(
-      0,
-      maxSelectedBusinessDayCount,
-    );
+    const nextSelectedBusinessDays = [...selectedBusinessDays, businessDay];
 
     onBusinessDayChange(nextSelectedBusinessDays.join(', '));
   };
