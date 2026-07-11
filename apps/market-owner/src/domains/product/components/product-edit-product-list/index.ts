@@ -1,6 +1,6 @@
 export { ProductEditProductList } from './ProductEditProductList';
 export { createProductEditCardProps, createProductEditDisplayGroups } from './display-groups';
-export { ProductEditEmptyView } from './product-edit-empty-view/ProductEditEmptyView';
+export { ProductEditEmptyView } from './product-edit-empty-view';
 export type {
   ProductEditCardProps,
   ProductEditCardVariantTypes,

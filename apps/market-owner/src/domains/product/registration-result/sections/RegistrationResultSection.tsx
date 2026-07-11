@@ -8,7 +8,7 @@ import {
 } from '@/shared/components';
 import type { ProductCategoryGroupTypes } from '@/shared/constants/product-categories';
 
-import type { RegistrationResultProduct } from '../fixtures/registration-result.fixture';
+import type { RegistrationResultProduct } from '../fixtures';
 import { CATEGORY_FILTER_DROPDOWN_ID } from '../components/RegistrationResultDropdown';
 import { RegistrationResultSectionLayout } from '../components/RegistrationResultSectionLayout';
 import { RegistrationResultTable } from '../components/RegistrationResultTable';

@@ -11,7 +11,7 @@ import {
 import { type ProductCategoryTypes } from '@/domains/product/constants';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
-import { type EventDiscountEditProductTypes } from '../fixtures/event-discount-edit.fixture';
+import { type EventDiscountEditProductTypes } from '../fixtures';
 
 interface EventDiscountEditProductSectionProps {
   products: EventDiscountEditProductTypes[];

@@ -13,7 +13,7 @@ import {
   IcPlus,
 } from '@dongchimi/design-system/icons';
 
-import type { RegistrationResultProduct } from '../fixtures/registration-result.fixture';
+import type { RegistrationResultProduct } from '../fixtures';
 import type { RegistrationResultEditableProductFieldTypes } from '../hooks/useRegistrationResultProductDrafts';
 import * as S from './RegistrationResult.css';
 

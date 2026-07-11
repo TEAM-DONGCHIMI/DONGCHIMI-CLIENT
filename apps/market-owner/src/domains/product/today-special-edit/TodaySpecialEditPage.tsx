@@ -1,8 +1,8 @@
 import { ProductEditPageShell } from '@/domains/product/components/product-edit-page-shell';
 import { useProductEditProducts } from '@/domains/product/hooks';
 
-import { eventDiscountEditProducts } from '../event-discount-edit/fixtures/event-discount-edit.fixture';
-import { todaySpecialEditProducts } from './fixtures/today-special-edit.fixture';
+import { eventDiscountEditProducts } from '../event-discount-edit/fixtures';
+import { todaySpecialEditProducts } from './fixtures';
 import { TodaySpecialEditProductSection } from './sections/TodaySpecialEditProductSection';
 
 export const TodaySpecialEditPage = () => {

@@ -12,10 +12,12 @@ import { useCategoryDropdown } from './hooks/useCategoryDropdown';
 import { useCurrentProductField } from './hooks/useCurrentProductField';
 import { useProductDraftNavigation } from './hooks/useProductDraftNavigation';
 import { useTodaySpecialForm } from './hooks/useTodaySpecialForm';
-import { ProductInfoSection } from './sections/ProductInfoSection';
-import { ProductPeriodSection } from './sections/ProductPeriodSection';
-import { ProductPriceSection } from './sections/ProductPriceSection';
-import { RegistrationTitleSection } from './sections/RegistrationTitleSection';
+import {
+  ProductInfoSection,
+  ProductPeriodSection,
+  ProductPriceSection,
+  RegistrationTitleSection,
+} from './sections';
 import * as S from './TodaySpecialRegistrationPage.css';
 
 export const TodaySpecialRegistrationPage = () => {

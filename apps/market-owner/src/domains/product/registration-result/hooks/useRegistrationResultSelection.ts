@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import type { RegistrationResultProduct } from '../fixtures/registration-result.fixture';
+import type { RegistrationResultProduct } from '../fixtures';
 
 interface UseRegistrationResultSelectionParams {
   visibleProducts: readonly RegistrationResultProduct[];

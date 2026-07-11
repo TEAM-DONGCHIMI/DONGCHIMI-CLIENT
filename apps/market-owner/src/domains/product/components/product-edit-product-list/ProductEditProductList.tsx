@@ -7,7 +7,7 @@ import {
   type ProductEditCardVariantTypes,
   type ProductEditProductGroup,
 } from './display-groups';
-import { ProductEditEmptyView } from './product-edit-empty-view/ProductEditEmptyView';
+import { ProductEditEmptyView } from './product-edit-empty-view';
 
 interface ProductEditProductListProps {
   ariaLabel: string;

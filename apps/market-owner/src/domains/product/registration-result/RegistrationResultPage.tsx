@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router';
 import { DesktopHeader } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
-import { registrationResultFixture } from './fixtures/registration-result.fixture';
+import { registrationResultFixture } from './fixtures';
 import * as S from './RegistrationResultPage.css';
-import { RegistrationResultSection } from './sections/RegistrationResultSection';
+import { RegistrationResultSection } from './sections';
 
 export const RegistrationResultPage = () => {
   const navigate = useNavigate();
