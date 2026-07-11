@@ -1,4 +1,4 @@
-import { MobileHeader } from '@/shared/components';
+import { MobileHeader } from '@/shared/components/ui/mobile-header';
 
 import { NearbyMarketsClientProvider } from './NearbyMarketsClientProvider';
 import * as S from './NearbyMarketsPage.css';
