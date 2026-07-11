@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { ToastProvider, useToast } from '@dongchimi/shared/toast';
 
 import { Button, Flex, Stack } from '@dongchimi/design-system/components';
-import { IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
+import { IcCircleExclamation } from '@dongchimi/design-system/icons';
 
 import { DesktopHeader } from '@/shared/components';
 
@@ -38,7 +38,9 @@ type StringMarketInformationFormFieldTypes = {
     : never;
 }[keyof MarketInformationFormTypes];
 
-const toastIcon = <IcCircleExclamationFillColor0 height='2.4rem' width='2.4rem' />;
+const toastIcon = (
+  <IcCircleExclamation className={S.toastErrorIconClassName} height='2.4rem' width='2.4rem' />
+);
 const toastErrorOptions = {
   icon: toastIcon,
   id: 'market-information-registration-error',
