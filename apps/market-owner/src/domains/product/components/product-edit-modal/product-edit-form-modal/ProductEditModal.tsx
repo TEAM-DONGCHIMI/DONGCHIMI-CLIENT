@@ -1,11 +1,7 @@
 import { useRef, useState, type ChangeEventHandler } from 'react';
 
 import { Button, Dialog, InlineField } from '@dongchimi/design-system/components';
-import {
-  IcCalendarPlusSizeSmall,
-  IcChevronDownSizeSmallColor50,
-  IcLineHorizontalSizeSmall,
-} from '@dongchimi/design-system/icons';
+import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
 
 import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
 import { imageUploadInputAccept, isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
@@ -15,19 +11,27 @@ import {
   productSelectableCategoryOptions,
   type ProductSelectableCategoryTypes,
 } from '../../../constants';
-import { useProductOverlayDisclosure } from '../../../hooks';
+import { useProductCategoryDropdownLayout, useProductOverlayDisclosure } from '../../../hooks';
 import {
   addOneDayToProductEditDate,
   formatProductEditDateForInput,
-} from '../../../utils/product-edit-date';
+  getProductDateMinimum,
+  isProductEditDateRangeValid,
+  isProductEditDateTodayOrFuture,
+} from '../../../utils/product-date';
+import {
+  formatProductPriceInput,
+  limitProductNameInput,
+  limitProductPromotionTextInput,
+} from '../../../utils/product-input';
 import {
   type ProductEditCardProps,
   type ProductEditCardVariantTypes,
 } from '../../product-edit-product-list';
 import { DateField } from '../../date-field';
-import { ProductCategoryDropdown } from '../../product-category-dropdown';
+import { ProductCategoryDropdown, ProductCategoryTrigger } from '../../product-category-dropdown';
 import { ProductImageUploadField } from '../../product-image-upload-field';
-import { useProductEditModalTitleFocus } from '../hooks/use-product-edit-modal-title-focus';
+import { useProductEditModalContentFocus } from '../hooks/use-product-edit-modal-content-focus';
 import { keepProductEditDialogOpen, openProductEditOverlay } from '../open-product-edit-overlay';
 import * as S from './ProductEditModal.css';
 
@@ -95,13 +99,21 @@ export const ProductEditModal = ({
   const [initialValues] = useState(() => createInitialValues(product));
   const [values, setValues] = useState(initialValues);
   const categoryFieldRef = useRef<HTMLDivElement>(null);
-  const titleRef = useProductEditModalTitleFocus(open);
+  const categoryTriggerRef = useRef<HTMLButtonElement>(null);
+  const contentRef = useProductEditModalContentFocus(open);
   const categoryDropdown = useProductOverlayDisclosure({
     overlayId: PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID,
     triggerRef: categoryFieldRef,
   });
+  const categoryDropdownStyle = useProductCategoryDropdownLayout({
+    containerRef: categoryFieldRef,
+    isOpen: categoryDropdown.isOpen,
+    triggerRef: categoryTriggerRef,
+  });
   const isTodaySpecial = variant === 'todaySpecial';
   const isTodayOnly = values.startDate === values.endDate;
+  const isStartDateValid = isTodaySpecial || isProductEditDateTodayOrFuture(values.startDate);
+  const isDateRangeValid = isProductEditDateRangeValid(values.startDate, values.endDate);
   const isEdited = !isSameFormValues(values, initialValues);
   const handleImagePreviewChange = ({ file, previewUrl }: ImagePreviewChangePayload) => {
     setValues((currentValues) => ({
@@ -125,9 +137,20 @@ export const ProductEditModal = ({
   const updateValue =
     (key: keyof ProductEditFormValues): ChangeEventHandler<HTMLInputElement> =>
     (event) => {
+      const inputValue = event.target.value;
+      const isPriceField = key === 'originalPrice' || key === 'salePrice';
+      const nextValue =
+        key === 'productName'
+          ? limitProductNameInput(inputValue)
+          : key === 'promotionText'
+            ? limitProductPromotionTextInput(inputValue)
+            : isPriceField
+              ? formatProductPriceInput(inputValue)
+              : inputValue;
+
       setValues((currentValues) => ({
         ...currentValues,
-        [key]: event.target.value,
+        [key]: nextValue,
       }));
     };
 
@@ -165,11 +188,9 @@ export const ProductEditModal = ({
 
   return (
     <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
-      <Dialog.Content className={S.contentClassName}>
+      <Dialog.Content ref={contentRef} className={S.contentClassName}>
         <div className={S.containerClassName}>
-          <Dialog.Title ref={titleRef} className={S.titleClassName} tabIndex={-1}>
-            판매 정보를 수정해주세요
-          </Dialog.Title>
+          <Dialog.Title className={S.titleClassName}>판매 정보를 수정해주세요</Dialog.Title>
 
           <div className={S.bodyClassName}>
             <section className={S.sectionClassName}>
@@ -194,16 +215,13 @@ export const ProductEditModal = ({
                   </div>
                   <div ref={categoryFieldRef} className={S.categoryFieldClassName}>
                     <span className={S.fieldLabelClassName}>상품 구분</span>
-                    <button
+                    <ProductCategoryTrigger
                       aria-controls={PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID}
                       aria-expanded={categoryDropdown.isOpen}
-                      className={S.categoryTriggerClassName}
-                      type='button'
+                      label={values.categoryName}
                       onClick={categoryDropdown.toggle}
-                    >
-                      <span>{values.categoryName}</span>
-                      <IcChevronDownSizeSmallColor50 aria-hidden='true' />
-                    </button>
+                      ref={categoryTriggerRef}
+                    />
 
                     {categoryDropdown.isOpen && (
                       <ProductCategoryDropdown
@@ -212,6 +230,7 @@ export const ProductEditModal = ({
                         id={PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID}
                         options={productSelectableCategoryOptions}
                         selectedCategory={values.categoryName}
+                        style={categoryDropdownStyle}
                         onSelect={selectCategory}
                       />
                     )}
@@ -279,6 +298,7 @@ export const ProductEditModal = ({
                       <DateField
                         ariaLabel='행사 종료일'
                         className={S.dateFieldClassName}
+                        min={getProductDateMinimum(values.startDate)}
                         value={values.endDate}
                         onChange={updateValue('endDate')}
                       />
@@ -320,7 +340,7 @@ export const ProductEditModal = ({
             </Button>
             <Button
               className={S.footerButtonClassName}
-              disabled={!isEdited}
+              disabled={!isEdited || !isStartDateValid || !isDateRangeValid}
               size='small'
               variant='solid'
               onClick={submitModal}

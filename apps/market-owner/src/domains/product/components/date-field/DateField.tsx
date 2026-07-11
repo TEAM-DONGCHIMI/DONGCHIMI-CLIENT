@@ -9,7 +9,7 @@ import {
 import { IcCircleExclamationSizeSmallColorNegative } from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
-import { getTodayProductDateInputValue } from '../../utils/product-edit-date';
+import { getTodayDateInputValue } from '../../utils/product-date';
 import * as S from './DateField.css';
 
 export interface DateFieldProps {
@@ -29,7 +29,7 @@ export const DateField = ({
   className,
   errorMessage,
   hasError = false,
-  min = getTodayProductDateInputValue(),
+  min = getTodayDateInputValue(),
   readOnly = false,
   onBlur,
   onChange,

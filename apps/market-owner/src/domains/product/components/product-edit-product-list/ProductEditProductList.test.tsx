@@ -134,13 +134,33 @@ describe('ProductEditProductList', () => {
       await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
     ).toBeInTheDocument();
     await waitFor(() => {
-      expect(document.activeElement).toBe(
-        screen.getByRole('heading', { name: '판매 정보를 수정해주세요' }),
-      );
+      expect(screen.getByRole('dialog')).toHaveFocus();
     });
     expect(screen.getByLabelText('상품명')).toHaveValue('딸기 2팩');
     expect(screen.getByLabelText('오늘의 특가')).toHaveValue('4,500');
     expect(screen.getByRole('button', { name: '변경하기' })).toBeDisabled();
+
+    await user.clear(screen.getByLabelText('상품명'));
+    await user.type(screen.getByLabelText('상품명'), '12345 7890123456');
+    await user.type(screen.getByLabelText('상품 한줄 홍보글'), '1234567890 1234567890 12345');
+
+    expect(screen.getByLabelText('상품명')).toHaveValue('12345 789012345');
+    expect(screen.getByLabelText('상품 한줄 홍보글')).toHaveValue('1234567890 1234567890 123');
+
+    await user.clear(screen.getByLabelText('원가'));
+    await user.type(screen.getByLabelText('원가'), '가격1234원');
+    await user.clear(screen.getByLabelText('오늘의 특가'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '특가4500원');
+
+    expect(screen.getByLabelText('원가')).toHaveValue('1,234');
+    expect(screen.getByLabelText('오늘의 특가')).toHaveValue('4,500');
+
+    await user.clear(screen.getByLabelText('원가'));
+    await user.type(screen.getByLabelText('원가'), '5000');
+
+    await user.clear(screen.getByLabelText('상품명'));
+    await user.type(screen.getByLabelText('상품명'), '딸기 2팩');
+    await user.clear(screen.getByLabelText('상품 한줄 홍보글'));
 
     await user.click(screen.getByRole('button', { name: '하루 더 늘리기' }));
 
@@ -190,7 +210,15 @@ describe('ProductEditProductList', () => {
 
     await user.click(screen.getByRole('button', { name: '채소･과일' }));
 
-    expect(await screen.findByRole('group', { name: '상품 구분 선택' })).toBeInTheDocument();
+    const categoryDropdown = await screen.findByRole('group', { name: '상품 구분 선택' });
+
+    expect(
+      categoryDropdown.style.getPropertyValue('--product-category-dropdown-max-height'),
+    ).toMatch(/px$/);
+
+    fireEvent.scroll(categoryDropdown);
+    fireEvent.scroll(document);
+    expect(categoryDropdown).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '정육･달걀' }));
 
