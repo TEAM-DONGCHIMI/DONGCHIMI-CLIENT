@@ -3,7 +3,7 @@ import { useCallback, useEffect, useId, useRef, type ChangeEvent } from 'react';
 import { overlay, useOverlayData } from 'overlay-kit';
 import { type UseFormRegisterReturn } from 'react-hook-form';
 
-import { AddableField, Dropdown, Stack } from '@dongchimi/design-system/components';
+import { AddableField, Dropdown, RequiredMark, Stack } from '@dongchimi/design-system/components';
 import {
   IcChevronDown,
   IcChevronUp,
@@ -13,7 +13,6 @@ import {
   IcPlusSizeSmallColor60,
 } from '@dongchimi/design-system/icons';
 
-import { RequiredMark } from '../components/RequiredMark';
 import { holidayOptions, marketInformationRegistrationFixture } from '../fixtures';
 import * as S from './BusinessOperationSection.css';
 

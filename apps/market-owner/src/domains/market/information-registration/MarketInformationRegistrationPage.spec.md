@@ -20,7 +20,7 @@
 - Target viewport: desktop `1440 x 675`, responsive fallback for narrow viewport
 - FRS / SRS: TBD
 - Decision / Meeting note: DCMSM-26 Jira 본문
-- Related Jira: DCMSM-26
+- Related Jira: DCMSM-26, DCMSM-35, DCMDS-29
 
 ## Scope
 
@@ -37,6 +37,7 @@
 - 마트 번호는 필수 입력이며 숫자만 입력받아 일반전화, 휴대전화, 인터넷전화 번호 형식으로 하이픈을 자동 적용하고, 미입력 또는 전화번호 형식 오류 시 에러 메시지를 표시합니다.
 - 점주 번호는 필수 입력이며 숫자만 입력받아 휴대전화 번호 형식으로 하이픈을 자동 적용하고, 미입력 또는 휴대전화 형식 오류 시 에러 메시지를 표시합니다.
 - 필수 입력값이 채워지기 전 `등록하기` 버튼을 disabled 상태로 유지합니다.
+- 필수 입력 표시 `*`에 hover하면 `* 표시는 필수로 입력해야 해요.` 툴팁을 표시하고, hover가 해제되면 닫습니다.
 - 폼 상태와 touched/error 관리는 `react-hook-form`으로 처리하고, 필드 검증 규칙은 `zod` schema와 `zodResolver`로 관리합니다.
 - 기존 design-system layout primitive와 form/button/input/chip/addable field 컴포넌트를 우선 조합합니다.
 
@@ -69,11 +70,11 @@
 
 ## Design System And Component Boundary
 
-- design-system `ui` components: `TextInput`, `Button`, `AddableField`, `Chip`
+- design-system `ui` components: `TextInput`, `Button`, `AddableField`, `Chip`, `RequiredMark`
 - design-system `layout` components: `Flex`, `Stack`, `Grid`
 - design-system icons: `IcPlus`, `IcPlusSizeSmallColor60`, `IcLineHorizontalSizeSmall`, `IcClockSizeSmallColor60`, `IcPhoneSizeSmallColor60`, `IcChevronDown`
 - app-shared components: none
-- page-local components: required mark and section-local field composition
+- page-local components: section-local field composition
 - not promoted to design-system: 마트 정보 등록 전용 header/logo placeholder와 field composition은 현재 단일 route 전용입니다.
 
 ## States
