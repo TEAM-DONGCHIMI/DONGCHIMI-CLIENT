@@ -52,11 +52,11 @@ export const MobileModal = ({
           <div className={S.messageClassName}>
             <Dialog.Title className={S.titleClassName}>{title}</Dialog.Title>
             <Dialog.Description className={S.descriptionGroupClassName}>
-              {subText != null ? (
+              {subText != null && (
                 <>
                   <span className={S.subTextClassName}>{subText}</span>{' '}
                 </>
-              ) : null}
+              )}
               <span className={S.descriptionClassName}>{description}</span>
             </Dialog.Description>
           </div>

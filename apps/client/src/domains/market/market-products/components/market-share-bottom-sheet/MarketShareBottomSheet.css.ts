@@ -25,8 +25,23 @@ export const triggerClassName = style({
 });
 
 export const sheetClassName = style({
+  position: 'fixed',
+  top: 'auto',
+  right: 'auto',
+  bottom: 0,
+  left: '50%',
+  width: '100%',
+  maxWidth: 'none',
   minHeight: '43rem',
+  margin: 0,
   boxShadow: 'none',
+  transform: 'translate3d(-50%, 0, 0)',
+  selectors: {
+    '&&': {
+      width: '100%',
+      maxWidth: 'none',
+    },
+  },
 });
 
 export const bodyClassName = style({
@@ -59,6 +74,7 @@ export const linkTextClassName = style({
 });
 
 export const linkCopyButtonClassName = style({
+  ...typography['body-2-regular'],
   display: 'inline-flex',
   width: '2.4rem',
   height: '2.4rem',
@@ -68,8 +84,8 @@ export const linkCopyButtonClassName = style({
   border: 0,
   padding: 0,
   backgroundColor: 'transparent',
-  color: atomic.common[100],
   cursor: 'pointer',
+  lineHeight: 0,
   selectors: {
     '&:focus-visible': {
       borderRadius: 8,
@@ -112,6 +128,7 @@ export const actionButtonClassName = style({
 });
 
 export const actionIconClassName = style({
+  ...typography['heading-3-regular'],
   display: 'inline-flex',
   width: '4rem',
   height: '4rem',
@@ -121,11 +138,13 @@ export const actionIconClassName = style({
   border: `0.1rem solid ${atomic.neutral[40]}`,
   borderRadius: '999rem',
   backgroundColor: atomic.common[0],
+  color: atomic.neutral[80],
+  lineHeight: 0,
 });
 
-export const blankIconClassName = style({
+export const toastIconClassName = style({
+  ...typography['heading-3-regular'],
+  display: 'block',
   width: '2rem',
   height: '2rem',
-  border: `0.3rem dashed ${atomic.common[100]}`,
-  borderRadius: 4,
 });

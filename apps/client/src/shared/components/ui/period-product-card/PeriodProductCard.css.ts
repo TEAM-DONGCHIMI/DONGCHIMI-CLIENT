@@ -1,18 +1,24 @@
-import { style } from '@vanilla-extract/css';
+import { createVar, style } from '@vanilla-extract/css';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
+export const cardMaxWidthVar = createVar();
+
 export const rootClassName = style({
   boxSizing: 'border-box',
   display: 'flex',
-  width: '9.4rem',
+  width: '100%',
+  maxWidth: cardMaxWidthVar,
   minWidth: 0,
   flexDirection: 'column',
   alignItems: 'flex-start',
   gap: '0.4rem',
   color: atomic.neutral[90],
+  vars: {
+    [cardMaxWidthVar]: '9.4rem',
+  },
 });
 
 export const interactiveRootClassName = style({
@@ -34,8 +40,8 @@ export const interactiveRootClassName = style({
 export const imageFrameClassName = style({
   position: 'relative',
   display: 'block',
-  width: '9.4rem',
-  height: '9.4rem',
+  width: '100%',
+  aspectRatio: '1 / 1',
   flexShrink: 0,
   overflow: 'hidden',
   borderRadius: 12,
