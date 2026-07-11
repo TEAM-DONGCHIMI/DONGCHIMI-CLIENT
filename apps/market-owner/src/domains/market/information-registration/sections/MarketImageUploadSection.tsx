@@ -6,10 +6,19 @@ import { IcCamera, IcPlus } from '@dongchimi/design-system/icons';
 import * as S from './MarketImageUploadSection.css';
 
 export interface MarketImageUploadSectionProps {
-  onImageSelect: (file: File) => void;
+  onImageError: (error: MarketImageUploadErrorTypes) => void;
+  onImageSelect: (file: File) => Promise<void> | void;
 }
 
-export const MarketImageUploadSection = ({ onImageSelect }: MarketImageUploadSectionProps) => {
+export type MarketImageUploadErrorTypes = 'network' | 'size' | 'type' | 'upload';
+
+const allowedImageTypes = new Set(['image/jpeg', 'image/png']);
+const maxImageFileSizeBytes = 10 * 1024 * 1024;
+
+export const MarketImageUploadSection = ({
+  onImageError,
+  onImageSelect,
+}: MarketImageUploadSectionProps) => {
   const imageInputId = useId();
   const [previewImageUrl, setPreviewImageUrl] = useState<string>();
 
@@ -21,22 +30,41 @@ export const MarketImageUploadSection = ({ onImageSelect }: MarketImageUploadSec
     };
   }, [previewImageUrl]);
 
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.currentTarget.files?.[0];
 
-    if (selectedFile) {
-      const nextPreviewImageUrl = URL.createObjectURL(selectedFile);
+    event.currentTarget.value = '';
 
-      onImageSelect(selectedFile);
+    if (!selectedFile) {
+      return;
+    }
+
+    if (!allowedImageTypes.has(selectedFile.type)) {
+      onImageError('type');
+
+      return;
+    }
+
+    if (selectedFile.size > maxImageFileSizeBytes) {
+      onImageError('size');
+
+      return;
+    }
+
+    try {
+      await onImageSelect(selectedFile);
+
+      const nextPreviewImageUrl = URL.createObjectURL(selectedFile);
       setPreviewImageUrl(nextPreviewImageUrl);
-      event.currentTarget.value = '';
+    } catch {
+      onImageError(navigator.onLine ? 'upload' : 'network');
     }
   };
 
   return (
     <Stack aria-label='마트 이미지' as='section' className={S.imageColumnClassName}>
       <input
-        accept='image/*'
+        accept='.jpg,.jpeg,.png,image/jpeg,image/png'
         className={S.imageUploadInputClassName}
         id={imageInputId}
         type='file'

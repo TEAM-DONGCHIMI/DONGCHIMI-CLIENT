@@ -7,4 +7,5 @@ export type { BusinessOperationSectionProps } from './BusinessOperationSection';
 export { ContactSection } from './ContactSection';
 export type { ContactSectionProps } from './ContactSection';
 export { MarketImageUploadSection } from './MarketImageUploadSection';
+export type { MarketImageUploadErrorTypes } from './MarketImageUploadSection';
 export type { MarketImageUploadSectionProps } from './MarketImageUploadSection';

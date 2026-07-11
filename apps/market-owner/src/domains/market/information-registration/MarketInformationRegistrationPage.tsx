@@ -2,8 +2,10 @@ import { type ChangeEvent } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { ToastProvider, useToast } from '@dongchimi/shared/toast';
 
 import { Button, Flex, Stack } from '@dongchimi/design-system/components';
+import { IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
 
 import { DesktopHeader } from '@/shared/components';
 
@@ -17,6 +19,7 @@ import {
   formatMobilePhoneNumber,
   marketInformationRegistrationSchema,
   type MarketInformationFormTypes,
+  type MarketInformationRegistrationRequest,
 } from './model';
 import {
   AddressSection,
@@ -24,6 +27,7 @@ import {
   BusinessOperationSection,
   ContactSection,
   MarketImageUploadSection,
+  type MarketImageUploadErrorTypes,
 } from './sections';
 
 export type { MarketInformationFormTypes } from './model';
@@ -33,6 +37,53 @@ type StringMarketInformationFormFieldTypes = {
     ? Field
     : never;
 }[keyof MarketInformationFormTypes];
+
+const toastIcon = <IcCircleExclamationFillColor0 height='2.4rem' width='2.4rem' />;
+const toastErrorOptions = {
+  icon: toastIcon,
+  id: 'market-information-registration-error',
+} as const;
+const imageErrorMessageMap: Record<MarketImageUploadErrorTypes, string> = {
+  network: '네트워크 연결을 확인한 후 다시 시도해주세요.',
+  size: '파일 크기는 최대 10MB까지 업로드할 수 있습니다.',
+  type: 'JPG, JPEG, PNG 파일만 업로드할 수 있습니다.',
+  upload: '이미지 업로드에 실패했습니다. 다시 시도해주세요.',
+};
+const addressSearchErrorMessage = '주소 검색 서비스를 이용할 수 없습니다.';
+const serverErrorMessage = (
+  <>
+    서버 오류가 발생했습니다.
+    <br />
+    잠시 후 다시 시도해주세요.
+  </>
+);
+const registrationErrorMessage = (
+  <>
+    마트 정보를 등록하지 못했습니다.
+    <br />
+    잠시 후 다시 시도해주세요.
+  </>
+);
+
+export interface MarketInformationRegistrationPageProps {
+  onAddressSearch?: () => Promise<string> | string;
+  onImageSelect?: (file: File) => Promise<void> | void;
+  onRegister?: (request: MarketInformationRegistrationRequest) => Promise<void> | void;
+}
+
+const defaultAddressSearch = () => marketInformationRegistrationFixture.selectedAddress;
+const defaultImageSelect = () => undefined;
+const defaultRegister = () => undefined;
+
+const isServerError = (error: unknown) => {
+  if (typeof error !== 'object' || error === null || !('response' in error)) {
+    return false;
+  }
+
+  const { response } = error;
+
+  return response instanceof Response && response.status >= 500;
+};
 
 const getNextFormValue = (name: string, value: string) => {
   if (name === 'brn') {
@@ -54,7 +105,12 @@ const getNextFormValue = (name: string, value: string) => {
   return value;
 };
 
-export const MarketInformationRegistrationPage = () => {
+const MarketInformationRegistrationPageContent = ({
+  onAddressSearch = defaultAddressSearch,
+  onImageSelect = defaultImageSelect,
+  onRegister = defaultRegister,
+}: MarketInformationRegistrationPageProps = {}) => {
+  const toast = useToast();
   const {
     formState: { errors, isValid },
     handleSubmit,
@@ -119,13 +175,32 @@ export const MarketInformationRegistrationPage = () => {
     setFormValue('holiday', holiday);
   };
 
-  const handleAddressSearch = () => {
-    setFormValue('address', marketInformationRegistrationFixture.selectedAddress);
+  const handleAddressSearch = async () => {
+    try {
+      const address = await onAddressSearch();
+
+      setFormValue('address', address);
+    } catch {
+      toast.error(addressSearchErrorMessage, toastErrorOptions);
+    }
   };
 
-  const handleMarketInformationSubmit = handleSubmit((form: MarketInformationFormTypes) => {
-    createMarketInformationRegistrationRequest(form);
+  const handleMarketInformationSubmit = handleSubmit(async (form: MarketInformationFormTypes) => {
+    try {
+      const request = createMarketInformationRegistrationRequest(form);
+
+      await onRegister(request);
+    } catch (error) {
+      toast.error(
+        isServerError(error) ? serverErrorMessage : registrationErrorMessage,
+        toastErrorOptions,
+      );
+    }
   });
+
+  const handleImageError = (error: MarketImageUploadErrorTypes) => {
+    toast.error(imageErrorMessageMap[error], toastErrorOptions);
+  };
 
   return (
     <div className={S.pageRootClassName}>
@@ -140,7 +215,10 @@ export const MarketInformationRegistrationPage = () => {
 
           <form noValidate className={S.formClassName} onSubmit={handleMarketInformationSubmit}>
             <Flex align='start' className={S.formContentClassName}>
-              <MarketImageUploadSection onImageSelect={() => undefined} />
+              <MarketImageUploadSection
+                onImageError={handleImageError}
+                onImageSelect={onImageSelect}
+              />
 
               <Stack className={S.fieldsClassName} gap='2xl'>
                 <BasicMarketInfoSection
@@ -214,5 +292,15 @@ export const MarketInformationRegistrationPage = () => {
         </Stack>
       </main>
     </div>
+  );
+};
+
+export const MarketInformationRegistrationPage = (
+  props: MarketInformationRegistrationPageProps,
+) => {
+  return (
+    <ToastProvider offset='2.4rem' placement='top-center'>
+      <MarketInformationRegistrationPageContent {...props} />
+    </ToastProvider>
   );
 };
