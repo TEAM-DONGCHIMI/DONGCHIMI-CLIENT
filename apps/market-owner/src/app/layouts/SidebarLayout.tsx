@@ -17,6 +17,7 @@ import {
 import { ToastProvider } from '@dongchimi/shared/toast';
 
 import { Sidebar, type SidebarItem, type SidebarSection } from '@/shared/components';
+import sidebarBrandLogo from '@/shared/assets/images/Img_pavicon.svg';
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
 
 import * as S from './SidebarLayout.css';
@@ -142,12 +143,7 @@ const getActiveSidebarItemId = (pathname: string): SidebarItemIdTypes | undefine
 };
 
 const SidebarBrand = () => (
-  <span className={S.brandClassName}>
-    <span aria-hidden='true' className={S.brandLogoClassName}>
-      DC
-    </span>
-    <span>동치미</span>
-  </span>
+  <img alt='동치미' className={S.brandImageClassName} src={sidebarBrandLogo} />
 );
 
 const SidebarHelp = () => (

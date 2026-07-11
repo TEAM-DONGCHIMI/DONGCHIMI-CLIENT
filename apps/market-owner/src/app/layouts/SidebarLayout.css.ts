@@ -28,25 +28,11 @@ export const contentSlotClassName = style({
   overflowY: 'auto',
 });
 
-export const brandClassName = style({
-  display: 'inline-flex',
+export const brandImageClassName = style({
+  display: 'block',
   width: '9.2rem',
   height: '3.2rem',
-  alignItems: 'center',
-  gap: '0.8rem',
-  color: atomic.neutral[90],
-});
-
-export const brandLogoClassName = style({
-  display: 'inline-flex',
-  width: '3.2rem',
-  height: '3.2rem',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '0.8rem',
-  backgroundColor: atomic.neutral[90],
-  color: atomic.common[0],
-  ...typography['caption-1-medium'],
+  flexShrink: 0,
 });
 
 export const profileAvatarClassName = style({
