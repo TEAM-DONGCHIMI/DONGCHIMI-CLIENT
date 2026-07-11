@@ -226,9 +226,9 @@ export const itemButtonClassName = style({
 
 export const footerClassName = style({
   display: 'flex',
-  flexGrow: 1,
   width: '100%',
   minHeight: '4.8rem',
+  marginTop: 'auto',
   alignItems: 'center',
   justifyContent: 'center',
   padding: '1.2rem',

@@ -45,4 +45,34 @@ describe('LeafletShareCard', () => {
 
     expect(handleOpenQrCode).toHaveBeenCalledTimes(1);
   });
+
+  it('disables every share action without changing the card content', async () => {
+    const handleCopyLink = vi.fn();
+    const handleOpenQrCode = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <LeafletShareCard
+        {...defaultProps}
+        disabled
+        onCopyLink={handleCopyLink}
+        onOpenQrCode={handleOpenQrCode}
+      />,
+    );
+
+    const copyIconButton = screen.getByRole('button', { name: '전단 공유 링크 복사' });
+    const copyActionButton = screen.getByRole('button', { name: '링크 복사' });
+    const qrActionButton = screen.getByRole('button', { name: '매장 고유 QR코드 보기' });
+
+    expect(copyIconButton).toBeDisabled();
+    expect(copyActionButton).toBeDisabled();
+    expect(qrActionButton).toBeDisabled();
+
+    await user.click(copyIconButton);
+    await user.click(copyActionButton);
+    await user.click(qrActionButton);
+
+    expect(handleCopyLink).not.toHaveBeenCalled();
+    expect(handleOpenQrCode).not.toHaveBeenCalled();
+  });
 });

@@ -8,6 +8,7 @@
 - Route: `/`
 - Path: `apps/market-owner/src/domains/home/overview/HomePage.tsx`
 - Jira: DCMSM-27
+- Related Jira: DCMSM-32 홈 상품 0건 딤드 상태 UI
 - Related Jira: DCMSM-15 route scaffold
 - Status: Implemented
 
@@ -50,7 +51,7 @@
 - `DesktopHeader`의 상품 검색 영역에 `ProductSearchPanel`을 배치합니다.
 - hero checkerboard 영역 안에 quick action 카드 3개를 배치합니다.
 - 오늘의 특가 상품 카드와 행사 할인 상품 카드를 `@dongchimi/shared` `ProductCard`와 page-local fixture
-  데이터로 렌더링합니다.
+  데이터로 렌더링하고, 각 등록 건수가 0이면 홈 전용 딤드 상태를 표시합니다.
 - 오른쪽 전단 공유 카드를 `LeafletShareCard`로 구성합니다.
 - 공유 카드에는 공유 링크, 링크 복사 액션, 매장 고유 QR코드 보기 액션을 노출합니다.
 - sidebar `홈` active state와 protected layout 안 렌더링을 유지합니다.
@@ -96,7 +97,7 @@ HomePage(main)
 - `HomeQuickButton`: Figma `button_home quick` node `2403:69244` 기준의 312x74 quick button입니다.
 - `HomeDashboardSection`: 2개 상품 카드와 공유 카드를 같은 responsive grid에 배치합니다.
 - `HomeProductSummarySection`: shared `ProductCard` 오늘의 특가 상품 카드와 행사 할인 상품 카드를
-  배치합니다.
+  배치합니다. 0건 딤드 정책은 홈 전용이므로 `ProductCard` public API를 바꾸지 않고 section이 담당합니다.
 - `HomeShareSection`: 전단 공유 링크 복사 결과와 QR 준비중 feedback을 홈 toast flow에 연결합니다.
 - `LeafletShareCard`: 전단 공유 카드 heading, description, link field, action buttons를 담당합니다.
 
@@ -133,7 +134,12 @@ HomePage(main)
 ## States
 
 - loading: 검색 결과 갱신 대기 중에는 dropdown empty message 대신 pending message를 표시합니다.
-- empty: fixture 기준 기본 상품 목록을 노출하고, 검색 결과가 없으면 검색 dropdown에 empty message를 표시합니다.
+- empty: 상품 summary는 `dailyCount === 0` 또는 `periodicCount === 0`이면 각 카드에 딤드 오버레이와
+  `등록한 상품이 없어요. 상품을 먼저 등록해주세요.` 문구를 표시합니다. 검색 결과가 없으면 검색 dropdown에
+  empty message를 표시합니다.
+- flyer empty: `flyer === null`이면 전단 공유 카드에 딤드 오버레이와 `전단을 공유하려면` / `상품을 먼저
+등록해주세요.` 문구를 두 줄로 표시합니다. 링크 field와 action 행은 유지하되 URL 텍스트만 비우고, 모든 공유
+  action은 disabled로 렌더링합니다.
 - error: 알 수 없는 route는 router fallback에서 처리합니다. 검색 결과에서 상품을 선택했지만 상품 정보를
   불러오지 못하면 상단 error toast로 `상품 정보를 불러오지 못했어요.`를 표시합니다.
 - disabled: QR 보기 실제 API 동작은 후속 범위이며, 현재는 버튼 클릭 시 준비 중 toast를 표시합니다.
@@ -147,10 +153,11 @@ HomePage(main)
 - mutation: none
 - fixture:
   - 오늘의 특가 상품 카드와 행사 할인 상품 카드에 들어갈 상품 목록
-  - 각 카드의 `itemVariant`, `totalCount`, edit route
+  - 홈 응답의 `dailyCount`, `dailyProducts`, `periodicCount`, `periodicProducts`를 카드별
+    `itemVariant`, `totalCount`, edit route로 매핑
   - 검색 dropdown에 사용할 상품명, 구분 label, 등록일, edit route, 상품 정보 load 가능 여부
   - hero quick action title, description, route
-  - 전단 공유 링크와 공유 설명 copy
+  - 전단 공유 링크와 공유 설명 copy, `flyer` 존재 여부
 - model: none
 
 ## Behavior
@@ -162,6 +169,10 @@ HomePage(main)
 - `등록한 상품 전체보기` action은 `ProductCard`의 desktop actionSlot으로 주입하고, 오늘의 특가 상품
   카드는 `[오늘의 특가 상품] 수정하기` route, 행사 할인 상품 카드는 `[행사 할인 상품] 수정하기` route로
   이동합니다.
+- `dailyCount` 또는 `periodicCount`가 0이면 해당 카드의 row는 렌더링하지 않고, actionSlot button도
+  disabled로 렌더링합니다. 딤드 오버레이는 card 전체 클릭을 막습니다.
+- `flyer === null`이면 전단 공유 카드의 URL 텍스트는 비우고, 공유 action은 disabled로 렌더링합니다. 카드
+  layout은 유지한 채 딤드 오버레이가 클릭을 막습니다.
 - 링크 복사는 clipboard 성공 시 `전단 링크가 복사되었습니다.` completed toast를 표시합니다.
 - 링크 복사 실패 또는 clipboard 미지원 시 `링크를 복사하지 못했습니다. 다시 시도해주세요.` error toast를 표시합니다.
 - QR 보기 클릭은 QR 표시 API/flow가 확정되기 전까지 `QR코드 보기 기능은 준비 중입니다.` completed toast를 표시합니다.
@@ -185,7 +196,10 @@ HomePage(main)
 - hero quick actions: quick action 카드는 native `button`으로 렌더링하고 accessible name을 제공합니다.
 - product cards: `ProductCard`의 section/list/button semantics를 유지합니다.
 - product actions: `등록한 상품 전체보기`는 native `button`으로 렌더링하고 accessible name을 제공합니다.
+  0건 카드의 action은 disabled이며 상품 row도 제공하지 않습니다.
+- product empty state: 0건 안내 문구는 일반 텍스트로 노출하며, 별도 live announcement를 사용하지 않습니다.
 - share actions: 링크 복사, QR 보기 액션은 native `button`으로 렌더링하고 accessible name을 제공합니다.
+  `flyer === null`이면 세 공유 action은 모두 disabled로 렌더링합니다.
 - toast: 링크 복사 성공 toast는 `role="status"`, 링크 복사 실패와 상품 정보 load 실패 toast는
   `role="alert"`로 노출합니다.
 - keyboard: 검색 입력, 상품 row button, 공유 action button은 keyboard focus와 activation을 지원합니다.
@@ -227,9 +241,11 @@ HomePage(main)
 - [x] sidebar `홈` link has `aria-current="page"`
 - [x] hero quick action buttons render from fixture data
 - [x] daily and periodic `ProductCard` sections render from fixture data
+- [x] daily and periodic cards independently render a disabled dimmed state when their count is 0
 - [x] product row click navigates to each edit page
 - [x] product summary action buttons navigate to each edit page
 - [x] share card renders share URL, copy action, and QR action
+- [x] null flyer state dims the share card, clears only its URL text, and disables all share actions
 - [x] link copy success shows completed toast
 - [x] link copy failure shows error toast
 - [x] QR code action shows preparing toast

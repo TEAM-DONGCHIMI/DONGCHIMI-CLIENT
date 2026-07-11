@@ -10,6 +10,7 @@ type NativeSectionProps = Omit<ComponentPropsWithoutRef<'section'>, 'children'>;
 export interface LeafletShareCardProps extends NativeSectionProps {
   copyLabel?: string;
   description?: string;
+  disabled?: boolean;
   onCopyLink: () => void;
   onOpenQrCode: () => void;
   qrLabel?: string;
@@ -28,6 +29,7 @@ export const LeafletShareCard = ({
   className,
   copyLabel = DEFAULT_COPY_LABEL,
   description = DEFAULT_DESCRIPTION,
+  disabled = false,
   id,
   onCopyLink,
   onOpenQrCode,
@@ -61,6 +63,7 @@ export const LeafletShareCard = ({
           <button
             aria-label='전단 공유 링크 복사'
             className={S.linkCopyButtonClassName}
+            disabled={disabled}
             onClick={onCopyLink}
             type='button'
           >
@@ -71,7 +74,12 @@ export const LeafletShareCard = ({
 
       <ul className={S.actionListClassName}>
         <li>
-          <button className={S.actionButtonClassName} onClick={onCopyLink} type='button'>
+          <button
+            className={S.actionButtonClassName}
+            disabled={disabled}
+            onClick={onCopyLink}
+            type='button'
+          >
             <span aria-hidden='true' className={S.actionIconClassName}>
               <IcCopySizeSmall />
             </span>
@@ -79,7 +87,12 @@ export const LeafletShareCard = ({
           </button>
         </li>
         <li>
-          <button className={S.actionButtonClassName} onClick={onOpenQrCode} type='button'>
+          <button
+            className={S.actionButtonClassName}
+            disabled={disabled}
+            onClick={onOpenQrCode}
+            type='button'
+          >
             <span aria-hidden='true' className={S.actionIconClassName}>
               <IcLoginSizeSmall />
             </span>
