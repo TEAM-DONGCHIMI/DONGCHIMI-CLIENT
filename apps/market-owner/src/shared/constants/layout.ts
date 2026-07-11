@@ -1,0 +1,1 @@
+export const MARKET_OWNER_SIDEBAR_WIDTH_PX = 290;

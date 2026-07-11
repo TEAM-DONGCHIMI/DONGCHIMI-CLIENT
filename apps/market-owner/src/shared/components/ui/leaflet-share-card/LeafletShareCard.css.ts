@@ -81,7 +81,10 @@ export const linkCopyButtonClassName = style({
   cursor: 'pointer',
   transition: 'background-color 130ms ease',
   selectors: {
-    '&:hover': {
+    '&:disabled': {
+      cursor: 'not-allowed',
+    },
+    '&:not(:disabled):hover': {
       backgroundColor: atomic.neutral[20],
     },
     '&:focus-visible': {
@@ -116,7 +119,10 @@ export const actionButtonClassName = style({
   textAlign: 'left',
   transition: 'background-color 130ms ease',
   selectors: {
-    '&:hover': {
+    '&:disabled': {
+      cursor: 'not-allowed',
+    },
+    '&:not(:disabled):hover': {
       backgroundColor: atomic.neutral[10],
     },
     '&:focus-visible': {

@@ -93,4 +93,10 @@ describe('ProductCard', () => {
     expect(screen.getByText('등록된 상품이 없습니다.')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '더 많은 상품 보기' })).toBeNull();
   });
+
+  it('does not render an empty surface when an empty message is explicitly omitted', () => {
+    render(<ProductCard emptyMessage='' items={[]} onProductClick={vi.fn()} title='등록된 상품' />);
+
+    expect(screen.getByRole('region', { name: '등록된 상품' }).querySelector('p')).toBeNull();
+  });
 });

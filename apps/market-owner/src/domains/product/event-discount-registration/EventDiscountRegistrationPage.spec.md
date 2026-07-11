@@ -7,19 +7,19 @@
 - Page: `event-discount-registration`
 - Route: `/products/event-discount/new`
 - Path: `apps/market-owner/src/domains/product/event-discount-registration/EventDiscountRegistrationPage.tsx`
-- Jira: DCMSM-18, DCMSM-19
+- Jira: DCMSM-18, DCMSM-19, DCMSM-25
 - Figma:
-  - APPJAM page node 1553:114355
-  - APPJAM Section node 1553:114358
-  - APPJAM file analysis progress nodes 1553:114280, 1553:114305, 1553:114330
-  - 화면 설계서 node 493:102280
-  - 화면 설계서 node 493:102314
+  - APPJAM registration method home node 1553:112508
+  - APPJAM file upload modal states
+  - APPJAM excel template download toast states
+  - APPJAM POS excel guide panel
+  - APPJAM file analysis confirm/progress nodes 1553:114355, 1553:114358, 1553:114280, 1553:114305, 1553:114330
 - Status: Implemented
 
 ## Purpose
 
-행사 할인 상품 등록 flow에서 업로드가 완료된 등록 파일을 분석하기 전에 파일명과 AI 분석 항목을 확인하고, 분석 시작 후 AI 등록 파일 분석 진행 상태를 표시합니다.
-사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, 분석 결과 확인 화면은 DCMSM-20의 no-sidebar 결과 확인 route에서 이어집니다.
+행사 할인 상품 등록 flow의 첫 진입 화면에서 등록 방식을 선택하고, 엑셀 파일 업로드 UI 상태를 거쳐 등록 파일 확인과 AI 분석 진행 화면으로 이어집니다.
+사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, 실제 업로드 API, 다운로드 API, SSE transport, 분석 결과 확인 API는 후속 이슈에서 연결합니다.
 
 ## Ownership
 
@@ -27,13 +27,18 @@
 - React Router route object imports this page from `src/app/router.tsx`.
 - Page-local components, sections, hooks, fixtures, and utils stay under this page folder.
 - Sidebar/protected layout responsibility stays in `src/app/layouts/SidebarLayout.tsx` and `src/app/routes/ProtectedRoute.tsx`.
-- `FileAnalysisConfirmSection` is page-local because the copy, file fixture, and next-step behavior are tied to this registration flow.
-- `FileAnalysisConfirmSection` renders the Figma `Section` card as the root `section` element instead of adding a separate layout wrapper.
-- `FileAnalysisProgressSection` is page-local because the current SSE payload shape and DCMSM-20 handoff timing are not implemented yet.
+- Toast viewport placement is owned by the nearest `ToastProvider`; sidebar protected routes use `SidebarLayout` to center toast feedback over the content area.
+- `RegistrationMethodSection` is page-local because upload method copy, CTA behavior, POS guide entry, and toast feedback are tied to this registration flow.
+- `PosExcelGuidePanel` is page-local because its title and image-only placeholder surfaces are specific to the event discount registration upload guide.
+- `usePosGuideModalBehavior` stays page-local because the POS guide is an event discount registration specific modal with its own drawer positioning and modal behavior contract.
+- `useExcelUploadFlow` stays page-local because it owns only the excel upload modal and file-analysis view transitions for this route.
+- App-shared `UploadModal` is reused for the excel upload modal default/upload states.
+- Shared `ToastProvider`/`useToast` runtime is reused for action feedback while design-system `Toast` remains the rendered UI.
+- `FileAnalysisConfirmSection` and `FileAnalysisProgressSection` remain page-local flow steps for the uploaded file confirmation and AI analysis progress.
 - `ProcessingStep` is reused from market-owner shared UI for the ordered analysis step list.
 - App-shared `DesktopHeader` is reused for the breadcrumb header.
-- Design-system `Flex` is reused for internal layout and `Button` is reused for actions.
-- Analysis item chips are page-local static labels until repeated reuse is confirmed in a later API integration issue.
+- Design-system `Flex` and `Button` are reused for internal layout and actions.
+- No new shared/design-system component is introduced in this issue.
 
 ## Layout
 
@@ -44,50 +49,78 @@
 
 ## UI States
 
-- loading/progress: `분석 시작` 후 `FileAnalysisProgressSection`을 렌더링하고, `대기`/`진행 중...`/`완료` step 상태와 progressbar를 표시합니다.
-- empty/disabled: 분석 가능한 파일명이 없으면 `분석할 파일이 없습니다.`를 표시하고 `분석 시작` 버튼을 비활성화합니다.
-- completed: 원본 분석 진행률이 100% 이상이거나 모든 step이 `완료`면 `취소` 버튼을 비활성화합니다.
-- error: 일시적인 분석 오류 화면은 서버 SSE contract가 확정된 뒤 별도 상태로 연결합니다. 알 수 없는 route는 router fallback에서 처리합니다.
-- success: `/products/event-discount/new` route가 확인 화면과 분석 진행 화면을 같은 protected layout 안에서 렌더링합니다.
+- initial/method: `/products/event-discount/new` first renders the registration method home with excel and leaflet upload cards.
+- modal/default: clicking `엑셀 업로드` opens `UploadModal` with two-line guidance copy, a file format tooltip, and a disabled upload button.
+- modal/upload: selecting a `.xlsx` or `.csv` file shows the selected file name and enables the upload button.
+- modal/error: the shared `UploadModal` still supports an error state, but this page does not wire it because client-side extension validation is out of scope for this publishing issue.
+- success/confirm: clicking the enabled upload button closes the modal and renders `FileAnalysisConfirmSection` with the selected file name.
+- loading/progress: `분석 시작` renders `FileAnalysisProgressSection` with step statuses and progressbar.
+- completed: original analysis progress at 100% or all completed steps disable the progress cancel action.
+- toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback with the completed status icon.
+- toast/error: the page can render error toast feedback with the error status icon; `전단지 업로드` currently shows Figma error-style feedback because the actual upload API is out of scope.
+- panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel with the two-line title (`POS에서 엑셀 파일을` / `이렇게 다운 받으시면 돼요.`) and three stacked guide image placeholders; Escape, backdrop click, or the close button hides it and restores focus.
+- route error: unknown route is handled by the existing router fallback.
 
 ## Data
 
 - query: none
 - mutation: none
-- fixture: page-local `fileAnalysisConfirmFixture`, `fileAnalysisProgressFixtures`
+- fixture:
+  - `fileAnalysisConfirmFixture`
+  - `fileAnalysisProgressFixtures`
+- static registration-method, upload-modal, POS guide, and toast copy is colocated with the component that renders or triggers it.
+- accepted excel extensions shown to users: `.xlsx`, `.csv`
 - model: none
 
 ## Behavior
 
-- Breadcrumb copy는 `행사 할인 상품 등록 / 등록 파일 분석`입니다.
-- 업로드 완료 파일명은 `상품목록_202607.xlsx` fixture로 표시합니다.
-- AI 분석 항목은 `상품명 등록`, `판매가격 등록`, `상품 이미지 연결`, `카테고리 분류`를 읽기 전용으로 표시합니다.
-- `취소`는 이전 업로드/등록 단계로 돌아가는 callback entry point입니다. 실제 이전 화면 연결은 등록 페이지 조합 작업에서 처리합니다.
-- `분석 시작`은 같은 route 안에서 DCMSM-19 분석 진행 화면으로 전환합니다.
-- 분석 진행 단계는 `파일 업로드`, `상품명 등록`, `판매가격 등록`, `상품 이미지 연결`, `카테고리 분류` 순서로 표시합니다.
-- 진행 중 step은 `aria-current="step"`을 적용합니다.
-- 진행률은 서버 SSE 연결 전까지 fixture의 `progressPercentage`를 사용하며, 실제 SSE 연결 시 동일 props에 서버 값을 주입합니다.
-- 진행률 표시는 반올림한 0~100 값을 사용하되, 완료 판단은 표시값이 아니라 원본 진행률 또는 step 완료 상태를 기준으로 합니다.
-- 분석 완료 후 `/products/registration-result` 화면으로 자동 이동하는 동작은 SSE 완료 이벤트와 route handoff가 확정된 뒤 연결합니다.
-- 행사 할인 상품 등록 form, 업로드 API, SSE transport, 분석 결과 확인/임시 저장, 최종 등록 완료 결과 UI는 이번 이슈 범위가 아닙니다.
+- Breadcrumb copy is `홈 / 행사 할인 상품 등록` on the method view.
+- Breadcrumb copy switches to `행사 할인 상품 등록 / 등록 파일 분석` on confirm/progress views.
+- `엑셀 업로드` opens the excel upload modal and resets stale file selection state.
+- `UploadModal` uses `.xlsx,.csv` as the file input `accept` hint value.
+- The modal default state shows `상품이 등록된 엑셀 파일을 선택해주세요.` / `업로드하면 상품이 자동으로 등록됩니다.` on separate visual lines and shows `지원 파일은 .xlsx, .csv예요.` below the file select button.
+- The modal file format tooltip is hidden after the modal moves to upload state.
+- The page does not perform client-side extension blocking in this publishing issue. Any selected local file moves the modal to upload state so the user can confirm the selected file name.
+- File format validation and server/API upload failure mapping are follow-up integration concerns.
+- Upload success is UI-only until API integration: clicking enabled `파일 업로드` stores the selected file name and switches to confirmation.
+- Confirmation `취소` clears the uploaded file state and returns to the method view.
+- `분석 시작` switches to progress view.
+- Progress `취소` returns to confirmation view.
+- `엑셀 양식 다운로드` shows the success toast. Actual file download/API failure mapping is out of scope.
+- `전단지 업로드` shows the Figma toast feedback. Actual leaflet image upload/API is out of scope.
+- Toast feedback uses the shared toast runtime. The page passes the Figma status icon through the toast `icon` slot and uses a stable toast id for registration action feedback so triggering a new toast replaces the visible toast and resets the runtime timer.
+- The page does not own toast viewport positioning or sidebar-width correction.
+- The POS guide panel behaves as a modal dialog through `usePosGuideModalBehavior`: Escape and backdrop click close it, focus moves to the close button on open and returns to the previously focused trigger on close, Tab focus is kept inside the panel, and body scroll is locked while open.
+- POS guide image areas are 36rem-wide placeholder surfaces until real guide image assets are provided; the fixed heights are 27.4rem, 24.1rem, and 17.5rem, and step copy stays in accessible image labels instead of visible text.
+- Analysis items are read-only static labels until repeated reuse or API mapping is confirmed.
+- Analysis progress value is clamped and rounded for display while completion checks use original progress or step status.
 
 ## Accessibility
 
-- heading order: page root는 visible `h1`으로 `등록한 파일을 확인해주세요`를 제공합니다.
-- keyboard: `취소`와 `분석 시작`은 native button keyboard interaction을 사용합니다.
-- focus: focus-visible 스타일을 제거하지 않습니다.
-- current state: sidebar item은 현재 route에 `aria-current="page"`를 적용합니다.
-- breadcrumb: 현재 위치 nav와 현재 페이지 `aria-current="page"`를 제공합니다.
-- analysis items: `AI 분석 항목` label과 list semantics를 제공합니다.
-- analysis progress: `AI 분석 진행 현황` ordered list와 `AI 분석 진행률` progressbar semantics를 제공합니다.
+- heading order: method view provides visible `h1` `상품 등록`; confirm/progress views provide their own visible `h1`.
+- keyboard: card CTAs, modal actions, POS guide close, confirmation actions, and progress actions use native button interaction.
+- focus: focus-visible styles are preserved.
+- current state: sidebar item has `aria-current="page"` for the current route.
+- breadcrumb: current location nav and current page use `aria-current="page"`.
+- modal: `UploadModal` provides dialog title/description through the shared component.
+- toast: shared toast runtime renders design-system `Toast`, which supplies status/alert roles and live region defaults; page-supplied icons are decorative.
+- POS guide: the right panel is a modal dialog labelled by its visible title (`role="dialog"`, `aria-modal="true"`, `aria-labelledby`) with Escape/backdrop close, focus move-to/return, Tab containment, and body scroll lock.
+- analysis items: `AI 분석 항목` label and list semantics are preserved.
+- analysis progress: `AI 분석 진행 현황` ordered list and `AI 분석 진행률` progressbar semantics are preserved.
 
 ## Verification
 
-- [x] `/products/event-discount/new` route renders `등록한 파일을 확인해주세요`
-- [x] route renders uploaded file name and four AI analysis items
+- [x] `/products/event-discount/new` initial view renders `상품 등록`
+- [x] route renders excel and leaflet upload cards
+- [x] clicking `엑셀 업로드` opens the upload modal in default state
+- [x] `.xlsx` or `.csv` file selection enables upload action
+- [x] clicking enabled upload action switches to file confirmation
+- [x] file confirmation renders selected file name and analysis items
 - [x] `분석 시작` switches to the AI analysis progress section
 - [x] AI analysis progress section renders step status labels and progressbar value
 - [x] completed AI analysis progress disables cancel action
+- [x] clicking `엑셀 양식 다운로드` renders toast feedback with icon
+- [x] clicking POS guide link opens the modal panel; close button, Escape, and backdrop click close it
+- [x] clicking `전단지 업로드` renders toast feedback with icon
 - [x] route renders sidebar complementary landmark
 - [x] sidebar `행사 할인 상품 등록` link has `aria-current="page"`
-- [x] `분석 시작` is disabled when there is no analyzable file name
