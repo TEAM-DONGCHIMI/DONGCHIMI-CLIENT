@@ -176,8 +176,8 @@ HomePage(main)
 - 링크 복사는 clipboard 성공 시 `전단 링크가 복사되었습니다.` completed toast를 표시합니다.
 - 링크 복사 실패 또는 clipboard 미지원 시 `링크를 복사하지 못했습니다. 다시 시도해주세요.` error toast를 표시합니다.
 - QR 보기 클릭은 QR 표시 API/flow가 확정되기 전까지 `QR코드 보기 기능은 준비 중입니다.` completed toast를 표시합니다.
-- toast는 `@dongchimi/shared/toast` 런타임을 사용하고, 위치는 `SidebarLayout`의 본문 중앙 toast provider
-  정책을 따릅니다.
+- toast는 `@dongchimi/shared/toast` 런타임을 사용하고, 위치는 `SidebarLayout`의 전체 viewport 기준
+  `top-center` toast provider 정책을 따릅니다.
 - 상품 검색은 한 글자 이상 입력 시 dropdown을 열고, 검색창과 dropdown 사이 gap은 4px입니다.
 - 검색 결과의 필터링/정렬은 API 응답 순서를 따르고, `ProductSearchPanel`은 전달받은 순서를 유지합니다.
 - 검색 결과 조회는 호출부에서 debounce된 query를 기준으로 처리해 불필요한 네트워크 요청을 줄입니다.

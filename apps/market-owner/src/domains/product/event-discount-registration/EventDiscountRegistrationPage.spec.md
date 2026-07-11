@@ -27,7 +27,7 @@
 - React Router route object imports this page from `src/app/router.tsx`.
 - Page-local components, sections, hooks, fixtures, and utils stay under this page folder.
 - Sidebar/protected layout responsibility stays in `src/app/layouts/SidebarLayout.tsx` and `src/app/routes/ProtectedRoute.tsx`.
-- Toast viewport placement is owned by the nearest `ToastProvider`; sidebar protected routes use `SidebarLayout` to center toast feedback over the content area.
+- Toast viewport placement is owned by the nearest `ToastProvider`; sidebar protected routes use `SidebarLayout` to show toast feedback at the viewport `top-center`.
 - `RegistrationMethodSection` is page-local because upload method copy, CTA behavior, POS guide entry, and toast feedback are tied to this registration flow.
 - `PosExcelGuidePanel` is page-local because its title and image-only placeholder surfaces are specific to the event discount registration upload guide.
 - `usePosGuideModalBehavior` stays page-local because the POS guide is an event discount registration specific modal with its own drawer positioning and modal behavior contract.

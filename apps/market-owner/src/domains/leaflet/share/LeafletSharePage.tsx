@@ -16,7 +16,14 @@ import * as S from './LeafletSharePage.css';
 type LeafletShareViewTypes = 'confirm' | 'share';
 
 const TOAST_DURATION_MS = 3000;
+const TOAST_ICON_SIZE = '2.4rem';
 const QR_DOWNLOAD_MODAL_OVERLAY_ID = 'leaflet-share-qr-download-modal';
+
+const toastIconProps = {
+  'aria-hidden': true,
+  height: TOAST_ICON_SIZE,
+  width: TOAST_ICON_SIZE,
+} as const;
 
 export const LeafletSharePage = () => {
   const navigate = useNavigate();
@@ -28,7 +35,7 @@ export const LeafletSharePage = () => {
   const showCopiedToast = () => {
     toast.completed('전단 링크가 복사되었습니다.', {
       durationMs: TOAST_DURATION_MS,
-      icon: <IcCircleCheckFill aria-hidden='true' />,
+      icon: <IcCircleCheckFill {...toastIconProps} />,
     });
   };
   const showCopyErrorToast = () => {
@@ -40,14 +47,14 @@ export const LeafletSharePage = () => {
       </>,
       {
         durationMs: TOAST_DURATION_MS,
-        icon: <IcCircleExclamation aria-hidden='true' className={S.errorIconClassName} />,
+        icon: <IcCircleExclamation {...toastIconProps} className={S.errorIconClassName} />,
       },
     );
   };
   const showDownloadErrorToast = () => {
     toast.error('QR 이미지 다운로드를 실패했습니다.', {
       durationMs: TOAST_DURATION_MS,
-      icon: <IcCircleExclamation aria-hidden='true' className={S.errorIconClassName} />,
+      icon: <IcCircleExclamation {...toastIconProps} className={S.errorIconClassName} />,
     });
   };
   const openQrModal = () => {

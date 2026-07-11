@@ -26,8 +26,8 @@ OverlayKit은 modal을 필요한 시점에 선언적으로 열고 닫는 API를 
 `AppProviders`는 `QueryProvider` 안에 `ToastProvider`, 그 안에 `OverlayProvider`를 둡니다.
 OverlayKit은 provider의 children 뒤에 overlay 컴포넌트를 렌더하므로, Query provider와 Toast provider가 바깥에 있어야 overlay content도 TanStack Query context와 toast context를 사용할 수 있습니다.
 사장님 웹 전역 toast 기본 placement는 `top-right`로 유지합니다.
-사이드바가 있는 화면처럼 본문 영역 기준 중앙 toast가 필요한 경우에는 해당 layout 안에서 더 가까운
-`ToastProvider`를 추가해 위치 정책만 override합니다.
+사이드바가 있는 화면처럼 전체 viewport 기준 상단 중앙 toast가 필요한 경우에는 해당 layout 안에서 더 가까운
+`ToastProvider`를 추가해 위치 정책만 `top-center`로 override합니다.
 
 Overlay content에서 React Router hook이 필요하면 route/layout 안쪽으로 provider 위치를 다시 검토하거나, routing 동작을 callback으로 주입합니다.
 

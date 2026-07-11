@@ -14,10 +14,7 @@ import { Sidebar, type SidebarItem, type SidebarSection } from '@/shared/compone
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
 
 import * as S from './SidebarLayout.css';
-import {
-  SIDEBAR_LAYOUT_TOAST_CENTER_OFFSET_X,
-  SIDEBAR_LAYOUT_TOAST_OFFSET_Y,
-} from './SidebarLayout.constants';
+import { SIDEBAR_LAYOUT_TOAST_OFFSET_Y } from './SidebarLayout.constants';
 
 const sidebarItemRoutes = {
   eventDiscountEdit: MARKET_OWNER_ROUTES.eventDiscountEdit,
@@ -160,13 +157,7 @@ export const SidebarLayout = () => {
         />
       </div>
       <div className={S.contentSlotClassName}>
-        <ToastProvider
-          offset={{
-            x: SIDEBAR_LAYOUT_TOAST_CENTER_OFFSET_X,
-            y: SIDEBAR_LAYOUT_TOAST_OFFSET_Y,
-          }}
-          placement='top-center'
-        >
+        <ToastProvider offset={SIDEBAR_LAYOUT_TOAST_OFFSET_Y} placement='top-center'>
           <Outlet />
         </ToastProvider>
       </div>

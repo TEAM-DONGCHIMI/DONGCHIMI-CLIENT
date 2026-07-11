@@ -41,6 +41,16 @@ const mockClipboardWriteText = (writeText: (text: string) => Promise<void>) => {
   });
 };
 
+const expectSidebarToastViewportToUseViewportTopCenter = () => {
+  const toastViewport = screen.getByRole('region', { name: '토스트 알림' });
+
+  expect(toastViewport.style.getPropertyValue('--toast-viewport-center-offset-x')).toBe('');
+  expect(toastViewport).toHaveStyle({
+    '--toast-viewport-offset-x': '2rem',
+    '--toast-viewport-offset-y': '2rem',
+  });
+};
+
 describe('marketOwnerRoutes', () => {
   it('renders public auth routes without the sidebar layout', async () => {
     renderRoute('/login');
@@ -184,7 +194,7 @@ describe('marketOwnerRoutes', () => {
     expect(screen.queryByRole('link', { name: '오늘의 전단 공유' })).not.toBeInTheDocument();
   });
 
-  it('centers sidebar-layout toasts over the content area', async () => {
+  it('centers sidebar-layout toasts over the viewport', async () => {
     const user = userEvent.setup();
 
     renderRoute('/products/event-discount/new');
@@ -194,10 +204,7 @@ describe('marketOwnerRoutes', () => {
     await user.click(screen.getByRole('button', { name: '엑셀 양식 다운로드' }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('엑셀 양식 다운로드 완료');
-    expect(screen.getByRole('region', { name: '토스트 알림' })).toHaveStyle({
-      '--toast-viewport-center-offset-x': '145px',
-      '--toast-viewport-offset-y': '2rem',
-    });
+    expectSidebarToastViewportToUseViewportTopCenter();
   });
 
   it('navigates the today-special summary action to the edit page', async () => {
@@ -260,10 +267,7 @@ describe('marketOwnerRoutes', () => {
 
     expect(writeText).toHaveBeenCalledWith('dongchimi.kr/mangwon-fresh');
     expect(await screen.findByRole('status')).toHaveTextContent('전단 링크가 복사되었습니다.');
-    expect(screen.getByRole('region', { name: '토스트 알림' })).toHaveStyle({
-      '--toast-viewport-center-offset-x': '145px',
-      '--toast-viewport-offset-y': '2rem',
-    });
+    expectSidebarToastViewportToUseViewportTopCenter();
   });
 
   it('shows an error toast when leaflet link copy fails', async () => {
