@@ -37,6 +37,7 @@ export const ProductCard = ({
   const hasItems = items.length > 0;
   const hasHiddenItems = items.length > visibleCount;
   const visibleItems = isExpanded ? items : items.slice(0, visibleCount);
+  const shouldShowEmptyMessage = !hasItems && Boolean(emptyMessage);
   const hasActionSlot = Boolean(actionSlot);
   const shouldShowDefaultToggle = !hasActionSlot && hasHiddenItems;
   const shouldShowFooter = hasActionSlot || shouldShowDefaultToggle;
@@ -66,7 +67,7 @@ export const ProductCard = ({
           </header>
 
           {/* 상품이 있으면 목록을, 없으면 empty 상태를 노출합니다. */}
-          {hasItems ? (
+          {hasItems && (
             <List aria-labelledby={headingId} className={S.listClassName} gap='md' id={listId}>
               {visibleItems.map((item, index) => (
                 <ProductItem
@@ -78,9 +79,8 @@ export const ProductCard = ({
                 />
               ))}
             </List>
-          ) : (
-            <p className={S.emptyClassName}>{emptyMessage}</p>
           )}
+          {shouldShowEmptyMessage && <p className={S.emptyClassName}>{emptyMessage}</p>}
         </div>
 
         {/* 외부 actionSlot이 있으면 우선 사용하고, 없으면 내부 더보기/접기를 사용합니다. */}

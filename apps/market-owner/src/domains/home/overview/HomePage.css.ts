@@ -2,7 +2,6 @@ import { style } from '@vanilla-extract/css';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
-const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 const cardShadow = '0 1.6rem 3.6rem rgba(25, 33, 46, 0.08)';
 const checkerboardColor = 'rgba(229, 232, 235, 0.68)';
 const dashboardCardHeight = '38.6rem';
@@ -95,22 +94,40 @@ export const productCardClassName = style({
   overflow: 'hidden',
 });
 
-export const productCardActionButtonClassName = style({
-  ...typography['body-3-semibold'],
-  appearance: 'none',
-  display: 'inline-flex',
+export const dashboardCardContainerClassName = style({
+  position: 'relative',
+  minWidth: 0,
+});
+
+export const dashboardCardEmptyOverlayClassName = style({
+  position: 'absolute',
+  zIndex: 1,
+  inset: 0,
+  display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  border: 0,
-  borderRadius: '1.2rem',
+  borderRadius: '2rem',
+  padding: '2rem',
+  backgroundColor: semantic.overlay.dimmer,
+  color: atomic.common[0],
+  pointerEvents: 'auto',
+  textAlign: 'center',
+});
+
+export const dashboardCardEmptyMessageClassName = style({
+  ...typography['heading-2-semibold'],
+  margin: 0,
+  whiteSpace: 'pre-line',
+});
+
+export const productCardActionButtonClassName = style({
+  ...typography['body-3-semibold'],
+  height: 'auto',
   padding: '0.4rem 0.8rem',
-  backgroundColor: 'transparent',
   color: semantic.primary.strong,
-  cursor: 'pointer',
   selectors: {
-    '&:focus-visible': {
-      outline: `3px solid ${focusOutlineColor}`,
-      outlineOffset: 2,
+    '&:disabled': {
+      color: semantic.primary.strong,
     },
   },
 });
