@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react';
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { fireEvent, render, screen, userEvent } from '../../../../test';
+import { createEvent, fireEvent, render, screen, userEvent } from '../../../../test';
 import { UploadModal } from './UploadModal';
 
 const dialogName = '파일 업로드';
@@ -105,6 +105,39 @@ describe('UploadModal', () => {
 
     expect(handleFileChange).toHaveBeenCalledTimes(1);
     expect(handleUpload).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls file drop handler when files are dropped on the upload body', () => {
+    const handleFileDrop = vi.fn();
+    const file = new File(['name,price'], 'products.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderUploadModal({
+      onFileDrop: handleFileDrop,
+    });
+
+    const dropTarget = screen.getByText(defaultProps.label);
+    const dragOverEvent = createEvent.dragOver(dropTarget, {
+      dataTransfer: {
+        files: [file],
+      },
+    });
+    const dropEvent = createEvent.drop(dropTarget, {
+      dataTransfer: {
+        files: [file],
+      },
+    });
+    const preventDragOverDefault = vi.spyOn(dragOverEvent, 'preventDefault');
+    const preventDropDefault = vi.spyOn(dropEvent, 'preventDefault');
+
+    fireEvent(dropTarget, dragOverEvent);
+    fireEvent(dropTarget, dropEvent);
+
+    expect(preventDragOverDefault).toHaveBeenCalledTimes(1);
+    expect(preventDropDefault).toHaveBeenCalledTimes(1);
+    expect(handleFileDrop).toHaveBeenCalledTimes(1);
+    expect(handleFileDrop.mock.calls[0]?.[0][0]).toBe(file);
   });
 
   it('resets the file input value before opening the file picker', async () => {
