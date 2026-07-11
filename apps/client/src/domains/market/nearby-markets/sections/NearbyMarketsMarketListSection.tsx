@@ -9,31 +9,23 @@ import { CLIENT_ROUTES } from '@/shared/constants';
 import { useIntersectionObserver } from '@/shared/hooks';
 import { formatWon } from '@/shared/utils';
 
-import type { useGetNearbyMarketsInfiniteQuery } from '../../hooks/use-nearby-markets-infinite-query';
-import type { NearbyMarketDtoTypes } from '../../model/nearby-markets-schema';
+import { useNearbyMarketsMarketList } from '../NearbyMarketsClientProvider';
 import * as S from '../NearbyMarketsPage.css';
 
 const NEARBY_MARKETS_LOAD_ERROR_TOAST_ID = 'nearby-markets-load-error';
 const NEARBY_MARKETS_LOAD_ERROR_MESSAGE = '마트를 불러올 수 없어요';
 
-export interface NearbyMarketsMarketListSectionProps extends Pick<
-  ReturnType<typeof useGetNearbyMarketsInfiniteQuery>,
-  'error' | 'fetchNextPage' | 'hasNextPage' | 'isError' | 'isFetchingNextPage' | 'isPending'
-> {
-  keyword?: string;
-  markets: NearbyMarketDtoTypes[];
-}
-
-export const NearbyMarketsMarketListSection = ({
-  error,
-  fetchNextPage,
-  hasNextPage,
-  isError,
-  isFetchingNextPage,
-  isPending,
-  keyword,
-  markets,
-}: NearbyMarketsMarketListSectionProps) => {
+export const NearbyMarketsMarketListSection = () => {
+  const {
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isError,
+    isFetchingNextPage,
+    isPending,
+    keyword,
+    markets,
+  } = useNearbyMarketsMarketList();
   const router = useRouter();
   const toast = useToast();
 
