@@ -17,7 +17,7 @@ export const createLazyRoute = <ModuleTypes, ExportNameTypes extends keyof Modul
 
   const BoundariedLazyRouteComponent = () => {
     return (
-      <AsyncBoundary>
+      <AsyncBoundary loadingFallback={null}>
         <LazyRouteComponent />
       </AsyncBoundary>
     );
