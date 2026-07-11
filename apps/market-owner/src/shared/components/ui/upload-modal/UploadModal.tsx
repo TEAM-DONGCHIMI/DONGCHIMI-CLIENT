@@ -2,6 +2,7 @@ import {
   useRef,
   type ChangeEventHandler,
   type ComponentPropsWithoutRef,
+  type DragEventHandler,
   type MouseEventHandler,
   type ReactNode,
 } from 'react';
@@ -35,6 +36,7 @@ export interface UploadModalProps extends NativeDialogContentProps {
   uploadButtonLabel?: string;
   onCancel?: MouseEventHandler<HTMLButtonElement>;
   onFileChange?: ChangeEventHandler<HTMLInputElement>;
+  onFileDrop?: (files: FileList) => void;
   onOpenChange: (open: boolean) => void;
   onUpload?: MouseEventHandler<HTMLButtonElement>;
 }
@@ -71,6 +73,7 @@ export const UploadModal = ({
   uploadButtonLabel = DEFAULT_UPLOAD_BUTTON_LABEL,
   onCancel,
   onFileChange,
+  onFileDrop,
   onOpenChange,
   onUpload,
   ...contentProps
@@ -93,6 +96,21 @@ export const UploadModal = ({
   };
   const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     onFileChange?.(event);
+  };
+  const handleFileDragOver: DragEventHandler<HTMLDivElement> = (event) => {
+    event.preventDefault();
+  };
+  const handleFileDrop: DragEventHandler<HTMLDivElement> = (event) => {
+    event.preventDefault();
+
+    const { files } = event.dataTransfer;
+
+    if (files.length === 0) {
+      return;
+    }
+
+    resetFileInputValue();
+    onFileDrop?.(files);
   };
   const handleOpenChange = (open: boolean) => {
     if (!open) {
@@ -124,7 +142,11 @@ export const UploadModal = ({
             <div className={S.mainClassName}>
               <Dialog.Title className={S.titleClassName}>{heading}</Dialog.Title>
 
-              <div className={S.bodyRecipe({ state })}>
+              <div
+                className={S.bodyRecipe({ state })}
+                onDragOver={onFileDrop == null ? undefined : handleFileDragOver}
+                onDrop={onFileDrop == null ? undefined : handleFileDrop}
+              >
                 <div className={S.textGroupClassName}>
                   {isUploadState && description != null && (
                     <p className={S.descriptionClassName}>{description}</p>

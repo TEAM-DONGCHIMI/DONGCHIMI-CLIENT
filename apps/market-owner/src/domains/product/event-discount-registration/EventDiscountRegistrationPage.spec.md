@@ -7,7 +7,7 @@
 - Page: `event-discount-registration`
 - Route: `/products/event-discount/new`
 - Path: `apps/market-owner/src/domains/product/event-discount-registration/EventDiscountRegistrationPage.tsx`
-- Jira: DCMSM-18, DCMSM-19, DCMSM-25
+- Jira: DCMSM-18, DCMSM-19, DCMSM-25, DCMSM-34
 - Figma:
   - APPJAM registration method home node 1553:112508
   - APPJAM file upload modal states
@@ -32,6 +32,7 @@
 - `PosExcelGuidePanel` is page-local because its title and image-only placeholder surfaces are specific to the event discount registration upload guide.
 - `usePosGuideModalBehavior` stays page-local because the POS guide is an event discount registration specific modal with its own drawer positioning and modal behavior contract.
 - `useExcelUploadFlow` stays page-local because it owns only the excel upload modal and file-analysis view transitions for this route.
+- `useFileDrop` is reused from product domain hooks for file drop event handling; accepted extension validation stays in `useExcelUploadFlow` because `.xlsx/.csv` is specific to this flow.
 - App-shared `UploadModal` is reused for the excel upload modal default/upload states.
 - Shared `ToastProvider`/`useToast` runtime is reused for action feedback while design-system `Toast` remains the rendered UI.
 - `FileAnalysisConfirmSection` and `FileAnalysisProgressSection` remain page-local flow steps for the uploaded file confirmation and AI analysis progress.
@@ -51,14 +52,14 @@
 
 - initial/method: `/products/event-discount/new` first renders the registration method home with excel and leaflet upload cards.
 - modal/default: clicking `엑셀 업로드` opens `UploadModal` with two-line guidance copy, a file format tooltip, and a disabled upload button.
-- modal/upload: selecting a `.xlsx` or `.csv` file shows the selected file name and enables the upload button.
-- modal/error: the shared `UploadModal` still supports an error state, but this page does not wire it because client-side extension validation is out of scope for this publishing issue.
+- modal/upload: selecting or dropping a `.xlsx` or `.csv` file shows the selected file name and enables the upload button.
+- modal/error: selecting or dropping a file outside `.xlsx` or `.csv` shows the upload modal error state and keeps the upload button disabled.
 - success/confirm: clicking the enabled upload button closes the modal and renders `FileAnalysisConfirmSection` with the selected file name.
 - loading/progress: `분석 시작` renders `FileAnalysisProgressSection` with step statuses and progressbar.
 - completed: original analysis progress at 100% or all completed steps disable the progress cancel action.
 - toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback with the completed status icon.
 - toast/error: the page can render error toast feedback with the error status icon; `전단지 업로드` currently shows Figma error-style feedback because the actual upload API is out of scope.
-- panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel with the two-line title (`POS에서 엑셀 파일을` / `이렇게 다운 받으시면 돼요.`) and three stacked guide image placeholders; Escape, backdrop click, or the close button hides it and restores focus.
+- panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel with a right-to-left slide-in animation, the two-line title (`POS에서 엑셀 파일을` / `이렇게 다운 받으시면 돼요.`), and three stacked guide image placeholders; Escape, backdrop click, or the close button hides it and restores focus.
 - route error: unknown route is handled by the existing router fallback.
 
 ## Data
@@ -79,9 +80,11 @@
 - `엑셀 업로드` opens the excel upload modal and resets stale file selection state.
 - `UploadModal` uses `.xlsx,.csv` as the file input `accept` hint value.
 - The modal default state shows `상품이 등록된 엑셀 파일을 선택해주세요.` / `업로드하면 상품이 자동으로 등록됩니다.` on separate visual lines and shows `지원 파일은 .xlsx, .csv예요.` below the file select button.
+- Dropping a file on the modal body follows the same selected-file state transition as the native file select button.
+- Drag over / drag leave / drop visual effects are intentionally out of scope for DCMSM-34.
 - The modal file format tooltip is hidden after the modal moves to upload state.
-- The page does not perform client-side extension blocking in this publishing issue. Any selected local file moves the modal to upload state so the user can confirm the selected file name.
-- File format validation and server/API upload failure mapping are follow-up integration concerns.
+- The page performs lightweight client-side extension checking for local selection and drag & drop. Files outside `.xlsx` and `.csv` move the modal to error state.
+- Server/API upload failure mapping remains a follow-up integration concern.
 - Upload success is UI-only until API integration: clicking enabled `파일 업로드` stores the selected file name and switches to confirmation.
 - Confirmation `취소` clears the uploaded file state and returns to the method view.
 - `분석 시작` switches to progress view.
@@ -91,6 +94,7 @@
 - Toast feedback uses the shared toast runtime. The page passes the Figma status icon through the toast `icon` slot and uses a stable toast id for registration action feedback so triggering a new toast replaces the visible toast and resets the runtime timer.
 - The page does not own toast viewport positioning or sidebar-width correction.
 - The POS guide panel behaves as a modal dialog through `usePosGuideModalBehavior`: Escape and backdrop click close it, focus moves to the close button on open and returns to the previously focused trigger on close, Tab focus is kept inside the panel, and body scroll is locked while open.
+- The POS guide panel uses a CSS-only open animation from `translateX(100%)` to `translateX(0)` and disables the animation for `prefers-reduced-motion: reduce`.
 - POS guide image areas are 36rem-wide placeholder surfaces until real guide image assets are provided; the fixed heights are 27.4rem, 24.1rem, and 17.5rem, and step copy stays in accessible image labels instead of visible text.
 - Analysis items are read-only static labels until repeated reuse or API mapping is confirmed.
 - Analysis progress value is clamped and rounded for display while completion checks use original progress or step status.
@@ -103,6 +107,7 @@
 - current state: sidebar item has `aria-current="page"` for the current route.
 - breadcrumb: current location nav and current page use `aria-current="page"`.
 - modal: `UploadModal` provides dialog title/description through the shared component.
+- drag & drop: dropping a file on the modal body is an alternate pointer input path; keyboard users keep the existing file select button path.
 - toast: shared toast runtime renders design-system `Toast`, which supplies status/alert roles and live region defaults; page-supplied icons are decorative.
 - POS guide: the right panel is a modal dialog labelled by its visible title (`role="dialog"`, `aria-modal="true"`, `aria-labelledby`) with Escape/backdrop close, focus move-to/return, Tab containment, and body scroll lock.
 - analysis items: `AI 분석 항목` label and list semantics are preserved.
@@ -114,6 +119,8 @@
 - [x] route renders excel and leaflet upload cards
 - [x] clicking `엑셀 업로드` opens the upload modal in default state
 - [x] `.xlsx` or `.csv` file selection enables upload action
+- [x] dropping a file on the upload modal enables upload action
+- [x] unsupported file selection or drop renders upload modal error state
 - [x] clicking enabled upload action switches to file confirmation
 - [x] file confirmation renders selected file name and analysis items
 - [x] `분석 시작` switches to the AI analysis progress section

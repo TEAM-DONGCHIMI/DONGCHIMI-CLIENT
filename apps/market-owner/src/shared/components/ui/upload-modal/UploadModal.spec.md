@@ -27,6 +27,7 @@
 - Upload 상태의 optional description 한 줄
 - Dialog 밖 hidden file input과 Button 기반 파일 선택 trigger
 - 숨겨진 file input과 change handler 연결
+- 파일 선택 영역의 optional drag & drop handler 연결
 - 취소 / 업로드 callback 연결
 - 파일 선택 icon 기본값과 호출부 override 슬롯
 
@@ -36,6 +37,7 @@
 - 파일 파싱과 데이터 검증
 - 서버 오류 코드별 메시지 매핑
 - 업로드 progress, loading, retry UI
+- drag over / drag leave / drop 시각 효과
 - 다른 형태의 modal primitive 구현
 
 ## UI Structure
@@ -50,6 +52,7 @@ UploadModal
         Dialog.Description
       File select Button
       Optional file select tooltip label
+      Optional drop handler on body
   Hidden file input sibling outside Dialog root
     Footer
       Cancel Button
@@ -65,6 +68,7 @@ UploadModal
   - 업로드 흐름별 `heading` 문구 지정
   - 파일 종류별 `accept` 정책 지정
   - 선택 파일 상태와 업로드 가능 여부 계산
+  - drag & drop 파일 선택이 필요한 경우 drop된 `FileList` 처리
   - 실제 업로드 API 호출과 오류 메시지 매핑
   - 필요 시 파일 선택 icon override
 - non-owned behavior:
@@ -86,14 +90,16 @@ UploadModal
 - `cancelLabel`: 취소 버튼 문구, defaults to `취소`
 - `uploadButtonLabel`: 업로드 버튼 문구, defaults to `파일 업로드`
 - `onFileChange`: hidden file input change handler
+- `onFileDrop`: optional body drop handler. 호출부가 제공할 때만 body 영역에서 drag over 기본 동작을 막고 drop된 `FileList`를 전달합니다.
 - `onCancel`: cancel button click handler. `event.preventDefault()`를 호출하면 modal close를 막을 수 있습니다.
 - `onUpload`: upload button click handler
 - `uploadButtonDisabled`: upload CTA disabled override
 
 ## States
 
-- default: 안내 문구와 assistive solid 파일 선택 버튼을 노출하고 업로드 버튼은 비활성화합니다.
+- default: 안내 문구와 assistive solid 파일 선택 버튼을 노출하고 업로드 버튼은 비활성화합니다. `onFileDrop`이 있으면 body 영역 drop도 파일 선택 진입점으로 동작합니다.
 - upload: optional description, 선택 파일/대상 문구, primary soft 파일 선택 버튼, 활성 업로드 버튼을 노출합니다.
+- upload long filename: 선택 파일명이 body 너비를 넘으면 한 줄에서 말줄임표로 처리합니다.
 - error: negative 안내 문구와 negative outlined 파일 선택 버튼을 노출하고 업로드 버튼은 비활성화합니다.
 - disabled: 업로드 버튼은 state가 `upload`이 아닐 때 기본 비활성화하며 `uploadButtonDisabled`로 override할 수 있습니다.
 - loading: 이 컴포넌트가 직접 소유하지 않습니다.
@@ -124,6 +130,7 @@ UploadModal
 - hidden file input은 native `<dialog>`의 close/remount 흐름에 영향을 받지 않도록 `Dialog` root 밖 sibling으로 렌더링합니다.
 - file input은 실제 file picker와 `onFileChange` 연결을 담당하며 `tabIndex={-1}`로 일반 탭 순서에 포함하지 않습니다.
 - file input은 같은 파일을 다시 선택해도 change 흐름이 막히지 않도록 file picker를 열기 전에 value를 초기화합니다.
+- drag & drop은 `onFileDrop`이 제공된 경우에만 동작하며, keyboard 사용자는 기존 파일 선택 버튼으로 동일 기능에 접근합니다.
 - native dialog cancel 요청은 `preventDefault`로 막고, Dialog의 `onOpenChange(false)` 닫힘 요청은 호출부로 전달하지 않아 열린 상태를 유지합니다.
 - modal close는 명시적 취소 버튼 또는 호출부의 업로드 완료 close로만 수행합니다.
 - 파일 선택 icon은 장식 요소로 DS Button의 `leftIcon` slot에 전달되어 `aria-hidden` 처리됩니다.
@@ -150,6 +157,7 @@ UploadModal
 - file select trigger width: `13.4rem`
 - file select tooltip: optional, trigger 아래 `caption-2-medium` dark pill로 표시
 - file select tooltip has a centered top arrow tip and `0.8rem` gap from the trigger.
+- upload state selected file text truncates with one-line ellipsis.
 - footer gap: `1.4rem`
 - footer button width: `20rem`
 - long text는 wrapping되어 부모 너비를 넘지 않아야 합니다.
