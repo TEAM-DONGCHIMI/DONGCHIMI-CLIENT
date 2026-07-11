@@ -431,40 +431,6 @@ export const categoryExpandedGroupClassName = style({
   gap: '0.4rem',
 });
 
-export const categoryButtonClassName = style({
-  ...typography['caption-1-medium'],
-  display: 'inline-flex',
-  height: '3rem',
-  alignItems: 'center',
-  justifyContent: 'center',
-  border: `0.1rem solid ${atomic.neutral[20]}`,
-  borderRadius: '2rem',
-  padding: '0 1.4rem',
-  backgroundColor: atomic.common[0],
-  color: atomic.neutral[80],
-  cursor: 'pointer',
-  selectors: {
-    '&[aria-pressed="true"]': {
-      borderColor: semantic.primary.normal,
-      backgroundColor: semantic.primary.normal,
-      color: atomic.common[0],
-    },
-    '&:focus-visible': {
-      outline: `3px solid ${focusOutlineColor}`,
-      outlineOffset: 2,
-    },
-  },
-});
-
-export const moreCategoryButtonClassName = style([
-  categoryButtonClassName,
-  {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.2rem',
-  },
-]);
-
 export const eventProductGridClassName = style({
   display: 'grid',
   gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',

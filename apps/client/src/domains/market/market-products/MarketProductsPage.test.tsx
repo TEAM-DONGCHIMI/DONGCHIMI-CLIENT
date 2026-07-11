@@ -4,7 +4,7 @@ import { act, renderWithProviders, screen, userEvent, waitFor, within } from '@/
 
 import { getCurrentBusinessCloseTime, MarketProductsPage } from './MarketProductsPage';
 import { marketProductsFixture, type BusinessHourTypes } from './fixtures/market-products.fixture';
-import { calculateFirstRowCategoryCount } from './sections/EventDiscountProductsSection';
+import { calculateFirstRowCategoryCount } from './hooks/useEventDiscountCategoryLayout';
 import { formatBusinessDays } from './sections/MarketOverviewSection';
 import { formatPrice } from './utils/format-price';
 

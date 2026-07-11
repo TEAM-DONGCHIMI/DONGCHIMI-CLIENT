@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
+import { PillButton } from '@dongchimi/design-system';
 import { IcChevronDown, IcChevronUp } from '@dongchimi/design-system/icons';
 import { PeriodProductCard } from '@/shared/components/ui/period-product-card';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
+import { useEventDiscountCategoryLayout } from '../hooks/useEventDiscountCategoryLayout';
 import type {
   EventDiscountCategoryFixtureTypes,
   EventDiscountProductFixtureTypes,
@@ -28,53 +30,6 @@ interface EventDiscountProductsSectionProps {
 export const EVENT_DISCOUNT_ALL_CATEGORY_ID = 'all';
 
 const EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES = 'calc((100vw - 10rem) / 3)';
-
-type CategoryRowMeasurementTypes = Readonly<{
-  allCategoryWidth: number;
-  categoryWidths: readonly number[];
-  containerWidth: number;
-  gap: number;
-  moreCategoryWidth: number;
-}>;
-
-export const calculateFirstRowCategoryCount = ({
-  allCategoryWidth,
-  categoryWidths,
-  containerWidth,
-  gap,
-  moreCategoryWidth,
-}: CategoryRowMeasurementTypes) => {
-  const fullCategoryRowWidth = categoryWidths.reduce((totalWidth, categoryWidth) => {
-    return totalWidth + gap + categoryWidth;
-  }, allCategoryWidth);
-
-  if (fullCategoryRowWidth <= containerWidth) {
-    return categoryWidths.length;
-  }
-
-  let occupiedWidth = allCategoryWidth + gap + moreCategoryWidth;
-  let nextCategoryCount = 0;
-
-  for (const categoryWidth of categoryWidths) {
-    const nextWidth = occupiedWidth + gap + categoryWidth;
-
-    if (nextWidth > containerWidth) {
-      break;
-    }
-
-    occupiedWidth = nextWidth;
-    nextCategoryCount += 1;
-  }
-
-  return nextCategoryCount;
-};
-
-const getFlexGapPx = (element: HTMLElement) => {
-  const gap = window.getComputedStyle(element).columnGap;
-  const parsedGap = Number.parseFloat(gap);
-
-  return Number.isFinite(parsedGap) ? parsedGap : 0;
-};
 
 const EVENT_DISCOUNT_PRELOAD_ROOT_MARGIN = '0px 0px 240px';
 
@@ -140,81 +95,16 @@ export const EventDiscountProductsSection = ({
   selectedCategoryId,
   visibleCategoryCount,
 }: EventDiscountProductsSectionProps) => {
-  const categoryListRef = useRef<HTMLDivElement>(null);
-  const categoryMeasureRowRef = useRef<HTMLDivElement>(null);
   const loadMoreSentinelRef = useEventDiscountInfiniteScroll({
     hasNextPage,
     nextCursor,
     onLoadNextPage,
   });
-  const [firstRowCategoryCount, setFirstRowCategoryCount] = useState(visibleCategoryCount);
-  const categoryLayoutSignature = categories
-    .map((category) => `${category.categoryId}:${category.label}`)
-    .join('|');
-
-  const updateFirstRowCategoryCount = useCallback(() => {
-    const categoryListElement = categoryListRef.current;
-    const measureRowElement = categoryMeasureRowRef.current;
-
-    if (categoryListElement == null || measureRowElement == null) {
-      return;
-    }
-
-    const containerWidth = categoryListElement.clientWidth;
-
-    if (containerWidth <= 0) {
-      setFirstRowCategoryCount(visibleCategoryCount);
-      return;
-    }
-
-    const measuredItems = Array.from(measureRowElement.children) as HTMLElement[];
-    const allCategoryElement = measuredItems[0];
-    const moreCategoryElement = measuredItems[measuredItems.length - 1];
-
-    if (allCategoryElement == null || moreCategoryElement == null) {
-      return;
-    }
-
-    const gap = getFlexGapPx(measureRowElement);
-    const categoryItemElements = measuredItems.slice(1, -1);
-    const nextCategoryCount = calculateFirstRowCategoryCount({
-      allCategoryWidth: allCategoryElement.getBoundingClientRect().width,
-      categoryWidths: categoryItemElements.map((categoryItemElement) => {
-        return categoryItemElement.getBoundingClientRect().width;
-      }),
-      containerWidth,
-      gap,
-      moreCategoryWidth: moreCategoryElement.getBoundingClientRect().width,
+  const { categoryListRef, categoryMeasureRowRef, firstRowCategoryCount } =
+    useEventDiscountCategoryLayout({
+      categories,
+      visibleCategoryCount,
     });
-
-    setFirstRowCategoryCount((currentCount) => {
-      return currentCount === nextCategoryCount ? currentCount : nextCategoryCount;
-    });
-  }, [visibleCategoryCount]);
-
-  useLayoutEffect(() => {
-    updateFirstRowCategoryCount();
-  }, [categoryLayoutSignature, updateFirstRowCategoryCount]);
-
-  useEffect(() => {
-    if (typeof ResizeObserver === 'undefined' || categoryListRef.current == null) {
-      window.addEventListener('resize', updateFirstRowCategoryCount);
-
-      return () => {
-        window.removeEventListener('resize', updateFirstRowCategoryCount);
-      };
-    }
-
-    const resizeObserver = new ResizeObserver(() => {
-      updateFirstRowCategoryCount();
-    });
-
-    resizeObserver.observe(categoryListRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [updateFirstRowCategoryCount]);
 
   const defaultVisibleCategories = categories.slice(0, firstRowCategoryCount);
   const hiddenCategories = categories.slice(firstRowCategoryCount);
@@ -238,62 +128,75 @@ export const EventDiscountProductsSection = ({
           aria-hidden='true'
           className={S.categoryMeasurementRowClassName}
         >
-          <span className={S.categoryButtonClassName}>전체</span>
+          <PillButton platform='mobile' tabIndex={-1} variant='outlined-light'>
+            전체
+          </PillButton>
           {categories.map((category) => (
-            <span key={category.categoryId} className={S.categoryButtonClassName}>
+            <PillButton
+              key={category.categoryId}
+              platform='mobile'
+              tabIndex={-1}
+              variant='outlined-light'
+            >
               {category.label}
-            </span>
+            </PillButton>
           ))}
-          <span className={S.moreCategoryButtonClassName}>
+          <PillButton
+            icon={<IcChevronDown />}
+            platform='mobile'
+            tabIndex={-1}
+            variant='outlined-light'
+          >
             더보기
-            <MoreButtonIcon aria-hidden='true' />
-          </span>
+          </PillButton>
         </div>
 
         <div className={S.categoryPrimaryRowClassName}>
-          <button
+          <PillButton
             aria-pressed={selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID}
-            className={S.categoryButtonClassName}
             onClick={() => onSelectCategory(EVENT_DISCOUNT_ALL_CATEGORY_ID)}
-            type='button'
+            platform='mobile'
+            variant={
+              selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID ? 'filled' : 'outlined-light'
+            }
           >
             전체
-          </button>
+          </PillButton>
           {defaultVisibleCategories.map((category) => (
-            <button
+            <PillButton
               key={category.categoryId}
               aria-pressed={selectedCategoryId === category.categoryId}
-              className={S.categoryButtonClassName}
               onClick={() => onSelectCategory(category.categoryId)}
-              type='button'
+              platform='mobile'
+              variant={selectedCategoryId === category.categoryId ? 'filled' : 'outlined-light'}
             >
               {category.label}
-            </button>
+            </PillButton>
           ))}
           {hasHiddenCategories && (
-            <button
+            <PillButton
               aria-expanded={isCategoryExpanded}
-              className={S.moreCategoryButtonClassName}
+              icon={<MoreButtonIcon />}
               onClick={onToggleCategoryExpanded}
-              type='button'
+              platform='mobile'
+              variant='outlined-light'
             >
               더보기
-              <MoreButtonIcon aria-hidden='true' />
-            </button>
+            </PillButton>
           )}
         </div>
         {hasExpandedCategories && (
           <div className={S.categoryExpandedGroupClassName}>
             {hiddenCategories.map((category) => (
-              <button
+              <PillButton
                 key={category.categoryId}
                 aria-pressed={selectedCategoryId === category.categoryId}
-                className={S.categoryButtonClassName}
                 onClick={() => onSelectCategory(category.categoryId)}
-                type='button'
+                platform='mobile'
+                variant={selectedCategoryId === category.categoryId ? 'filled' : 'outlined-light'}
               >
                 {category.label}
-              </button>
+              </PillButton>
             ))}
           </div>
         )}
