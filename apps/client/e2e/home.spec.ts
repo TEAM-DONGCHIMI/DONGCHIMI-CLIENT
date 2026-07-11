@@ -17,13 +17,12 @@ test('client root route redirects to login', async ({ page }) => {
 test('client market list route shell renders', async ({ page }) => {
   await page.goto('/markets');
 
-  await expect(page.getByRole('heading', { name: '내 주변 마트' })).toBeVisible({
-    timeout: routeShellTimeout,
-  });
-  await expect(page.getByRole('link', { name: '망원 신선마트 전단 보기' })).toHaveAttribute(
-    'href',
-    marketProductsPath,
-  );
+  await expect(
+    page.getByRole('heading', { name: '현재 위치를 기준으로 가까운 마트를 보여드릴게요' }),
+  ).toBeVisible({ timeout: routeShellTimeout });
+  await expect(page.getByRole('searchbox', { name: '위치 또는 마트 검색' })).toBeVisible();
+  await expect(page.getByRole('region', { name: '지도 영역' })).toBeVisible();
+  await expect(page.getByRole('region', { name: '주변 마트 목록' })).toBeVisible();
 });
 
 test('client market products route shell renders', async ({ page }) => {
