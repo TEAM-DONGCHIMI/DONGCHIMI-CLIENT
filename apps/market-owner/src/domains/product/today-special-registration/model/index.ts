@@ -2,13 +2,12 @@
 export {
   createEmptyTodaySpecialProductForm,
   formatPriceInput,
-  isValidTodaySpecialImageFile,
+  getTodayDateInputValue,
   limitProductDescriptionInput,
   limitProductNameInput,
+  normalizeTodaySpecialStartDateInput,
   sanitizeProductDescription,
   sanitizeProductName,
-  todaySpecialImageInputAccept,
-  todaySpecialImageUploadErrorMessages,
 } from './product-form.utils';
 export { todaySpecialRegistrationFormSchema } from './product-form.schema';
 export type {

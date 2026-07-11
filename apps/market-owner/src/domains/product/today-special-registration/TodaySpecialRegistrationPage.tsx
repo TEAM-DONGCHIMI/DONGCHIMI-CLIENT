@@ -6,12 +6,12 @@ import { IcCirclePlusSizeSmall } from '@dongchimi/design-system/icons';
 import { DesktopHeader } from '@/shared/components/ui/desktop-header/DesktopHeader';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
+import { isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
 
 import { useCategoryDropdown } from './hooks/useCategoryDropdown';
 import { useCurrentProductField } from './hooks/useCurrentProductField';
 import { useProductDraftNavigation } from './hooks/useProductDraftNavigation';
 import { useTodaySpecialForm } from './hooks/useTodaySpecialForm';
-import { isValidTodaySpecialImageFile } from './model';
 import {
   ProductInfoSection,
   ProductPeriodSection,
@@ -53,7 +53,7 @@ export const TodaySpecialRegistrationPage = () => {
   };
   const imagePreview = useImagePreview({
     currentPreviewUrl: currentProduct.imagePreviewUrl,
-    isValidFile: isValidTodaySpecialImageFile,
+    isValidFile: isValidImageUploadFile,
     onPreviewChange: handleImagePreviewChange,
     previewUrls: products.map((product) => product.imagePreviewUrl),
   });

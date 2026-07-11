@@ -1,0 +1,1 @@
+export { ProductImageUploadField } from './ProductImageUploadField';

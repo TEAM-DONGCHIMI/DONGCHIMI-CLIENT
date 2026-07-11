@@ -28,7 +28,7 @@ Figma APPJAM `Product Edit Card Desktop` node `793:6739`와 첨부 이미지를 
 
 - `productName`: 상품명입니다. 최대 2줄로 표시하고 넘치면 ellipsis 처리합니다.
 - `categoryName`: 카테고리 chip 문구입니다. 기본값은 `정육`입니다.
-- `viewCount`, `viewCountLabel`: 조회수 chip 문구입니다. `viewCount`가 없으면 조회수 chip을 숨깁니다.
+- `viewCount`, `viewCountLabel`: 조회수 chip 문구입니다. `viewCount`가 없으면 `0 조회`를 표시하고, 1천/1만 단위는 축약 표기합니다.
 - `originalPrice`: 정가 텍스트입니다. `todayDiscountPrice`가 `true`일 때만 표시합니다.
 - `salePercent`: 할인율 텍스트입니다. `todayDiscountPrice`가 `true`일 때만 표시합니다.
 - `salePrice`: 판매가 텍스트입니다.

@@ -1,0 +1,1 @@
+export { ProductEditEmptyView } from './ProductEditEmptyView';
