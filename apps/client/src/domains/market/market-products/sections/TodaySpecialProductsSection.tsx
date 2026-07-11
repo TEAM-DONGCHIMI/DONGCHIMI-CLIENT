@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+
 import Link from 'next/link';
 
 import { PointChip } from '@dongchimi/design-system';
@@ -12,20 +16,20 @@ import { formatPrice } from '../utils/format-price';
 const TODAY_SPECIAL_PRODUCTS_LIST_ID = 'today-special-products-list';
 
 interface TodaySpecialProductsSectionProps {
-  isExpanded: boolean;
+  initialVisibleCount: number;
   marketId: string;
-  onToggleExpanded: () => void;
   products: TodaySpecialProductFixtureTypes[];
   totalCount: number;
 }
 
 export const TodaySpecialProductsSection = ({
-  isExpanded,
+  initialVisibleCount,
   marketId,
-  onToggleExpanded,
   products,
   totalCount,
 }: TodaySpecialProductsSectionProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const visibleProducts = isExpanded ? products : products.slice(0, initialVisibleCount);
   const toggleLabel = isExpanded ? '접기' : '등록한 상품 전체보기';
   const ToggleIcon = isExpanded ? IcChevronUp : IcChevronDown;
 
@@ -39,7 +43,7 @@ export const TodaySpecialProductsSection = ({
       </div>
 
       <div className={S.todayProductListClassName} id={TODAY_SPECIAL_PRODUCTS_LIST_ID}>
-        {products.map((product) => (
+        {visibleProducts.map((product) => (
           <Link
             key={product.productId}
             aria-label={`${product.name} ${formatPrice(product.discountedPrice)}원 상품 보기`}
@@ -71,7 +75,7 @@ export const TodaySpecialProductsSection = ({
         aria-controls={TODAY_SPECIAL_PRODUCTS_LIST_ID}
         aria-expanded={isExpanded}
         className={S.inlineToggleButtonClassName}
-        onClick={onToggleExpanded}
+        onClick={() => setIsExpanded((previousValue) => !previousValue)}
         type='button'
       >
         {toggleLabel}

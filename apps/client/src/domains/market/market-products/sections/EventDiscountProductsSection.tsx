@@ -1,4 +1,6 @@
-import { useEffect, useRef } from 'react';
+'use client';
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { PillButton } from '@dongchimi/design-system';
 import { IcChevronDown, IcChevronUp } from '@dongchimi/design-system/icons';
@@ -6,24 +8,13 @@ import { PeriodProductCard } from '@/shared/components/ui/period-product-card';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
 import { useEventDiscountCategoryLayout } from '../hooks/useEventDiscountCategoryLayout';
-import type {
-  EventDiscountCategoryFixtureTypes,
-  EventDiscountProductFixtureTypes,
-} from '../fixtures/market-products.fixture';
+import type { EventDiscountProductsFixtureTypes } from '../fixtures/market-products.fixture';
 import * as S from '../MarketProductsPage.css';
 import { formatPrice } from '../utils/format-price';
 
 interface EventDiscountProductsSectionProps {
-  categories: EventDiscountCategoryFixtureTypes[];
-  hasNextPage: boolean;
-  isCategoryExpanded: boolean;
+  eventDiscount: EventDiscountProductsFixtureTypes;
   marketId: string;
-  nextCursor: number | null;
-  onLoadNextPage: () => void;
-  onSelectCategory: (categoryId: string) => void;
-  onToggleCategoryExpanded: () => void;
-  products: EventDiscountProductFixtureTypes[];
-  selectedCategoryId: string;
   visibleCategoryCount: number;
 }
 
@@ -31,13 +22,21 @@ export const EVENT_DISCOUNT_ALL_CATEGORY_ID = 'all';
 
 const EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES = 'calc((100vw - 10rem) / 3)';
 
+const INITIAL_EVENT_DISCOUNT_PAGE_COUNT = 1;
+
 const EVENT_DISCOUNT_PRELOAD_ROOT_MARGIN = '0px 0px 240px';
+
+type UseEventDiscountInfiniteScrollTypes = Readonly<{
+  hasNextPage: boolean;
+  nextCursor: number | null;
+  onLoadNextPage: () => void;
+}>;
 
 const useEventDiscountInfiniteScroll = ({
   hasNextPage,
   nextCursor,
   onLoadNextPage,
-}: Pick<EventDiscountProductsSectionProps, 'hasNextPage' | 'nextCursor' | 'onLoadNextPage'>) => {
+}: UseEventDiscountInfiniteScrollTypes) => {
   const loadMoreSentinelRef = useRef<HTMLDivElement>(null);
   const hasRequestedNextPageRef = useRef(false);
 
@@ -83,22 +82,51 @@ const useEventDiscountInfiniteScroll = ({
 };
 
 export const EventDiscountProductsSection = ({
-  categories,
-  hasNextPage,
-  isCategoryExpanded,
+  eventDiscount,
   marketId,
-  nextCursor,
-  onLoadNextPage,
-  onSelectCategory,
-  onToggleCategoryExpanded,
-  products,
-  selectedCategoryId,
   visibleCategoryCount,
 }: EventDiscountProductsSectionProps) => {
+  const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(EVENT_DISCOUNT_ALL_CATEGORY_ID);
+  const [loadedEventDiscountPageCount, setLoadedEventDiscountPageCount] = useState(
+    INITIAL_EVENT_DISCOUNT_PAGE_COUNT,
+  );
+  const { categories, pages } = eventDiscount;
+  const lastLoadedEventDiscountPage = pages[loadedEventDiscountPageCount - 1];
+  const hasNextPage =
+    lastLoadedEventDiscountPage?.hasNext === true && lastLoadedEventDiscountPage.nextCursor != null;
+  const nextCursor = hasNextPage ? lastLoadedEventDiscountPage.nextCursor : null;
+  const products = useMemo(() => {
+    const loadedProducts = pages
+      .slice(0, loadedEventDiscountPageCount)
+      .flatMap((page) => page.products);
+
+    if (selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID) {
+      return loadedProducts;
+    }
+
+    return loadedProducts.filter((product) => product.categoryId === selectedCategoryId);
+  }, [loadedEventDiscountPageCount, pages, selectedCategoryId]);
+  const handleLoadNextPage = useCallback(() => {
+    setLoadedEventDiscountPageCount((currentPageCount) => {
+      return Math.min(currentPageCount + 1, pages.length);
+    });
+  }, [pages.length]);
+  const handleSelectCategory = useCallback(
+    (categoryId: string) => {
+      if (categoryId === selectedCategoryId) {
+        return;
+      }
+
+      setSelectedCategoryId(categoryId);
+      setLoadedEventDiscountPageCount(INITIAL_EVENT_DISCOUNT_PAGE_COUNT);
+    },
+    [selectedCategoryId],
+  );
   const loadMoreSentinelRef = useEventDiscountInfiniteScroll({
     hasNextPage,
     nextCursor,
-    onLoadNextPage,
+    onLoadNextPage: handleLoadNextPage,
   });
   const { categoryListRef, categoryMeasureRowRef, firstRowCategoryCount } =
     useEventDiscountCategoryLayout({
@@ -154,7 +182,7 @@ export const EventDiscountProductsSection = ({
         <div className={S.categoryPrimaryRowClassName}>
           <PillButton
             aria-pressed={selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID}
-            onClick={() => onSelectCategory(EVENT_DISCOUNT_ALL_CATEGORY_ID)}
+            onClick={() => handleSelectCategory(EVENT_DISCOUNT_ALL_CATEGORY_ID)}
             platform='mobile'
             variant={
               selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID ? 'filled' : 'outlined-light'
@@ -166,7 +194,7 @@ export const EventDiscountProductsSection = ({
             <PillButton
               key={category.categoryId}
               aria-pressed={selectedCategoryId === category.categoryId}
-              onClick={() => onSelectCategory(category.categoryId)}
+              onClick={() => handleSelectCategory(category.categoryId)}
               platform='mobile'
               variant={selectedCategoryId === category.categoryId ? 'filled' : 'outlined-light'}
             >
@@ -177,7 +205,7 @@ export const EventDiscountProductsSection = ({
             <PillButton
               aria-expanded={isCategoryExpanded}
               icon={<MoreButtonIcon />}
-              onClick={onToggleCategoryExpanded}
+              onClick={() => setIsCategoryExpanded((previousValue) => !previousValue)}
               platform='mobile'
               variant='outlined-light'
             >
@@ -191,7 +219,7 @@ export const EventDiscountProductsSection = ({
               <PillButton
                 key={category.categoryId}
                 aria-pressed={selectedCategoryId === category.categoryId}
-                onClick={() => onSelectCategory(category.categoryId)}
+                onClick={() => handleSelectCategory(category.categoryId)}
                 platform='mobile'
                 variant={selectedCategoryId === category.categoryId ? 'filled' : 'outlined-light'}
               >
@@ -216,7 +244,7 @@ export const EventDiscountProductsSection = ({
             />
           ))}
         </div>
-      ) : (
+      ) : hasNextPage ? null : (
         <p className={S.emptyTextClassName}>해당 카테고리에 등록된 상품이 없어요.</p>
       )}
       {hasNextPage && (

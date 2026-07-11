@@ -2,11 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { act, renderWithProviders, screen, userEvent, waitFor, within } from '@/test';
 
-import { getCurrentBusinessCloseTime, MarketProductsPage } from './MarketProductsPage';
+import { MarketProductsPage } from './MarketProductsPage';
 import { marketProductsFixture, type BusinessHourTypes } from './fixtures/market-products.fixture';
 import { calculateFirstRowCategoryCount } from './hooks/useEventDiscountCategoryLayout';
 import { formatBusinessDays } from './sections/MarketOverviewSection';
 import { formatPrice } from './utils/format-price';
+import { getCurrentBusinessCloseTime } from './utils/market-actions';
 
 const router = {
   back: vi.fn(),

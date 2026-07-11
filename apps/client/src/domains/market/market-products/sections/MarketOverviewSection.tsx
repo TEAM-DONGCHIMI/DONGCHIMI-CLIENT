@@ -1,9 +1,9 @@
 import Image from 'next/image';
 
-import { Chip } from '@dongchimi/design-system';
 import { IcCalendar, IcLocation, IcPhone } from '@dongchimi/design-system/icons';
 
-import { MarketShareBottomSheet } from '../components/market-share-bottom-sheet';
+import { MarketOverviewActions } from '../components/MarketOverviewActions';
+import { MarketStatusChip } from '../components/MarketStatusChip';
 import type { BusinessDayTypes, BusinessHourTypes } from '../fixtures/market-products.fixture';
 import * as S from '../MarketProductsPage.css';
 
@@ -40,7 +40,6 @@ interface MarketOverviewSectionProps {
     name: string;
     thumbnailUrl: string | null;
   };
-  onOpenCallModal: () => void;
   shareUrl: string;
 }
 
@@ -112,11 +111,7 @@ const formatBusinessHour = (businessHour: BusinessHourTypes) => {
   };
 };
 
-export const MarketOverviewSection = ({
-  market,
-  onOpenCallModal,
-  shareUrl,
-}: MarketOverviewSectionProps) => {
+export const MarketOverviewSection = ({ market, shareUrl }: MarketOverviewSectionProps) => {
   const businessHourTexts = market.businessHours.map(formatBusinessHour);
 
   return (
@@ -125,9 +120,7 @@ export const MarketOverviewSection = ({
         <h2 className={S.marketTitleClassName} id='market-overview-title'>
           {market.name}
         </h2>
-        <Chip className={S.marketStatusChipClassName} color='primary' size='mobile' variant='soft'>
-          {market.isOpenNow ? '영업중' : '영업 종료'}
-        </Chip>
+        <MarketStatusChip isOpenNow={market.isOpenNow} />
       </div>
 
       <div className={S.marketInfoClassName}>
@@ -187,17 +180,13 @@ export const MarketOverviewSection = ({
         </dl>
       </div>
 
-      <div className={S.actionRowClassName}>
-        <MarketShareBottomSheet
-          marketName={market.name}
-          shareUrl={shareUrl}
-          triggerClassName={S.shareTriggerClassName}
-          triggerLabel='공유하기'
-        />
-        <button className={S.primaryActionButtonClassName} onClick={onOpenCallModal} type='button'>
-          전화걸기
-        </button>
-      </div>
+      <MarketOverviewActions
+        businessHours={market.businessHours}
+        isOpenNow={market.isOpenNow}
+        marketName={market.name}
+        marketPhone={market.marketPhone1}
+        shareUrl={shareUrl}
+      />
     </section>
   );
 };
