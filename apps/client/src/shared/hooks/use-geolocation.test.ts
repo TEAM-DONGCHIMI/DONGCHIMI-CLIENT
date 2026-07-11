@@ -99,4 +99,91 @@ describe('useGeolocation', () => {
 
     await waitFor(() => expect(result.current.coordinates).toEqual({ lat: 37.5665, lng: 126.978 }));
   });
+
+  it('retries the position request once when the window regains focus after a timeout', async () => {
+    let successCallback: PositionCallback | undefined;
+    let errorCallback: PositionErrorCallback | undefined;
+    const getCurrentPosition = vi.fn(
+      (success: PositionCallback, error: PositionErrorCallback | null | undefined) => {
+        successCallback = success;
+        errorCallback = error ?? undefined;
+      },
+    );
+
+    vi.stubGlobal('navigator', {
+      geolocation: {
+        getCurrentPosition,
+      },
+    });
+
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+
+    const { result } = renderHook(() => useGeolocation());
+
+    await waitFor(() => expect(getCurrentPosition).toHaveBeenCalledTimes(1));
+
+    act(() => {
+      errorCallback?.(createGeolocationError(3));
+    });
+
+    await waitFor(() => expect(result.current.errorCode).toBe('TIMEOUT'));
+
+    expect(addEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function), {
+      once: true,
+    });
+
+    act(() => {
+      window.dispatchEvent(new Event('focus'));
+      window.dispatchEvent(new Event('focus'));
+    });
+
+    await waitFor(() => expect(getCurrentPosition).toHaveBeenCalledTimes(2));
+
+    const focusHandler = addEventListenerSpy.mock.calls.find(([type]) => type === 'focus')?.[1];
+
+    await waitFor(() => expect(removeEventListenerSpy).toHaveBeenCalledWith('focus', focusHandler));
+
+    act(() => {
+      successCallback?.(createPosition(37.5665, 126.978));
+    });
+
+    await waitFor(() => expect(result.current.coordinates).toEqual({ lat: 37.5665, lng: 126.978 }));
+
+    addEventListenerSpy.mockRestore();
+    removeEventListenerSpy.mockRestore();
+  });
+
+  it('removes the focus listener when unmounted while awaiting a retry', async () => {
+    let errorCallback: PositionErrorCallback | undefined;
+    const getCurrentPosition = vi.fn(
+      (_success: PositionCallback, error: PositionErrorCallback | null | undefined) => {
+        errorCallback = error ?? undefined;
+      },
+    );
+
+    vi.stubGlobal('navigator', {
+      geolocation: {
+        getCurrentPosition,
+      },
+    });
+
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+
+    const { result, unmount } = renderHook(() => useGeolocation());
+
+    await waitFor(() => expect(getCurrentPosition).toHaveBeenCalledTimes(1));
+
+    act(() => {
+      errorCallback?.(createGeolocationError(3));
+    });
+
+    await waitFor(() => expect(result.current.errorCode).toBe('TIMEOUT'));
+
+    unmount();
+
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
+
+    removeEventListenerSpy.mockRestore();
+  });
 });

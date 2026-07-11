@@ -30,6 +30,8 @@ const DAUM_POSTCODE_SCRIPT_SRC = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod
 
 let daumPostcodeScriptPromise: Promise<void> | null = null;
 
+const noop = () => undefined;
+
 export const formatDaumPostcodeAdministrativeAddress = ({
   address,
   bname,
@@ -57,19 +59,19 @@ export const loadDaumPostcodeScript = () => {
   }
 
   daumPostcodeScriptPromise = new Promise<void>((resolve, reject) => {
+    const handleError = (failedScript: HTMLScriptElement) => () => {
+      daumPostcodeScriptPromise = null;
+      failedScript.remove();
+      reject(new Error('Failed to load Daum postcode script'));
+    };
+
     const existingScript = document.getElementById(
       DAUM_POSTCODE_SCRIPT_ID,
     ) as HTMLScriptElement | null;
 
     if (existingScript != null) {
       existingScript.addEventListener('load', () => resolve(), { once: true });
-      existingScript.addEventListener(
-        'error',
-        () => reject(new Error('Failed to load Daum postcode script')),
-        {
-          once: true,
-        },
-      );
+      existingScript.addEventListener('error', handleError(existingScript), { once: true });
 
       return;
     }
@@ -79,13 +81,7 @@ export const loadDaumPostcodeScript = () => {
     script.async = true;
     script.src = DAUM_POSTCODE_SCRIPT_SRC;
     script.addEventListener('load', () => resolve(), { once: true });
-    script.addEventListener(
-      'error',
-      () => reject(new Error('Failed to load Daum postcode script')),
-      {
-        once: true,
-      },
-    );
+    script.addEventListener('error', handleError(script), { once: true });
 
     document.head.appendChild(script);
   });
@@ -109,7 +105,7 @@ export const useDaumPostcodeSearch = ({
       return;
     }
 
-    void loadDaumPostcodeScript().catch(onError);
+    void loadDaumPostcodeScript().catch(onError ?? noop);
   }, [enabled, onError]);
 
   return useCallback(() => {
@@ -136,6 +132,6 @@ export const useDaumPostcodeSearch = ({
           },
         }).open();
       })
-      .catch(onError);
+      .catch(onError ?? noop);
   }, [enabled, onError, onSelectAddress]);
 };

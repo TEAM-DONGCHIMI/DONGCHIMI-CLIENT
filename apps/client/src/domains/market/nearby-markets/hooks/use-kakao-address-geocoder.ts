@@ -83,6 +83,14 @@ export const useKakaoAddressGeocoder = ({
         lng: Number(firstResult.x),
       };
 
+      if (!Number.isFinite(nextCoordinates.lat) || !Number.isFinite(nextCoordinates.lng)) {
+        setResolved(null);
+        setErrorAddress(address);
+        onCoordinatesChange(null);
+
+        return;
+      }
+
       setErrorAddress(null);
       setResolved({ address, coordinates: nextCoordinates });
       onCoordinatesChange(nextCoordinates);
@@ -95,6 +103,6 @@ export const useKakaoAddressGeocoder = ({
 
   return {
     coordinates: resolved?.address === address ? resolved.coordinates : null,
-    isError: errorAddress === address,
+    isError: address != null && errorAddress === address,
   };
 };
