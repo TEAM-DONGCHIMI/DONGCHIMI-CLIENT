@@ -12,5 +12,5 @@
 ## Behavior
 
 - `registration` variant는 안내 문구, dashed empty upload box, preview dimmer, 숨겨진 file input을 제공합니다.
-- `editModal` variant는 수정 modal의 checkerboard image placeholder와 camera badge를 표시합니다.
+- `editModal` variant는 수정 modal의 checkerboard image placeholder와 `IcCameraDefault` badge를 표시합니다.
 - 실제 이미지 파일 검증과 object URL 생성/정리는 호출부 hook/model이 담당합니다.
