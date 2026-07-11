@@ -114,6 +114,9 @@ export const labelRecipe = recipe({
       },
       upload: {
         color: atomic.neutral[70],
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
       },
       error: {
         color: semantic.status.negativeLight,

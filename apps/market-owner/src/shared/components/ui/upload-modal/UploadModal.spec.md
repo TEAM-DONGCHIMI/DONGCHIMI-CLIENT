@@ -99,6 +99,7 @@ UploadModal
 
 - default: 안내 문구와 assistive solid 파일 선택 버튼을 노출하고 업로드 버튼은 비활성화합니다. `onFileDrop`이 있으면 body 영역 drop도 파일 선택 진입점으로 동작합니다.
 - upload: optional description, 선택 파일/대상 문구, primary soft 파일 선택 버튼, 활성 업로드 버튼을 노출합니다.
+- upload long filename: 선택 파일명이 body 너비를 넘으면 한 줄에서 말줄임표로 처리합니다.
 - error: negative 안내 문구와 negative outlined 파일 선택 버튼을 노출하고 업로드 버튼은 비활성화합니다.
 - disabled: 업로드 버튼은 state가 `upload`이 아닐 때 기본 비활성화하며 `uploadButtonDisabled`로 override할 수 있습니다.
 - loading: 이 컴포넌트가 직접 소유하지 않습니다.
@@ -156,6 +157,7 @@ UploadModal
 - file select trigger width: `13.4rem`
 - file select tooltip: optional, trigger 아래 `caption-2-medium` dark pill로 표시
 - file select tooltip has a centered top arrow tip and `0.8rem` gap from the trigger.
+- upload state selected file text truncates with one-line ellipsis.
 - footer gap: `1.4rem`
 - footer button width: `20rem`
 - long text는 wrapping되어 부모 너비를 넘지 않아야 합니다.
