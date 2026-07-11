@@ -97,46 +97,51 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
   const displayValue =
     !hasEditedKeyword && coordinates != null ? DEFAULT_LOCATION_ADDRESS_TEXT : keyword;
 
-  const contextValue = useMemo<NearbyMarketsClientContextValueTypes>(
+  const mapValue = useMemo<NearbyMarketsClientContextValueTypes['map']>(
     () => ({
-      map: {
-        coordinates,
-        errorCode,
-        isMarketsError: isMarkerMarketsError,
-        markets: markerMarkets,
-      },
-      marketList: {
-        error,
-        fetchNextPage,
-        hasNextPage,
-        isError: isMarketsError,
-        isFetchingNextPage,
-        isPending: isMarketsPending,
-        keyword: debouncedKeyword,
-        markets,
-      },
-      search: {
-        keyword: displayValue,
-        onKeywordChange: handleKeywordChange,
-        placeholder: LOCATION_PERMISSION_DENIED_PLACEHOLDER,
-      },
-    }),
-    [
       coordinates,
-      debouncedKeyword,
-      displayValue,
-      error,
       errorCode,
+      isMarketsError: isMarkerMarketsError,
+      markets: markerMarkets,
+    }),
+    [coordinates, errorCode, isMarkerMarketsError, markerMarkets],
+  );
+
+  const marketListValue = useMemo<NearbyMarketsClientContextValueTypes['marketList']>(
+    () => ({
+      error,
       fetchNextPage,
       hasNextPage,
-      handleKeywordChange,
-      isMarkerMarketsError,
-      isMarketsError,
+      isError: isMarketsError,
       isFetchingNextPage,
+      isPending: isMarketsPending,
+      keyword: debouncedKeyword,
+      markets,
+    }),
+    [
+      debouncedKeyword,
+      error,
+      fetchNextPage,
+      hasNextPage,
+      isFetchingNextPage,
+      isMarketsError,
       isMarketsPending,
-      markerMarkets,
       markets,
     ],
+  );
+
+  const searchValue = useMemo<NearbyMarketsClientContextValueTypes['search']>(
+    () => ({
+      keyword: displayValue,
+      onKeywordChange: handleKeywordChange,
+      placeholder: LOCATION_PERMISSION_DENIED_PLACEHOLDER,
+    }),
+    [displayValue, handleKeywordChange],
+  );
+
+  const contextValue = useMemo<NearbyMarketsClientContextValueTypes>(
+    () => ({ map: mapValue, marketList: marketListValue, search: searchValue }),
+    [mapValue, marketListValue, searchValue],
   );
 
   return (
