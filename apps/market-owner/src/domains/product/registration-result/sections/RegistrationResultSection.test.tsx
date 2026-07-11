@@ -2,7 +2,7 @@ import { ToastProvider } from '@dongchimi/shared/toast';
 import { OverlayProvider, overlay } from 'overlay-kit';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { render, screen, userEvent, within } from '@/test';
+import { fireEvent, render, screen, userEvent, waitFor, within } from '@/test';
 import { registrationResultFixture, type RegistrationResultProduct } from '../fixtures';
 import {
   RegistrationResultSection,
@@ -28,6 +28,30 @@ const renderSection = (props: Partial<RegistrationResultSectionProps> = {}) => {
   );
 
   return { handlePrevious, handleRegister };
+};
+
+const createDomRect = ({
+  height,
+  left,
+  top,
+  width,
+}: {
+  height: number;
+  left: number;
+  top: number;
+  width: number;
+}): DOMRect => {
+  return {
+    bottom: top + height,
+    height,
+    left,
+    right: left + width,
+    top,
+    width,
+    x: left,
+    y: top,
+    toJSON: () => ({}),
+  } as DOMRect;
 };
 
 afterEach(() => {
@@ -199,6 +223,41 @@ describe('RegistrationResultSection', () => {
     await user.click(within(dropdown).getByRole('button', { name: '수산' }));
 
     expect(categoryButton).toHaveTextContent('수산');
+  });
+
+  it('keeps the product category dropdown anchored while scrolling', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    const [categoryButton] = screen.getAllByRole('button', { name: '상품 카테고리 선택' });
+    const getBoundingClientRectSpy = vi
+      .spyOn(categoryButton, 'getBoundingClientRect')
+      .mockReturnValue(createDomRect({ height: 40, left: 200, top: 100, width: 206 }));
+
+    await user.click(categoryButton);
+
+    const dropdown = await screen.findByRole('group', { name: '상품 카테고리' });
+
+    expect(dropdown).toHaveStyle({ left: '200px', top: '148px' });
+
+    getBoundingClientRectSpy.mockReturnValue(
+      createDomRect({ height: 40, left: 200, top: 40, width: 206 }),
+    );
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(dropdown).toHaveStyle({ left: '200px', top: '88px' });
+    });
+
+    getBoundingClientRectSpy.mockReturnValue(
+      createDomRect({ height: 40, left: 200, top: -60, width: 206 }),
+    );
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('group', { name: '상품 카테고리' })).not.toBeInTheDocument();
+    });
   });
 
   it('formats discount period while typing date digits', async () => {

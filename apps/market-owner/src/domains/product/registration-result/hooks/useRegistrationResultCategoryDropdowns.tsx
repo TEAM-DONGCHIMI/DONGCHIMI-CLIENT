@@ -8,7 +8,6 @@ import {
   CATEGORY_FILTER_DROPDOWN_OVERLAY_ID,
   CategoryFilterDropdown,
   ProductCategoryDropdown,
-  getAnchorRect,
 } from '../components/RegistrationResultDropdown';
 import type { RegistrationResultProduct } from '../fixtures';
 import {
@@ -73,12 +72,12 @@ export const useRegistrationResultCategoryDropdowns = ({
       return;
     }
 
-    const anchorRect = getAnchorRect(event.currentTarget);
+    const anchorElement = event.currentTarget;
 
     overlay.open(
       ({ isOpen, close, unmount }) => (
         <CategoryFilterDropdown
-          anchorRect={anchorRect}
+          anchorElement={anchorElement}
           close={close}
           isOpen={isOpen}
           selectedCategories={selectedCategoryFilters}
@@ -92,7 +91,7 @@ export const useRegistrationResultCategoryDropdowns = ({
 
   const openProductCategoryDropdown =
     (product: RegistrationResultProduct) => (event: MouseEvent<HTMLButtonElement>) => {
-      const anchorRect = getAnchorRect(event.currentTarget);
+      const anchorElement = event.currentTarget;
       const selectedCategoryValue = getRegistrationResultProductFieldValue(
         product,
         productDrafts,
@@ -107,7 +106,7 @@ export const useRegistrationResultCategoryDropdowns = ({
       overlay.open(
         ({ isOpen, close, unmount }) => (
           <ProductCategoryDropdown
-            anchorRect={anchorRect}
+            anchorElement={anchorElement}
             close={close}
             isOpen={isOpen}
             selectedCategory={selectedCategory}

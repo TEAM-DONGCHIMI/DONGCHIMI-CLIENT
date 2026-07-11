@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEventHandler } from 'react';
+import { useCallback, useEffect, useState, type KeyboardEventHandler } from 'react';
 
 import { Dropdown } from '@dongchimi/design-system/components';
 
@@ -22,23 +22,7 @@ export const CATEGORY_FILTER_DROPDOWN_ID = 'registration-result-category-filter-
 export const CATEGORY_FILTER_DROPDOWN_OVERLAY_ID =
   'registration-result-category-filter-dropdown-overlay';
 
-export interface AnchorRect {
-  bottom: number;
-  left: number;
-  top: number;
-}
-
-export const getAnchorRect = (element: HTMLElement): AnchorRect => {
-  const rect = element.getBoundingClientRect();
-
-  return {
-    bottom: rect.bottom,
-    left: rect.left,
-    top: rect.top,
-  };
-};
-
-const getDropdownMaxLeft = (anchorRect: AnchorRect) => {
+const getDropdownMaxLeft = (anchorRect: DOMRect) => {
   if (typeof window === 'undefined') {
     return anchorRect.left;
   }
@@ -46,7 +30,7 @@ const getDropdownMaxLeft = (anchorRect: AnchorRect) => {
   return window.innerWidth - CATEGORY_DROPDOWN_WIDTH - CATEGORY_DROPDOWN_SCREEN_MARGIN;
 };
 
-const getDropdownTop = (anchorRect: AnchorRect, dropdownHeight: number) => {
+const getDropdownTop = (anchorRect: DOMRect, dropdownHeight: number) => {
   const defaultTop = anchorRect.bottom + CATEGORY_DROPDOWN_GAP;
   const shouldFlip =
     typeof window !== 'undefined' &&
@@ -62,12 +46,93 @@ const getDropdownTop = (anchorRect: AnchorRect, dropdownHeight: number) => {
   );
 };
 
-const getDropdownPositionStyle = (anchorRect: AnchorRect, dropdownHeight: number) => {
+const getDropdownPositionStyle = (anchorRect: DOMRect, dropdownHeight: number) => {
   const maxLeft = getDropdownMaxLeft(anchorRect);
   const left = Math.max(CATEGORY_DROPDOWN_SCREEN_MARGIN, Math.min(anchorRect.left, maxLeft));
   const top = getDropdownTop(anchorRect, dropdownHeight);
 
   return { left, top };
+};
+
+const isAnchorOutsideViewport = (anchorRect: DOMRect) => {
+  if (typeof window === 'undefined' || (anchorRect.width === 0 && anchorRect.height === 0)) {
+    return false;
+  }
+
+  return (
+    anchorRect.bottom <= 0 ||
+    anchorRect.top >= window.innerHeight ||
+    anchorRect.right <= 0 ||
+    anchorRect.left >= window.innerWidth
+  );
+};
+
+const useAnchoredDropdownPosition = ({
+  anchorElement,
+  dropdownHeight,
+  isOpen,
+  onAnchorUnavailable,
+}: {
+  anchorElement: HTMLElement;
+  dropdownHeight: number;
+  isOpen: boolean;
+  onAnchorUnavailable: () => void;
+}) => {
+  const [positionStyle, setPositionStyle] = useState(() =>
+    getDropdownPositionStyle(anchorElement.getBoundingClientRect(), dropdownHeight),
+  );
+
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+
+    const updatePosition = () => {
+      if (!anchorElement.isConnected) {
+        onAnchorUnavailable();
+
+        return;
+      }
+
+      const anchorRect = anchorElement.getBoundingClientRect();
+
+      if (isAnchorOutsideViewport(anchorRect)) {
+        onAnchorUnavailable();
+
+        return;
+      }
+
+      const nextPositionStyle = getDropdownPositionStyle(anchorRect, dropdownHeight);
+
+      setPositionStyle((currentPositionStyle) => {
+        if (
+          currentPositionStyle.left === nextPositionStyle.left &&
+          currentPositionStyle.top === nextPositionStyle.top
+        ) {
+          return currentPositionStyle;
+        }
+
+        return nextPositionStyle;
+      });
+    };
+
+    updatePosition();
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updatePosition);
+
+    resizeObserver?.observe(anchorElement);
+
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+      resizeObserver?.disconnect();
+    };
+  }, [anchorElement, dropdownHeight, isOpen, onAnchorUnavailable]);
+
+  return positionStyle;
 };
 
 const getCategoryOptionSelected = (
@@ -113,14 +178,14 @@ const getBackdropKeyDownHandler = (dismiss: () => void): KeyboardEventHandler<HT
 };
 
 export const CategoryFilterDropdown = ({
-  anchorRect,
+  anchorElement,
   isOpen,
   selectedCategories,
   close,
   unmount,
   onSelectionChange,
 }: {
-  anchorRect: AnchorRect;
+  anchorElement: HTMLElement;
   isOpen: boolean;
   selectedCategories: ReadonlySet<ProductCategoryGroupTypes>;
   close: () => void;
@@ -130,11 +195,17 @@ export const CategoryFilterDropdown = ({
   const [currentSelectedCategories, setCurrentSelectedCategories] = useState(
     () => new Set(selectedCategories),
   );
-  const dismiss = () => {
+  const dismiss = useCallback(() => {
     close();
     unmount();
-  };
+  }, [close, unmount]);
   const handleBackdropKeyDown = getBackdropKeyDownHandler(dismiss);
+  const positionStyle = useAnchoredDropdownPosition({
+    anchorElement,
+    dropdownHeight: CATEGORY_FILTER_DROPDOWN_HEIGHT,
+    isOpen,
+    onAnchorUnavailable: dismiss,
+  });
 
   useDismissOnEscape(isOpen, dismiss);
 
@@ -160,8 +231,6 @@ export const CategoryFilterDropdown = ({
     setCurrentSelectedCategories(nextSelectedCategories);
     onSelectionChange(nextSelectedCategories);
   };
-
-  const positionStyle = getDropdownPositionStyle(anchorRect, CATEGORY_FILTER_DROPDOWN_HEIGHT);
 
   return (
     <div
@@ -198,7 +267,7 @@ export const CategoryFilterDropdown = ({
 };
 
 export const ProductCategoryDropdown = ({
-  anchorRect,
+  anchorElement,
   isOpen,
   selectedCategory,
   close,
@@ -206,7 +275,7 @@ export const ProductCategoryDropdown = ({
   onDismiss,
   onSelect,
 }: {
-  anchorRect: AnchorRect;
+  anchorElement: HTMLElement;
   isOpen: boolean;
   selectedCategory: string;
   close: () => void;
@@ -214,20 +283,24 @@ export const ProductCategoryDropdown = ({
   onDismiss?: () => void;
   onSelect: (category: ProductCategoryGroupTypes) => void;
 }) => {
-  const dismiss = () => {
+  const dismiss = useCallback(() => {
     close();
     unmount();
     onDismiss?.();
-  };
+  }, [close, onDismiss, unmount]);
   const handleBackdropKeyDown = getBackdropKeyDownHandler(dismiss);
+  const positionStyle = useAnchoredDropdownPosition({
+    anchorElement,
+    dropdownHeight: PRODUCT_CATEGORY_DROPDOWN_HEIGHT,
+    isOpen,
+    onAnchorUnavailable: dismiss,
+  });
 
   useDismissOnEscape(isOpen, dismiss);
 
   if (!isOpen) {
     return null;
   }
-
-  const positionStyle = getDropdownPositionStyle(anchorRect, PRODUCT_CATEGORY_DROPDOWN_HEIGHT);
 
   return (
     <div
