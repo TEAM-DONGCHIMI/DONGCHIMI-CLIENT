@@ -368,6 +368,13 @@ describe('marketOwnerRoutes', () => {
       await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText('상품명')).toHaveValue('풀숲');
+
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    await waitFor(() => expect(router.state.location.search).toBe(''));
+    expect(
+      screen.queryByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows pending feedback before debounced search results are applied', async () => {
