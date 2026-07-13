@@ -6,7 +6,7 @@ import { Map, MapInfoWindow, MapMarker, useKakaoLoader } from 'react-kakao-maps-
 
 import type { GeolocationErrorCodeTypes } from '@/shared/hooks';
 
-import type { NearbyMarketDtoTypes } from '../../model/nearby-markets-schema';
+import { useNearbyMarketsMap } from '../NearbyMarketsClientProvider';
 import * as S from '../NearbyMarketsPage.css';
 import {
   CURRENT_LOCATION_ARIA_LABEL,
@@ -19,13 +19,6 @@ import {
   MAP_ZOOM_LEVEL,
   PERMISSION_DENIED_MESSAGE,
 } from './NearbyMarketsMapSection.constants';
-
-export interface NearbyMarketsMapSectionProps {
-  coordinates: { lat: number; lng: number } | null;
-  errorCode: GeolocationErrorCodeTypes | null;
-  isMarketsError: boolean;
-  markets: NearbyMarketDtoTypes[];
-}
 
 const resolveStatusMessage = (
   errorCode: GeolocationErrorCodeTypes | null,
@@ -42,12 +35,8 @@ const resolveStatusMessage = (
   return null;
 };
 
-export const NearbyMarketsMapSection = ({
-  coordinates,
-  errorCode,
-  isMarketsError,
-  markets,
-}: NearbyMarketsMapSectionProps) => {
+export const NearbyMarketsMapSection = () => {
+  const { coordinates, errorCode, isMarketsError, markets } = useNearbyMarketsMap();
   const [loading, error] = useKakaoLoader({
     appkey: KAKAO_MAP_APP_KEY ?? '',
   });
