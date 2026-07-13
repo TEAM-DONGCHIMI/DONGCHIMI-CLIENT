@@ -1,7 +1,11 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
+import {
+  MARKET_OWNER_ROUTES,
+  MARKET_OWNER_ROUTE_SEARCH_PARAMS,
+  type MarketOwnerRouteTypes,
+} from '@/shared/constants/routes';
 import { useDebouncedValue } from '@/shared/hooks';
 
 import { ProductSearchPanel, type ProductSearchPanelItemTypes } from '../product-search-panel';
@@ -23,8 +27,6 @@ export interface ProductHeaderSearchProps {
   onProductLoadError?: () => void;
   products: readonly ProductHeaderSearchProductTypes[];
 }
-
-const SEARCH_PRODUCT_ID_PARAM = 'productId';
 
 const productSearchLabelByDealType = {
   DAILY: '오늘의 특가',
@@ -67,7 +69,7 @@ const createProductSearchPanelItem = (
 
 const createProductEditSearchPath = (product: ProductHeaderSearchProductTypes) => {
   const searchParams = new URLSearchParams({
-    [SEARCH_PRODUCT_ID_PARAM]: String(product.productId),
+    [MARKET_OWNER_ROUTE_SEARCH_PARAMS.productEditTargetProductId]: String(product.productId),
   });
 
   return `${productEditRouteByDealType[product.dealType]}?${searchParams.toString()}`;
