@@ -1,29 +1,28 @@
 import { HttpResponse, http } from 'msw';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { server } from '@/test';
 import { httpClient } from './http-client';
 
-const API_BASE_URL = 'https://api.test';
-
 describe('httpClient', () => {
-  beforeAll(() => {
-    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', API_BASE_URL);
-  });
-
-  afterAll(() => {
-    vi.unstubAllEnvs();
-  });
-
-  it('MSW가 가로챈 JSON 응답을 반환한다', async () => {
+  it('동일 출처 API의 JSON 응답을 반환한다', async () => {
     server.use(
-      http.get(`${API_BASE_URL}/test-resource`, () => {
+      http.get('*/test-resource', ({ request }) => {
+        expect(request.headers.get('Accept')).toBe('application/json');
+        expect(request.headers.get('Authorization')).toBeNull();
+
         return HttpResponse.json({ name: '동치미' });
       }),
     );
 
-    const result = await httpClient.get<{ name: string }>('test-resource');
+    const result = await httpClient.get<{ name: string }>('/test-resource');
 
     expect(result).toEqual({ name: '동치미' });
+  });
+
+  it('외부 origin 요청은 차단한다', async () => {
+    await expect(httpClient.get('https://api.example.com/test-resource')).rejects.toMatchObject({
+      type: 'configuration',
+    });
   });
 });

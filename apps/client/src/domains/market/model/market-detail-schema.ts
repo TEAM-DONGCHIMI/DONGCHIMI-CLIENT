@@ -1,0 +1,64 @@
+import { validateApiResponse, z } from '@dongchimi/shared/api';
+
+export const businessDaySchema = z.string();
+
+export type BusinessDayTypes = z.infer<typeof businessDaySchema>;
+
+export const businessHourSchema = z.discriminatedUnion('isOpen', [
+  z.object({
+    close: z.string(),
+    days: z.array(businessDaySchema),
+    isOpen: z.literal(true),
+    open: z.string(),
+  }),
+  z.object({
+    days: z.array(businessDaySchema),
+    isOpen: z.literal(false),
+  }),
+]);
+
+export type BusinessHourTypes = z.infer<typeof businessHourSchema>;
+
+const nullableStringSchema = z
+  .string()
+  .nullish()
+  .transform((value) => value ?? null);
+
+export const popularProductSchema = z.object({
+  discountedPrice: z.number(),
+  discountRate: z.number(),
+  name: z.string(),
+  productId: z.number(),
+  thumbnailUrl: nullableStringSchema,
+});
+
+export type PopularProductTypes = z.infer<typeof popularProductSchema>;
+
+export const marketDetailSchema = z.object({
+  address: z.string(),
+  businessHours: z.array(businessHourSchema),
+  isOpenNow: z.boolean(),
+  marketId: z.number(),
+  marketPhone1: z.string(),
+  marketPhone2: nullableStringSchema,
+  name: z.string(),
+  ownerPhone: z.string(),
+  thumbnailUrl: nullableStringSchema,
+  top3: z.array(popularProductSchema),
+});
+
+export type MarketDetailTypes = z.infer<typeof marketDetailSchema>;
+
+const marketDetailResponseSchema = z.object({
+  code: z.string(),
+  data: marketDetailSchema,
+  message: z.string(),
+  success: z.literal(true),
+});
+
+export const resolveMarketDetailResponse = (rawResponse: unknown): MarketDetailTypes => {
+  return validateApiResponse(marketDetailResponseSchema, rawResponse, {
+    endpoint: 'GET /v1/users/markets/{slug}',
+    schemaDescription: 'market detail response',
+  }).data;
+};

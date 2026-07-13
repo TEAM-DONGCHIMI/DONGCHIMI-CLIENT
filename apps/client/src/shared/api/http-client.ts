@@ -1,6 +1,5 @@
 import ky, { type KyInstance, type Options } from 'ky';
 
-import { getClientEnv } from '@/shared/config';
 import { createApiConfigurationError, normalizeApiError } from './api-error';
 
 type HttpMethodTypes = 'delete' | 'get' | 'patch' | 'post' | 'put';
@@ -18,19 +17,22 @@ const REQUEST_TIMEOUT_MS = 10_000;
 
 let cachedHttpClient: KyInstance | undefined;
 
-const getApiBaseUrl = () => {
-  const { apiBaseUrl } = getClientEnv();
-
-  if (!apiBaseUrl) {
-    throw createApiConfigurationError('NEXT_PUBLIC_API_BASE_URL is not configured.');
+const getSameOriginRequestUrl = (path: string) => {
+  if (typeof window === 'undefined') {
+    throw createApiConfigurationError('httpClient is available only in the browser.');
   }
 
-  return apiBaseUrl;
+  const requestUrl = new URL(path, window.location.origin);
+
+  if (requestUrl.origin !== window.location.origin) {
+    throw createApiConfigurationError('httpClient accepts only same-origin API routes.');
+  }
+
+  return requestUrl.toString();
 };
 
 export const createHttpClient = () => {
   return ky.create({
-    prefix: getApiBaseUrl(),
     retry: {
       limit: 0,
     },
@@ -53,7 +55,7 @@ export const getHttpClient = () => {
 
 const request = async <ResponseDataTypes>(path: string, options?: Options) => {
   try {
-    return await getHttpClient()<ResponseDataTypes>(path, options).json();
+    return await getHttpClient()<ResponseDataTypes>(getSameOriginRequestUrl(path), options).json();
   } catch (error) {
     throw await normalizeApiError(error);
   }
