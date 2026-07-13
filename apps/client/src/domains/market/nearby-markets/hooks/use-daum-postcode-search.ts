@@ -30,8 +30,10 @@ const DAUM_POSTCODE_SCRIPT_SRC = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod
 
 let daumPostcodeScriptPromise: Promise<void> | null = null;
 
+// onError가 없을 때 promise rejection을 삼키기 위한 기본 handler입니다.
 const noop = () => undefined;
 
+// input에 표시할 "00시 00구 00동" 형태의 행정동 검색어를 Daum 응답에서 만듭니다.
 export const formatDaumPostcodeAdministrativeAddress = ({
   address,
   bname,
@@ -41,14 +43,17 @@ export const formatDaumPostcodeAdministrativeAddress = ({
   return [sido, sigungu, bname].filter(Boolean).join(' ') || address;
 };
 
+// Kakao geocoder에 넘길 지도 좌표 변환용 주소를 고릅니다.
 export const resolveDaumPostcodeMapAddress = ({
   address,
   jibunAddress,
   roadAddress,
 }: DaumPostcodeCompleteDataTypes) => {
+  // 지도 좌표 변환은 도로명 주소가 가장 안정적이고, 없으면 Daum 기본 주소와 지번 주소 순서로 보완합니다.
   return roadAddress || address || jibunAddress;
 };
 
+// Daum postcode script는 여러 번 삽입하지 않도록 module-level promise로 공유합니다.
 export const loadDaumPostcodeScript = () => {
   if (window.daum?.Postcode != null) {
     return Promise.resolve();
@@ -60,6 +65,7 @@ export const loadDaumPostcodeScript = () => {
 
   daumPostcodeScriptPromise = new Promise<void>((resolve, reject) => {
     const handleError = (failedScript: HTMLScriptElement) => () => {
+      // 실패한 script와 promise를 버려야 다음 클릭에서 다시 로드할 수 있습니다.
       daumPostcodeScriptPromise = null;
       failedScript.remove();
       reject(new Error('Failed to load Daum postcode script'));
@@ -90,11 +96,15 @@ export const loadDaumPostcodeScript = () => {
 };
 
 type UseDaumPostcodeSearchOptionsTypes = Readonly<{
+  // false이면 script preload와 팝업 열기를 모두 막습니다.
   enabled: boolean;
+  // script 로드 실패나 Daum Postcode 객체 누락을 화면 쪽에서 처리하기 위한 callback입니다.
   onError?: () => void;
+  // 사용자가 Daum 팝업에서 주소를 선택했을 때 provider로 넘길 callback입니다.
   onSelectAddress: (address: { mapAddress: string; searchKeyword: string }) => void;
 }>;
 
+// 위치 권한 미허용 상태에서 Daum 우편번호 검색 팝업을 열 수 있는 click handler를 만듭니다.
 export const useDaumPostcodeSearch = ({
   enabled,
   onError,
@@ -105,16 +115,21 @@ export const useDaumPostcodeSearch = ({
       return;
     }
 
+    // 위치 권한 거부 상태에서는 첫 클릭 전에 script를 미리 로드합니다.
     void loadDaumPostcodeScript().catch(onError ?? noop);
   }, [enabled, onError]);
 
+  // input 클릭 시 실행되는 함수입니다.
   return useCallback(() => {
+    // 권한 허용 상태에서는 기존 자동 위치 플로우를 유지하기 위해 아무 일도 하지 않습니다.
     if (!enabled) {
       return;
     }
 
+    // 클릭 시점에 script가 아직 없으면 먼저 로드한 뒤 팝업을 엽니다.
     void loadDaumPostcodeScript()
       .then(() => {
+        // 전역에 붙은 Daum Postcode 생성자를 안전하게 꺼냅니다.
         const Postcode = window.daum?.Postcode;
 
         if (Postcode == null) {
@@ -125,8 +140,11 @@ export const useDaumPostcodeSearch = ({
 
         new Postcode({
           oncomplete: (data) => {
+            // input에는 행정동 검색어를 보여줍니다.
             onSelectAddress({
+              // 지도에는 geocoder에 적합한 주소를 따로 넘깁니다.
               mapAddress: resolveDaumPostcodeMapAddress(data),
+              // 검색 결과 선택 후 input에 노출할 표시값입니다.
               searchKeyword: formatDaumPostcodeAdministrativeAddress(data),
             });
           },
