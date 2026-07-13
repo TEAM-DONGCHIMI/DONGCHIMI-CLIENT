@@ -1,6 +1,6 @@
-import { type ChangeEvent, useEffect, useId, useState } from 'react';
+import { type ChangeEvent, useEffect, useId, useRef, useState } from 'react';
 
-import { Stack } from '@dongchimi/design-system/components';
+import { Button, Stack } from '@dongchimi/design-system/components';
 import { IcCamera, IcPlus } from '@dongchimi/design-system/icons';
 
 import * as S from './MarketImageUploadSection.css';
@@ -20,6 +20,7 @@ export const MarketImageUploadSection = ({
   onImageSelect,
 }: MarketImageUploadSectionProps) => {
   const imageInputId = useId();
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string>();
 
   useEffect(() => {
@@ -64,42 +65,44 @@ export const MarketImageUploadSection = ({
   return (
     <Stack aria-label='마트 이미지' as='section' className={S.imageColumnClassName}>
       <input
+        ref={imageInputRef}
         accept='.jpg,.jpeg,.png,image/jpeg,image/png'
         className={S.imageUploadInputClassName}
         id={imageInputId}
         type='file'
         onChange={handleImageChange}
       />
-      <label
-        aria-label='마트 이미지 추가'
-        className={S.imageUploadButtonClassName}
-        htmlFor={imageInputId}
-      >
-        {previewImageUrl ? (
-          <>
-            <img
-              alt='선택한 마트 이미지'
-              className={S.imagePreviewClassName}
-              src={previewImageUrl}
-            />
-            <span aria-hidden='true' className={S.imageUploadCameraIconSlotClassName}>
-              <IcCamera className={S.imageUploadCameraIconClassName} />
+      {previewImageUrl ? (
+        <div className={S.imageUploadButtonClassName}>
+          <img alt='선택한 마트 이미지' className={S.imagePreviewClassName} src={previewImageUrl} />
+          <Button
+            aria-label='마트 이미지 변경'
+            className={S.imageUploadCameraButtonClassName}
+            color='assistive'
+            size='large'
+            variant='outlined'
+            onClick={() => imageInputRef.current?.click()}
+          >
+            <IcCamera aria-hidden='true' className={S.imageUploadCameraIconClassName} />
+          </Button>
+        </div>
+      ) : (
+        <label
+          aria-label='마트 이미지 추가'
+          className={S.imageUploadButtonClassName}
+          htmlFor={imageInputId}
+        >
+          <IcPlus aria-hidden='true' className={S.imageUploadIconClassName} />
+          <span className={S.imageUploadTextGroupClassName}>
+            <span className={S.imageUploadTitleClassName}>마트 이미지를 추가해주세요.</span>
+            <span className={S.imageUploadDescriptionClassName}>
+              이미지를 등록하지 않으면
+              <br />
+              기본 이미지가 사용됩니다.
             </span>
-          </>
-        ) : (
-          <>
-            <IcPlus aria-hidden='true' className={S.imageUploadIconClassName} />
-            <span className={S.imageUploadTextGroupClassName}>
-              <span className={S.imageUploadTitleClassName}>마트 이미지를 추가해주세요.</span>
-              <span className={S.imageUploadDescriptionClassName}>
-                이미지를 등록하지 않으면
-                <br />
-                기본 이미지가 사용됩니다.
-              </span>
-            </span>
-          </>
-        )}
-      </label>
+          </span>
+        </label>
+      )}
       <p className={S.imageGuideClassName}>권장 비율 4:3 · 1200 × 900px 이상</p>
     </Stack>
   );

@@ -56,4 +56,14 @@ describe('MarketImageUploadSection', () => {
 
     expect(onImageError).toHaveBeenCalledWith('upload');
   });
+
+  it('이미지를 선택하면 변경 camera 버튼을 표시한다', async () => {
+    const user = userEvent.setup();
+    const { fileInput } = renderSection();
+    const imageFile = new File(['image'], 'market.jpg', { type: 'image/jpeg' });
+
+    await user.upload(fileInput, imageFile);
+
+    expect(screen.getByRole('button', { name: '마트 이미지 변경' })).toBeInTheDocument();
+  });
 });
