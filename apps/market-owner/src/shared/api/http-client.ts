@@ -40,12 +40,6 @@ export const createHttpClient = () => {
       beforeRequest: [
         ({ request }) => {
           request.headers.set('Accept', 'application/json');
-
-          const { devAccessToken } = getMarketOwnerEnv();
-
-          if (devAccessToken) {
-            request.headers.set('Authorization', `Bearer ${devAccessToken}`);
-          }
         },
       ],
     },
