@@ -123,4 +123,38 @@ describe('ListCell', () => {
     expect(screen.getByRole('checkbox', { name: '상품 행 선택' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '카테고리 선택' })).toBeDisabled();
   });
+
+  it('forwards validation and blur props to inline fields', async () => {
+    const handleBlur = vi.fn();
+    const handleChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <ListCell
+        fields={[
+          {
+            'aria-label': '상품명',
+            errorMessage: '상품명을 입력해주세요.',
+            id: 'product-name',
+            maxLength: 15,
+            onBlur: handleBlur,
+            onChange: handleChange,
+            status: 'error',
+            value: '',
+          },
+        ]}
+      />,
+    );
+
+    const field = screen.getByRole('textbox', { name: '상품명' });
+
+    expect(field).toHaveAttribute('aria-invalid', 'true');
+    expect(field).toHaveAttribute('maxlength', '15');
+    expect(screen.getByText('상품명을 입력해주세요.')).toBeInTheDocument();
+
+    await user.click(field);
+    await user.tab();
+
+    expect(handleBlur).toHaveBeenCalledOnce();
+  });
 });

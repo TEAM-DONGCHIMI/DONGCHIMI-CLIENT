@@ -17,17 +17,20 @@ import * as S from './ListCell.css';
 type NativeDivProps = Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'onChange'>;
 
 type FieldButtonProps = Pick<ComponentPropsWithoutRef<'button'>, 'disabled' | 'onClick'>;
-type FieldInputProps = Pick<ComponentPropsWithoutRef<'input'>, 'inputMode'>;
+type FieldInputProps = Pick<
+  ComponentPropsWithoutRef<'input'>,
+  'inputMode' | 'maxLength' | 'onBlur'
+>;
 
 export type ListCellMediaStatusTypes = 'default' | 'error';
 export type ListCellStatusToneTypes = 'neutral' | 'negative';
 export type ListCellFieldInputTypes = 'email' | 'number' | 'search' | 'tel' | 'text' | 'url';
 
-export interface ListCellFieldProps extends FieldButtonProps {
+export interface ListCellFieldProps extends FieldButtonProps, FieldInputProps {
   'aria-label'?: string;
   defaultValue?: string | number;
+  errorMessage?: ReactNode;
   id: string;
-  inputMode?: FieldInputProps['inputMode'];
   onChange?: ChangeEventHandler<HTMLInputElement>;
   placeholder?: string;
   readOnly?: boolean;
@@ -235,8 +238,11 @@ export const ListCell = forwardRef<HTMLDivElement, ListCellProps>(
                 'aria-label': ariaLabel,
                 defaultValue,
                 disabled,
+                errorMessage,
                 id,
                 inputMode,
+                maxLength,
+                onBlur,
                 onChange,
                 onClick,
                 placeholder,
@@ -298,7 +304,10 @@ export const ListCell = forwardRef<HTMLDivElement, ListCellProps>(
                       aria-label={fieldLabel}
                       className={S.inlineFieldClassName}
                       defaultValue={defaultValue}
+                      errorMessage={errorMessage}
                       inputMode={inputMode}
+                      maxLength={maxLength}
+                      onBlur={onBlur}
                       onChange={onChange}
                       placeholder={placeholder}
                       size='small'
