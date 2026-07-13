@@ -132,7 +132,7 @@ export const messageRow = style({
   gap: 4,
   minWidth: 0,
   minHeight: 18,
-  marginTop: 4,
+  marginTop: '0.4rem',
 });
 
 export const errorIconSlot = style({

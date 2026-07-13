@@ -107,6 +107,7 @@ visible label을 렌더링하지 않으므로 `aria-label`과 `aria-labelledby` 
 - text: neutral-90, placeholder: neutral-60
 - unit은 줄바꿈하지 않고 input은 남은 너비에서 축소되어 두 콘텐츠가 겹치지 않습니다.
 - error message: Caption 1 Medium, negative color, 16px 오류 아이콘과 4px gap을 사용합니다.
+- input wrapper와 error message 사이는 `0.4rem` (기본 root font-size 10px 기준 4px)을 사용합니다.
 
 ## Accessibility
 

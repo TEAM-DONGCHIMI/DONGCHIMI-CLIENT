@@ -48,21 +48,21 @@ export const imagePreviewClassName = style({
   objectFit: 'cover',
 });
 
-export const imageUploadCameraIconSlotClassName = style({
+export const imageUploadCameraButtonClassName = style({
   position: 'absolute',
   top: '1.2rem',
   right: '1.2rem',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '2.8rem',
-  height: '2.8rem',
-  color: atomic.common[100],
+  width: '4rem',
+  minWidth: '4rem',
+  height: '4rem',
+  padding: '1rem',
+  borderRadius: '100%',
 });
 
 export const imageUploadCameraIconClassName = style({
-  width: '2.8rem',
-  height: '2.8rem',
+  display: 'block',
+  width: '2rem',
+  height: '2rem',
 });
 
 export const imageUploadIconClassName = style({

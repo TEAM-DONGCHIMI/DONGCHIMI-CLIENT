@@ -1,8 +1,14 @@
-import { useState, type ChangeEvent } from 'react';
+import { type ChangeEvent } from 'react';
 
 import { type UseFormRegisterReturn } from 'react-hook-form';
 
-import { AddableField, Chip, RequiredMark, Stack } from '@dongchimi/design-system/components';
+import {
+  AddableField,
+  Chip,
+  RequiredMark,
+  Stack,
+  TextInput,
+} from '@dongchimi/design-system/components';
 import {
   IcCircleExclamationSizeSmallColorNegative,
   IcLineHorizontalSizeSmall,
@@ -10,21 +16,18 @@ import {
   IcPlusSizeSmallColor60,
 } from '@dongchimi/design-system/icons';
 
-import {
-  formatMarketPhoneNumber,
-  formatMobilePhoneNumber,
-  isValidMarketPhone,
-  isValidOwnerPhone,
-} from '../model';
 import * as S from './ContactSection.css';
 
-const additionalMarketPhoneErrorMessage = '올바른 전화번호를 입력해주세요.';
-const additionalOwnerPhoneErrorMessage = '올바른 휴대전화 번호를 입력해주세요.';
-
 export interface ContactSectionProps {
+  additionalMarketPhone: string;
+  additionalMarketPhoneErrorMessage?: string;
+  additionalMarketPhoneField: UseFormRegisterReturn<'marketPhone2'>;
+  isAdditionalMarketPhoneVisible: boolean;
   marketPhone1: string;
   marketPhone1ErrorMessage?: string;
   marketPhone1Field: UseFormRegisterReturn<'marketPhone1'>;
+  onAdditionalMarketPhoneAdd: () => void;
+  onAdditionalMarketPhoneRemove: () => void;
   onInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
   ownerPhone: string;
   ownerPhoneErrorMessage?: string;
@@ -32,53 +35,27 @@ export interface ContactSectionProps {
 }
 
 export const ContactSection = ({
+  additionalMarketPhone,
+  additionalMarketPhoneErrorMessage,
+  additionalMarketPhoneField,
+  isAdditionalMarketPhoneVisible,
   marketPhone1,
   marketPhone1ErrorMessage,
   marketPhone1Field,
+  onAdditionalMarketPhoneAdd,
+  onAdditionalMarketPhoneRemove,
   onInputChange,
   ownerPhone,
   ownerPhoneErrorMessage,
   ownerPhoneField,
 }: ContactSectionProps) => {
-  const [isAdditionalMarketPhoneVisible, setIsAdditionalMarketPhoneVisible] = useState(false);
-  const [isAdditionalOwnerPhoneVisible, setIsAdditionalOwnerPhoneVisible] = useState(false);
-  const [additionalMarketPhone, setAdditionalMarketPhone] = useState('');
-  const [additionalOwnerPhone, setAdditionalOwnerPhone] = useState('');
-
-  const handleRemoveAdditionalMarketPhone = () => {
-    setIsAdditionalMarketPhoneVisible(false);
-    setAdditionalMarketPhone('');
-  };
-
-  const handleRemoveAdditionalOwnerPhone = () => {
-    setIsAdditionalOwnerPhoneVisible(false);
-    setAdditionalOwnerPhone('');
-  };
-
-  const handleAdditionalMarketPhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setAdditionalMarketPhone(formatMarketPhoneNumber(event.currentTarget.value));
-  };
-
-  const handleAdditionalOwnerPhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setAdditionalOwnerPhone(formatMobilePhoneNumber(event.currentTarget.value));
-  };
-
-  const additionalMarketPhoneStatusProps =
-    additionalMarketPhone.length > 0 && !isValidMarketPhone(additionalMarketPhone)
-      ? ({
-          errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
-          errorMessage: additionalMarketPhoneErrorMessage,
-          status: 'error',
-        } as const)
-      : {};
-  const additionalOwnerPhoneStatusProps =
-    additionalOwnerPhone.length > 0 && !isValidOwnerPhone(additionalOwnerPhone)
-      ? ({
-          errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
-          errorMessage: additionalOwnerPhoneErrorMessage,
-          status: 'error',
-        } as const)
-      : {};
+  const additionalMarketPhoneStatusProps = additionalMarketPhoneErrorMessage
+    ? ({
+        errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
+        errorMessage: additionalMarketPhoneErrorMessage,
+        status: 'error',
+      } as const)
+    : {};
   const marketPhone1StatusProps = marketPhone1ErrorMessage
     ? ({
         errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
@@ -88,7 +65,6 @@ export const ContactSection = ({
     : {};
   const ownerPhoneStatusProps = ownerPhoneErrorMessage
     ? ({
-        errorIcon: <IcCircleExclamationSizeSmallColorNegative />,
         errorMessage: ownerPhoneErrorMessage,
         status: 'error',
       } as const)
@@ -121,7 +97,7 @@ export const ContactSection = ({
             {...marketPhone1Field}
             value={marketPhone1}
             onChange={onInputChange}
-            onTrailingAction={() => setIsAdditionalMarketPhoneVisible(true)}
+            onTrailingAction={onAdditionalMarketPhoneAdd}
             {...marketPhone1StatusProps}
           />
           {isAdditionalMarketPhoneVisible && (
@@ -129,14 +105,14 @@ export const ContactSection = ({
               aria-label='추가 마트 번호'
               className={S.addableFieldClassName}
               leadingIcon={<IcPhoneSizeSmallColor60 />}
-              name='additionalMarketPhone'
               placeholder='마트 번호를 입력해주세요.'
               trailingActionLabel='추가 마트 번호 제거'
               trailingIcon={<IcLineHorizontalSizeSmall />}
               type='tel'
+              {...additionalMarketPhoneField}
               value={additionalMarketPhone}
-              onChange={handleAdditionalMarketPhoneChange}
-              onTrailingAction={handleRemoveAdditionalMarketPhone}
+              onChange={onInputChange}
+              onTrailingAction={onAdditionalMarketPhoneRemove}
               {...additionalMarketPhoneStatusProps}
             />
           )}
@@ -149,39 +125,18 @@ export const ContactSection = ({
           <RequiredMark />
         </span>
         <div className={S.ownerPhoneRowsClassName}>
-          <AddableField
+          <TextInput
             aria-label='점주 번호'
             className={S.addableFieldClassName}
             inputMode='numeric'
-            leadingIcon={<IcPhoneSizeSmallColor60 />}
             placeholder='점주 번호를 입력해주세요.'
             required
-            trailingActionLabel='점주 번호 추가'
-            trailingIcon={<IcPlusSizeSmallColor60 />}
             type='tel'
             {...ownerPhoneField}
             value={ownerPhone}
             onChange={onInputChange}
-            onTrailingAction={() => setIsAdditionalOwnerPhoneVisible(true)}
             {...ownerPhoneStatusProps}
           />
-          {isAdditionalOwnerPhoneVisible && (
-            <AddableField
-              aria-label='추가 점주 번호'
-              className={S.addableFieldClassName}
-              inputMode='numeric'
-              leadingIcon={<IcPhoneSizeSmallColor60 />}
-              name='additionalOwnerPhone'
-              placeholder='점주 번호를 입력해주세요.'
-              trailingActionLabel='추가 점주 번호 제거'
-              trailingIcon={<IcLineHorizontalSizeSmall />}
-              type='tel'
-              value={additionalOwnerPhone}
-              onChange={handleAdditionalOwnerPhoneChange}
-              onTrailingAction={handleRemoveAdditionalOwnerPhone}
-              {...additionalOwnerPhoneStatusProps}
-            />
-          )}
         </div>
       </div>
     </Stack>
