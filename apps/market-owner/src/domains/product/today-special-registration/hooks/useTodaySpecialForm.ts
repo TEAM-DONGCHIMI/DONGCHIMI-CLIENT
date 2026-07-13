@@ -12,7 +12,7 @@ import {
 const createInitialProductForm = () => createEmptyTodaySpecialProductForm();
 
 interface UseTodaySpecialFormParams {
-  onSubmit: () => void;
+  onSubmit: (values: TodaySpecialRegistrationFormTypes) => Promise<void> | void;
 }
 
 type TodaySpecialProductTouchedFieldsTypes = Partial<
@@ -26,7 +26,7 @@ type TodaySpecialProductErrorsTypes = Partial<
 export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => {
   const {
     control,
-    formState: { errors, isSubmitted, isValid, touchedFields },
+    formState: { errors, isSubmitted, isSubmitting, isValid, touchedFields },
     handleSubmit,
     setValue,
   } = useForm<TodaySpecialRegistrationFormTypes>({
@@ -51,7 +51,7 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
   const currentProductTouchedFields = touchedFields.products?.[currentIndex] as
     | TodaySpecialProductTouchedFieldsTypes
     | undefined;
-  const isSubmitDisabled = products.length === 0 || !isValid;
+  const isSubmitDisabled = products.length === 0 || !isValid || isSubmitting;
 
   return {
     appendProduct: append,
@@ -61,6 +61,7 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
     currentProductTouchedFields,
     handleFormSubmit: handleSubmit(onSubmit),
     isSubmitted,
+    isSubmitting,
     isSubmitDisabled,
     products,
     removeProduct: remove,

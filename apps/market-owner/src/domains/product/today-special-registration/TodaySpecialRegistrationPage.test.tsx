@@ -1,11 +1,19 @@
 import { MemoryRouter, Route, Routes } from 'react-router';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppProviders } from '@/app/AppProviders';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { fireEvent, render, screen, userEvent } from '@/test';
 
 import { TodaySpecialRegistrationPage } from './TodaySpecialRegistrationPage';
+
+const { uploadProductImages } = vi.hoisted(() => ({
+  uploadProductImages: vi.fn(),
+}));
+
+vi.mock('./hooks/useTodaySpecialImageUpload', () => ({
+  useTodaySpecialImageUpload: () => ({ uploadProductImages }),
+}));
 
 const renderTodaySpecialRegistrationPage = () => {
   return render(
@@ -27,6 +35,11 @@ const renderTodaySpecialRegistrationPage = () => {
 };
 
 describe('TodaySpecialRegistrationPage', () => {
+  beforeEach(() => {
+    uploadProductImages.mockReset();
+    uploadProductImages.mockResolvedValue([null]);
+  });
+
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -49,7 +62,74 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
-    expect(screen.getByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
+    expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
+    expect(uploadProductImages).toHaveBeenCalledWith([
+      expect.objectContaining({ imageFile: null, name: '딸기' }),
+    ]);
+  });
+
+  it('uploads a selected product image before completing registration', async () => {
+    const user = userEvent.setup();
+    const imageFile = new File(['image'], 'product.png', { type: 'image/png' });
+
+    renderTodaySpecialRegistrationPage();
+
+    await user.upload(screen.getByLabelText('상품 이미지'), imageFile);
+    await user.type(screen.getByLabelText('상품명'), '딸기');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('채소･과일'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '4500');
+    await user.type(screen.getByLabelText('판매가'), '5000');
+    await user.click(screen.getByRole('button', { name: '등록 완료' }));
+
+    expect(uploadProductImages).toHaveBeenCalledWith([expect.objectContaining({ imageFile })]);
+    expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
+  });
+
+  it('keeps the page open and shows an error toast when image upload fails', async () => {
+    const user = userEvent.setup();
+
+    uploadProductImages.mockRejectedValue(new Error('upload failed'));
+    renderTodaySpecialRegistrationPage();
+
+    await user.type(screen.getByLabelText('상품명'), '딸기');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('채소･과일'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '4500');
+    await user.type(screen.getByLabelText('판매가'), '5000');
+    await user.click(screen.getByRole('button', { name: '등록 완료' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '이미지를 업로드하지 못했습니다. 다시 시도해주세요.',
+    );
+    expect(screen.queryByText('오늘의 특가 상품 수정 페이지')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '등록 완료' })).toBeEnabled();
+  });
+
+  it('disables registration actions while images are uploading', async () => {
+    const user = userEvent.setup();
+    let completeUpload: ((objectKeys: (string | null)[]) => void) | undefined;
+
+    uploadProductImages.mockReturnValueOnce(
+      new Promise((resolve) => {
+        completeUpload = resolve;
+      }),
+    );
+    renderTodaySpecialRegistrationPage();
+
+    await user.type(screen.getByLabelText('상품명'), '딸기');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('채소･과일'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '4500');
+    await user.type(screen.getByLabelText('판매가'), '5000');
+    await user.click(screen.getByRole('button', { name: '등록 완료' }));
+
+    expect(await screen.findByRole('button', { name: '등록 중' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '상품 계속 등록' })).toBeDisabled();
+
+    completeUpload?.([null]);
+
+    expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
   });
 
   it('limits product text fields including spaces', async () => {

@@ -1,9 +1,9 @@
 import { API_ENDPOINTS, isApiResponseValidationError } from '@dongchimi/shared/api';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { httpClient } from './http-client';
 import { ApiError } from './api-error';
-import { createPresignedUploadUrl } from './presigned-upload';
+import { createPresignedUploadUrl, uploadFileToPresignedUrl } from './presigned-upload';
 
 vi.mock('./http-client', () => ({
   httpClient: {
@@ -82,5 +82,49 @@ describe('createPresignedUploadUrl', () => {
         contentLength: 11 * 1024 * 1024,
       }),
     ).rejects.toBe(apiError);
+  });
+});
+
+describe('uploadFileToPresignedUrl', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('uploads the file with the required headers returned by the API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200 });
+    const file = new File(['image'], 'product.png', { type: 'image/png' });
+    const requiredHeaders = {
+      'Content-Type': 'image/png',
+      'x-amz-meta-purpose': 'PRODUCT_THUMBNAIL',
+    };
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    await uploadFileToPresignedUrl({
+      file,
+      requiredHeaders,
+      uploadUrl: 'https://s3.example.com/tmp/product.png?signature=temporary',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://s3.example.com/tmp/product.png?signature=temporary',
+      {
+        body: file,
+        headers: requiredHeaders,
+        method: 'PUT',
+      },
+    );
+  });
+
+  it('rejects an unsuccessful storage response', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 403 }));
+
+    await expect(
+      uploadFileToPresignedUrl({
+        file: new File(['image'], 'product.png', { type: 'image/png' }),
+        requiredHeaders: { 'Content-Type': 'image/png' },
+        uploadUrl: 'https://s3.example.com/tmp/product.png?signature=expired',
+      }),
+    ).rejects.toThrow('Presigned upload failed with status 403.');
   });
 });

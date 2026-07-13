@@ -5,6 +5,12 @@ import { httpClient } from './http-client';
 export type PresignedUploadRequestTypes = CommonApiTypes.PresignedUploadRequest;
 export type PresignedUploadResponseTypes = CommonApiTypes.PresignedUploadResponse;
 
+interface UploadFileToPresignedUrlParams {
+  file: File;
+  requiredHeaders: Record<string, string>;
+  uploadUrl: string;
+}
+
 const presignedUploadResponseSchema = z.object({
   success: z.literal(true),
   code: z.string(),
@@ -29,4 +35,20 @@ export const createPresignedUploadUrl = async (
   });
 
   return validatedResponse.data;
+};
+
+export const uploadFileToPresignedUrl = async ({
+  file,
+  requiredHeaders,
+  uploadUrl,
+}: UploadFileToPresignedUrlParams) => {
+  const response = await fetch(uploadUrl, {
+    body: file,
+    headers: requiredHeaders,
+    method: 'PUT',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Presigned upload failed with status ${response.status}.`);
+  }
 };

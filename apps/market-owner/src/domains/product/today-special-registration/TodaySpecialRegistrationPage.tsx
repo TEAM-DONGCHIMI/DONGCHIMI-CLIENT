@@ -2,16 +2,21 @@ import { useNavigate } from 'react-router';
 
 import { Button } from '@dongchimi/design-system/components';
 import { IcCirclePlusSizeSmall } from '@dongchimi/design-system/icons';
+import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader } from '@/shared/components/ui/desktop-header/DesktopHeader';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
-import { isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
+import {
+  imageUploadErrorMessages,
+  isValidImageUploadFile,
+} from '@/shared/utils/image-upload.utils';
 
 import { useCategoryDropdown } from './hooks/useCategoryDropdown';
 import { useCurrentProductField } from './hooks/useCurrentProductField';
 import { useProductDraftNavigation } from './hooks/useProductDraftNavigation';
 import { useTodaySpecialForm } from './hooks/useTodaySpecialForm';
+import { useTodaySpecialImageUpload } from './hooks/useTodaySpecialImageUpload';
 import {
   ProductInfoSection,
   ProductPeriodSection,
@@ -22,10 +27,16 @@ import * as S from './TodaySpecialRegistrationPage.css';
 
 export const TodaySpecialRegistrationPage = () => {
   const navigate = useNavigate();
+  const toast = useToast();
+  const { uploadProductImages } = useTodaySpecialImageUpload();
   const form = useTodaySpecialForm({
-    onSubmit: () => {
-      // TODO: presigned URL 발급, storage PUT, 상품 payload submit 순서로 API 연동.
-      navigate(MARKET_OWNER_ROUTES.todaySpecialEdit);
+    onSubmit: async ({ products }) => {
+      try {
+        await uploadProductImages(products);
+        navigate(MARKET_OWNER_ROUTES.todaySpecialEdit);
+      } catch {
+        toast.error(imageUploadErrorMessages.uploadFailed);
+      }
     },
   });
   const { currentIndex, currentProduct, products, setValue } = form;
@@ -85,7 +96,7 @@ export const TodaySpecialRegistrationPage = () => {
     <main className={S.pageRootClassName}>
       <DesktopHeader currentLabel='오늘의 특가 상품 등록' parentLabel='홈' showSearchBar={false} />
 
-      <form onSubmit={form.handleFormSubmit}>
+      <form aria-busy={form.isSubmitting} onSubmit={form.handleFormSubmit}>
         <section
           className={S.formContentClassName}
           aria-labelledby='today-special-registration-title'
@@ -102,6 +113,7 @@ export const TodaySpecialRegistrationPage = () => {
             <Button
               className={S.actionButtonClassName}
               color='assistive'
+              disabled={form.isSubmitting}
               leftIcon={<IcCirclePlusSizeSmall />}
               onClick={draftNavigation.actionSectionProps.onAddProduct}
               size='small'
@@ -115,7 +127,7 @@ export const TodaySpecialRegistrationPage = () => {
               size='small'
               type='submit'
             >
-              등록 완료
+              {form.isSubmitting ? '등록 중' : '등록 완료'}
             </Button>
           </footer>
         </section>

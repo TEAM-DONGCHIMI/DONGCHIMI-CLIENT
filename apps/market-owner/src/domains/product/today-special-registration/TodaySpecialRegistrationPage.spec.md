@@ -7,8 +7,9 @@
 - Page: `today-special-registration`
 - Route: `/products/today-special/new`
 - Path: `apps/market-owner/src/domains/product/today-special-registration/TodaySpecialRegistrationPage.tsx`
-- Jira: DCMSM-21
-- Status: UI implemented, API integration pending
+- Jira: DCMSM-21, DCMSM-56
+- Related API: DCMSM-50
+- Status: UI and Presigned image upload implemented, product registration API pending
 
 ## Purpose
 
@@ -16,7 +17,8 @@
 Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, dropdown node `1553:80444`
 및 화면설계서의 입력/노출 규칙을 기준으로 구현합니다.
 
-실제 등록 API, presigned image upload API, server validation error 표시는 후속 API 연동 범위입니다.
+실제 상품 등록 API와 server validation error 표시는 후속 API 연동 범위입니다.
+선택 이미지는 등록 완료 시 Presigned URL 발급 후 S3 임시 저장소에 업로드합니다.
 Client-side field validation error는 필드 아래 메시지로 표시합니다.
 
 ## Ownership
@@ -33,7 +35,10 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `TodaySpecialRegistrationPage.tsx`
   - 페이지 shell, section 조합, submit 성공 후 route 이동을 담당합니다.
 - `hooks/useTodaySpecialForm.ts`
-  - RHF form 생성, field array, 현재 상품 index, submit disabled 상태를 소유합니다.
+  - RHF form 생성, field array, 현재 상품 index, submit/isSubmitting 상태를 소유합니다.
+- `hooks/useTodaySpecialImageUpload.ts`
+  - TanStack Query Presigned URL mutation과 S3 PUT을 상품 순서대로 조합합니다.
+  - 이미지가 없는 상품은 `null`, 이미지가 있는 상품은 후속 등록 payload용 `objectKey`를 반환합니다.
 - `hooks/useCurrentProductField.ts`
   - 현재 상품의 text/date/price field change, blur, formatting, error message 계산을 담당합니다.
 - `hooks/useCategoryDropdown.tsx`
@@ -75,10 +80,10 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - multi product: 상품이 2개 이상이면 title에 `(현재/전체)`, 이전/다음 button, 삭제 button을 표시합니다.
 - title row와 title main은 상품 control 표시 여부와 관계없이 높이 `4rem`을 유지하고, title은 상단 정렬해 등록·수정 전환과 상품 추가 시 위치가 움직이지 않게 합니다.
 - disabled submit: 필수값이 비어 있거나 form completion 조건을 만족하지 않으면 `등록 완료`를 disabled 처리합니다.
-- submit success: 등록 완료 후 오늘의 특가 상품 수정 route로 이동합니다.
+- submit pending: action button을 disabled 처리하고 submit button copy를 `등록 중`으로 변경합니다.
+- submit success: 선택 이미지를 임시 저장소에 업로드한 뒤 오늘의 특가 상품 수정 route로 이동합니다.
 - field error: blur 또는 submit validation 이후 필드 아래에 icon과 error message를 표시합니다.
-- server error: API 연결 시 추가합니다.
-- loading: 이번 범위에서 다루지 않습니다.
+- upload error: 이미지 업로드 실패 toast를 표시하고 현재 페이지에 머뭅니다.
 
 ## Form Rules
 
@@ -144,7 +149,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 ## Behavior
 
 - `상품 계속 등록`
-  - 항상 활성화합니다.
+  - 기본 상태에서는 활성화하고 이미지 업로드가 포함된 submit 중에는 비활성화합니다.
   - 새 빈 상품 draft를 추가하고 해당 draft로 이동합니다.
   - 동일 화면에서 다음 상품을 이어서 입력합니다.
 - 이전/다음 icon button
@@ -158,8 +163,11 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `등록 완료`
   - 기본 form submit을 막습니다.
   - 모든 draft가 submit 가능 조건을 만족할 때만 활성화합니다.
-  - API 연결 전까지는 TODO hook point를 남기고 유효한 submit 시 home route로 이동합니다.
-  - 후속 API 연결 시 `presigned URL 발급 -> storage PUT -> 상품 payload submit -> 성공 시 home 이동` 순서로 교체합니다.
+  - 이미지가 있는 draft는 `presigned URL 발급 -> storage PUT` 순서로 처리합니다.
+  - 이미지가 없는 draft는 업로드 요청 없이 기본 이미지용 `null`을 유지합니다.
+  - 업로드 중에는 중복 submit과 상품 draft 추가를 막습니다.
+  - 업로드 실패 시 오류 toast를 표시하고 이동하지 않습니다.
+  - 상품 등록 API 연결 전까지 발급된 `objectKey`는 flow hook 반환값으로만 유지하고, 이미지 업로드 성공 후 기존 수정 route로 이동합니다.
 
 ## Accessibility
 
@@ -192,10 +200,9 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 ## Non-Goals / Follow-Ups
 
 - Server validation error 표시
-- Loading/submitting state
-- 실제 presigned image upload
 - 실제 상품 등록 mutation
-- 등록 실패/네트워크 실패 toast 또는 field error
+- 상품 등록 payload에 image `objectKey` 연결
+- 상품 등록 실패/네트워크 실패 toast 또는 field error
 - Date picker custom component 공통화
 
 ## Verification
@@ -222,4 +229,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - [ ] pressing Enter or Space on DateField opens native date picker
 - [ ] `상품 계속 등록` stays enabled and opens a fresh product draft
 - [ ] title count and previous/next/delete controls render when there are multiple drafts
-- [ ] valid `등록 완료` submit navigates to home before API integration is wired
+- [x] valid `등록 완료` submit navigates to today special edit after image uploads complete
+- [x] 이미지가 있는 상품은 Presigned URL 발급 후 API가 요구한 header로 S3 PUT한다
+- [x] 이미지가 없는 상품은 업로드 요청을 보내지 않는다
+- [x] 이미지 업로드 중 등록 action이 disabled되고 `등록 중`을 표시한다
+- [x] 이미지 업로드 실패 시 오류 toast를 표시하고 현재 route에 머문다
