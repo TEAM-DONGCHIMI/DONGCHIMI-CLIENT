@@ -39,11 +39,11 @@ export const panelClassName = style({
 export const closeButtonClassName = style({
   appearance: 'none',
   display: 'inline-flex',
-  width: '4rem',
+  width: '2.8rem',
   height: '4rem',
   alignItems: 'center',
   justifyContent: 'center',
-  margin: '1.8rem 0 0 2.5rem',
+  margin: '1.8rem 0 0 1.945rem',
   border: 0,
   borderRadius: '0.8rem',
   backgroundColor: 'transparent',
