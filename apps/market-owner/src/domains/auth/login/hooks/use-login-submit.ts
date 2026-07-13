@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
+import { isApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
+
+import { useLoginMutation } from '../../hooks/use-login-mutation';
 
 const LOGIN_MISMATCH_ERROR_MESSAGE = '이메일 또는 비밀번호가 일치하지 않습니다.';
 const LOGIN_NETWORK_ERROR_MESSAGE = '네트워크 연결을 확인한 후 다시 시도해주세요.';
@@ -26,11 +29,11 @@ export interface UseLoginSubmitOptions {
   submitLogin?: LoginSubmitHandlerTypes;
 }
 
-const defaultSubmitLogin: LoginSubmitHandlerTypes = async () => {
-  return { redirectTo: MARKET_OWNER_ROUTES.home };
-};
-
 const getLoginErrorMessage = (error: unknown) => {
+  if (isApiError(error) && error.type === 'network') {
+    return LOGIN_NETWORK_ERROR_MESSAGE;
+  }
+
   if (
     typeof error === 'object' &&
     error !== null &&
@@ -42,10 +45,9 @@ const getLoginErrorMessage = (error: unknown) => {
   return LOGIN_MISMATCH_ERROR_MESSAGE;
 };
 
-export const useLoginSubmit = ({
-  submitLogin = defaultSubmitLogin,
-}: UseLoginSubmitOptions = {}) => {
+export const useLoginSubmit = ({ submitLogin }: UseLoginSubmitOptions = {}) => {
   const navigate = useNavigate();
+  const loginMutation = useLoginMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginErrorMessage, setLoginErrorMessage] = useState<string>();
 
@@ -58,7 +60,12 @@ export const useLoginSubmit = ({
     setLoginErrorMessage(undefined);
 
     try {
-      const result = await submitLogin(params);
+      const result =
+        submitLogin !== undefined
+          ? await submitLogin(params)
+          : await loginMutation.mutateAsync(params).then(() => ({
+              redirectTo: MARKET_OWNER_ROUTES.home,
+            }));
 
       navigate(result.redirectTo);
     } catch (error) {

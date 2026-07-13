@@ -2,13 +2,17 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 
+import { QueryProvider } from '@/shared/query';
+
 import { render, screen, waitFor } from '../../../../../test';
 import { LoginForm, type LoginFormProps } from './LoginForm';
 
 const renderLoginForm = (props: LoginFormProps = {}) => {
   return render(
     <MemoryRouter>
-      <LoginForm {...props} />
+      <QueryProvider>
+        <LoginForm {...props} />
+      </QueryProvider>
     </MemoryRouter>,
   );
 };
