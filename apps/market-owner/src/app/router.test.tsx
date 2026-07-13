@@ -1,15 +1,24 @@
 import { RouterProvider, createMemoryRouter } from 'react-router';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { signupMarketOwner } from '@/domains/auth/api/auth-api';
+import { ApiError } from '@/shared/api';
 import { render, screen } from '@/test';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { AppProviders } from './AppProviders';
 import { marketOwnerRoutes } from './router';
 
 vi.mock('@/domains/auth/api/auth-api', () => ({
-  signupMarketOwner: vi.fn().mockResolvedValue({
+  signupMarketOwner: vi.fn(),
+}));
+
+const mockSignupMarketOwner = vi.mocked(signupMarketOwner);
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  mockSignupMarketOwner.mockResolvedValue({
     success: true,
     code: 'SUCCESS',
     message: 'ok',
@@ -17,8 +26,8 @@ vi.mock('@/domains/auth/api/auth-api', () => ({
       ownerId: 1,
       email: 'new@example.com',
     },
-  }),
-}));
+  });
+});
 
 const renderRoute = (path: string) => {
   const router = createMemoryRouter(marketOwnerRoutes, {
@@ -100,13 +109,9 @@ describe('marketOwnerRoutes', () => {
     await user.clear(emailInput);
     expect(screen.getByText('이메일을 입력해주세요.')).toBeInTheDocument();
 
-    await user.type(emailInput, 'used@example.com');
-    expect(screen.getByText('이미 사용 중인 이메일입니다.')).toBeInTheDocument();
-
     await user.clear(emailInput);
-    await user.type(emailInput, 'new@example.com');
+    await user.type(emailInput, 'used@example.com');
     expect(screen.queryByText('올바른 이메일 형식이 아닙니다.')).not.toBeInTheDocument();
-    expect(screen.queryByText('이미 사용 중인 이메일입니다.')).not.toBeInTheDocument();
   });
 
   it('validates signup password input after focus leaves the field', async () => {
@@ -197,6 +202,31 @@ describe('marketOwnerRoutes', () => {
     await user.click(await screen.findByRole('button', { name: '가입 완료' }));
 
     expect(await screen.findByRole('heading', { name: '마트 관리자 로그인' })).toBeInTheDocument();
+  });
+
+  it('shows the server duplicate email message when signup API rejects with DUPLICATE_EMAIL', async () => {
+    const user = userEvent.setup();
+
+    mockSignupMarketOwner.mockRejectedValueOnce(
+      new ApiError({
+        code: 'DUPLICATE_EMAIL',
+        message: '이미 가입된 이메일입니다.',
+        status: 409,
+        type: 'validation',
+      }),
+    );
+
+    renderRoute('/signup');
+
+    await fillSignupForm(user, {
+      email: 'used@example.com',
+      password: 'abc123',
+      passwordConfirm: 'abc123',
+    });
+    await user.click(await screen.findByRole('button', { name: '가입 완료' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('이미 가입된 이메일입니다.');
+    expect(screen.getByRole('heading', { name: '회원가입' })).toBeInTheDocument();
   });
 
   it('renders protected work routes with the sidebar layout', async () => {

@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 import {
-  isUsedSignupEmail,
   SIGNUP_EMAIL_ALLOWED_CHARACTERS_PATTERN,
   SIGNUP_EMAIL_ERROR_MESSAGES,
   SIGNUP_EMAIL_PATTERN,
@@ -32,8 +31,7 @@ export const signupSchema = z
         (email) => SIGNUP_EMAIL_ALLOWED_CHARACTERS_PATTERN.test(email),
         SIGNUP_EMAIL_ERROR_MESSAGES.format,
       )
-      .refine((email) => SIGNUP_EMAIL_PATTERN.test(email), SIGNUP_EMAIL_ERROR_MESSAGES.format)
-      .refine((email) => !isUsedSignupEmail(email), SIGNUP_EMAIL_ERROR_MESSAGES.duplicated),
+      .refine((email) => SIGNUP_EMAIL_PATTERN.test(email), SIGNUP_EMAIL_ERROR_MESSAGES.format),
     password: z
       .string()
       .min(1, SIGNUP_PASSWORD_ERROR_MESSAGES.required)

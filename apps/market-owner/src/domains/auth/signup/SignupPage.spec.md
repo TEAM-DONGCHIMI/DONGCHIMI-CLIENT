@@ -26,7 +26,7 @@
 - `TextInput` error/status prop derivation is shared with `login` via `domains/auth/hooks/get-text-input-status-props.ts`.
 - Email-required/format and password-required copy is shared with `login` via `domains/auth/constants/auth-messages.ts`.
 - Zod validation schema, resolver, default values, and API request/response types stay in `schemas/signup-schema.ts`.
-- Email error messages, format/allowed-character patterns, and the temporary duplicate email list stay in `utils/email-validation.ts`; password error messages and length bounds stay in `utils/password-validation.ts`; shared whitespace/Korean-character patterns stay in `utils/text-pattern.ts`.
+- Email error messages and format/allowed-character patterns stay in `utils/email-validation.ts`; password error messages and length bounds stay in `utils/password-validation.ts`; shared whitespace/Korean-character patterns stay in `utils/text-pattern.ts`.
 - Form primitives use design-system `Flex`, `TextInput`, and `Button`.
 
 ## UI States
@@ -44,8 +44,8 @@
 ## Data
 
 - query: none
-- mutation: none
-- fixture: temporary duplicate email list in `utils/email-validation.ts`
+- mutation: owner signup API
+- fixture: none
 - model: signup owner register request/response types in `signup-schema.ts`
 
 ## Behavior
@@ -54,7 +54,7 @@
 - 이메일 입력은 영문, 숫자, `@`, `.`, `_`, `-`만 허용합니다.
 - 이메일 입력은 공백과 한글을 허용하지 않습니다.
 - 이메일 형식은 `local@domain.com` 또는 `local@domain.co.kr`만 유효합니다.
-- 이메일 형식이 유효하면 현재 page-local 임시 중복 목록으로 중복 여부를 확인합니다.
+- 이메일 형식이 유효하면 중복 여부는 submit 이후 서버 `DUPLICATE_EMAIL` 응답으로 확인합니다.
 - 비밀번호 입력은 6-20자만 유효합니다.
 - 비밀번호 입력은 공백과 한글을 허용하지 않습니다.
 - 비밀번호 확인 입력은 비밀번호와 동일한 값을 입력해야 유효합니다.
@@ -80,7 +80,7 @@
 - [ ] email, password, password confirm fields are labelled
 - [ ] invalid email renders `올바른 이메일 형식이 아닙니다.`
 - [ ] empty touched email renders `이메일을 입력해주세요.`
-- [ ] duplicated email renders `이미 사용 중인 이메일입니다.`
+- [ ] duplicate email submit failure renders the server error message as a form-level toast
 - [ ] invalid password renders `6-20자로 입력해주세요.`
 - [ ] empty touched password renders `비밀번호를 입력해주세요.`
 - [ ] password confirmation mismatch renders `비밀번호가 일치하지 않습니다.`
