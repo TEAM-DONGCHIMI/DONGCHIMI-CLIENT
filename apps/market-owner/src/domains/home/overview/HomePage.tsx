@@ -1,12 +1,18 @@
+import { useNavigate } from 'react-router';
 import { useToast, type ToastStatusTypes } from '@dongchimi/shared/toast';
 import {
   IcCircleCheckFillSizeSmall,
   IcCircleExclamationFillColor0,
 } from '@dongchimi/design-system/icons';
 
-import { DesktopHeader } from '@/shared/components';
+import {
+  DesktopHeader,
+  ProductHeaderSearch,
+  type ProductHeaderSearchProductTypes,
+} from '@/shared/components';
+import { productHeaderSearchProducts } from '@/shared/fixtures/product-header-search.fixture';
+import { createProductEditTargetPath } from '@/shared/utils/product-edit-target-path.utils';
 
-import { HomeSearchPanel } from './components/home-search-panel';
 import * as S from './HomePage.css';
 import { HomeDashboardSection, HomeHeroSection } from './sections';
 
@@ -26,6 +32,7 @@ const getHomeToastIcon = (status: ToastStatusTypes) => {
 
 export const HomePage = () => {
   const toast = useToast();
+  const navigate = useNavigate();
 
   const showHomeToast = (message: string, status: ToastStatusTypes) => {
     const options = {
@@ -53,6 +60,16 @@ export const HomePage = () => {
     showHomeToast(SEARCH_PRODUCT_LOAD_ERROR_MESSAGE, 'error');
   };
 
+  const handleSelectProduct = (product: ProductHeaderSearchProductTypes) => {
+    if (product.isProductInfoLoadable === false) {
+      handleProductLoadError();
+
+      return;
+    }
+
+    navigate(createProductEditTargetPath(product));
+  };
+
   const handleQrCodePreparing = () => {
     showHomeToast(QR_CODE_PREPARING_MESSAGE, 'completed');
   };
@@ -63,7 +80,12 @@ export const HomePage = () => {
       <DesktopHeader
         className={S.pageHeaderClassName}
         homeLabel='동치미 홈'
-        searchSlot={<HomeSearchPanel onProductLoadError={handleProductLoadError} />}
+        searchSlot={
+          <ProductHeaderSearch
+            onSelectProduct={handleSelectProduct}
+            products={productHeaderSearchProducts}
+          />
+        }
         showSearchBar
         variant='onlyHome'
       />
