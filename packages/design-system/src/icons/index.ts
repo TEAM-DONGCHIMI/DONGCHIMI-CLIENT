@@ -7,6 +7,7 @@ export { default as IcCalendarSizeXsmallColorPrimaryStrong } from './generated/I
 export { default as IcCalendarSizeXsmallColorPrimary } from './generated/IcCalendarSizeXsmallColorPrimary';
 export { default as IcCalendar } from './generated/IcCalendar';
 export { default as IcCameraColor0 } from './generated/IcCameraColor0';
+export { default as IcCameraDefault } from './generated/IcCameraDefault';
 export { default as IcCamera } from './generated/IcCamera';
 export { default as IcCheckboxActionSizeSmall } from './generated/IcCheckboxActionSizeSmall';
 export { default as IcCheckboxAction } from './generated/IcCheckboxAction';

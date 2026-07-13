@@ -86,6 +86,7 @@ TabNav
 
 - layout: list는 inline-flex입니다.
 - spacing: Figma `edit_tab_container` 기준으로 item 간 gap은 16px입니다.
+- indicator spacing: tab text와 하단 selected indicator 사이 간격은 8px입니다.
 - responsive: item text는 줄바꿈하지 않습니다. overflow 처리는 호출부 layout이 담당합니다.
 - hover/focus/disabled: focus-visible ring과 disabled opacity를 제공합니다.
 - token usage: typography와 color는 `typography`, `atomic`, `semantic` token을 사용합니다.

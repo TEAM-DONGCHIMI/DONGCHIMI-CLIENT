@@ -1,6 +1,7 @@
 import { type ChangeEventHandler, type ReactNode } from 'react';
 
-import { IcCamera, IcPlus } from '@dongchimi/design-system/icons';
+import { IconButton } from '@dongchimi/design-system/components';
+import { IcCameraDefault, IcPlus } from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
 import * as S from './ProductImageUploadField.css';
@@ -53,21 +54,31 @@ export const ProductImageUploadField = ({
       type='file'
     />
   );
-  const cameraIcon = (
+  const emptyEditModalCamera = hasFileInput ? (
+    <IconButton
+      aria-label={`${label} 추가`}
+      className={S.cameraBadgeRecipe({ variant })}
+      color='assistive'
+      icon={<IcCameraDefault />}
+      rounded
+      onClick={openFilePicker}
+    />
+  ) : (
     <span className={S.cameraBadgeRecipe({ variant })} aria-hidden='true'>
-      <IcCamera />
+      <IcCameraDefault />
     </span>
   );
-  const imageBoxContent = (
-    <>
-      {previewUrl && (
-        <span className={S.previewContentClassName}>
-          <img alt={previewAlt} className={S.previewImageClassName} src={previewUrl} />
-          {cameraIcon}
-        </span>
-      )}
-      {!previewUrl && variant === 'registration' && (
-        <span className={S.emptyContentClassName}>
+  const imageBoxContent = previewUrl ? (
+    <span className={S.previewContentClassName}>
+      <img alt={previewAlt} className={S.previewImageClassName} src={previewUrl} />
+      <span className={S.cameraBadgeRecipe({ variant })} aria-hidden='true'>
+        <IcCameraDefault />
+      </span>
+    </span>
+  ) : (
+    <span className={S.emptyContentClassName}>
+      {variant === 'registration' ? (
+        <>
           <IcPlus className={S.emptyIconClassName} aria-hidden='true' />
           <span>{EMPTY_IMAGE_COPY}</span>
         </span>
