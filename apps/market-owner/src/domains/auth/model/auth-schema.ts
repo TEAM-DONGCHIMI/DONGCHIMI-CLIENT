@@ -1,10 +1,17 @@
 import { z } from '@dongchimi/shared/api';
 
-export const ownerLoginResponseSchema = z.object({
-  success: z.literal(true),
-  code: z.literal('SUCCESS'),
-  message: z.string(),
-  data: z.object({
+const createOwnerAuthSuccessResponseSchema = <DataSchemaTypes extends z.ZodType>(
+  dataSchema: DataSchemaTypes,
+) =>
+  z.object({
+    success: z.literal(true),
+    code: z.literal('SUCCESS'),
+    message: z.string(),
+    data: dataSchema,
+  });
+
+export const ownerLoginResponseSchema = createOwnerAuthSuccessResponseSchema(
+  z.object({
     accessToken: z.string(),
     ownerId: z.number(),
     email: z.string(),
@@ -12,17 +19,14 @@ export const ownerLoginResponseSchema = z.object({
     marketName: z.string().nullable().optional(),
     marketThumbnailUrl: z.string().nullable().optional(),
   }),
-});
+);
 
-export const ownerSignupResponseSchema = z.object({
-  success: z.literal(true),
-  code: z.literal('SUCCESS'),
-  message: z.string(),
-  data: z.object({
+export const ownerSignupResponseSchema = createOwnerAuthSuccessResponseSchema(
+  z.object({
     ownerId: z.number(),
     email: z.string(),
   }),
-});
+);
 
 export type OwnerLoginResponseTypes = z.infer<typeof ownerLoginResponseSchema>;
 export type OwnerSignupResponseTypes = z.infer<typeof ownerSignupResponseSchema>;
