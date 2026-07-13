@@ -76,6 +76,7 @@ export const useSignupForm = () => {
       handlePasswordConfirmBlur: passwordConfirmController.field.onBlur,
       handlePasswordConfirmChange,
       handleSubmit: form.handleSubmit,
+      setSubmitErrorMessage,
     },
     state: {
       email: emailController.field.value,
