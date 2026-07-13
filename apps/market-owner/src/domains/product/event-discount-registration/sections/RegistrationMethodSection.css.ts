@@ -2,6 +2,13 @@ import { style } from '@vanilla-extract/css';
 
 import { atomic, semantic, shadow, typography } from '@dongchimi/design-system/tokens';
 
+const guideLineButtonActionStyle = {
+  ...typography['body-3-semibold'],
+  color: atomic.neutral[60],
+  textDecorationLine: 'underline',
+  textUnderlineOffset: '0.2rem',
+};
+
 export const sectionClassName = style({
   width: '100%',
   minWidth: 0,
@@ -142,22 +149,18 @@ export const secondaryActionButtonClassName = style({
 });
 
 export const guideLineButtonClassName = style({
-  ...typography['body-3-semibold'],
+  ...guideLineButtonActionStyle,
   alignSelf: 'center',
   maxWidth: '100%',
-  color: atomic.neutral[60],
-  letterSpacing: 0,
   overflowWrap: 'anywhere',
   textAlign: 'center',
-  textDecoration: 'underline',
-  textUnderlineOffset: '0.2rem',
   whiteSpace: 'normal',
   selectors: {
-    '&:not(:disabled):hover': {
-      ...typography['body-3-semibold'],
+    '&&:not(:disabled):hover': {
+      ...guideLineButtonActionStyle,
     },
-    '&:focus-visible': {
-      ...typography['body-3-semibold'],
+    '&&:focus-visible': {
+      ...guideLineButtonActionStyle,
     },
   },
 });
