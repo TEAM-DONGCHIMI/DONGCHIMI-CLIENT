@@ -1,6 +1,7 @@
 import ky, { type KyInstance, type Options } from 'ky';
 
 import { getClientEnv } from '@/shared/config';
+import { getAccessToken } from '@/shared/auth';
 import { createApiConfigurationError, normalizeApiError } from './api-error';
 
 type HttpMethodTypes = 'delete' | 'get' | 'patch' | 'post' | 'put';
@@ -39,6 +40,12 @@ export const createHttpClient = () => {
       beforeRequest: [
         ({ request }) => {
           request.headers.set('Accept', 'application/json');
+
+          const accessToken = getAccessToken();
+
+          if (accessToken) {
+            request.headers.set('Authorization', `Bearer ${accessToken}`);
+          }
         },
       ],
     },

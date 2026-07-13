@@ -2,6 +2,7 @@ import { HttpResponse, http } from 'msw';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { server } from '@/test';
+import { clearAccessToken, setAccessToken } from '@/shared/auth';
 import { httpClient } from './http-client';
 
 const API_BASE_URL = 'https://api.test';
@@ -12,6 +13,7 @@ describe('httpClient', () => {
   });
 
   afterAll(() => {
+    clearAccessToken();
     vi.unstubAllEnvs();
   });
 
@@ -25,5 +27,19 @@ describe('httpClient', () => {
     const result = await httpClient.get<{ name: string }>('test-resource');
 
     expect(result).toEqual({ name: '동치미' });
+  });
+
+  it('저장된 access token을 Authorization 헤더에 포함한다', async () => {
+    setAccessToken('access-token');
+
+    server.use(
+      http.get(`${API_BASE_URL}/authenticated-resource`, ({ request }) => {
+        return HttpResponse.json({ authorization: request.headers.get('Authorization') });
+      }),
+    );
+
+    const result = await httpClient.get<{ authorization: string }>('authenticated-resource');
+
+    expect(result.authorization).toBe('Bearer access-token');
   });
 });
