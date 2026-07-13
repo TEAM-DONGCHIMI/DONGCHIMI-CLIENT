@@ -287,6 +287,92 @@ describe('RegistrationResultSection', () => {
     expect(priceInput).toHaveValue('4500');
   });
 
+  it('renders field validation messages and updates them as values change', async () => {
+    const user = userEvent.setup();
+    const product: RegistrationResultProduct = {
+      category: '가공식품',
+      discountPeriod: '',
+      id: 'validation-product',
+      price: '',
+      productName: '',
+      promotionText: '',
+      status: 'needsEdit',
+      statusReason: '입력값 확인 필요',
+    };
+
+    renderSection({
+      products: [product],
+      summary: { completedCount: 0, needsEditCount: 1, totalCount: 1 },
+    });
+
+    const productNameInput = screen.getByPlaceholderText('제품명을 입력하세요.');
+    const priceInput = screen.getByPlaceholderText('가격을 입력하세요.');
+    const promotionTextInput = screen.getByPlaceholderText('홍보문구를 입력하세요.');
+    const discountPeriodInput = screen.getByRole('textbox', { name: '상품 할인 기간 입력' });
+
+    expect(productNameInput).not.toHaveAttribute('aria-invalid');
+    expect(priceInput).not.toHaveAttribute('aria-invalid');
+    expect(discountPeriodInput).not.toHaveAttribute('aria-invalid');
+    expect(screen.queryByText('상품명을 입력해주세요.')).not.toBeInTheDocument();
+    expect(screen.queryByText('가격을 입력해주세요.')).not.toBeInTheDocument();
+    expect(screen.queryByText('할인 기간을 입력해주세요.')).not.toBeInTheDocument();
+
+    await user.type(productNameInput, '1');
+    await user.clear(productNameInput);
+
+    expect(productNameInput).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByText('상품명을 입력해주세요.')).toBeInTheDocument();
+
+    await user.type(productNameInput, '1234567890123456');
+
+    expect(screen.getByText('상품명은 공백 포함 15자 이하로 입력해주세요.')).toBeInTheDocument();
+
+    await user.clear(productNameInput);
+    await user.type(productNameInput, '  수정 상품  ');
+    await user.tab();
+
+    expect(productNameInput).toHaveValue('수정 상품');
+    expect(productNameInput).not.toHaveAttribute('aria-invalid');
+
+    await user.type(priceInput, '1');
+    await user.clear(priceInput);
+
+    expect(screen.getByText('가격을 입력해주세요.')).toBeInTheDocument();
+
+    await user.type(priceInput, '12a,900원');
+
+    expect(priceInput).toHaveValue('12900');
+    expect(priceInput).not.toHaveAttribute('aria-invalid');
+
+    await user.clear(priceInput);
+    await user.type(priceInput, '100000001');
+
+    expect(screen.getByText('1억원 이하로 입력하세요.')).toBeInTheDocument();
+
+    await user.clear(priceInput);
+    await user.type(priceInput, '100000000');
+
+    expect(priceInput).not.toHaveAttribute('aria-invalid');
+
+    await user.type(promotionTextInput, '1234567890123456789012345678901');
+
+    expect(screen.getByText('홍보문구는 공백 포함 30자 이하로 입력해주세요.')).toBeInTheDocument();
+
+    await user.type(discountPeriodInput, '2026134020260720');
+
+    expect(screen.getByText('올바른 날짜 형식으로 입력해주세요.')).toBeInTheDocument();
+
+    await user.clear(discountPeriodInput);
+    await user.type(discountPeriodInput, '2026072020260713');
+
+    expect(screen.getByText('종료일은 시작일 이후 날짜를 선택해주세요.')).toBeInTheDocument();
+
+    await user.clear(discountPeriodInput);
+    await user.type(discountPeriodInput, '2026071320260713');
+
+    expect(discountPeriodInput).not.toHaveAttribute('aria-invalid');
+  });
+
   it('uploads a product image preview from the image field', async () => {
     const user = userEvent.setup();
     const imageFile = new File(['preview'], 'preview.png', { type: 'image/png' });

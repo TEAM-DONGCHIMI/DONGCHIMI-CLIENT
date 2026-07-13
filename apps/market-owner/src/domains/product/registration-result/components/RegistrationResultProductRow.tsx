@@ -2,6 +2,7 @@ import {
   useRef,
   type ChangeEvent,
   type ChangeEventHandler,
+  type FocusEventHandler,
   type MouseEvent,
   type ReactNode,
 } from 'react';
@@ -15,6 +16,12 @@ import {
 
 import type { RegistrationResultProduct } from '../fixtures';
 import type { RegistrationResultEditableProductFieldTypes } from '../hooks/useRegistrationResultProductDrafts';
+import {
+  getRegistrationResultFieldBlurValue,
+  getRegistrationResultFieldInputValue,
+  type RegistrationResultProductFieldErrorTypes,
+  type RegistrationResultProductFieldValues,
+} from '../utils/registration-result-product-validation';
 import * as S from './RegistrationResult.css';
 
 export interface ImagePreview {
@@ -22,16 +29,9 @@ export interface ImagePreview {
   src: string;
 }
 
-export interface RegistrationResultProductFieldValues {
-  category: string;
-  discountPeriod: string;
-  price: string;
-  productName: string;
-  promotionText: string;
-}
-
 interface RegistrationResultProductRowProps {
   checked: boolean;
+  fieldErrors: RegistrationResultProductFieldErrorTypes;
   fieldValues: RegistrationResultProductFieldValues;
   imagePreview?: ImagePreview;
   product: RegistrationResultProduct;
@@ -42,6 +42,7 @@ interface RegistrationResultProductRowProps {
 }
 
 interface ProductFieldParams {
+  fieldErrors: RegistrationResultProductFieldErrorTypes;
   fieldValues: RegistrationResultProductFieldValues;
   productId: string;
   productLabel: string;
@@ -129,50 +130,50 @@ const getMediaActionViewModel = ({
   };
 };
 
-const formatDateDigits = (value: string) => {
-  if (value.length <= 4) {
-    return value;
-  }
-
-  if (value.length <= 6) {
-    return `${value.slice(0, 4)}-${value.slice(4)}`;
-  }
-
-  return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
-};
-
-export const formatDiscountPeriodInput = (value: string) => {
-  const digits = value.replace(/\D/g, '').slice(0, 16);
-  const startDate = formatDateDigits(digits.slice(0, 8));
-  const endDate = formatDateDigits(digits.slice(8, 16));
-
-  if (endDate.length === 0) {
-    return startDate;
-  }
-
-  return `${startDate} ~ ${endDate}`;
-};
-
-const getNextFieldValue = (field: RegistrationResultEditableProductFieldTypes, value: string) => {
-  if (field === 'discountPeriod') {
-    return formatDiscountPeriodInput(value);
-  }
-
-  return value;
-};
-
 const getFieldChangeHandler = (
   field: RegistrationResultEditableProductFieldTypes,
   onFieldChange: ProductFieldParams['onFieldChange'],
 ): ChangeEventHandler<HTMLInputElement> => {
   return (event) => {
-    const nextValue = getNextFieldValue(field, event.currentTarget.value);
+    const nextValue = getRegistrationResultFieldInputValue(field, event.currentTarget.value);
 
     onFieldChange(field, nextValue);
   };
 };
 
+const getFieldBlurHandler = (
+  field: RegistrationResultEditableProductFieldTypes,
+  onFieldChange: ProductFieldParams['onFieldChange'],
+): FocusEventHandler<HTMLInputElement> => {
+  return (event) => {
+    const nextValue = getRegistrationResultFieldBlurValue(field, event.currentTarget.value);
+
+    if (nextValue !== event.currentTarget.value) {
+      onFieldChange(field, nextValue);
+    }
+  };
+};
+
+const getFieldValidationProps = (
+  errorMessage: string | undefined,
+  options: { singleLine?: boolean } = {},
+) => {
+  if (errorMessage == null) {
+    return { status: 'default' as const };
+  }
+
+  return {
+    errorMessage: options.singleLine ? (
+      <span className={S.singleLineFieldErrorClassName}>{errorMessage}</span>
+    ) : (
+      errorMessage
+    ),
+    status: 'error' as const,
+  };
+};
+
 const getProductFields = ({
+  fieldErrors,
   fieldValues,
   productId,
   productLabel,
@@ -181,13 +182,16 @@ const getProductFields = ({
 }: ProductFieldParams): readonly ListCellFieldProps[] => {
   return [
     {
+      ...getFieldValidationProps(fieldErrors.productName),
       id: `${productId}-name`,
+      onBlur: getFieldBlurHandler('productName', onFieldChange),
       onChange: getFieldChangeHandler('productName', onFieldChange),
       placeholder: '제품명을 입력하세요.',
       value: fieldValues.productName,
       width: '16rem',
     },
     {
+      ...getFieldValidationProps(fieldErrors.price, { singleLine: true }),
       id: `${productId}-price`,
       inputMode: 'numeric',
       onChange: getFieldChangeHandler('price', onFieldChange),
@@ -205,13 +209,16 @@ const getProductFields = ({
       width: '12.8rem',
     },
     {
+      ...getFieldValidationProps(fieldErrors.promotionText),
       id: `${productId}-promotion`,
+      onBlur: getFieldBlurHandler('promotionText', onFieldChange),
       onChange: getFieldChangeHandler('promotionText', onFieldChange),
       placeholder: '홍보문구를 입력하세요.',
       value: fieldValues.promotionText,
       width: '31.9rem',
     },
     {
+      ...getFieldValidationProps(fieldErrors.discountPeriod),
       'aria-label': `${productLabel} 할인 기간 입력`,
       id: `${productId}-discount-period`,
       inputMode: 'numeric',
@@ -225,6 +232,7 @@ const getProductFields = ({
 
 export const RegistrationResultProductRow = ({
   checked,
+  fieldErrors,
   fieldValues,
   imagePreview,
   product,
@@ -241,6 +249,7 @@ export const RegistrationResultProductRow = ({
   const statusViewModel = getProductStatusViewModel(product);
   const mediaActionViewModel = getMediaActionViewModel({ hasProductImage, needsEdit });
   const productFields = getProductFields({
+    fieldErrors,
     fieldValues,
     productId: product.id,
     productLabel,

@@ -39,8 +39,20 @@ const successFields: ListCellFieldProps[] = [
 ];
 
 const errorFields: ListCellFieldProps[] = [
-  { id: 'name', placeholder: '제품명을 입력하세요', width: 160 },
-  { id: 'price', placeholder: '가격을 입력하세요', width: 112 },
+  {
+    errorMessage: '상품명을 입력해주세요.',
+    id: 'name',
+    placeholder: '제품명을 입력하세요',
+    status: 'error',
+    width: 160,
+  },
+  {
+    errorMessage: '가격을 입력해주세요.',
+    id: 'price',
+    placeholder: '가격을 입력하세요',
+    status: 'error',
+    width: 112,
+  },
   {
     'aria-label': '카테고리 선택',
     id: 'category',
@@ -50,7 +62,13 @@ const errorFields: ListCellFieldProps[] = [
     width: 128,
   },
   { id: 'description', placeholder: '홍보문구를 입력하세요', width: 319 },
-  { id: 'period', placeholder: 'YYYY-MM-DD ~  YYYY-MM-DD', width: 198 },
+  {
+    errorMessage: '할인 기간을 입력해주세요.',
+    id: 'period',
+    placeholder: 'YYYY-MM-DD ~  YYYY-MM-DD',
+    status: 'error',
+    width: 198,
+  },
 ];
 
 const meta = {

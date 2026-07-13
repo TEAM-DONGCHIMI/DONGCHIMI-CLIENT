@@ -5,7 +5,7 @@ import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 const contentMaxWidth = '137.6rem';
-const tableColumnTemplate = '61fr 100fr 196fr 147fr 160fr 365fr 230fr 117fr';
+const tableColumnTemplate = '6.1rem 10rem 19.6rem 14.7rem 16rem 36.5rem 23rem 11.7rem';
 const statusColumnWidth = '11.7rem';
 const statusColumnHeaderInset = '3.9rem';
 
@@ -68,9 +68,12 @@ export const tableScrollClassName = style({
 });
 
 export const tableClassName = style({
-  width: '100%',
-  maxWidth: contentMaxWidth,
-  minWidth: 0,
+  width: contentMaxWidth,
+  minWidth: contentMaxWidth,
+});
+
+export const singleLineFieldErrorClassName = style({
+  whiteSpace: 'nowrap',
 });
 
 export const tableHeaderClassName = style({
