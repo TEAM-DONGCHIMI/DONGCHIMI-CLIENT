@@ -1,6 +1,5 @@
 import { type ProductCardItemTypes, type ProductCardProps } from '@dongchimi/shared';
 
-import { type ProductHeaderSearchProductTypes } from '@/shared/components';
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
 
 export interface HomeProductSectionFixtureTypes {
@@ -19,8 +18,6 @@ interface HomeHeroActionFixtureTypes {
   title: string;
 }
 
-type HomeSearchProductFixtureTypes = ProductHeaderSearchProductTypes;
-
 interface HomeFlyerFixtureTypes {
   flyerId: number;
   qrCode: string;
@@ -33,13 +30,6 @@ export interface HomeShareFixtureTypes {
   title: string;
   url: string;
 }
-
-const normalizeSearchText = (value: string) => value.toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
-
-const homeSearchDealTypeLabels = {
-  DAILY: '오늘의 특가',
-  PERIODIC: '행사 할인',
-} satisfies Record<HomeSearchProductFixtureTypes['dealType'], string>;
 
 const dailyProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
   discountRate: 10,
@@ -62,54 +52,6 @@ export const homeProductSummary = {
   periodicCount: 35,
   periodicProducts,
 } as const;
-
-export const homeSearchProducts: HomeSearchProductFixtureTypes[] = [
-  {
-    dealType: 'DAILY',
-    isProductInfoLoadable: false,
-    productId: 123,
-    name: '풀무원 두부 1팩',
-  },
-  {
-    dealType: 'DAILY',
-    productId: 124,
-    name: '풀무원 콩나물 100g',
-  },
-  {
-    dealType: 'PERIODIC',
-    productId: 125,
-    name: '풀숲',
-  },
-  {
-    dealType: 'PERIODIC',
-    productId: 126,
-    name: '풀풀풀',
-  },
-  {
-    dealType: 'DAILY',
-    productId: 127,
-    name: '풀무원 순두부 350g',
-  },
-  {
-    dealType: 'PERIODIC',
-    productId: 128,
-    name: '풀무원 두부 세트',
-  },
-] satisfies HomeSearchProductFixtureTypes[];
-
-export const getHomeSearchProductsByQuery = (query: string) => {
-  const normalizedQuery = normalizeSearchText(query);
-
-  if (normalizedQuery.length === 0) {
-    return [];
-  }
-
-  return homeSearchProducts.filter((product) =>
-    normalizeSearchText(`${homeSearchDealTypeLabels[product.dealType]}${product.name}`).includes(
-      normalizedQuery,
-    ),
-  );
-};
 
 export const homeProductSections: HomeProductSectionFixtureTypes[] = [
   {

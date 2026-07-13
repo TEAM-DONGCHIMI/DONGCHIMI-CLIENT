@@ -1,11 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
 
-import {
-  MARKET_OWNER_ROUTES,
-  MARKET_OWNER_ROUTE_SEARCH_PARAMS,
-  type MarketOwnerRouteTypes,
-} from '@/shared/constants/routes';
 import { useDebouncedValue } from '@/shared/hooks';
 
 import { ProductSearchPanel, type ProductSearchPanelItemTypes } from '../product-search-panel';
@@ -24,7 +18,7 @@ export interface ProductHeaderSearchProps {
     query: string,
     products: readonly ProductHeaderSearchProductTypes[],
   ) => ProductHeaderSearchProductTypes[];
-  onProductLoadError?: () => void;
+  onSelectProduct: (product: ProductHeaderSearchProductTypes) => void;
   products: readonly ProductHeaderSearchProductTypes[];
 }
 
@@ -32,11 +26,6 @@ const productSearchLabelByDealType = {
   DAILY: '오늘의 특가',
   PERIODIC: '행사 할인',
 } satisfies Record<ProductHeaderSearchDealTypes, string>;
-
-const productEditRouteByDealType = {
-  DAILY: MARKET_OWNER_ROUTES.todaySpecialEdit,
-  PERIODIC: MARKET_OWNER_ROUTES.eventDiscountEdit,
-} satisfies Record<ProductHeaderSearchDealTypes, MarketOwnerRouteTypes>;
 
 const normalizeSearchText = (value: string) => value.toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
 
@@ -50,11 +39,7 @@ const getDefaultProductsByQuery = (
     return [];
   }
 
-  return products.filter((product) =>
-    normalizeSearchText(
-      `${productSearchLabelByDealType[product.dealType]}${product.name}`,
-    ).includes(normalizedQuery),
-  );
+  return products.filter((product) => normalizeSearchText(product.name).includes(normalizedQuery));
 };
 
 const createProductSearchPanelItem = (
@@ -67,20 +52,11 @@ const createProductSearchPanelItem = (
   };
 };
 
-const createProductEditSearchPath = (product: ProductHeaderSearchProductTypes) => {
-  const searchParams = new URLSearchParams({
-    [MARKET_OWNER_ROUTE_SEARCH_PARAMS.productEditTargetProductId]: String(product.productId),
-  });
-
-  return `${productEditRouteByDealType[product.dealType]}?${searchParams.toString()}`;
-};
-
 export const ProductHeaderSearch = ({
   getProductsByQuery = getDefaultProductsByQuery,
-  onProductLoadError,
+  onSelectProduct,
   products,
 }: ProductHeaderSearchProps) => {
-  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query);
   const isSearchPending = query.trim().length > 0 && query !== debouncedQuery;
@@ -93,24 +69,22 @@ export const ProductHeaderSearch = ({
     [searchProducts],
   );
 
+  const handleSelectProduct = (item: ProductSearchPanelItemTypes) => {
+    const selectedProduct = searchProducts.find((product) => String(product.productId) === item.id);
+
+    if (selectedProduct == null) {
+      return;
+    }
+
+    onSelectProduct(selectedProduct);
+  };
+
   return (
     <ProductSearchPanel
       isPending={isSearchPending}
       items={searchPanelItems}
       onQueryChange={(nextQuery) => setQuery(nextQuery)}
-      onSelectProduct={(item) => {
-        const selectedProduct = searchProducts.find(
-          (product) => String(product.productId) === item.id,
-        );
-
-        if (selectedProduct == null || selectedProduct.isProductInfoLoadable === false) {
-          onProductLoadError?.();
-
-          return;
-        }
-
-        navigate(createProductEditSearchPath(selectedProduct));
-      }}
+      onSelectProduct={handleSelectProduct}
     />
   );
 };
