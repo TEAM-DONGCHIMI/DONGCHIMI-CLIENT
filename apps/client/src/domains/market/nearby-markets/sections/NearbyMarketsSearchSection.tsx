@@ -5,7 +5,8 @@ import { useNearbyMarketsSearch } from '../NearbyMarketsClientProvider';
 import * as S from '../NearbyMarketsPage.css';
 
 export const NearbyMarketsSearchSection = () => {
-  const { keyword, onKeywordChange, placeholder } = useNearbyMarketsSearch();
+  const { keyword, onKeywordChange, onKeywordClick, placeholder, readOnly } =
+    useNearbyMarketsSearch();
 
   return (
     <section aria-labelledby='nearby-markets-title' className={S.searchSectionClassName}>
@@ -16,8 +17,10 @@ export const NearbyMarketsSearchSection = () => {
       </h1>
 
       <NearbyMarketsLocationSearchInput
+        onClick={onKeywordClick}
         onValueChange={onKeywordChange}
         placeholder={placeholder}
+        readOnly={readOnly}
         value={keyword}
       />
     </section>
