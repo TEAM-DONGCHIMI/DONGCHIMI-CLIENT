@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -68,7 +68,7 @@ export const OAuthCallbackPage = () => {
   const searchParams = useSearchParams();
   const kakaoLoginMutation = useKakaoLoginMutation();
   const hasRequestedLoginRef = useRef(false);
-  const code = searchParams.get('code');
+  const [code] = useState(() => searchParams.get('code'));
   const oauthError = searchParams.get('error');
 
   useEffect(() => {
@@ -81,6 +81,7 @@ export const OAuthCallbackPage = () => {
     }
 
     hasRequestedLoginRef.current = true;
+    window.history.replaceState(window.history.state, '', CLIENT_ROUTES.oauthCallback);
 
     kakaoLoginMutation.mutate(
       { code },
