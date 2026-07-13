@@ -122,11 +122,16 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
   }, []);
 
   // Daum script 또는 팝업 실행 실패를 사용자가 알 수 있게 toast로 노출합니다.
-  const handlePostcodeSearchError = useCallback(() => {
-    toast.error(POSTCODE_SEARCH_ERROR_MESSAGE, {
-      id: POSTCODE_SEARCH_ERROR_TOAST_ID,
-    });
-  }, [toast]);
+  const handlePostcodeSearchError = useCallback(
+    (error: Error) => {
+      void error;
+
+      toast.error(POSTCODE_SEARCH_ERROR_MESSAGE, {
+        id: POSTCODE_SEARCH_ERROR_TOAST_ID,
+      });
+    },
+    [toast],
+  );
 
   const handlePostcodeAddressSelect = useCallback(
     (address: { mapAddress: string; searchKeyword: string }) => {

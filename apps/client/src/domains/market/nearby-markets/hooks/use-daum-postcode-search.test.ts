@@ -119,7 +119,7 @@ describe('useDaumPostcodeSearch', () => {
       expect(onError).toHaveBeenCalledTimes(1);
     });
 
-    expect(onError).toHaveBeenCalledWith();
+    expect(onError).toHaveBeenCalledWith(new Error('Daum postcode constructor is unavailable'));
     expect(onSelectAddress).not.toHaveBeenCalled();
   });
 

@@ -27,11 +27,14 @@ declare global {
 
 const DAUM_POSTCODE_SCRIPT_ID = 'daum-postcode-script';
 const DAUM_POSTCODE_SCRIPT_SRC = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+const DAUM_POSTCODE_MISSING_ERROR_MESSAGE = 'Daum postcode constructor is unavailable';
 
 let daumPostcodeScriptPromise: Promise<void> | null = null;
 
 // onError가 없을 때 promise rejection을 삼키기 위한 기본 handler입니다.
-const noop = () => undefined;
+const noop = (error: Error) => {
+  void error;
+};
 
 // input에 표시할 "00시 00구 00동" 형태의 행정동 검색어를 Daum 응답에서 만듭니다.
 export const formatDaumPostcodeAdministrativeAddress = ({
@@ -99,7 +102,7 @@ type UseDaumPostcodeSearchOptionsTypes = Readonly<{
   // false이면 script preload와 팝업 열기를 모두 막습니다.
   enabled: boolean;
   // script 로드 실패나 Daum Postcode 객체 누락을 화면 쪽에서 처리하기 위한 callback입니다.
-  onError?: () => void;
+  onError?: (error: Error) => void;
   // 사용자가 Daum 팝업에서 주소를 선택했을 때 provider로 넘길 callback입니다.
   onSelectAddress: (address: { mapAddress: string; searchKeyword: string }) => void;
 }>;
@@ -133,7 +136,7 @@ export const useDaumPostcodeSearch = ({
         const Postcode = window.daum?.Postcode;
 
         if (Postcode == null) {
-          onError?.();
+          onError?.(new Error(DAUM_POSTCODE_MISSING_ERROR_MESSAGE));
 
           return;
         }
