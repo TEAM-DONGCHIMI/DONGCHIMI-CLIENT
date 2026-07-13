@@ -7,14 +7,14 @@
 - Page: `signup`
 - Route: `/signup`
 - Path: `apps/market-owner/src/domains/auth/signup/SignupPage.tsx`
-- Jira: DCMSM-15
+- Jira: DCMSM-15, DCMSM-53
 - Status: Implemented
 - Figma: APPJAM node `1608:108592`
 
 ## Purpose
 
-사장님웹 회원가입 화면의 초기 form UI와 이메일, 비밀번호, 비밀번호 확인 입력 검증을 public auth layout 안에서 렌더링합니다.
-이번 범위는 client-side validation과 유효 submit 이후 로그인 페이지 이동까지이며 실제 회원가입 API, 서버 중복 확인은 후속 auth 작업에서 연결합니다.
+사장님웹 회원가입 화면은 이메일, 비밀번호, 비밀번호 확인 입력 검증을 public auth layout 안에서 렌더링하고, 유효한 submit 이후 사장님 회원가입 API를 호출합니다.
+회원가입 성공 시 로그인 페이지로 이동하며, 서버 validation 실패나 중복 이메일 실패는 form-level toast로 노출합니다.
 
 ## Ownership
 
@@ -23,30 +23,32 @@
 - Public auth layout responsibility stays in `src/app/layouts/AuthLayout.tsx`.
 - Page-local spacing and signup-specific presentation stay in `SignupPage.css.ts`.
 - Signup form state, field handlers, and submit error state stay in `hooks/use-signup-form.ts`.
+- Signup submit API state stays in `domains/auth/hooks/use-signup-mutation.ts`.
+- Signup API helper and response schema stay in `domains/auth/api/auth-api.ts` and `domains/auth/model/auth-schema.ts`.
 - `TextInput` error/status prop derivation is shared with `login` via `domains/auth/hooks/get-text-input-status-props.ts`.
 - Email-required/format and password-required copy is shared with `login` via `domains/auth/constants/auth-messages.ts`.
-- Zod validation schema, resolver, default values, and API request/response types stay in `schemas/signup-schema.ts`.
+- Zod validation schema, resolver, and default values stay in `schemas/signup-schema.ts`.
 - Email error messages and format/allowed-character patterns stay in `utils/email-validation.ts`; password error messages and length bounds stay in `utils/password-validation.ts`; shared whitespace/Korean-character patterns stay in `utils/text-pattern.ts`.
-- Form primitives use design-system `Flex`, `TextInput`, and `Button`.
+- Form primitives use design-system `Flex`, `TextInput`, `Toast`, and `Button`.
 
 ## UI States
 
 - default: logo slot, `회원가입` heading, helper description, email/password/password confirm fields, disabled submit CTA를 렌더링합니다.
-- validation: 이메일 입력은 touched 이후 실시간으로 필수값, 공백, 한글, 허용 문자, 이메일 형식, 중복 여부를 검증합니다.
+- validation: 이메일 입력은 touched 이후 실시간으로 필수값, 공백, 한글, 허용 문자, 이메일 형식을 검증합니다. 중복 이메일 여부는 submit 이후 서버 `DUPLICATE_EMAIL` 응답으로 처리합니다.
 - validation: 비밀번호 입력은 touched 이후 실시간으로 필수값, 6-20자 길이, 공백, 한글 여부를 검증합니다.
 - validation: 비밀번호 확인 입력은 touched 이후 실시간으로 필수값과 비밀번호 일치 여부를 검증합니다.
 - success: 비밀번호 확인 입력이 비밀번호와 일치하면 우측 체크 아이콘을 표시합니다.
-- disabled: full validation 전까지 `가입 완료` CTA는 disabled 상태입니다.
-- loading: 이번 범위에서 다루지 않습니다.
-- error: field validation error는 각 `TextInput` 아래에 표시하고, 네트워크 또는 가입 실패 같은 submit error는 field group 아래 toast로 표시합니다.
-- success: 유효한 form submit 이후 `/login`으로 이동합니다.
+- disabled: full validation 전이거나 회원가입 mutation이 pending 상태이면 `가입 완료` CTA가 disabled 상태입니다.
+- loading: 회원가입 mutation이 pending 상태이면 submit CTA를 disabled 처리해 중복 submit을 방지합니다.
+- error: field validation error는 각 `TextInput` 아래에 표시하고, 네트워크 또는 회원가입 실패 같은 submit error는 field group 아래 toast로 표시합니다.
+- success: 유효한 form submit 이후 회원가입 API가 성공하면 `/login`으로 이동합니다.
 
 ## Data
 
 - query: none
 - mutation: owner signup API
 - fixture: none
-- model: signup owner register request/response types in `signup-schema.ts`
+- model: owner signup request/response types and schema in `domains/auth/api` and `domains/auth/model`
 
 ## Behavior
 
@@ -60,15 +62,16 @@
 - 비밀번호 확인 입력은 비밀번호와 동일한 값을 입력해야 유효합니다.
 - 비밀번호 확인 입력값이 유효하면 입력창 우측에 `IcCircleCheckFill` trailing icon을 표시합니다.
 - submit CTA는 전체 입력값이 유효할 때 활성화됩니다.
-- 유효한 form submit 이후 로그인 페이지로 이동합니다.
-- 네트워크 오류 또는 가입 실패 오류는 field error message가 아니라 form-level toast로 표시합니다.
+- submit CTA는 회원가입 mutation이 pending 상태일 때 다시 disabled 됩니다.
+- 유효한 form submit 이후 회원가입 API가 성공하면 로그인 페이지로 이동합니다.
+- 서버 validation 실패, 서버 중복 이메일 실패, 네트워크 오류는 field error가 아닌 form-level toast로 표시합니다.
 
 ## Accessibility
 
-- heading order: page root는 visible `h1`으로 `회원가입`을 제공합니다.
-- field labels: `TextInput` visible label이 각 input의 accessible name입니다.
-- validation messages: `TextInput` error message는 `aria-describedby`와 `aria-invalid`로 input에 연결됩니다.
-- button: `가입 완료`는 full validation 전까지 native disabled button으로 노출합니다.
+- heading order: page root는 visible `h1`로 `회원가입`을 제공합니다.
+- field labels: `TextInput` visible label은 각 input의 accessible name입니다.
+- validation messages: `TextInput` error message는 `aria-describedby`와 `aria-invalid`로 input에 연결합니다.
+- button: `가입 완료`는 full validation 전 또는 pending 중 native disabled button으로 노출합니다.
 - submit error toast: error toast는 alert live region으로 노출합니다.
 - decorative logo: 체크무늬 logo slot은 accessible name에서 제외합니다.
 - focus: design-system input/button focus-visible style을 유지합니다.
@@ -88,5 +91,6 @@
 - [ ] valid password confirmation renders a right-side check icon
 - [ ] submit button renders as disabled before valid input
 - [ ] submit button is enabled when email, password, and password confirmation are valid
+- [ ] submit button is disabled while signup mutation is pending
 - [ ] valid signup submit redirects to `/login`
 - [ ] submit failure renders as an error toast instead of a field error
