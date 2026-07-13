@@ -27,8 +27,10 @@ export const useLoginForm = ({ submitLogin }: UseLoginFormOptions = {}) => {
 
   return {
     action: {
+      handleEmailBlur: fields.action.handleEmailBlur,
       handleEmailChange: fields.action.handleEmailChange,
       handleKeepSignedInChange: fields.action.handleKeepSignedInChange,
+      handlePasswordBlur: fields.action.handlePasswordBlur,
       handlePasswordChange: fields.action.handlePasswordChange,
       handleSubmit,
     },
