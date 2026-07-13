@@ -25,7 +25,7 @@ export const TodaySpecialRegistrationPage = () => {
   const form = useTodaySpecialForm({
     onSubmit: () => {
       // TODO: presigned URL 발급, storage PUT, 상품 payload submit 순서로 API 연동.
-      navigate(MARKET_OWNER_ROUTES.home);
+      navigate(MARKET_OWNER_ROUTES.todaySpecialEdit);
     },
   });
   const { currentIndex, currentProduct, products, setValue } = form;

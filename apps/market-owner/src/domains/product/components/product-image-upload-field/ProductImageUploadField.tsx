@@ -1,7 +1,7 @@
 import { useRef, type ChangeEventHandler, type ReactNode } from 'react';
 
 import { IconButton } from '@dongchimi/design-system/components';
-import { IcCamera, IcPlus } from '@dongchimi/design-system/icons';
+import { IcCameraDefault, IcPlus } from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
 import * as S from './ProductImageUploadField.css';
@@ -65,20 +65,20 @@ export const ProductImageUploadField = ({
       aria-label={`${label} 추가`}
       className={S.cameraBadgeRecipe({ variant })}
       color='assistive'
-      icon={<IcCamera />}
+      icon={<IcCameraDefault />}
       rounded
       onClick={openFilePicker}
     />
   ) : (
     <span className={S.cameraBadgeRecipe({ variant })} aria-hidden='true'>
-      <IcCamera />
+      <IcCameraDefault />
     </span>
   );
   const imageBoxContent = previewUrl ? (
     <span className={S.previewContentClassName}>
       <img alt={previewAlt} className={S.previewImageClassName} src={previewUrl} />
       <span className={S.cameraBadgeRecipe({ variant })} aria-hidden='true'>
-        <IcCamera />
+        <IcCameraDefault />
       </span>
     </span>
   ) : (

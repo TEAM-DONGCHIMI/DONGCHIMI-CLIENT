@@ -44,6 +44,10 @@ export const descriptionClassName = style({
   ...typography['body-2-medium'],
 });
 
+export const toastErrorIconClassName = style({
+  color: atomic.common[0],
+});
+
 export const formClassName = style({
   marginTop: '3.6rem',
 });

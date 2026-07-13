@@ -22,7 +22,7 @@ export const tabItemClassName = style({
   justifyContent: 'center',
   boxSizing: 'border-box',
   minHeight: '5.1rem',
-  padding: '1.2rem 0.2rem',
+  padding: '1.2rem 0.2rem 0.8rem',
   border: 0,
   borderBottom: `0.2rem solid transparent`,
   backgroundColor: 'transparent',

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
-export const useProductEditModalTitleFocus = (open: boolean) => {
-  const titleRef = useRef<HTMLHeadingElement>(null);
+export const useProductEditModalContentFocus = (open: boolean) => {
+  const contentRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     if (!open) {
@@ -11,7 +11,7 @@ export const useProductEditModalTitleFocus = (open: boolean) => {
     let innerFrameId = 0;
     const frameId = window.requestAnimationFrame(() => {
       innerFrameId = window.requestAnimationFrame(() => {
-        titleRef.current?.focus();
+        contentRef.current?.focus();
       });
     });
 
@@ -21,5 +21,5 @@ export const useProductEditModalTitleFocus = (open: boolean) => {
     };
   }, [open]);
 
-  return titleRef;
+  return contentRef;
 };

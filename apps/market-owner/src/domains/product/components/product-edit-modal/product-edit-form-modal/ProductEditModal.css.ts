@@ -1,11 +1,10 @@
 import { style } from '@vanilla-extract/css';
 
 import { recipe } from '@dongchimi/design-system/styles';
-import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
+import { atomic } from '@dongchimi/design-system/tokens';
 
 import * as Content from '../ProductEditModalContent.css';
 
-const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 const categoryFieldWidth = '20.6rem';
 
 export const contentClassName = style([
@@ -88,35 +87,17 @@ export const categoryFieldClassName = style({
   gap: '0.8rem',
 });
 
-export const categoryTriggerClassName = style({
-  ...typography['body-2-medium'],
-  appearance: 'none',
-  boxSizing: 'border-box',
-  display: 'flex',
-  width: '100%',
-  height: '4rem',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  border: `1px solid ${atomic.neutral[20]}`,
-  borderRadius: '0.4rem',
-  padding: '1rem 1.6rem',
-  backgroundColor: atomic.common[0],
-  color: atomic.neutral[90],
-  cursor: 'pointer',
-  selectors: {
-    '&:focus-visible': {
-      outline: `3px solid ${focusOutlineColor}`,
-      outlineOffset: 2,
-    },
-  },
-});
-
 export const categoryDropdownClassName = style({
   position: 'absolute',
   top: 'calc(100% + 0.8rem)',
   right: 0,
   zIndex: 1,
   width: categoryFieldWidth,
+  maxHeight: 'var(--product-category-dropdown-max-height)',
+  backgroundColor: atomic.common[0],
+  overflowX: 'hidden',
+  overflowY: 'auto',
+  overscrollBehaviorY: 'none',
 });
 
 export const dateRowClassName = style({

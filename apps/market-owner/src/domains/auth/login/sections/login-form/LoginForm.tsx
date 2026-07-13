@@ -11,7 +11,14 @@ export interface LoginFormProps {
 
 export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
   const {
-    action: { handleEmailChange, handleKeepSignedInChange, handlePasswordChange, handleSubmit },
+    action: {
+      handleEmailBlur,
+      handleEmailChange,
+      handleKeepSignedInChange,
+      handlePasswordBlur,
+      handlePasswordChange,
+      handleSubmit,
+    },
     state: {
       email,
       emailStatusProps,
@@ -34,6 +41,7 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
         {...emailStatusProps}
         autoComplete='email'
         label='이메일'
+        onBlur={handleEmailBlur}
         onChange={handleEmailChange}
         placeholder='이메일을 입력해주세요.'
         type='email'
@@ -43,6 +51,7 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
         {...passwordStatusProps}
         autoComplete='current-password'
         label='비밀번호'
+        onBlur={handlePasswordBlur}
         onChange={handlePasswordChange}
         placeholder='비밀번호를 입력해주세요.'
         type='password'

@@ -7,16 +7,17 @@ import type {
 } from 'react';
 
 import { cn } from '@dongchimi/design-system/styles';
-import {
-  IcChevronDown,
-  IcChevronUp,
-  IcCircleExclamationSizeSmallColorNegative,
-} from '@dongchimi/design-system/icons';
+import { IcCircleExclamationSizeSmallColorNegative } from '@dongchimi/design-system/icons';
 
 import { imageUploadInputAccept } from '@/shared/utils/image-upload.utils';
 
 import { ProductImageUploadField } from '../../components/product-image-upload-field';
-import { CategoryDropdownOverlay } from '../components/CategoryDropdownOverlay';
+import {
+  ProductCategoryDropdown,
+  ProductCategoryTrigger,
+} from '../../components/product-category-dropdown';
+import { productSelectableCategoryOptions } from '../../constants';
+import { productNameMaxLength, productPromotionTextMaxLength } from '../../utils/product-input';
 import { FieldGroup } from '../components/FieldGroup';
 import {
   type TodaySpecialProductErrorMessageTypes,
@@ -27,10 +28,10 @@ import * as S from '../TodaySpecialRegistrationPage.css';
 interface ProductInfoSectionProps {
   categoryDropdownId: string;
   categoryDropdownStyle: CSSProperties;
+  categoryFieldRef: RefObject<HTMLDivElement | null>;
   categoryTriggerRef: RefObject<HTMLButtonElement | null>;
   isCategoryDropdownOpen: boolean;
   onCategorySelect: (category: string) => void;
-  onCloseCategoryDropdown: () => void;
   onCategoryTriggerClick: MouseEventHandler<HTMLButtonElement>;
   onDescriptionBlur: FocusEventHandler<HTMLInputElement>;
   onDescriptionChange: ChangeEventHandler<HTMLInputElement>;
@@ -44,10 +45,10 @@ interface ProductInfoSectionProps {
 export const ProductInfoSection = ({
   categoryDropdownId,
   categoryDropdownStyle,
+  categoryFieldRef,
   categoryTriggerRef,
   isCategoryDropdownOpen,
   onCategorySelect,
-  onCloseCategoryDropdown,
   onCategoryTriggerClick,
   onDescriptionBlur,
   onDescriptionChange,
@@ -82,12 +83,19 @@ export const ProductInfoSection = ({
           onImageChange={onImageChange}
         />
 
-        <div className={S.productInfoFieldRowsClassName}>
+        <div
+          className={cn(
+            S.productInfoFieldRowsClassName,
+            (productErrorMessages.name || productErrorMessages.category) &&
+              S.productInfoFieldRowsErrorClassName,
+          )}
+        >
           <div className={S.twoColumnRowClassName}>
             <FieldGroup
               errorMessage={productErrorMessages.name}
               id='today-special-product-name'
               label='상품명'
+              maxLength={productNameMaxLength}
               onBlur={onNameBlur}
               onChange={onNameChange}
               placeholder='상품명을 입력하세요.'
@@ -96,34 +104,25 @@ export const ProductInfoSection = ({
             />
 
             <FieldGroup label='상품 구분'>
-              <div className={S.categoryWrapperClassName}>
-                <button
+              <div ref={categoryFieldRef} className={S.categoryWrapperClassName}>
+                <ProductCategoryTrigger
                   aria-describedby={productErrorMessages.category ? categoryErrorId : undefined}
                   aria-controls={isCategoryDropdownOpen ? categoryDropdownId : undefined}
                   aria-expanded={isCategoryDropdownOpen}
-                  className={cn(
-                    S.categoryTriggerClassName,
-                    productErrorMessages.category && S.categoryTriggerErrorClassName,
-                  )}
+                  className={cn(productErrorMessages.category && S.categoryTriggerErrorClassName)}
                   data-today-special-category-trigger
+                  label={product.category || '카테고리'}
                   onClick={onCategoryTriggerClick}
+                  placeholder={!product.category}
                   ref={categoryTriggerRef}
-                  type='button'
-                >
-                  <span className={!product.category ? S.categoryPlaceholderClassName : undefined}>
-                    {product.category || '카테고리'}
-                  </span>
-                  {isCategoryDropdownOpen ? (
-                    <IcChevronUp aria-hidden='true' />
-                  ) : (
-                    <IcChevronDown aria-hidden='true' />
-                  )}
-                </button>
+                />
 
                 {isCategoryDropdownOpen && (
-                  <CategoryDropdownOverlay
+                  <ProductCategoryDropdown
+                    ariaLabel='상품 구분 선택'
+                    className={S.categoryDropdownClassName}
                     id={categoryDropdownId}
-                    onClose={onCloseCategoryDropdown}
+                    options={productSelectableCategoryOptions}
                     onSelect={onCategorySelect}
                     selectedCategory={product.category}
                     style={categoryDropdownStyle}
@@ -146,6 +145,7 @@ export const ProductInfoSection = ({
             errorMessage={productErrorMessages.description}
             id='today-special-product-description'
             label='상품 한줄 홍보문구'
+            maxLength={productPromotionTextMaxLength}
             onBlur={onDescriptionBlur}
             onChange={onDescriptionChange}
             placeholder='홍보문구를 입력하세요.'

@@ -1,4 +1,8 @@
+import type { CSSProperties } from 'react';
+
 import { Dropdown } from '@dongchimi/design-system/components';
+
+import * as S from './ProductCategoryDropdown.css';
 
 interface ProductCategoryDropdownProps<CategoryTypes extends string> {
   ariaLabel: string;
@@ -8,7 +12,7 @@ interface ProductCategoryDropdownProps<CategoryTypes extends string> {
   className?: string;
   id?: string;
   isSelected?: (category: CategoryTypes) => boolean;
-  itemClassName?: string;
+  style?: CSSProperties;
 }
 
 export const ProductCategoryDropdown = <CategoryTypes extends string>({
@@ -16,16 +20,16 @@ export const ProductCategoryDropdown = <CategoryTypes extends string>({
   className,
   id,
   isSelected,
-  itemClassName,
   onSelect,
   options,
   selectedCategory,
+  style,
 }: ProductCategoryDropdownProps<CategoryTypes>) => {
   return (
-    <Dropdown aria-label={ariaLabel} className={className} id={id} role='group'>
+    <Dropdown aria-label={ariaLabel} className={className} id={id} role='group' style={style}>
       {options.map((category) => (
         <Dropdown.Item
-          className={itemClassName}
+          className={S.itemClassName}
           color='primary'
           key={category}
           onClick={() => onSelect(category)}

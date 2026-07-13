@@ -42,6 +42,7 @@
 - 기본 selected 상태는 행사 할인 수정 페이지에서는 `카테고리별`, 오늘의 특가 수정 페이지에서는 `상품 등록 순`이며, 사용자가 선택한 항목을 filled 상태와 `aria-pressed`로 표시합니다.
 - breadcrumb header와 상단 control 영역은 scroll container 안에서 함께 고정되어 상품 목록 스크롤 중에도 유지됩니다.
 - 일괄 기간 수정 버튼을 처음 누르면 bulk period selection mode에 진입하고 `선택된 상품 (0)`을 표시합니다.
+- 선택된 상품 수는 `semantic.primary.strong` 색상으로 강조합니다.
 - bulk period selection mode에서 같은 버튼을 다시 눌렀을 때 선택 상품이 없으면 selection mode를 종료합니다.
 - bulk period selection mode에서 선택 상품이 1개 이상이면 기간 일괄 수정 버튼을 강조 상태로 표시합니다.
 - bulk period selection mode에서 선택 상품이 있으면 첫 번째 선택 상품의 기간을 기본값으로 전달해 `ProductEditPeriodModal`을 엽니다.

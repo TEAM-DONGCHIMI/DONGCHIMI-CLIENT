@@ -1,6 +1,8 @@
 import { type ChangeEvent, useState } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
+import { getVisibleFieldErrorMessage } from '@/shared/utils/form-error.utils';
+
 import { getTextInputStatusProps } from '../../hooks/get-text-input-status-props';
 import {
   SIGNUP_FORM_DEFAULT_VALUES,
@@ -47,26 +49,43 @@ export const useSignupForm = () => {
   const isPasswordConfirmValid =
     passwordConfirmController.field.value.length > 0 &&
     passwordConfirmController.fieldState.error === undefined;
+  const isSubmitted = form.formState.isSubmitted;
+  const emailErrorMessage = getVisibleFieldErrorMessage({
+    error: emailController.fieldState.error,
+    isSubmitted,
+    isTouched: emailController.fieldState.isTouched,
+  });
+  const passwordErrorMessage = getVisibleFieldErrorMessage({
+    error: passwordController.fieldState.error,
+    isSubmitted,
+    isTouched: passwordController.fieldState.isTouched,
+  });
+  const passwordConfirmErrorMessage = getVisibleFieldErrorMessage({
+    error: passwordConfirmController.fieldState.error,
+    isSubmitted,
+    isTouched: passwordConfirmController.fieldState.isTouched,
+  });
 
   return {
     action: {
       clearSubmitErrorMessage,
+      handleEmailBlur: emailController.field.onBlur,
       handleEmailChange,
+      handlePasswordBlur: passwordController.field.onBlur,
       handlePasswordChange,
+      handlePasswordConfirmBlur: passwordConfirmController.field.onBlur,
       handlePasswordConfirmChange,
       handleSubmit: form.handleSubmit,
     },
     state: {
       email: emailController.field.value,
-      emailStatusProps: getTextInputStatusProps(emailController.fieldState.error?.message),
+      emailStatusProps: getTextInputStatusProps(emailErrorMessage),
       isPasswordConfirmValid,
       isValid: form.formState.isValid,
       password: passwordController.field.value,
       passwordConfirm: passwordConfirmController.field.value,
-      passwordConfirmStatusProps: getTextInputStatusProps(
-        passwordConfirmController.fieldState.error?.message,
-      ),
-      passwordStatusProps: getTextInputStatusProps(passwordController.fieldState.error?.message),
+      passwordConfirmStatusProps: getTextInputStatusProps(passwordConfirmErrorMessage),
+      passwordStatusProps: getTextInputStatusProps(passwordErrorMessage),
       submitErrorMessage,
     },
   };
