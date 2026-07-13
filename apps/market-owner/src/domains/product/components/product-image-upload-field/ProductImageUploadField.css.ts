@@ -96,19 +96,21 @@ export const uploadTriggerClassName = style({
 });
 
 export const imageBoxPreviewRecipe = recipe({
+  base: {
+    selectors: {
+      '&::after': {
+        position: 'absolute',
+        inset: 0,
+        content: '',
+        background: `linear-gradient(0deg, ${semantic.status.dimmer.hover} 0%, ${semantic.status.dimmer.hover} 100%)`,
+      },
+    },
+  },
   variants: {
     variant: {
       editModal: {},
       registration: {
         border: 0,
-        selectors: {
-          '&::after': {
-            position: 'absolute',
-            inset: 0,
-            content: '',
-            background: `linear-gradient(0deg, ${semantic.status.dimmer.hover} 0%, ${semantic.status.dimmer.hover} 100%)`,
-          },
-        },
       },
     },
   },

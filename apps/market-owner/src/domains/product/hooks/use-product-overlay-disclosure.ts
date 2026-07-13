@@ -2,11 +2,13 @@ import { type RefObject, useCallback, useEffect } from 'react';
 import { overlay, useOverlayData } from 'overlay-kit';
 
 interface UseProductOverlayDisclosureParams {
+  onDismiss?: () => void;
   overlayId: string;
   triggerRef?: RefObject<HTMLElement | null>;
 }
 
 export const useProductOverlayDisclosure = ({
+  onDismiss,
   overlayId,
   triggerRef,
 }: UseProductOverlayDisclosureParams) => {
@@ -40,12 +42,14 @@ export const useProductOverlayDisclosure = ({
       const target = event.target as Node;
 
       if (!triggerRef.current?.contains(target)) {
+        onDismiss?.();
         close();
       }
     };
 
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        onDismiss?.();
         close();
       }
     };
@@ -57,7 +61,7 @@ export const useProductOverlayDisclosure = ({
       document.removeEventListener('pointerdown', closeOnPointerDown);
       document.removeEventListener('keydown', closeOnEscape);
     };
-  }, [close, isOpen, triggerRef]);
+  }, [close, isOpen, onDismiss, triggerRef]);
 
   useEffect(() => {
     return () => {

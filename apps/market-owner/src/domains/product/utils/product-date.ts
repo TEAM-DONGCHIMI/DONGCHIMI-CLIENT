@@ -53,6 +53,22 @@ const startOfToday = () => {
   return today;
 };
 
+export const getTodayDateInputValue = () => {
+  const today = startOfToday();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+export const getProductDateMinimum = (date?: string) => {
+  const today = getTodayDateInputValue();
+  const normalizedDate = formatProductEditDateForInput(date);
+
+  return normalizedDate >= today ? normalizedDate : today;
+};
+
 export const isProductEditDateTodayOrFuture = (date?: string) => {
   const parsedDate = parseProductEditDate(date);
 
@@ -61,4 +77,15 @@ export const isProductEditDateTodayOrFuture = (date?: string) => {
   }
 
   return parsedDate >= startOfToday();
+};
+
+export const isProductEditDateRangeValid = (startDate?: string, endDate?: string) => {
+  const parsedStartDate = parseProductEditDate(startDate);
+  const parsedEndDate = parseProductEditDate(endDate);
+
+  if (parsedStartDate == null || parsedEndDate == null) {
+    return false;
+  }
+
+  return parsedEndDate >= parsedStartDate;
 };

@@ -119,7 +119,7 @@ const sidebarSections: SidebarSection[] = [
         label: '행사 할인 상품 수정',
       }),
     ],
-    title: '상품을 등록하고 오늘의 전단을 만들어보세요',
+    title: '우리 마트 전단을 동네 주민에게 전달하기',
   },
 ];
 
