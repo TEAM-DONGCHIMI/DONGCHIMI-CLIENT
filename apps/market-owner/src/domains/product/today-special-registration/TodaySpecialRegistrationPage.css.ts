@@ -2,8 +2,6 @@ import { style } from '@vanilla-extract/css';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
-const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
-
 export const pageRootClassName = style({
   width: '100%',
   minWidth: 'max-content',
@@ -27,7 +25,7 @@ export const titleSectionClassName = style({
 
 export const titleContentClassName = style({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   justifyContent: 'space-between',
   width: '100%',
   minHeight: '4rem',
@@ -35,9 +33,10 @@ export const titleContentClassName = style({
 
 export const titleMainClassName = style({
   display: 'inline-flex',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   gap: '0.8rem',
   minWidth: 0,
+  height: '4rem',
 });
 
 export const titleClassName = style({
@@ -109,8 +108,12 @@ export const sectionBodyClassName = style({
 export const productInfoFieldRowsClassName = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '0.9rem',
+  gap: '2rem',
   minWidth: 0,
+});
+
+export const productInfoFieldRowsErrorClassName = style({
+  gap: '0.9rem',
 });
 
 export const fieldLabelClassName = style({
@@ -128,7 +131,7 @@ export const twoColumnRowClassName = style({
 export const fieldGroupClassName = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '0.8rem',
+  gap: '0.2rem',
   minWidth: 0,
 });
 
@@ -149,42 +152,7 @@ export const fieldErrorIconClassName = style({
 
 export const categoryWrapperClassName = style({
   position: 'relative',
-  minWidth: '13.4rem',
-});
-
-export const categoryTriggerClassName = style({
-  ...typography['body-3-medium'],
-  appearance: 'none',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  boxSizing: 'border-box',
-  width: '13.4rem',
-  height: '4rem',
-  padding: '0.6rem 1.6rem',
-  border: `1px solid ${atomic.neutral[20]}`,
-  borderRadius: '0.4rem',
-  backgroundColor: atomic.common[0],
-  color: atomic.neutral[90],
-  cursor: 'pointer',
-  transition: 'border-color 160ms ease, outline-color 160ms ease',
-  selectors: {
-    '&:hover': {
-      borderColor: atomic.neutral[80],
-    },
-    '&[aria-expanded="true"]': {
-      borderColor: atomic.neutral[80],
-    },
-    '&:focus-visible': {
-      borderColor: atomic.neutral[80],
-      outline: `0.3rem solid ${focusOutlineColor}`,
-      outlineOffset: '0.2rem',
-    },
-  },
-});
-
-export const categoryPlaceholderClassName = style({
-  color: atomic.neutral[60],
+  width: '20.6rem',
 });
 
 export const categoryTriggerErrorClassName = style({
@@ -202,23 +170,17 @@ export const categoryTriggerErrorClassName = style({
   },
 });
 
-export const categoryDropdownOverlayClassName = style({
+export const categoryDropdownClassName = style({
   position: 'absolute',
   top: 'calc(100% + 0.8rem)',
   left: 0,
   zIndex: 1,
-});
-
-export const categoryDropdownClassName = style({
   width: '20.6rem',
-  maxHeight: 'var(--today-special-category-dropdown-max-height)',
-  border: 0,
+  maxHeight: 'var(--product-category-dropdown-max-height)',
+  backgroundColor: atomic.common[0],
   overflowX: 'hidden',
   overflowY: 'auto',
-});
-
-export const categoryDropdownItemClassName = style({
-  width: '16.6rem',
+  overscrollBehaviorY: 'none',
 });
 
 export const dateSingleFieldClassName = style({

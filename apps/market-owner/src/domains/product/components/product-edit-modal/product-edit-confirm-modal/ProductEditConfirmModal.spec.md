@@ -29,6 +29,7 @@
 - 호출부는 `openProductEditConfirmModal`을 호출하고, helper가 공통 overlay open/close handler를 연결합니다.
 - 현재 범위에서는 확인 버튼이 실제 mutation을 실행하지 않고 modal만 닫습니다.
 - Dialog primitive의 backdrop click, Escape close, focus management를 그대로 사용합니다.
+- modal 최초 진입 시 취소/확인 button에 focus-visible 상태를 만들지 않고 dialog container에 focus를 둡니다.
 
 ## Accessibility
 

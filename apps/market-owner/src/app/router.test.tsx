@@ -409,13 +409,13 @@ describe('marketOwnerRoutes', () => {
 
     await user.click(screen.getByRole('button', { name: '기간 일괄 수정' }));
 
-    expect(screen.getByText('선택된 상품 (0)')).toBeInTheDocument();
+    expect(screen.getByLabelText('선택된 상품 (0)')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '딸기 2팩 상품 수정' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '딸기 2팩 상품 삭제' })).toBeDisabled();
 
     await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 선택' }));
 
-    expect(screen.getByText('선택된 상품 (1)')).toBeInTheDocument();
+    expect(screen.getByLabelText('선택된 상품 (1)')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '기간 일괄 수정' }));
 
@@ -426,7 +426,7 @@ describe('marketOwnerRoutes', () => {
 
     await user.click(screen.getByRole('button', { name: '취소' }));
 
-    expect(screen.queryByText('선택된 상품 (1)')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('선택된 상품 (1)')).not.toBeInTheDocument();
   });
 
   it('deletes selected products from the edit page bulk delete flow', async () => {
@@ -440,11 +440,11 @@ describe('marketOwnerRoutes', () => {
 
     await user.click(screen.getByRole('button', { name: '일괄 삭제' }));
 
-    expect(screen.getByText('선택된 상품 (0)')).toBeInTheDocument();
+    expect(screen.getByLabelText('선택된 상품 (0)')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '햇감자 1kg 상품 선택' }));
 
-    expect(screen.getByText('선택된 상품 (1)')).toBeInTheDocument();
+    expect(screen.getByLabelText('선택된 상품 (1)')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '일괄 삭제' }));
 
@@ -457,7 +457,7 @@ describe('marketOwnerRoutes', () => {
     await user.click(screen.getByRole('button', { name: '삭제하기' }));
 
     expect(screen.queryByText('햇감자 1kg')).not.toBeInTheDocument();
-    expect(screen.queryByText('선택된 상품 (1)')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('선택된 상품 (1)')).not.toBeInTheDocument();
   });
 
   it('renders the not found page for unknown routes', async () => {

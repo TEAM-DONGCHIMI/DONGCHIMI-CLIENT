@@ -36,12 +36,18 @@
 - `하루 더 늘리기`는 종료일을 하루 증가시키고 버튼을 `오늘만 특가로`로 전환합니다.
 - `오늘만 특가로`는 종료일을 시작일로 되돌립니다.
 - 카드의 dotted date label은 modal input용 `YYYY-MM-DD` 형식으로 변환합니다.
+- 편집 가능한 시작일 field는 오늘부터 선택할 수 있습니다.
+- 종료일 field의 최소 날짜는 시작일과 오늘 중 더 늦은 날짜이며, 종료일이 시작일보다 이전이면 `변경하기`를 비활성화합니다.
+- 상품명은 공백을 포함해 최대 15자, 상품 한줄 홍보글은 공백을 포함해 최대 25자까지 입력할 수 있습니다.
+- 원가, 오늘의 특가, 판매가는 숫자만 입력할 수 있고 천 단위 콤마를 표시합니다.
+- 카테고리 dropdown은 viewport 하단과 40px 간격을 유지하고, modal scroll 시 현재 trigger 위치를 기준으로 최대 높이를 다시 계산합니다.
 - 텍스트/가격 입력은 design-system `InlineField`를 사용하고, 날짜 입력은 product domain 공용 `DateField`를 사용합니다.
 - 상품 이미지 영역은 product domain 공용 `ProductImageUploadField`를 사용합니다.
 
 ## Accessibility
 
 - `Dialog.Title`을 사용해 dialog accessible name을 제공합니다.
+- modal 최초 진입 시 특정 제목/입력/button에 focus-visible 상태를 만들지 않고 dialog container에 focus를 둡니다.
 - 취소/변경하기는 native button semantics를 유지합니다.
 - 상품 구분 trigger는 `aria-expanded`로 dropdown open 상태를 제공합니다.
 

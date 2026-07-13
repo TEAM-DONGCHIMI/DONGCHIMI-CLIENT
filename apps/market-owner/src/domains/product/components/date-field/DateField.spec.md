@@ -16,4 +16,6 @@
 - visible value/placeholder와 투명한 native `input type="date"`를 함께 렌더링합니다.
 - `Enter` 또는 Space 입력 시 native date picker를 엽니다.
 - 직접 타이핑과 paste 입력은 막고, picker 선택으로 값을 변경합니다.
+- `min`을 전달하지 않으면 오늘 날짜를 기본 최소 선택일로 사용합니다.
+- 종료일처럼 별도 최소 날짜가 필요한 사용처는 시작일과 오늘 중 더 늦은 날짜를 `min`으로 전달합니다.
 - `readOnly`이면 picker를 열지 않고 회색 읽기 전용 field로 표시합니다.
