@@ -23,7 +23,7 @@ const getApiBaseUrl = () => {
   const { apiBaseUrl } = getMarketOwnerEnv();
 
   if (!apiBaseUrl) {
-    throw createApiConfigurationError('VITE_API_BASE_URL is not configured.');
+    throw createApiConfigurationError('VITE_PUBLIC_API_SERVER_BASE_URL is not configured.');
   }
 
   return apiBaseUrl;
@@ -40,6 +40,12 @@ export const createHttpClient = () => {
       beforeRequest: [
         ({ request }) => {
           request.headers.set('Accept', 'application/json');
+
+          const { devAccessToken } = getMarketOwnerEnv();
+
+          if (devAccessToken) {
+            request.headers.set('Authorization', `Bearer ${devAccessToken}`);
+          }
         },
       ],
     },
