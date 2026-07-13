@@ -1,15 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
 
+import { useAuthStore } from '@/shared/stores/auth-store';
+
 import { loginMarketOwner } from '../api/auth-api';
-import { authTokenStorage } from '../model/auth-token-storage';
 
 export const useLoginMutation = () => {
   return useMutation({
     mutationFn: loginMarketOwner,
-    onSuccess: (response, variables) => {
-      authTokenStorage.setAccessToken(response.data.accessToken, {
-        persist: variables.isAutoLogin,
-      });
+    onSuccess: (response) => {
+      useAuthStore.getState().setAccessToken(response.data.accessToken);
     },
   });
 };

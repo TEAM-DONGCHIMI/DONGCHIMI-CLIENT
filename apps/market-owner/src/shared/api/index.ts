@@ -2,4 +2,5 @@ export { ApiError, createApiConfigurationError, isApiError, normalizeApiError } 
 export type { ApiErrorCategoryTypes } from './api-error';
 export { HTTP_STATUS, RESPONSE_MESSAGE } from './http-status';
 export { createHttpClient, getHttpClient, httpClient } from './http-client';
+export type { HttpClientOptionsTypes } from './http-auth';
 export type * as OwnerApiTypes from './__generated__/data-contracts';

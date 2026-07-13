@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { httpClient } from '@/shared/api';
 
-import { loginMarketOwner, signupMarketOwner } from './auth-api';
+import { loginMarketOwner, refreshMarketOwnerAuth, signupMarketOwner } from './auth-api';
 
 vi.mock('@/shared/api', () => ({
   httpClient: {
@@ -40,6 +40,10 @@ describe('loginMarketOwner', () => {
     });
 
     expect(mockHttpPost).toHaveBeenCalledWith(API_ENDPOINTS.owner.auth.login, {
+      auth: {
+        skipAuthorization: true,
+        skipRefresh: true,
+      },
       credentials: 'include',
       json: {
         email: 'owner@example.com',
@@ -92,6 +96,10 @@ describe('signupMarketOwner', () => {
 
     await expect(signupMarketOwner(requestBody)).resolves.toEqual(response);
     expect(mockHttpPost).toHaveBeenCalledWith(API_ENDPOINTS.owner.auth.signup, {
+      auth: {
+        skipAuthorization: true,
+        skipRefresh: true,
+      },
       json: requestBody,
     });
   });
@@ -113,5 +121,44 @@ describe('signupMarketOwner', () => {
         password: 'password123!',
       }),
     ).rejects.toBeInstanceOf(ApiResponseValidationError);
+  });
+});
+
+describe('refreshMarketOwnerAuth', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('posts refresh request with cookie credentials and returns validated access token', async () => {
+    const response = {
+      success: true,
+      code: 'SUCCESS',
+      message: 'ok',
+      data: {
+        accessToken: 'refreshed-access-token',
+      },
+    };
+
+    mockHttpPost.mockResolvedValueOnce(response);
+
+    await expect(refreshMarketOwnerAuth()).resolves.toEqual(response);
+    expect(mockHttpPost).toHaveBeenCalledWith(API_ENDPOINTS.common.auth.refresh, {
+      auth: {
+        skipAuthorization: true,
+        skipRefresh: true,
+      },
+      credentials: 'include',
+    });
+  });
+
+  it('throws when the refresh response does not match the API contract', async () => {
+    mockHttpPost.mockResolvedValueOnce({
+      success: true,
+      code: 'SUCCESS',
+      message: 'ok',
+      data: {},
+    });
+
+    await expect(refreshMarketOwnerAuth()).rejects.toBeInstanceOf(ApiResponseValidationError);
   });
 });
