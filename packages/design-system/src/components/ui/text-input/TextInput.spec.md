@@ -203,7 +203,7 @@ TextInput
 ## Styling
 
 - root: caller width를 따르며 기본적으로 사용 가능한 inline width를 채웁니다. Figma의 660px은 예시 canvas 폭이며 고정 public width로 사용하지 않습니다.
-- vertical gap: label과 input 사이 8px, input과 supporting text 사이 4px
+- vertical gap: label과 input 사이 8px, input과 supporting text 사이 `0.4rem` (기본 root font-size 10px 기준 4px)
 - label row: height 22px, label과 required indicator 사이 4px
 - input: width 100%, height 48px, horizontal/vertical padding 12px, border 1px, radius 6px
 - label: Body 3 Semibold, 14px/1.4

@@ -47,16 +47,22 @@ describe('LoginForm', () => {
     expect(keepSignedInCheckbox).not.toBeChecked();
   });
 
-  it('validates the required email field while the user edits it', async () => {
+  it('shows the email field error after focus leaves the field', async () => {
     const user = userEvent.setup();
 
     renderLoginForm();
 
     const emailInput = screen.getByLabelText('이메일');
+    const passwordInput = screen.getByLabelText('비밀번호');
 
     await user.type(emailInput, 'invalid-email');
 
     expect(emailInput).toHaveValue('invalid-email');
+    expect(screen.queryByText('올바른 이메일 형식이 아닙니다.')).not.toBeInTheDocument();
+    expect(emailInput).not.toHaveAttribute('aria-invalid');
+
+    await user.click(passwordInput);
+
     expect(screen.getByText('올바른 이메일 형식이 아닙니다.')).toBeInTheDocument();
     expect(emailInput).toBeInvalid();
 
@@ -84,11 +90,12 @@ describe('LoginForm', () => {
     expect(emailInput).toHaveValue('owner_01-test@example.co.kr');
   });
 
-  it('masks and validates the required password field while the user edits it', async () => {
+  it('shows the password field error after focus leaves the field', async () => {
     const user = userEvent.setup();
 
     renderLoginForm();
 
+    const emailInput = screen.getByLabelText('이메일');
     const passwordInput = screen.getByLabelText('비밀번호');
 
     expect(passwordInput).toHaveAttribute('type', 'password');
@@ -100,6 +107,10 @@ describe('LoginForm', () => {
     expect(passwordInput).toBeValid();
 
     await user.clear(passwordInput);
+
+    expect(screen.queryByText('비밀번호를 입력해주세요.')).not.toBeInTheDocument();
+
+    await user.click(emailInput);
 
     expect(screen.getByText('비밀번호를 입력해주세요.')).toBeInTheDocument();
     expect(passwordInput).toBeInvalid();

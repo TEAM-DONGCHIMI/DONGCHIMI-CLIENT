@@ -20,23 +20,29 @@
 - Target viewport: desktop `1440 x 675`, responsive fallback for narrow viewport
 - FRS / SRS: TBD
 - Decision / Meeting note: DCMSM-26 Jira 본문
-- Related Jira: DCMSM-26
+- Related Jira: DCMSM-26, DCMSM-35, DCMDS-29
 
 ## Scope
 
 - 상단 로고 header, 페이지 제목/설명, 마트 이미지 업로드 placeholder를 렌더링합니다.
-- 마트 이미지 파일을 선택하면 선택한 이미지를 업로드 영역에 preview로 표시하고 오른쪽 위 camera icon을 표시합니다.
+- 마트 이미지 파일을 선택하면 선택한 이미지를 업로드 영역에 preview로 표시하고 오른쪽 위에 design-system `Button`의 `outlined / assistive / large` 조합을 사용하는 40px 원형 camera 버튼을 표시합니다.
+- 마트 이미지는 JPG/JPEG/PNG 형식과 최대 10MB 파일만 허용하고, 형식 오류·크기 초과·업로드 실패·네트워크 오류를 error Toast로 안내합니다.
 - 마트명, 사업자 등록 번호, 주소, 상세주소, 영업 시간, 휴무일, 마트 번호, 점주 번호 입력 UI를 렌더링합니다.
 - 마트명은 필수 입력이며 공백 포함 최대 15자까지 입력할 수 있고, 미입력 또는 첫 글자가 공백이면 에러 메시지를 표시합니다.
 - 사업자 등록 번호는 선택 입력이며 숫자만 입력할 수 있고, 입력한 숫자에 따라 `000-00-00000` 형식으로 하이픈을 자동 적용합니다. 입력한 경우 숫자 10자리를 모두 채워야 하며 형식이 맞지 않으면 에러 메시지를 표시합니다.
 - 주소는 필수 입력이며 주소 찾기를 통해 선택된 주소만 표시합니다. 직접 텍스트 입력은 막고, 미입력 안내는 후속 토스트 처리로 분리합니다.
 - 상세주소는 필수 입력이며 공백 포함 최대 20자까지 입력할 수 있고, 미입력 상태에서는 에러 메시지를 표시합니다.
-- 영업 요일은 월요일부터 일요일 중 최대 2개까지 다중 선택할 수 있고 선택한 요일을 trigger에 표시합니다.
+- 영업 요일은 월요일부터 일요일까지 선택 개수 제한 없이 다중 선택할 수 있고 선택한 요일을 trigger에 표시합니다.
 - 영업 시간은 숫자만 입력받아 `00:00 - 00:00` 형식으로 자동 포맷하며, `00:00`부터 `23:59` 범위 안에서 종료 시간이 시작 시간보다 이후여야 합니다.
+- 영업 요일 또는 영업 시간이 비어 있으면 `영업 요일과 영업시간을 입력해주세요.`를 표시하고, 영업 시간 형식이 올바르지 않으면 `올바른 시간을 입력해주세요.`를 표시합니다.
 - 영업 시간과 마트 번호는 `+` action으로 추가 입력 row를 최대 1개 노출하고, 추가 row의 `-` action으로 제거합니다.
+- 추가 영업 시간과 추가 마트 번호 row가 노출된 경우 기본 필드와 동일하게 blur 시점에 필수값과 형식을 검증하며, row를 제거하면 해당 값과 에러를 초기화합니다.
 - 마트 번호는 필수 입력이며 숫자만 입력받아 일반전화, 휴대전화, 인터넷전화 번호 형식으로 하이픈을 자동 적용하고, 미입력 또는 전화번호 형식 오류 시 에러 메시지를 표시합니다.
 - 점주 번호는 필수 입력이며 숫자만 입력받아 휴대전화 번호 형식으로 하이픈을 자동 적용하고, 미입력 또는 휴대전화 형식 오류 시 에러 메시지를 표시합니다.
-- 필수 입력값이 채워지기 전 `등록하기` 버튼을 disabled 상태로 유지합니다.
+- 점주 번호는 추가 입력 action 없이 1개만 입력할 수 있습니다.
+- 필드는 입력 중에 에러 메시지를 노출하지 않고, 해당 필드 또는 입력 영역을 벗어날 때 검증합니다.
+- 필수 입력값이 유효해지기 전 `등록하기` 버튼을 disabled 상태로 유지합니다.
+- 필수 입력 표시 `*`에 hover하면 `* 표시는 필수로 입력해야 해요.` 툴팁을 표시하고, hover가 해제되면 닫습니다.
 - 폼 상태와 touched/error 관리는 `react-hook-form`으로 처리하고, 필드 검증 규칙은 `zod` schema와 `zodResolver`로 관리합니다.
 - 기존 design-system layout primitive와 form/button/input/chip/addable field 컴포넌트를 우선 조합합니다.
 
@@ -69,11 +75,11 @@
 
 ## Design System And Component Boundary
 
-- design-system `ui` components: `TextInput`, `Button`, `AddableField`, `Chip`
+- design-system `ui` components: `TextInput`, `Button`, `AddableField`, `Chip`, `RequiredMark`
 - design-system `layout` components: `Flex`, `Stack`, `Grid`
 - design-system icons: `IcPlus`, `IcPlusSizeSmallColor60`, `IcLineHorizontalSizeSmall`, `IcClockSizeSmallColor60`, `IcPhoneSizeSmallColor60`, `IcChevronDown`
 - app-shared components: none
-- page-local components: required mark and section-local field composition
+- page-local components: section-local field composition
 - not promoted to design-system: 마트 정보 등록 전용 header/logo placeholder와 field composition은 현재 단일 route 전용입니다.
 
 ## States
@@ -81,14 +87,16 @@
 - loading: API 연동 전까지 별도 loading 없음
 - empty: 이미지 미등록 placeholder와 각 input placeholder를 표시합니다.
 - error: 마트명, 사업자 등록 번호, 상세주소, 영업 시간, 마트 번호, 점주 번호의 클라이언트 validation 메시지를 표시합니다. 주소 미입력 안내는 후속 토스트 처리로 분리합니다.
-- disabled: 필수값 미입력 시 submit button disabled
+- toast error: 이미지 형식/크기/업로드/네트워크 오류, 주소 검색 서비스 오류, 등록 서버 오류 및 등록 실패 문구를 공통 `ToastProvider`로 표시합니다. 실제 서비스 오류는 각 API callback이 실패할 때 노출합니다.
+- toast placement: 마트 정보 등록 페이지에서 발생한 Toast는 viewport 상단 중앙에서 24px 떨어진 위치에 표시합니다.
+- disabled: 필수값이 미입력 또는 유효하지 않으면 submit button을 비활성화합니다.
 - selected / active: select value로 영업 요일/휴무일 선택 상태를 관리합니다.
 
 ## Behavior
 
 - navigation: 이번 UI-only 범위에서는 route 연결 없음
 - interaction: 이미지 추가는 file input으로 이미지 파일 선택 창을 열고 선택한 이미지를 preview로 표시합니다. 주소 찾기는 외부 연동 전 placeholder action입니다. 영업 시간과 마트 번호의 추가 버튼은 추가 입력 row를 노출하고 추가 row의 제거 버튼은 해당 row를 숨깁니다.
-- form / validation: 마트명, 주소, 상세주소, 영업 요일, 영업 시간, 마트 번호, 점주 번호가 모두 비어 있지 않고 마트명/사업자 등록 번호/주소/상세주소/영업 시간 형식 에러가 없을 때 submit enabled
+- form / validation: 입력 중에는 에러 메시지를 노출하거나 갱신하지 않고, 필드에서 다른 영역으로 focus가 이동하는 blur 시점에 검증합니다. 영업 요일과 영업 시간은 하나의 입력 영역으로 취급해 영역 내부 이동 중에는 검증하지 않고 영역을 벗어날 때 함께 검증합니다.
 - model: `model/*`에서 form type, 입력 포맷터, validator, zod validation schema를 page-local로 관리합니다.
 - API: none
 

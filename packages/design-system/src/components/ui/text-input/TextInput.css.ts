@@ -25,12 +25,6 @@ export const label = style({
   color: atomic.neutral[90],
 });
 
-export const requiredMark = style({
-  ...typography['body-2-regular'],
-  flexShrink: 0,
-  color: semantic.primary.strong,
-});
-
 export const inputContainer = style({
   position: 'relative',
   width: '100%',
@@ -138,7 +132,7 @@ export const messageRow = style({
   gap: 4,
   minWidth: 0,
   minHeight: 18,
-  marginTop: 4,
+  marginTop: '0.4rem',
 });
 
 export const errorIconSlot = style({

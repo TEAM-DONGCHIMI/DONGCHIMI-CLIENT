@@ -1,17 +1,13 @@
+'use client';
+
 import { NearbyMarketsLocationSearchInput } from '../components/NearbyMarketsLocationSearchInput';
+import { useNearbyMarketsSearch } from '../NearbyMarketsClientProvider';
 import * as S from '../NearbyMarketsPage.css';
 
-export interface NearbyMarketsSearchSectionProps {
-  keyword: string;
-  onKeywordChange: (keyword: string) => void;
-  placeholder: string;
-}
+export const NearbyMarketsSearchSection = () => {
+  const { keyword, onKeywordChange, onKeywordClick, placeholder, readOnly } =
+    useNearbyMarketsSearch();
 
-export const NearbyMarketsSearchSection = ({
-  keyword,
-  onKeywordChange,
-  placeholder,
-}: NearbyMarketsSearchSectionProps) => {
   return (
     <section aria-labelledby='nearby-markets-title' className={S.searchSectionClassName}>
       <h1 className={S.titleClassName} id='nearby-markets-title'>
@@ -21,8 +17,10 @@ export const NearbyMarketsSearchSection = ({
       </h1>
 
       <NearbyMarketsLocationSearchInput
+        onClick={onKeywordClick}
         onValueChange={onKeywordChange}
         placeholder={placeholder}
+        readOnly={readOnly}
         value={keyword}
       />
     </section>

@@ -13,8 +13,11 @@ export const SignupPage = () => {
   const {
     action: {
       clearSubmitErrorMessage,
+      handleEmailBlur,
       handleEmailChange,
+      handlePasswordBlur,
       handlePasswordChange,
+      handlePasswordConfirmBlur,
       handlePasswordConfirmChange,
       handleSubmit,
     },
@@ -53,6 +56,7 @@ export const SignupPage = () => {
             autoComplete='email'
             label='이메일'
             name='email'
+            onBlur={handleEmailBlur}
             onChange={handleEmailChange}
             placeholder='example@email.com'
             type='email'
@@ -64,6 +68,7 @@ export const SignupPage = () => {
             autoComplete='new-password'
             label='비밀번호'
             name='password'
+            onBlur={handlePasswordBlur}
             onChange={handlePasswordChange}
             placeholder='비밀번호를 입력해주세요.'
             type='password'
@@ -75,6 +80,7 @@ export const SignupPage = () => {
             autoComplete='new-password'
             label='비밀번호 확인'
             name='passwordConfirm'
+            onBlur={handlePasswordConfirmBlur}
             onChange={handlePasswordConfirmChange}
             placeholder='비밀번호를 확인해주세요.'
             trailingIcon={isPasswordConfirmValid ? <IcCircleCheckFill /> : undefined}

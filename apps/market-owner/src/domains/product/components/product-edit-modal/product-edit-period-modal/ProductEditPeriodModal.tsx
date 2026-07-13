@@ -6,10 +6,13 @@ import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/d
 import {
   addOneDayToProductEditDate,
   formatProductEditDateForInput,
-} from '../../../utils/product-edit-date';
+  getProductDateMinimum,
+  isProductEditDateRangeValid,
+  isProductEditDateTodayOrFuture,
+} from '../../../utils/product-date';
 import { DateField } from '../../date-field';
 import { type ProductEditTypeTypes } from '../../product-edit-page-shell';
-import { useProductEditModalTitleFocus } from '../hooks/use-product-edit-modal-title-focus';
+import { useProductEditModalContentFocus } from '../hooks/use-product-edit-modal-content-focus';
 import { keepProductEditDialogOpen, openProductEditOverlay } from '../open-product-edit-overlay';
 import * as S from './ProductEditPeriodModal.css';
 
@@ -50,13 +53,15 @@ export const ProductEditPeriodModal = ({
   onClose,
   onSubmit,
 }: ProductEditPeriodModalProps) => {
-  const titleRef = useProductEditModalTitleFocus(open);
+  const contentRef = useProductEditModalContentFocus(open);
   const [initialPeriod] = useState(() => createInitialPeriod(initialPeriodProp));
   const [startDate, setStartDate] = useState(initialPeriod.startDate);
   const [endDate, setEndDate] = useState(initialPeriod.endDate);
   const isTodaySpecial = variant === 'todaySpecial';
   const isTodayOnly = startDate === endDate;
   const isEdited = startDate !== initialPeriod.startDate || endDate !== initialPeriod.endDate;
+  const isStartDateValid = isTodaySpecial || isProductEditDateTodayOrFuture(startDate);
+  const isDateRangeValid = isProductEditDateRangeValid(startDate, endDate);
 
   const updateStartDate: ChangeEventHandler<HTMLInputElement> = (event) => {
     setStartDate(event.target.value);
@@ -82,9 +87,9 @@ export const ProductEditPeriodModal = ({
 
   return (
     <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
-      <Dialog.Content className={S.contentClassName}>
+      <Dialog.Content ref={contentRef} className={S.contentClassName}>
         <div className={S.containerClassName}>
-          <Dialog.Title ref={titleRef} className={S.titleClassName} tabIndex={-1}>
+          <Dialog.Title className={S.titleClassName}>
             선택된 상품들의 판매 기간을 수정해주세요
           </Dialog.Title>
 
@@ -105,6 +110,7 @@ export const ProductEditPeriodModal = ({
                   <DateField
                     ariaLabel='행사 종료일'
                     className={S.dateFieldClassName}
+                    min={getProductDateMinimum(startDate)}
                     value={endDate}
                     onChange={updateEndDate}
                   />
@@ -144,7 +150,7 @@ export const ProductEditPeriodModal = ({
             </Button>
             <Button
               className={S.footerButtonClassName}
-              disabled={!isEdited}
+              disabled={!isEdited || !isStartDateValid || !isDateRangeValid}
               size='small'
               variant='solid'
               onClick={submitPeriod}

@@ -1,5 +1,6 @@
 import { Button, Dialog } from '@dongchimi/design-system/components';
 
+import { useProductEditModalContentFocus } from '../hooks/use-product-edit-modal-content-focus';
 import { openProductEditOverlay } from '../open-product-edit-overlay';
 import * as S from './ProductEditConfirmModal.css';
 
@@ -35,10 +36,11 @@ export const ProductEditConfirmModal = ({
   onConfirm,
 }: ProductEditConfirmModalProps) => {
   const copy = confirmModalCopyByAction[action];
+  const contentRef = useProductEditModalContentFocus(open);
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && onCancel()}>
-      <Dialog.Content className={S.contentClassName}>
+      <Dialog.Content ref={contentRef} className={S.contentClassName}>
         <div className={S.containerClassName}>
           <Dialog.Title className={S.titleClassName}>{copy.title}</Dialog.Title>
 

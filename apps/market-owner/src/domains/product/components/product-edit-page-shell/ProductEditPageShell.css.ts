@@ -1,6 +1,6 @@
 import { style, styleVariants } from '@vanilla-extract/css';
 
-import { atomic, typography } from '@dongchimi/design-system/tokens';
+import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 export const pageClassName = style({
   display: 'flex',
@@ -62,6 +62,10 @@ export const selectedProductCountClassName = style({
   marginRight: '0.8rem',
   color: atomic.neutral[70],
   whiteSpace: 'nowrap',
+});
+
+export const selectedProductNumberClassName = style({
+  color: semantic.primary.strong,
 });
 
 const actionButtonBaseClassName = style({

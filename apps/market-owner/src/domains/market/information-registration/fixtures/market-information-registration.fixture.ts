@@ -12,6 +12,8 @@ export const marketInformationRegistrationFixture = {
     businessTime: '',
     additionalBusinessDay: '',
     additionalBusinessTime: '',
+    hasAdditionalBusinessHours: false,
+    hasAdditionalMarketPhone: false,
     holiday: '',
     marketPhone1: '',
     marketPhone2: null,

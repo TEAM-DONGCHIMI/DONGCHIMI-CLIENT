@@ -9,6 +9,7 @@ import {
 import { IcCircleExclamationSizeSmallColorNegative } from '../../../icons';
 import { cn } from '../../../styles/class-name';
 import type { RecipeVariantProps } from '../../../styles/recipe';
+import { RequiredMark } from '../required-mark';
 import {
   errorIconSlot,
   input,
@@ -18,7 +19,6 @@ import {
   labelRow,
   messageRow,
   messageText,
-  requiredMark,
   root,
   trailingAction,
   trailingIcon,
@@ -125,11 +125,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             <label className={label} htmlFor={inputId}>
               {visibleLabel}
             </label>
-            {required && (
-              <span aria-hidden='true' className={requiredMark}>
-                *
-              </span>
-            )}
+            {required && <RequiredMark />}
           </div>
         )}
 

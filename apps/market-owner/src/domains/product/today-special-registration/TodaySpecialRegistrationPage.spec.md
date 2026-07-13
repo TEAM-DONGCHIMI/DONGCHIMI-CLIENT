@@ -37,8 +37,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `hooks/useCurrentProductField.ts`
   - 현재 상품의 text/date/price field change, blur, formatting, error message 계산을 담당합니다.
 - `hooks/useCategoryDropdown.tsx`
-  - category dropdown open/close 상태를 OverlayKit overlay id로 관리합니다.
-  - trigger 위치를 기준으로 dropdown max height를 계산하고, 외부 click과 Escape close 동작을 담당합니다.
+  - product domain 공용 `useProductOverlayDisclosure`로 open/close, 외부 click, Escape 동작을 관리합니다.
+  - 등록 화면에 필요한 dropdown max height와 form category touched 처리만 담당합니다.
 - `hooks/useProductDraftNavigation.ts`
   - 상품 draft 추가, 삭제, 이전, 다음 이동을 담당합니다.
 - `sections/RegistrationTitleSection.tsx`
@@ -52,8 +52,6 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `../components/date-field/DateField.tsx`
   - visible `YYYY-MM-DD` field와 투명 native `type=date` input overlay를 결합합니다.
   - native date icon/text는 숨기고, `showPicker()`로 date picker를 엽니다.
-- `components/CategoryDropdownOverlay.tsx`
-  - trigger wrapper 안에서 실제 `Dropdown`, `Dropdown.Item` UI를 렌더링합니다.
 - `model/product-form.types.ts`
   - schema inference 기반 form value와 text field 타입을 정의합니다.
 - `model/product-form.schema.ts`
@@ -72,8 +70,12 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - category empty: trigger에 `카테고리` placeholder를 표시합니다.
 - category open: dropdown을 trigger 하단에 표시하고 현재 선택된 item을 selected 상태로 표시합니다.
 - category overlay: trigger 바로 아래에 dropdown을 표시하고, 외부 click 또는 Escape로 닫습니다.
+- category scroll: dropdown 높이는 열릴 때와 viewport resize 때만 계산하고, 흰색 surface를 유지하며 목록 끝의 bounce와 배경 페이지로의 스크롤 전달을 막습니다.
+- category outside scroll: dropdown 내부 목록 스크롤은 높이 계산에서 제외하고, 주변 페이지가 스크롤되면 현재 trigger 위치를 기준으로 높이를 다시 계산합니다.
 - multi product: 상품이 2개 이상이면 title에 `(현재/전체)`, 이전/다음 button, 삭제 button을 표시합니다.
+- title row와 title main은 상품 control 표시 여부와 관계없이 높이 `4rem`을 유지하고, title은 상단 정렬해 등록·수정 전환과 상품 추가 시 위치가 움직이지 않게 합니다.
 - disabled submit: 필수값이 비어 있거나 form completion 조건을 만족하지 않으면 `등록 완료`를 disabled 처리합니다.
+- submit success: 등록 완료 후 오늘의 특가 상품 수정 route로 이동합니다.
 - field error: blur 또는 submit validation 이후 필드 아래에 icon과 error message를 표시합니다.
 - server error: API 연결 시 추가합니다.
 - loading: 이번 범위에서 다루지 않습니다.
@@ -173,7 +175,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 
 - Design system components: `Button`, `IconButton`, `InlineField`, `Dropdown`, generated icon components.
 - Product domain components: `DateField`, `ProductImageUploadField`
-- Page-local components: `CategoryDropdownOverlay`.
+- Product domain shared UI: `ProductCategoryDropdown`.
+- 상품 등록과 수정 modal은 동일한 `ProductCategoryTrigger` typography, 크기, padding, chevron을 사용합니다.
 - Page-local hooks: `useTodaySpecialForm`, `useCurrentProductField`, `useCategoryDropdown`, `useProductDraftNavigation`.
 - Page-local sections: title, product info, price, period.
 - App shared form util: touched/submitted 기준으로 visible error message를 계산합니다.
@@ -182,7 +185,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - Title count는 title text 바로 뒤에 표시하고, count와 chevron group 사이 간격은 `0.8rem`입니다.
 - `DateField`는 native date input의 브라우저 기본 icon/text를 노출하지 않기 위해 visible field와 transparent native input overlay를 사용합니다.
 - 오늘의 특가 등록 시작일은 오늘 날짜를 기본값과 `min`으로 사용해 이전 날짜 선택을 막습니다.
-- 상품명 error message가 표시되면 error message 아래와 `상품 한줄 홍보문구` label 사이 간격은 `0.9rem`입니다.
+- 상품명 또는 상품 구분 error message가 표시되면 error message 아래와 `상품 한줄 홍보문구` label 사이 간격은 `0.9rem`입니다.
+- 카테고리 목록은 product domain 공용 `ProductCategoryDropdown`의 기본 테두리와 item layout을 유지합니다.
 - Layout은 desktop Figma frame 기준으로 sidebar layout 내부 no-scroll form 화면을 목표로 합니다.
 
 ## Non-Goals / Follow-Ups

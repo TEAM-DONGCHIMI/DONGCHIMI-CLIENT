@@ -9,12 +9,17 @@ export const contentClassName = style({
   width: '100.8rem',
   maxWidth: 'calc(100vw - 3.2rem)',
   maxHeight: 'calc(100dvh - 4.8rem)',
-  padding: '5.6rem clamp(4rem, 5.85vw, 5.9rem)',
+  padding: '5.6rem 5.9rem',
   borderRadius: '2.4rem',
   boxShadow: shadow.normal.medium,
   overflowX: 'hidden',
   overflowY: 'auto',
   overscrollBehavior: 'contain',
+  '@media': {
+    '(max-width: 1180px)': {
+      padding: '4.8rem 4rem',
+    },
+  },
 });
 
 export const containerClassName = style({

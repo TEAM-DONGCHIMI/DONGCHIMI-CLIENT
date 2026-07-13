@@ -72,14 +72,18 @@ describe('marketOwnerRoutes', () => {
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   });
 
-  it('validates signup email input in real time', async () => {
+  it('validates signup email input after focus leaves the field', async () => {
     const user = userEvent.setup();
 
     renderRoute('/signup');
 
     const emailInput = await screen.findByLabelText('이메일');
+    const passwordInput = screen.getByLabelText('비밀번호');
 
     await user.type(emailInput, '한글');
+    expect(screen.queryByText('올바른 이메일 형식이 아닙니다.')).not.toBeInTheDocument();
+
+    await user.click(passwordInput);
     expect(screen.getByText('올바른 이메일 형식이 아닙니다.')).toBeInTheDocument();
 
     await user.clear(emailInput);
@@ -94,14 +98,18 @@ describe('marketOwnerRoutes', () => {
     expect(screen.queryByText('이미 사용 중인 이메일입니다.')).not.toBeInTheDocument();
   });
 
-  it('validates signup password input in real time', async () => {
+  it('validates signup password input after focus leaves the field', async () => {
     const user = userEvent.setup();
 
     renderRoute('/signup');
 
+    const emailInput = await screen.findByLabelText('이메일');
     const passwordInput = await screen.findByLabelText('비밀번호');
 
     await user.type(passwordInput, 'abc');
+    expect(screen.queryByText('6-20자로 입력해주세요.')).not.toBeInTheDocument();
+
+    await user.click(emailInput);
     expect(screen.getByText('6-20자로 입력해주세요.')).toBeInTheDocument();
 
     await user.clear(passwordInput);
@@ -120,19 +128,23 @@ describe('marketOwnerRoutes', () => {
     expect(screen.queryByText('비밀번호를 입력해주세요.')).not.toBeInTheDocument();
   });
 
-  it('validates signup password confirmation in real time', async () => {
+  it('validates signup password confirmation after focus leaves the field', async () => {
     const user = userEvent.setup();
 
     renderRoute('/signup');
 
+    const emailInput = await screen.findByLabelText('이메일');
     const passwordInput = await screen.findByLabelText('비밀번호');
     const passwordConfirmInput = screen.getByLabelText('비밀번호 확인');
     const passwordConfirmInputContainer = passwordConfirmInput.parentElement;
 
     await user.type(passwordInput, 'abc123');
     await user.type(passwordConfirmInput, 'abc124');
-    expect(screen.getByText('비밀번호가 일치하지 않습니다.')).toBeInTheDocument();
+    expect(screen.queryByText('비밀번호가 일치하지 않습니다.')).not.toBeInTheDocument();
     expect(passwordConfirmInputContainer?.querySelector('svg')).not.toBeInTheDocument();
+
+    await user.click(emailInput);
+    expect(screen.getByText('비밀번호가 일치하지 않습니다.')).toBeInTheDocument();
 
     await user.clear(passwordConfirmInput);
     expect(screen.getByText('비밀번호를 다시 입력해주세요.')).toBeInTheDocument();
@@ -494,13 +506,13 @@ describe('marketOwnerRoutes', () => {
 
     await user.click(screen.getByRole('button', { name: '기간 일괄 수정' }));
 
-    expect(screen.getByText('선택된 상품 (0)')).toBeInTheDocument();
+    expect(screen.getByLabelText('선택된 상품 (0)')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '딸기 2팩 상품 수정' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '딸기 2팩 상품 삭제' })).toBeDisabled();
 
     await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 선택' }));
 
-    expect(screen.getByText('선택된 상품 (1)')).toBeInTheDocument();
+    expect(screen.getByLabelText('선택된 상품 (1)')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '기간 일괄 수정' }));
 
@@ -511,7 +523,7 @@ describe('marketOwnerRoutes', () => {
 
     await user.click(screen.getByRole('button', { name: '취소' }));
 
-    expect(screen.queryByText('선택된 상품 (1)')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('선택된 상품 (1)')).not.toBeInTheDocument();
   });
 
   it('deletes selected products from the edit page bulk delete flow', async () => {
@@ -525,11 +537,11 @@ describe('marketOwnerRoutes', () => {
 
     await user.click(screen.getByRole('button', { name: '일괄 삭제' }));
 
-    expect(screen.getByText('선택된 상품 (0)')).toBeInTheDocument();
+    expect(screen.getByLabelText('선택된 상품 (0)')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '햇감자 1kg 상품 선택' }));
 
-    expect(screen.getByText('선택된 상품 (1)')).toBeInTheDocument();
+    expect(screen.getByLabelText('선택된 상품 (1)')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '일괄 삭제' }));
 
@@ -542,7 +554,7 @@ describe('marketOwnerRoutes', () => {
     await user.click(screen.getByRole('button', { name: '삭제하기' }));
 
     expect(screen.queryByText('햇감자 1kg')).not.toBeInTheDocument();
-    expect(screen.queryByText('선택된 상품 (1)')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('선택된 상품 (1)')).not.toBeInTheDocument();
   });
 
   it('renders the not found page for unknown routes', async () => {

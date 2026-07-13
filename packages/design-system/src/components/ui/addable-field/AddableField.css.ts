@@ -27,12 +27,6 @@ export const label = style({
   color: atomic.neutral[90],
 });
 
-export const requiredMark = style({
-  ...typography['body-2-regular'],
-  flexShrink: 0,
-  color: semantic.primary.strong,
-});
-
 export const field = recipe({
   base: {
     display: 'flex',
@@ -145,7 +139,7 @@ export const messageRow = style({
   gap: 4,
   minWidth: 0,
   minHeight: 18,
-  marginTop: 12,
+  marginTop: '0.4rem',
 });
 
 export const errorIcon = style({
