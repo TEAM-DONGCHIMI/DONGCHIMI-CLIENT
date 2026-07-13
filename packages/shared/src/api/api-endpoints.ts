@@ -23,8 +23,11 @@ export interface OwnerProductsSearchParamsTypes extends ApiSearchParamsTypes {
 }
 
 export interface UserMarketLocationSearchParamsTypes extends ApiSearchParamsTypes {
+  cursor?: number;
   lat: number;
   lng: number;
+  radius?: number;
+  size?: number;
 }
 
 export interface UserPeriodicProductsSearchParamsTypes extends ApiSearchParamsTypes {

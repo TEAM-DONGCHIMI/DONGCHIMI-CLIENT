@@ -33,8 +33,8 @@
 
 ## Out Of Scope
 
-- 위치 기반 마트 목록 조회 (지도 중심은 geolocation 연동되었으나, 현재 mock API는 위치 파라미터 없이 keyword 필터만 지원합니다)
-- 실제 백엔드 주변 마트 API 연동 (현재 `nearby-markets-api`는 mock 데이터를 반환하며, 백엔드 endpoint가 나오면 `httpClient.get` 호출로 교체합니다)
+- 위치 기반 마트 목록 조회는 `nearby-markets-api`에서 `httpClient.get`으로 `GET /v1/users/markets/location` endpoint를 호출합니다.
+- `lat`, `lng`, `radius`, `cursor`, `size`를 query parameter로 전달하고, 응답은 zod schema로 검증한 뒤 화면 모델의 `contents` 형태로 정규화합니다.
 - bottom sheet (마커 터치 시에는 간단한 정보창만 노출하며, 별도 bottom sheet UI는 이후 작업에서 연결합니다)
 - 권한 허용 시 검색 input에 실제 현재 위치의 행정동 주소(reverse geocoding)를 표시하는 것: 현재는 "서울시 마포구 망원동" 고정 텍스트를 기본 값으로 채우며, 실제 주소 조회는 외부 reverse geocoding 소스 확정 후 이후 작업에서 연결합니다.
 - 권한 미허용 시 Container 클릭 → 우편번호 찾기 모달을 통한 행정동 검색 플로우: 현재는 빈 값 + placeholder만 노출하며, 모달을 통한 행정동 검색은 외부 주소 검색 서비스 선정 후 이후 작업에서 연결합니다.
@@ -69,7 +69,7 @@
 - market list: `useIntersectionObserver`로 목록 하단 sentinel을 감지해 `NearbyMarketsClientProvider`로부터 전달받은 `fetchNextPage`를 호출하여 다음 페이지를 자동으로 불러옵니다(무한스크롤).
 - navigation: 마트 카드 클릭 시 `router.push`로 `/markets/[marketId]`로 이동합니다.
 - form / validation: 요청 파라미터(`keyword`/`cursor`/`lat`/`lng`/`radius`/`size`)와 API 응답 모두 zod 스키마(`nearby-markets-schema`)로 검증합니다. 응답은 검증 후 view model로 매핑합니다.
-- API: `useGetNearbyMarketsInfiniteQuery` → `getNearbyMarkets`(현재 mock)로 주변 마트 목록을 조회합니다. `keyword` 파라미터를 전달하면 mock 목록을 마트 이름/주소 기준(대소문자 무시)으로 필터링합니다.
+- API: `useGetNearbyMarketsInfiniteQuery` → `getNearbyMarkets`로 주변 마트 목록을 조회합니다. `lat`/`lng`가 준비된 뒤 query를 활성화하고, `hasNext`/`nextCursor`로 다음 페이지를 조회합니다.
 
 ## Accessibility
 
@@ -97,4 +97,4 @@
 
 ## Open Questions
 
-- 1차로 마트명/주소 keyword 필터와 권한 상태별 검색 input 기본 값(고정 텍스트)/placeholder 전환을 연결했습니다. 실제 행정동 주소 표시(reverse geocoding)와 우편번호 찾기 모달을 통한 행정동 검색 플로우는 외부 주소 검색 서비스 선정 및 현재 위치 reverse geocoding 소스 확정이 필요합니다.
+- 1차로 권한 상태별 검색 input 기본 값(고정 텍스트)/placeholder 전환과 위치 기반 주변 마트 조회를 연결했습니다. 실제 행정동 주소 표시(reverse geocoding)와 우편번호 찾기 모달을 통한 행정동 검색 플로우는 외부 주소 검색 서비스 선정 및 현재 위치 reverse geocoding 소스 확정이 필요합니다.

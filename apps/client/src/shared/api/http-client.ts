@@ -39,6 +39,12 @@ export const createHttpClient = () => {
       beforeRequest: [
         ({ request }) => {
           request.headers.set('Accept', 'application/json');
+
+          const token = process.env.NEXT_PUBLIC_API_TEST_TOKEN?.trim();
+
+          if (token) {
+            request.headers.set('Authorization', `Bearer ${token}`);
+          }
         },
       ],
     },

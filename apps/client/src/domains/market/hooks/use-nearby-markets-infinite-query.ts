@@ -5,6 +5,10 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { getNearbyMarkets, type NearbyMarketsListParamsTypes } from '../api/nearby-markets-api';
 import { nearbyMarketsQueryKeys } from '../query-keys';
 
+const hasNearbyMarketsLocationParams = ({ lat, lng }: NearbyMarketsListParamsTypes) => {
+  return typeof lat === 'number' && typeof lng === 'number';
+};
+
 export const useGetNearbyMarketsInfiniteQuery = (params: NearbyMarketsListParamsTypes = {}) => {
   return useInfiniteQuery({
     queryKey: nearbyMarketsQueryKeys.list(params),
@@ -18,5 +22,6 @@ export const useGetNearbyMarketsInfiniteQuery = (params: NearbyMarketsListParams
     },
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    enabled: hasNearbyMarketsLocationParams(params),
   });
 };

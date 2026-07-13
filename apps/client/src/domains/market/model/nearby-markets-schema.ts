@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from '@dongchimi/shared/api';
 
 export const nearbyMarketPreviewProductSchema = z.object({
   productId: z.number(),
@@ -17,7 +17,7 @@ export const nearbyMarketDtoSchema = z.object({
   address: z.string(),
   latitude: z.number(),
   longitude: z.number(),
-  distance: z.string(),
+  distance: z.string().optional().default(''),
   isOpen: z.boolean(),
   productCount: z.number(),
   previewProducts: z.array(nearbyMarketPreviewProductSchema),
@@ -25,11 +25,27 @@ export const nearbyMarketDtoSchema = z.object({
 
 export type NearbyMarketDtoTypes = z.infer<typeof nearbyMarketDtoSchema>;
 
-export const nearbyMarketsResponseDataSchema = z.object({
+const nearbyMarketsContentsResponseDataSchema = z.object({
   hasNext: z.boolean(),
   nextCursor: z.number().nullable(),
   contents: z.array(nearbyMarketDtoSchema),
 });
+
+const nearbyMarketsContentResponseDataSchema = z
+  .object({
+    hasNext: z.boolean(),
+    nextCursor: z.number().nullable(),
+    content: z.array(nearbyMarketDtoSchema),
+  })
+  .transform(({ content, ...data }) => ({
+    ...data,
+    contents: content,
+  }));
+
+export const nearbyMarketsResponseDataSchema = z.union([
+  nearbyMarketsContentsResponseDataSchema,
+  nearbyMarketsContentResponseDataSchema,
+]);
 
 export type NearbyMarketsResponseDataTypes = z.infer<typeof nearbyMarketsResponseDataSchema>;
 
@@ -58,8 +74,8 @@ const optionalTrimmedNonEmptyStringSchema = z.preprocess((value) => {
 
 export const nearbyMarketsListParamsSchema = z.object({
   keyword: optionalTrimmedNonEmptyStringSchema,
-  lat: z.number().optional(),
-  lng: z.number().optional(),
+  lat: z.number().min(-90).max(90).optional(),
+  lng: z.number().min(-180).max(180).optional(),
   radius: z.number().positive().optional(),
   size: z.number().int().positive().optional(),
 });
@@ -72,6 +88,19 @@ export const nearbyMarketsParamsSchema = nearbyMarketsListParamsSchema.extend({
 
 export type NearbyMarketsParamsTypes = z.infer<typeof nearbyMarketsParamsSchema>;
 
+export const nearbyMarketsLocationParamsSchema = nearbyMarketsParamsSchema.extend({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+});
+
+export type NearbyMarketsLocationParamsTypes = z.infer<typeof nearbyMarketsLocationParamsSchema>;
+
 export const resolveNearbyMarketsParams = (rawParams: unknown): NearbyMarketsParamsTypes => {
   return nearbyMarketsParamsSchema.parse(rawParams);
+};
+
+export const resolveNearbyMarketsLocationParams = (
+  rawParams: unknown,
+): NearbyMarketsLocationParamsTypes => {
+  return nearbyMarketsLocationParamsSchema.parse(rawParams);
 };
