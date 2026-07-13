@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { httpClient } from '@/shared/api';
 
-import { loginMarketOwner } from './auth-api';
+import { loginMarketOwner, signupMarketOwner } from './auth-api';
 
 vi.mock('@/shared/api', () => ({
   httpClient: {
@@ -65,5 +65,53 @@ describe('loginMarketOwner', () => {
         password: 'password123!',
       }),
     ).rejects.toThrow(ApiResponseValidationError);
+  });
+});
+
+describe('signupMarketOwner', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('posts owner signup request to the shared endpoint and returns validated response', async () => {
+    const response = {
+      success: true,
+      code: 'SUCCESS',
+      message: 'ok',
+      data: {
+        ownerId: 1,
+        email: 'owner@example.com',
+      },
+    };
+    const requestBody = {
+      email: 'owner@example.com',
+      password: 'password123!',
+    };
+
+    mockHttpPost.mockResolvedValueOnce(response);
+
+    await expect(signupMarketOwner(requestBody)).resolves.toEqual(response);
+    expect(mockHttpPost).toHaveBeenCalledWith(API_ENDPOINTS.owner.auth.signup, {
+      json: requestBody,
+    });
+  });
+
+  it('throws when the signup response does not match the API contract', async () => {
+    mockHttpPost.mockResolvedValueOnce({
+      success: true,
+      code: 'SUCCESS',
+      message: 'ok',
+      data: {
+        ownerId: '1',
+        email: 'owner@example.com',
+      },
+    });
+
+    await expect(
+      signupMarketOwner({
+        email: 'owner@example.com',
+        password: 'password123!',
+      }),
+    ).rejects.toBeInstanceOf(ApiResponseValidationError);
   });
 });

@@ -3,13 +3,26 @@ import { useNavigate } from 'react-router';
 import { Button, Flex, TextInput, Toast } from '@dongchimi/design-system/components';
 import { IcCircleCheckFill } from '@dongchimi/design-system/icons';
 
+import { isApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
+import { useSignupMutation } from '../hooks/use-signup-mutation';
 import { useSignupForm } from './hooks/use-signup-form';
 import * as S from './SignupPage.css';
 
+const SIGNUP_FALLBACK_ERROR_MESSAGE = '회원가입에 실패했습니다. 다시 시도해주세요.';
+
+const getSignupErrorMessage = (error: unknown) => {
+  if (isApiError(error) && error.message.length > 0) {
+    return error.message;
+  }
+
+  return SIGNUP_FALLBACK_ERROR_MESSAGE;
+};
+
 export const SignupPage = () => {
   const navigate = useNavigate();
+  const signupMutation = useSignupMutation();
   const {
     action: {
       clearSubmitErrorMessage,
@@ -20,6 +33,7 @@ export const SignupPage = () => {
       handlePasswordConfirmBlur,
       handlePasswordConfirmChange,
       handleSubmit,
+      setSubmitErrorMessage,
     },
     state: {
       email,
@@ -33,9 +47,18 @@ export const SignupPage = () => {
       submitErrorMessage,
     },
   } = useSignupForm();
-  const handleSignupSubmit = handleSubmit(() => {
+  const handleSignupSubmit = handleSubmit(async ({ email, password }) => {
     clearSubmitErrorMessage();
-    navigate(MARKET_OWNER_ROUTES.login);
+
+    try {
+      await signupMutation.mutateAsync({
+        email,
+        password,
+      });
+      navigate(MARKET_OWNER_ROUTES.login);
+    } catch (error) {
+      setSubmitErrorMessage(getSignupErrorMessage(error));
+    }
   });
 
   return (
@@ -96,7 +119,12 @@ export const SignupPage = () => {
           </div>
         )}
 
-        <Button className={S.submitButtonClassName} disabled={!isValid} size='large' type='submit'>
+        <Button
+          className={S.submitButtonClassName}
+          disabled={!isValid || signupMutation.isPending}
+          size='large'
+          type='submit'
+        >
           가입 완료
         </Button>
       </form>

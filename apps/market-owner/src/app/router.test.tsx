@@ -8,6 +8,18 @@ import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { AppProviders } from './AppProviders';
 import { marketOwnerRoutes } from './router';
 
+vi.mock('@/domains/auth/api/auth-api', () => ({
+  signupMarketOwner: vi.fn().mockResolvedValue({
+    success: true,
+    code: 'SUCCESS',
+    message: 'ok',
+    data: {
+      ownerId: 1,
+      email: 'new@example.com',
+    },
+  }),
+}));
+
 const renderRoute = (path: string) => {
   const router = createMemoryRouter(marketOwnerRoutes, {
     initialEntries: [path],
