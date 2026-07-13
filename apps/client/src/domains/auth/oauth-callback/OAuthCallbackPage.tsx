@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -8,8 +8,6 @@ import { useKakaoLoginMutation } from '@/domains/auth/hooks/use-kakao-login-muta
 import { setAccessToken } from '@/shared/auth';
 import { isApiError } from '@/shared/api';
 import { CLIENT_ROUTES } from '@/shared/constants';
-
-const PROCESSED_CODE_STORAGE_PREFIX = 'dongchimi.oauth.kakao.processed-code:';
 
 const getLoginErrorMessage = (error: unknown) => {
   if (!isApiError(error)) {
@@ -69,6 +67,7 @@ export const OAuthCallbackPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const kakaoLoginMutation = useKakaoLoginMutation();
+  const hasRequestedLoginRef = useRef(false);
   const code = searchParams.get('code');
   const oauthError = searchParams.get('error');
 
@@ -77,13 +76,11 @@ export const OAuthCallbackPage = () => {
       return;
     }
 
-    const processedCodeKey = `${PROCESSED_CODE_STORAGE_PREFIX}${code}`;
-
-    if (window.sessionStorage.getItem(processedCodeKey)) {
+    if (hasRequestedLoginRef.current) {
       return;
     }
 
-    window.sessionStorage.setItem(processedCodeKey, 'true');
+    hasRequestedLoginRef.current = true;
 
     kakaoLoginMutation.mutate(
       { code },
