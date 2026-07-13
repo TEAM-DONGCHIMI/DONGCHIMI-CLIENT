@@ -416,9 +416,7 @@ describe('marketOwnerRoutes', () => {
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '햇감자');
     await user.click(await screen.findByRole('button', { name: /햇감자 1kg/ }));
 
-    expect(
-      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
-    ).toBeInTheDocument();
+    expect(await findRouteHeading('행사 할인 상품을 수정하세요')).toBeInTheDocument();
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.eventDiscountEdit);
     expect(router.state.location.search).toBe('?productId=201');
     expect(
@@ -505,9 +503,7 @@ describe('marketOwnerRoutes', () => {
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '햇감자');
     await user.click(await screen.findByRole('button', { name: /햇감자 1kg/ }));
 
-    expect(
-      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
-    ).toBeInTheDocument();
+    expect(await findRouteHeading('행사 할인 상품을 수정하세요')).toBeInTheDocument();
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.eventDiscountEdit);
     expect(router.state.location.search).toBe('?productId=201');
     expect(
