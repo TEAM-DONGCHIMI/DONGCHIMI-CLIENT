@@ -5,7 +5,8 @@
 `ProductEditPageShell`은 사장님 상품 수정 페이지의 공통 상단 영역을 담당합니다.
 오늘의 특가 수정과 행사 할인 수정 페이지가 같은 헤더, route tab, 일괄 작업 버튼, 정렬 필터를 공유하되, 실제 상품 목록 영역은 각 페이지가 children으로 소유합니다.
 행사 할인 수정 페이지는 추가로 카테고리 필터를 제공합니다.
-헤더 상품 검색에서 진입한 개별 상품 수정 대상은 각 page가 `productId` search param으로 소비하고, shell은 layout과 필터 UI만 담당합니다.
+전역 헤더 상품 검색은 shared `ProductHeaderSearch`로 렌더링하고, 선택 결과의 수정 route 이동은 product domain shell이 담당합니다.
+이동한 각 page는 `productId` search param을 소비해 개별 수정 modal을 엽니다.
 
 ## Ownership
 
@@ -13,6 +14,10 @@
 - 사용처: `TodaySpecialEditPage`, `EventDiscountEditPage`
 - product domain route/copy에 묶인 컴포넌트이므로 `packages/design-system`이나 app shared component로 승격하지 않습니다.
 - route/copy/sort option 상수는 `ProductEditPageShell.constants.ts`가 소유합니다.
+- header search UI는 app shared `ProductHeaderSearch`가 소유하고, `ProductEditPageShell`은 선택 결과의
+  route 이동과 상품 정보 load 실패 feedback을 소유합니다.
+- `dealType`별 수정 route와 `productId` search param 조립은 `shared/utils/product-edit-target-path.utils.ts`가
+  소유합니다. 이 utility는 React navigation을 수행하지 않습니다.
 - product category option 상수는 `domains/product/constants/product-category.ts`가 소유합니다.
 - product category dropdown hook은 등록/수정 화면에서 함께 쓸 수 있도록 `domains/product/hooks/use-product-category-dropdown.tsx`가 소유합니다.
 - category dropdown open/close 상태는 행사 할인 수정 페이지에서만 `overlay-kit`의 overlay data에서 파생합니다.
@@ -31,6 +36,10 @@
 ## Behavior
 
 - `activeType`에 따라 heading, breadcrumb current label, selected tab을 바꿉니다.
+- 헤더 상품 검색은 API endpoint 계약 확정 전 app shared fixture를 사용합니다.
+- 헤더 검색에서 상품을 선택하면 `DAILY`는 오늘의 특가 수정 route, `PERIODIC`은 행사 할인 수정 route로
+  `productId` search param을 붙여 이동합니다.
+- 상품 정보를 불러올 수 없는 선택 결과는 현재 수정 페이지에 머물고 error toast를 표시합니다.
 - tab은 상품이 있는 경우 `TabNav.Item as={Link}`로 렌더링해 `/products/today-special/edit`, `/products/event-discount/edit` 사이를 route 이동합니다.
 - 등록 상품 수가 0인 tab은 disabled item으로 렌더링해 route 이동을 막습니다.
 - `카테고리별` filter는 행사 할인 수정 페이지에만 노출되며, trigger 아래에 category dropdown을 엽니다.
@@ -65,3 +74,9 @@
 - category trigger는 dropdown open state를 `aria-expanded`로 제공합니다.
 - category dropdown은 `Dropdown role="group"`으로 렌더링하고, 각 option UI는 `Dropdown.Item`의 selected state를 사용합니다.
 - bulk selection count는 visible text로 표시해 선택 개수 변화를 확인할 수 있게 합니다.
+
+## Verification
+
+- [x] 현재 수정 페이지의 header search에서 다른 `dealType` 상품을 선택하면 해당 수정 route와
+      `productId` search param으로 이동하고 개별 수정 modal을 엽니다.
+- [x] header search의 상품 정보를 불러올 수 없으면 현재 route를 유지하고 error toast를 표시합니다.

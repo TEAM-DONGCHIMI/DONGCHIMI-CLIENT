@@ -88,8 +88,10 @@ HomePage(main)
 - `DesktopHeader`: app-shared header를 `onlyHome` 모드로 소비하고 상품 검색 slot에 `ProductHeaderSearch`를
   노출합니다.
   page heading은 시각적으로 숨긴 `h1`으로 유지합니다.
-- `ProductHeaderSearch`: 한 글자 이상 입력 시 검색 dropdown을 열고, 결과 item 선택 시 `dealType`에 맞는
-  상품 수정 route로 `productId` search param을 붙여 이동합니다.
+- `ProductHeaderSearch`: 한 글자 이상 입력 시 검색 dropdown을 열고, 결과 item 선택 시 선택한 상품을
+  `HomePage`에 전달합니다.
+- `HomePage`: 전달받은 상품의 `dealType`에 맞는 상품 수정 route를 만들고 `productId` search param을 붙여
+  이동합니다. 상품 정보를 불러올 수 없는 선택 결과의 error feedback도 담당합니다.
 - `HomeHeroSection`: radius 20px checkerboard hero surface와 quick action 카드를 담당합니다.
   - quick action의 오른쪽 mint 영역은 icon/PNG asset 확정 전 placeholder slot으로 유지합니다.
 - `HomeQuickButton`: Figma `button_home quick` node `2403:69244` 기준의 312x74 quick button입니다.
@@ -153,7 +155,8 @@ HomePage(main)
   - 오늘의 특가 상품 카드와 행사 할인 상품 카드에 들어갈 상품 목록
   - 홈 응답의 `dailyCount`, `dailyProducts`, `periodicCount`, `periodicProducts`를 카드별
     `itemVariant`, `totalCount`, edit route로 매핑
-- 검색 dropdown에 사용할 상품명, `dealType`, `productId`, 상품 정보 load 가능 여부
+  - 검색 dropdown에 사용할 상품명, `dealType`, `productId`, 상품 정보 load 가능 여부는
+    `shared/fixtures/product-header-search.fixture.ts`가 소유
   - hero quick action title, description, route
   - 전단 공유 링크와 공유 설명 copy, `flyer` 존재 여부
 - model: none
@@ -177,8 +180,8 @@ HomePage(main)
   `top-center` toast provider 정책을 따릅니다.
 - 상품 검색은 한 글자 이상 입력 시 dropdown을 열고, 검색창과 dropdown 사이 gap은 4px입니다.
 - 검색 결과의 필터링/정렬은 API 응답 순서를 따르고, `ProductSearchPanel`은 전달받은 순서를 유지합니다.
-- 검색 결과 조회는 호출부에서 debounce된 query를 기준으로 처리해 불필요한 네트워크 요청을 줄입니다.
-- debounce 반영 전에는 `ProductSearchPanel`에 pending 상태를 전달해 결과 없음 message가 잘못 깜빡이지 않게 합니다.
+- 검색 query debounce와 pending 상태는 `ProductHeaderSearch`가 처리해 결과 없음 message가 잘못
+  깜빡이지 않게 합니다.
 - 검색 dropdown은 4개 기본 노출, 4개 초과 시 scroll 영역으로 전환하며 최대 10개까지만 렌더링합니다.
 - 검색 dropdown 외부 영역을 클릭하면 dropdown을 닫습니다.
 - 검색 결과 item을 클릭하면 상품 정보 load 가능 여부를 확인합니다.
