@@ -7,7 +7,7 @@
 - Page: `today-special-edit`
 - Route: `/products/today-special/edit`
 - Path: `apps/market-owner/src/domains/product/today-special-edit/TodaySpecialEditPage.tsx`
-- Jira: DCMSM-15
+- Jira: DCMSM-15, DCMSM-38
 - Status: Implemented
 
 ## Purpose
@@ -28,6 +28,7 @@
 - loading: 이번 범위에서 다루지 않습니다.
 - empty: 등록된 상품이 없으면 `ProductEditProductList`가 empty image, 안내 문구, `/products/today-special/new` 등록 link를 표시합니다.
 - error: 알 수 없는 route는 router fallback에서 처리합니다.
+  `productId` search param에 해당하는 상품을 찾지 못하면 error toast를 표시하고 search param을 제거합니다.
 - success: `/products/today-special/edit` route가 `오늘의 특가 상품을 수정하세요` heading과 오늘의 특가 상품 수정 카드 section을 렌더링합니다.
 
 ## Data
@@ -47,6 +48,8 @@
 - `상품 등록 순` filter는 등록일별 섹션을 표시합니다.
 - `조회수 순` filter는 조회수 높은 순 단일 섹션을 표시합니다.
 - 개별 상품 카드의 수정 버튼을 누르면 오늘의 특가 variant의 판매 정보 수정 modal을 엽니다.
+- `/products/today-special/edit?productId={id}`로 진입하면 같은 `productId`를 가진 오늘의 특가 상품의 개별 수정 modal을 자동으로 엽니다.
+- 자동으로 열린 modal이 닫히면 URL에서 `productId` search param을 제거합니다.
 - 일괄 기간 수정, 일괄 삭제 버튼은 shared shell에서 레이아웃 button으로 렌더링합니다.
 - 초기화 버튼은 shared shell에서 초기화 확인 modal을 열고, 확인하면 오늘의 특가 상품 목록을 비웁니다.
 - 개별 상품 카드의 삭제 버튼은 행사 기간이 남았으면 삭제 확인 modal 확인 후 해당 카드를 목록에서 제거하고, 기간이 지났으면 바로 제거합니다.
@@ -66,4 +69,6 @@
 - [ ] `오늘의 특가` tab link has `aria-current="page"`
 - [ ] `행사 할인` tab navigates to `/products/event-discount/edit`
 - [ ] category filter is not rendered
+- [x] `/products/today-special/edit?productId=...` opens the matching product edit modal
+- [x] closing the search-target edit modal removes `productId` search param
 - [x] empty product list renders registration link to `/products/today-special/new`
