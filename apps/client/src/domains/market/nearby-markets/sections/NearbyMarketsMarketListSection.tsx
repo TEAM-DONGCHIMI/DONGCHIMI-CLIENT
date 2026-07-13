@@ -82,7 +82,7 @@ export const NearbyMarketsMarketListSection = () => {
           discountCount={market.productCount}
           isOpen={market.isOpen}
           martName={market.name}
-          onActionClick={() => router.push(CLIENT_ROUTES.market(String(market.marketId)))}
+          onActionClick={() => router.push(CLIENT_ROUTES.market(market.slug))}
           products={market.previewProducts.map((product) => {
             const isDiscounted = product.discountRate > 0;
 
