@@ -26,6 +26,7 @@
 - HTTP client는 앱별 `src/shared/api` 위치에서 구성합니다.
 - `apps/client/src/shared/api/http-client.ts`는 browser에서 동일 출처 `/api/*` route를 호출합니다.
 - request timeout은 10초로 둡니다.
+- BFF Route Handler의 upstream `fetch`도 10초 timeout으로 제한합니다.
 - Ky transport retry는 기본 0회로 두고, query retry는 TanStack Query에서 제어합니다.
 - API error는 `auth`, `configuration`, `network`, `server`, `unknown`, `validation`으로 정규화합니다.
 - `API_BASE_URL`과 `DEV_ACCESS_TOKEN`은 server-only 환경 변수입니다. `DEV_ACCESS_TOKEN`은 development Route Handler에서만 upstream Bearer header로 사용하며, browser bundle이나 production route에 전달하지 않습니다.

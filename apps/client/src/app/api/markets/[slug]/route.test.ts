@@ -17,6 +17,7 @@ const getRouteResponse = () => {
 describe('GET /api/markets/[slug]', () => {
   afterEach(() => {
     vi.unstubAllEnvs();
+    vi.restoreAllMocks();
   });
 
   it('development 환경에서만 server token을 배포 API 요청에 전달한다', async () => {
@@ -77,6 +78,21 @@ describe('GET /api/markets/[slug]', () => {
           },
         });
       }),
+    );
+
+    const response = await getRouteResponse();
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toMatchObject({
+      code: 'API_PROXY_ERROR',
+      success: false,
+    });
+  });
+
+  it('upstream 요청이 timeout되면 bad gateway error를 반환한다', async () => {
+    vi.stubEnv('API_BASE_URL', API_BASE_URL);
+    vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(
+      new DOMException('Timeout', 'TimeoutError'),
     );
 
     const response = await getRouteResponse();

@@ -6,6 +6,7 @@ import { getServerApiEnv } from '@/shared/config';
 const API_CONFIGURATION_ERROR_MESSAGE = 'API 서버 설정을 확인해주세요.';
 const UPSTREAM_REQUEST_ERROR_MESSAGE = '마트 정보를 불러오지 못했어요.';
 const UPSTREAM_RESPONSE_ERROR_MESSAGE = 'API 서버에서 올바른 응답을 받지 못했어요.';
+const UPSTREAM_REQUEST_TIMEOUT_MS = 10_000;
 
 const isJsonContentType = (contentType: string | null): contentType is string => {
   return contentType?.includes('application/json') ?? false;
@@ -48,6 +49,7 @@ export const GET = async (_request: Request, { params }: RouteContextTypes) => {
       {
         cache: 'no-store',
         headers,
+        signal: AbortSignal.timeout(UPSTREAM_REQUEST_TIMEOUT_MS),
       },
     );
     const contentType = upstreamResponse.headers.get('content-type');

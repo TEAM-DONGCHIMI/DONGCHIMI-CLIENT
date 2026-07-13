@@ -28,6 +28,7 @@
 
 - `API_BASE_URL`이 없으면 `500` configuration response를 반환합니다.
 - upstream network failure는 `502` response를 반환합니다.
+- upstream 요청은 10초 안에 응답하지 않으면 `502` response를 반환합니다.
 - upstream이 JSON이 아닌 응답을 반환하면 `502` response를 반환합니다.
 - upstream HTTP error는 status/body를 그대로 browser에 전달합니다.
 
