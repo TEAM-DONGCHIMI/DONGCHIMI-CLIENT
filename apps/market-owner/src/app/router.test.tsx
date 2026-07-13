@@ -34,11 +34,16 @@ const renderRoute = (path: string) => {
     initialEntries: [path],
   });
 
-  return render(
+  const renderResult = render(
     <AppProviders>
       <RouterProvider router={router} />
     </AppProviders>,
   );
+
+  return {
+    router,
+    ...renderResult,
+  };
 };
 
 const fillSignupForm = async (
@@ -189,10 +194,10 @@ describe('marketOwnerRoutes', () => {
     await waitFor(() => expect(submitButton).toBeEnabled());
   });
 
-  it('redirects to login page after valid signup submit', async () => {
+  it('redirects to market information registration page after valid signup submit', async () => {
     const user = userEvent.setup();
 
-    renderRoute('/signup');
+    const { router } = renderRoute('/signup');
 
     await fillSignupForm(user, {
       email: 'new@example.com',
@@ -201,7 +206,11 @@ describe('marketOwnerRoutes', () => {
     });
     await user.click(await screen.findByRole('button', { name: '가입 완료' }));
 
-    expect(await screen.findByRole('heading', { name: '마트 관리자 로그인' })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe(
+        MARKET_OWNER_ROUTES.marketInformationRegistration,
+      );
+    });
   });
 
   it('shows the server duplicate email message when signup API rejects with DUPLICATE_EMAIL', async () => {

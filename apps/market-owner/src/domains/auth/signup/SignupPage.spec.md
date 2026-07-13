@@ -14,7 +14,7 @@
 ## Purpose
 
 사장님웹 회원가입 화면은 이메일, 비밀번호, 비밀번호 확인 입력 검증을 public auth layout 안에서 렌더링하고, 유효한 submit 이후 사장님 회원가입 API를 호출합니다.
-회원가입 성공 시 로그인 페이지로 이동하며, 서버 validation 실패나 중복 이메일 실패는 form-level toast로 노출합니다.
+회원가입 성공 시 마트 정보 등록 페이지로 이동하며, 서버 validation 실패나 중복 이메일 실패는 form-level toast로 노출합니다.
 
 ## Ownership
 
@@ -41,7 +41,7 @@
 - disabled: full validation 전이거나 회원가입 mutation이 pending 상태이면 `가입 완료` CTA가 disabled 상태입니다.
 - loading: 회원가입 mutation이 pending 상태이면 submit CTA를 disabled 처리해 중복 submit을 방지합니다.
 - error: field validation error는 각 `TextInput` 아래에 표시하고, 네트워크 또는 회원가입 실패 같은 submit error는 field group 아래 toast로 표시합니다.
-- success: 유효한 form submit 이후 회원가입 API가 성공하면 `/login`으로 이동합니다.
+- success: 유효한 form submit 이후 회원가입 API가 성공하면 `/markets/information-registration`으로 이동합니다.
 
 ## Data
 
@@ -63,7 +63,7 @@
 - 비밀번호 확인 입력값이 유효하면 입력창 우측에 `IcCircleCheckFill` trailing icon을 표시합니다.
 - submit CTA는 전체 입력값이 유효할 때 활성화됩니다.
 - submit CTA는 회원가입 mutation이 pending 상태일 때 다시 disabled 됩니다.
-- 유효한 form submit 이후 회원가입 API가 성공하면 로그인 페이지로 이동합니다.
+- 유효한 form submit 이후 회원가입 API가 성공하면 마트 정보 등록 페이지로 이동합니다.
 - 서버 validation 실패, 서버 중복 이메일 실패, 네트워크 오류는 field error가 아닌 form-level toast로 표시합니다.
 
 ## Accessibility
@@ -92,5 +92,5 @@
 - [ ] submit button renders as disabled before valid input
 - [ ] submit button is enabled when email, password, and password confirmation are valid
 - [ ] submit button is disabled while signup mutation is pending
-- [ ] valid signup submit redirects to `/login`
+- [ ] valid signup submit redirects to `/markets/information-registration`
 - [ ] submit failure renders as an error toast instead of a field error

@@ -55,7 +55,7 @@ export const SignupPage = () => {
         email,
         password,
       });
-      navigate(MARKET_OWNER_ROUTES.login);
+      navigate(MARKET_OWNER_ROUTES.marketInformationRegistration);
     } catch (error) {
       setSubmitErrorMessage(getSignupErrorMessage(error));
     }
