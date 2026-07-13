@@ -3,7 +3,7 @@ import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { signupMarketOwner } from '@/domains/auth/api/auth-api';
+import { loginMarketOwner, signupMarketOwner } from '@/domains/auth/api/auth-api';
 import { ApiError } from '@/shared/api';
 import { render, screen } from '@/test';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
@@ -11,13 +11,25 @@ import { AppProviders } from './AppProviders';
 import { marketOwnerRoutes } from './router';
 
 vi.mock('@/domains/auth/api/auth-api', () => ({
+  loginMarketOwner: vi.fn(),
   signupMarketOwner: vi.fn(),
 }));
 
+const mockLoginMarketOwner = vi.mocked(loginMarketOwner);
 const mockSignupMarketOwner = vi.mocked(signupMarketOwner);
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockLoginMarketOwner.mockResolvedValue({
+    success: true,
+    code: 'SUCCESS',
+    message: 'ok',
+    data: {
+      accessToken: 'access-token',
+      ownerId: 1,
+      email: 'owner@example.com',
+    },
+  });
   mockSignupMarketOwner.mockResolvedValue({
     success: true,
     code: 'SUCCESS',
