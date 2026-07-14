@@ -4,8 +4,16 @@ const getPublicEnv = (key: keyof ImportMetaEnv) => {
   return value === '' ? undefined : value;
 };
 
+const normalizeApiBaseUrl = (value: string | undefined) => {
+  if (value === '/') {
+    return value;
+  }
+
+  return value?.replace(/\/+$/, '');
+};
+
 export const getMarketOwnerEnv = () => {
   return {
-    apiBaseUrl: getPublicEnv('VITE_PUBLIC_API_SERVER_BASE_URL')?.replace(/\/+$/, ''),
+    apiBaseUrl: normalizeApiBaseUrl(getPublicEnv('VITE_PUBLIC_API_SERVER_BASE_URL')),
   };
 };
