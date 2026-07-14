@@ -12,6 +12,11 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 
+packageExtensions:
+  '@hookform/resolvers@5.4.0':
+    peerDependencies:
+      zod: ^4.4.3
+
 catalog:
   '@testing-library/dom': ^10.4.1
   '@testing-library/jest-dom': ^6.9.1

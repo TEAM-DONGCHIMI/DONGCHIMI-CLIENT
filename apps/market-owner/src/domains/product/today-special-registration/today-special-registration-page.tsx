@@ -10,26 +10,29 @@ import { isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
 
 import { useCategoryDropdown } from './hooks/useCategoryDropdown';
 import { useCurrentProductField } from './hooks/useCurrentProductField';
-import { useProductDraftNavigation } from './hooks/useProductDraftNavigation';
-import { useTodaySpecialForm } from './hooks/useTodaySpecialForm';
+import { useTodaySpecialForm } from './hooks/use-today-special-form';
+import { useTodaySpecialProductRegistration } from './hooks/use-today-special-product-registration';
 import {
   ProductInfoSection,
   ProductPeriodSection,
   ProductPriceSection,
   RegistrationTitleSection,
 } from './sections';
-import * as S from './TodaySpecialRegistrationPage.css';
+import * as S from './today-special-registration-page.css';
 
 export const TodaySpecialRegistrationPage = () => {
   const navigate = useNavigate();
+  const { registerProduct } = useTodaySpecialProductRegistration();
   const form = useTodaySpecialForm({
-    onSubmit: () => {
-      // TODO: presigned URL 발급, storage PUT, 상품 payload submit 순서로 API 연동.
-      navigate(MARKET_OWNER_ROUTES.todaySpecialEdit);
+    onSubmit: async (product) => {
+      const result = await registerProduct(product);
+
+      if (result.success) {
+        navigate(MARKET_OWNER_ROUTES.todaySpecialEdit);
+      }
     },
   });
   const { currentIndex, currentProduct, products, setValue } = form;
-  const productCount = products.length;
   const currentProductField = useCurrentProductField({
     currentIndex,
     currentProductErrors: form.currentProductErrors,
@@ -57,14 +60,13 @@ export const TodaySpecialRegistrationPage = () => {
     onPreviewChange: handleImagePreviewChange,
     previewUrls: products.map((product) => product.imagePreviewUrl),
   });
-  const draftNavigation = useProductDraftNavigation({
-    appendProduct: form.appendProduct,
-    closeCategoryDropdown: categoryDropdown.closeCategoryDropdown,
-    currentIndex,
-    productCount,
-    removeProduct: form.removeProduct,
-    revokeCurrentImagePreviewUrl: imagePreview.revokeCurrentPreviewUrl,
-    setCurrentIndex: form.setCurrentIndex,
+  const handleContinueRegistration = form.createCurrentProductSubmitHandler(async (product) => {
+    const result = await registerProduct(product);
+
+    if (result.success) {
+      categoryDropdown.closeCategoryDropdown();
+      form.resetForNextProduct();
+    }
   });
   const productInfoSectionProps = {
     ...categoryDropdown.productCategoryProps,
@@ -85,26 +87,47 @@ export const TodaySpecialRegistrationPage = () => {
     <main className={S.pageRootClassName}>
       <DesktopHeader currentLabel='오늘의 특가 상품 등록' parentLabel='홈' showSearchBar={false} />
 
-      <form onSubmit={form.handleFormSubmit}>
+      <form aria-busy={form.isSubmitting} onSubmit={form.handleFormSubmit}>
         <section
           className={S.formContentClassName}
           aria-labelledby='today-special-registration-title'
         >
-          <RegistrationTitleSection {...draftNavigation.titleSectionProps} />
+          <RegistrationTitleSection
+            canCancelCurrentDraft={form.canCancelCurrentDraft}
+            currentIndex={currentIndex}
+            onCancelCurrentDraft={() => {
+              imagePreview.revokeCurrentPreviewUrl();
+              categoryDropdown.closeCategoryDropdown();
+              form.cancelCurrentDraft();
+            }}
+            onNextProduct={() => {
+              categoryDropdown.closeCategoryDropdown();
+              form.moveToNextProduct();
+            }}
+            onPreviousProduct={() => {
+              categoryDropdown.closeCategoryDropdown();
+              form.moveToPreviousProduct();
+            }}
+            productCount={products.length}
+          />
 
-          <div className={S.fieldSectionsClassName}>
+          <fieldset className={S.fieldSectionsClassName} disabled={form.isRegisteredProduct}>
             <ProductInfoSection {...productInfoSectionProps} />
             <ProductPriceSection {...productPriceSectionProps} />
             <ProductPeriodSection {...productPeriodSectionProps} />
-          </div>
+          </fieldset>
 
           <footer className={S.actionSectionClassName}>
             <Button
               className={S.actionButtonClassName}
               color='assistive'
+              disabled={form.isSubmitting}
               leftIcon={<IcCirclePlusSizeSmall />}
-              onClick={draftNavigation.actionSectionProps.onAddProduct}
+              onClick={
+                form.isRegisteredProduct ? form.openNextProductDraft : handleContinueRegistration
+              }
               size='small'
+              type='button'
               variant='outlined'
             >
               상품 계속 등록
@@ -115,7 +138,7 @@ export const TodaySpecialRegistrationPage = () => {
               size='small'
               type='submit'
             >
-              등록 완료
+              {form.isSubmitting ? '등록 중' : '등록 완료'}
             </Button>
           </footer>
         </section>

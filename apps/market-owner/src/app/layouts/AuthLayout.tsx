@@ -1,4 +1,5 @@
 import { Outlet, useLocation } from 'react-router';
+import { ToastProvider } from '@dongchimi/shared/toast';
 
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
@@ -13,7 +14,9 @@ export const AuthLayout = () => {
       {isLoginRoute && <div aria-hidden='true' className={S.onboardingPanelClassName} />}
       <div className={S.authLayoutContentWrapperClassName}>
         <div className={S.authLayoutContentClassName}>
-          <Outlet />
+          <ToastProvider offset='2.4rem' placement='top-center'>
+            <Outlet />
+          </ToastProvider>
         </div>
       </div>
     </div>

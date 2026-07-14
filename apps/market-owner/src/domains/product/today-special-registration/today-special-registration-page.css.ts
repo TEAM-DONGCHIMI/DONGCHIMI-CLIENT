@@ -82,6 +82,10 @@ export const fieldSectionsClassName = style({
   flexDirection: 'column',
   flexShrink: 0,
   gap: '3.8rem',
+  minWidth: 0,
+  margin: 0,
+  padding: 0,
+  border: 0,
 });
 
 export const fieldSectionClassName = style({

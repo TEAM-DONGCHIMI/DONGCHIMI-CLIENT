@@ -108,6 +108,16 @@ const expectSidebarToastViewportToUseViewportTopCenter = () => {
   });
 };
 
+const expectAuthToastViewportToUseViewportTopCenter = () => {
+  const toastViewport = screen.getByRole('region', { name: '토스트 알림' });
+
+  expect(toastViewport.style.getPropertyValue('--toast-viewport-center-offset-x')).toBe('');
+  expect(toastViewport).toHaveStyle({
+    '--toast-viewport-offset-x': '2.4rem',
+    '--toast-viewport-offset-y': '2.4rem',
+  });
+};
+
 describe('marketOwnerRoutes', () => {
   it('renders public auth routes without the sidebar layout', async () => {
     renderRoute('/login');
@@ -122,6 +132,34 @@ describe('marketOwnerRoutes', () => {
     await waitFor(() => {
       expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.home);
     });
+  });
+
+  it('centers login toasts over the viewport through the auth layout toast policy', async () => {
+    const user = userEvent.setup();
+
+    mockLoginMarketOwner.mockRejectedValueOnce(
+      new ApiError({
+        message: '이메일 또는 비밀번호가 일치하지 않습니다.',
+        type: 'auth',
+      }),
+    );
+
+    const { container } = renderRoute('/login');
+
+    await screen.findByRole('heading');
+
+    const emailInput = container.querySelector<HTMLInputElement>('input[type="email"]');
+    const passwordInput = container.querySelector<HTMLInputElement>('input[type="password"]');
+
+    expect(emailInput).not.toBeNull();
+    expect(passwordInput).not.toBeNull();
+
+    await user.type(emailInput as HTMLInputElement, 'owner@example.com');
+    await user.type(passwordInput as HTMLInputElement, 'password123!');
+    await user.click(screen.getByRole('button'));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expectAuthToastViewportToUseViewportTopCenter();
   });
 
   it('redirects unauthenticated protected route access to login and returns after login', async () => {
