@@ -1,4 +1,4 @@
-import { type ChangeEvent, useState } from 'react';
+import { type ChangeEvent } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { getVisibleFieldErrorMessage } from '@/shared/utils/form-error.utils';
@@ -9,9 +9,13 @@ import {
   signupFormResolver,
   type SignupFormTypes,
 } from '../schemas/signup-schema';
+import { useSignupSubmit } from './use-signup-submit';
 
 export const useSignupForm = () => {
-  const [submitErrorMessage, setSubmitErrorMessage] = useState<string>();
+  const {
+    action: { clearSubmitErrorMessage, submit },
+    state: { isSubmitting, submitErrorMessage },
+  } = useSignupSubmit();
   const form = useForm<SignupFormTypes>({
     defaultValues: SIGNUP_FORM_DEFAULT_VALUES,
     mode: 'onChange',
@@ -32,7 +36,7 @@ export const useSignupForm = () => {
 
   const createFieldChangeHandler =
     (onFieldChange: (value: string) => void) => (event: ChangeEvent<HTMLInputElement>) => {
-      setSubmitErrorMessage(undefined);
+      clearSubmitErrorMessage();
       onFieldChange(event.target.value);
     };
 
@@ -41,10 +45,6 @@ export const useSignupForm = () => {
   const handlePasswordConfirmChange = createFieldChangeHandler(
     passwordConfirmController.field.onChange,
   );
-
-  const clearSubmitErrorMessage = () => {
-    setSubmitErrorMessage(undefined);
-  };
 
   const isPasswordConfirmValid =
     passwordConfirmController.field.value.length > 0 &&
@@ -65,23 +65,31 @@ export const useSignupForm = () => {
     isSubmitted,
     isTouched: passwordConfirmController.fieldState.isTouched,
   });
+  const isSubmitDisabled = isSubmitting || !form.formState.isValid;
+  const handleSubmit = form.handleSubmit(async ({ email, password }) => {
+    if (isSubmitting) {
+      return;
+    }
+
+    await submit({ email, password });
+  });
 
   return {
     action: {
-      clearSubmitErrorMessage,
       handleEmailBlur: emailController.field.onBlur,
       handleEmailChange,
       handlePasswordBlur: passwordController.field.onBlur,
       handlePasswordChange,
       handlePasswordConfirmBlur: passwordConfirmController.field.onBlur,
       handlePasswordConfirmChange,
-      handleSubmit: form.handleSubmit,
+      handleSubmit,
     },
     state: {
       email: emailController.field.value,
       emailStatusProps: getTextInputStatusProps(emailErrorMessage),
       isPasswordConfirmValid,
-      isValid: form.formState.isValid,
+      isSubmitDisabled,
+      isSubmitting,
       password: passwordController.field.value,
       passwordConfirm: passwordConfirmController.field.value,
       passwordConfirmStatusProps: getTextInputStatusProps(passwordConfirmErrorMessage),

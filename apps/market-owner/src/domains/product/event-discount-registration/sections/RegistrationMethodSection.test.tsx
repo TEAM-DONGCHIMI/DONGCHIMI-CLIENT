@@ -1,6 +1,8 @@
 import { render, screen, userEvent } from '@/test';
 import { describe, expect, it, vi } from 'vitest';
 
+import excelUploadImageUrl from '../assets/img-excel-upload.svg';
+import leafletUploadImageUrl from '../assets/img-leaflet-upload.svg';
 import { RegistrationMethodSection } from './RegistrationMethodSection';
 
 const defaultProps = {
@@ -17,8 +19,8 @@ const renderRegistrationMethodSection = (
 };
 
 describe('RegistrationMethodSection', () => {
-  it('renders registration method cards', () => {
-    renderRegistrationMethodSection();
+  it('renders registration method cards with decorative method images', () => {
+    const { container } = renderRegistrationMethodSection();
 
     expect(screen.getByRole('heading', { name: '상품 등록' })).toBeInTheDocument();
     expect(screen.getByText('상품을 등록할 방식을 선택해주세요.')).toBeInTheDocument();
@@ -26,6 +28,12 @@ describe('RegistrationMethodSection', () => {
     expect(screen.getByRole('heading', { name: '전단지 업로드' })).toBeInTheDocument();
     expect(screen.getByText('지원 형식: .xlsx, .csv')).toBeInTheDocument();
     expect(screen.getByText('지원 형식: jpg, jpeg, png')).toBeInTheDocument();
+    expect(container.querySelector(`img[src="${excelUploadImageUrl}"]`)).toHaveAttribute('alt', '');
+    expect(container.querySelector(`img[src="${leafletUploadImageUrl}"]`)).toHaveAttribute(
+      'alt',
+      '',
+    );
+    expect(screen.queryAllByRole('img')).toHaveLength(0);
   });
 
   it('calls entry point callbacks from each action', async () => {
