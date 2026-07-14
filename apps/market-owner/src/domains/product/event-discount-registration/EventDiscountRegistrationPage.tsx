@@ -6,22 +6,27 @@ import { useToast } from '@dongchimi/shared/toast';
 import { DesktopHeader, UploadModal } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
+import { type ProductImportResponseTypes, type StartProductImportParams } from './api';
 import { PosExcelGuidePanel } from './components';
 import { fileAnalysisConfirmFixture } from './fixtures';
 import { useExcelUploadFlow } from './hooks/useExcelUploadFlow';
 import { useFileAnalysisSimulation } from './hooks/useFileAnalysisSimulation';
+import { useStartProductImportMutation } from './hooks/useStartProductImportMutation';
 import {
   FileAnalysisConfirmSection,
   FileAnalysisProgressSection,
   RegistrationMethodSection,
 } from './sections';
 import * as S from './EventDiscountRegistrationPage.css';
+import { type ResolveExcelFileUrlTypes } from './utils/resolve-excel-file-url';
 
 const EXCEL_UPLOAD_ACCEPT = '.xlsx,.csv';
 const ACTION_FEEDBACK_TOAST_ID = 'event-discount-registration-action-feedback';
+const FILE_ANALYSIS_ERROR_TOAST_ID = 'event-discount-registration-file-analysis-error';
 const TOAST_ICON_SIZE = '2.4rem';
 const EXCEL_UPLOAD_DEFAULT_LABEL =
   '상품이 등록된 엑셀 파일을 선택해주세요.\n업로드하면 상품이 자동으로 등록됩니다.';
+const FILE_ANALYSIS_START_ERROR_MESSAGE = '파일 분석을 시작하지 못했습니다. 다시 시도해주세요.';
 
 const toastIconProps = {
   height: TOAST_ICON_SIZE,
@@ -46,9 +51,20 @@ const SimulatedFileAnalysisProgressSection = ({
   );
 };
 
-export const EventDiscountRegistrationPage = () => {
+export interface EventDiscountRegistrationPageProps {
+  marketId?: StartProductImportParams['marketId'];
+  resolveExcelFileUrl?: ResolveExcelFileUrlTypes;
+  startProductImport?: (params: StartProductImportParams) => Promise<ProductImportResponseTypes>;
+}
+
+export const EventDiscountRegistrationPage = ({
+  marketId,
+  resolveExcelFileUrl,
+  startProductImport,
+}: EventDiscountRegistrationPageProps = {}) => {
   const navigate = useNavigate();
   const toast = useToast();
+  const startProductImportMutation = useStartProductImportMutation();
   const [isPosGuideOpen, setIsPosGuideOpen] = useState(false);
   const {
     cancelFileAnalysisConfirmation,
@@ -61,8 +77,9 @@ export const EventDiscountRegistrationPage = () => {
     registrationView,
     startFileAnalysis,
     uploadExcelFile,
+    uploadedExcelFileUrl,
     uploadedExcelFileName,
-  } = useExcelUploadFlow();
+  } = useExcelUploadFlow({ resolveExcelFileUrl });
   const headerLabels =
     registrationView === 'method'
       ? {
@@ -91,6 +108,39 @@ export const EventDiscountRegistrationPage = () => {
   const handleFileAnalysisComplete = useCallback(() => {
     navigate(MARKET_OWNER_ROUTES.registrationResult);
   }, [navigate]);
+  const handleStartFileAnalysis = useCallback(async () => {
+    if (marketId == null || uploadedExcelFileUrl == null) {
+      toast.error(FILE_ANALYSIS_START_ERROR_MESSAGE, {
+        id: FILE_ANALYSIS_ERROR_TOAST_ID,
+        icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
+      });
+      return;
+    }
+
+    try {
+      const startImport = startProductImport ?? startProductImportMutation.mutateAsync;
+      const productImport = await startImport({
+        marketId,
+        request: {
+          excelFileUrl: uploadedExcelFileUrl,
+        },
+      });
+
+      startFileAnalysis(productImport.jobId);
+    } catch {
+      toast.error(FILE_ANALYSIS_START_ERROR_MESSAGE, {
+        id: FILE_ANALYSIS_ERROR_TOAST_ID,
+        icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
+      });
+    }
+  }, [
+    marketId,
+    startFileAnalysis,
+    startProductImport,
+    startProductImportMutation.mutateAsync,
+    toast,
+    uploadedExcelFileUrl,
+  ]);
 
   let registrationContent: ReactNode = null;
 
@@ -115,8 +165,9 @@ export const EventDiscountRegistrationPage = () => {
       <FileAnalysisConfirmSection
         analysisItems={fileAnalysisConfirmFixture.analysisItems}
         fileName={uploadedExcelFileName}
+        isStartAnalysisPending={startProductImportMutation.isPending}
         onCancel={cancelFileAnalysisConfirmation}
-        onStartAnalysis={startFileAnalysis}
+        onStartAnalysis={handleStartFileAnalysis}
       />
     );
   }

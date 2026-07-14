@@ -4,8 +4,13 @@ import { ToastProvider } from '@dongchimi/shared/toast';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { QueryProvider } from '@/shared/query';
 
-import { EventDiscountRegistrationPage } from './EventDiscountRegistrationPage';
+import {
+  EventDiscountRegistrationPage,
+  type EventDiscountRegistrationPageProps,
+} from './EventDiscountRegistrationPage';
+import type { StartProductImportParams } from './api';
 
 vi.mock('@lottiefiles/dotlottie-react', () => ({
   DotLottieReact: () => <span aria-hidden='true' data-testid='file-analysis-spinner' />,
@@ -13,12 +18,36 @@ vi.mock('@lottiefiles/dotlottie-react', () => ({
 
 const posGuideDialogName = /POS에서 엑셀 파일을\s+이렇게 다운 받으시면 돼요\./;
 
-const renderEventDiscountRegistrationPage = () => {
+const createMockResolveExcelFileUrl = () => {
+  return vi.fn((file: File) => `https://static.dongchimi.kr/test/${file.name}`);
+};
+
+const createMockStartProductImport = () => {
+  return vi.fn((params: StartProductImportParams) => {
+    void params;
+
+    return Promise.resolve({
+      jobId: 'job-123',
+    });
+  });
+};
+
+const renderEventDiscountRegistrationPage = (
+  props: Partial<EventDiscountRegistrationPageProps> = {},
+) => {
+  const resolveExcelFileUrl = props.resolveExcelFileUrl ?? createMockResolveExcelFileUrl();
+  const startProductImport = props.startProductImport ?? createMockStartProductImport();
   const router = createMemoryRouter(
     [
       {
         path: MARKET_OWNER_ROUTES.eventDiscountRegistration,
-        element: <EventDiscountRegistrationPage />,
+        element: (
+          <EventDiscountRegistrationPage
+            marketId={12}
+            resolveExcelFileUrl={resolveExcelFileUrl}
+            startProductImport={startProductImport}
+          />
+        ),
       },
       {
         path: MARKET_OWNER_ROUTES.registrationResult,
@@ -30,12 +59,14 @@ const renderEventDiscountRegistrationPage = () => {
     },
   );
   const renderResult = render(
-    <ToastProvider defaultDurationMs={null}>
-      <RouterProvider router={router} />
-    </ToastProvider>,
+    <QueryProvider>
+      <ToastProvider defaultDurationMs={null}>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </QueryProvider>,
   );
 
-  return { ...renderResult, router };
+  return { ...renderResult, resolveExcelFileUrl, router, startProductImport };
 };
 
 describe('EventDiscountRegistrationPage', () => {
@@ -45,7 +76,7 @@ describe('EventDiscountRegistrationPage', () => {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    renderEventDiscountRegistrationPage();
+    const { startProductImport } = renderEventDiscountRegistrationPage();
 
     expect(screen.getByRole('heading', { name: '상품 등록' })).toBeInTheDocument();
 
@@ -72,6 +103,12 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(screen.getByRole('button', { name: '분석 시작' }));
 
+    expect(startProductImport).toHaveBeenCalledWith({
+      marketId: 12,
+      request: {
+        excelFileUrl: 'https://static.dongchimi.kr/test/상품목록_202607.xlsx',
+      },
+    });
     expect(
       screen.getByRole('heading', { name: 'AI가 상품 정보를 분석하고 있어요' }),
     ).toBeInTheDocument();

@@ -7,5 +7,9 @@ const getPublicEnv = (key: keyof ImportMetaEnv) => {
 export const getMarketOwnerEnv = () => {
   return {
     apiBaseUrl: getPublicEnv('VITE_API_BASE_URL')?.replace(/\/+$/, ''),
+    temporaryExcelUploadBaseUrl: getPublicEnv('VITE_TEMPORARY_EXCEL_UPLOAD_BASE_URL')?.replace(
+      /\/+$/,
+      '',
+    ),
   };
 };
