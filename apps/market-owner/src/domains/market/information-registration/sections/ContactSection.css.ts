@@ -2,9 +2,11 @@ import { style } from '@vanilla-extract/css';
 
 import { atomic, typography } from '@dongchimi/design-system/tokens';
 
+const contactLabelColumnWidth = '10.8rem';
+
 export const inlineFieldClassName = style({
   display: 'grid',
-  gridTemplateColumns: 'max-content minmax(0, 1fr)',
+  gridTemplateColumns: `${contactLabelColumnWidth} minmax(0, 1fr)`,
   gap: '1.2rem',
   alignItems: 'start',
 });
