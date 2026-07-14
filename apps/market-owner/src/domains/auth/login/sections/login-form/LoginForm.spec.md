@@ -24,7 +24,7 @@
 - field hook: `login/hooks/use-login-fields.ts`가 React Hook Form controller로 이메일/비밀번호 입력 상태, 로그인 상태 유지 선택, error 표시 props를 관리합니다.
 - submit hook: `login/hooks/use-login-submit.ts`가 submit loading, redirect, error toast message 상태를 관리합니다.
 - schema: `login/schemas/login-schema.ts`가 zod 기반 필드 검증 규칙, 기본값, RHF resolver를 제공합니다.
-- utils: `login/utils/email-validation.ts`, `login/utils/password-validation.ts`가 validation message와 입력 제한 helper를 제공합니다.
+- utils: `login/utils/email-validation.ts`, `login/utils/password-validation.ts`가 validation message를 제공합니다.
 - data: 없음. auth API 연동은 후속 이슈 범위입니다.
 - states: default(초기 빈 폼), email/password editing, field validation error를 다룹니다. loading/server error는 이번 범위에서 다루지 않습니다.
 
@@ -33,7 +33,7 @@
 - 이메일 필드는 필수 입력 항목입니다.
 - 사용자가 이메일 필드를 수정하기 전에는 초기 빈 값 오류를 노출하지 않습니다.
 - 사용자가 이메일 값을 수정하면 입력값을 실시간으로 검증합니다.
-- 입력 가능한 문자는 영문, 숫자, `@`, `.`, `_`, `-`입니다. 한글과 그 밖의 문자는 입력값에 반영하지 않습니다.
+- 한글을 포함한 입력값을 필드에 반영하며, 올바른 이메일 형식이 아니면 기존 형식 오류를 표시합니다.
 - 빈 값이면 `이메일을 입력해주세요.` 오류를 표시합니다.
 - `example@email.com`, `example@email.co.kr`처럼 `@`와 점으로 구분된 도메인을 포함하지 않으면 `올바른 이메일 형식이 아닙니다.` 오류를 표시합니다.
 - 오류 상태는 디자인 시스템 `TextInput`의 `status='error'`와 `errorMessage`로 표시합니다.
