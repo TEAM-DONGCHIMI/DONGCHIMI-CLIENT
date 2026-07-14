@@ -5,7 +5,7 @@ import { AppProviders } from '@/app/AppProviders';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { fireEvent, render, screen, userEvent } from '@/test';
 
-import { TodaySpecialRegistrationPage } from './TodaySpecialRegistrationPage';
+import { TodaySpecialRegistrationPage } from './today-special-registration-page';
 
 const { registerDailyProduct, uploadProductImage } = vi.hoisted(() => ({
   registerDailyProduct: vi.fn(),
@@ -16,7 +16,7 @@ vi.mock('../hooks/use-daily-product-registration-mutation', () => ({
   useDailyProductRegistrationMutation: () => ({ mutateAsync: registerDailyProduct }),
 }));
 
-vi.mock('./hooks/useTodaySpecialImageUpload', () => ({
+vi.mock('./hooks/use-today-special-image-upload', () => ({
   useTodaySpecialImageUpload: () => ({ uploadProductImage }),
 }));
 

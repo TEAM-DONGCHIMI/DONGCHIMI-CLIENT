@@ -1,11 +1,17 @@
 import { RouterProvider, createMemoryRouter } from 'react-router';
-import { fireEvent, render, screen, userEvent } from '@/test';
+import { fireEvent, render, screen, userEvent, waitFor } from '@/test';
 import { ToastProvider } from '@dongchimi/shared/toast';
 import { describe, expect, it, vi } from 'vitest';
 
+import { ApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { QueryProvider } from '@/shared/query';
 
-import { EventDiscountRegistrationPage } from './EventDiscountRegistrationPage';
+import {
+  EventDiscountRegistrationPage,
+  type EventDiscountRegistrationPageProps,
+} from './EventDiscountRegistrationPage';
+import type { StartProductImportParams } from './api';
 
 vi.mock('@lottiefiles/dotlottie-react', () => ({
   DotLottieReact: () => <span aria-hidden='true' data-testid='file-analysis-spinner' />,
@@ -13,12 +19,45 @@ vi.mock('@lottiefiles/dotlottie-react', () => ({
 
 const posGuideDialogName = /POS에서 엑셀 파일을\s+이렇게 다운 받으시면 돼요\./;
 
-const renderEventDiscountRegistrationPage = () => {
+const createMockResolveExcelFileUrl = () => {
+  return vi.fn((file: File) => `https://static.dongchimi.kr/test/${file.name}`);
+};
+
+const createMockStartProductImport = () => {
+  return vi.fn((params: StartProductImportParams) => {
+    void params;
+
+    return Promise.resolve({
+      jobId: 'job-123',
+    });
+  });
+};
+
+const createDeferred = <ValueTypes,>() => {
+  let resolve!: (value: ValueTypes) => void;
+  const promise = new Promise<ValueTypes>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+
+  return { promise, resolve };
+};
+
+const renderEventDiscountRegistrationPage = (
+  props: Partial<EventDiscountRegistrationPageProps> = {},
+) => {
+  const resolveExcelFileUrl = props.resolveExcelFileUrl ?? createMockResolveExcelFileUrl();
+  const startProductImport = props.startProductImport ?? createMockStartProductImport();
   const router = createMemoryRouter(
     [
       {
         path: MARKET_OWNER_ROUTES.eventDiscountRegistration,
-        element: <EventDiscountRegistrationPage />,
+        element: (
+          <EventDiscountRegistrationPage
+            marketId={12}
+            resolveExcelFileUrl={resolveExcelFileUrl}
+            startProductImport={startProductImport}
+          />
+        ),
       },
       {
         path: MARKET_OWNER_ROUTES.registrationResult,
@@ -30,12 +69,14 @@ const renderEventDiscountRegistrationPage = () => {
     },
   );
   const renderResult = render(
-    <ToastProvider defaultDurationMs={null}>
-      <RouterProvider router={router} />
-    </ToastProvider>,
+    <QueryProvider>
+      <ToastProvider defaultDurationMs={null}>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </QueryProvider>,
   );
 
-  return { ...renderResult, router };
+  return { ...renderResult, resolveExcelFileUrl, router, startProductImport };
 };
 
 describe('EventDiscountRegistrationPage', () => {
@@ -45,7 +86,7 @@ describe('EventDiscountRegistrationPage', () => {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    renderEventDiscountRegistrationPage();
+    const { startProductImport } = renderEventDiscountRegistrationPage();
 
     expect(screen.getByRole('heading', { name: '상품 등록' })).toBeInTheDocument();
 
@@ -72,6 +113,12 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(screen.getByRole('button', { name: '분석 시작' }));
 
+    expect(startProductImport).toHaveBeenCalledWith({
+      marketId: 12,
+      request: {
+        excelFileUrl: 'https://static.dongchimi.kr/test/상품목록_202607.xlsx',
+      },
+    });
     expect(
       screen.getByRole('heading', { name: 'AI가 상품 정보를 분석하고 있어요' }),
     ).toBeInTheDocument();
@@ -126,6 +173,120 @@ describe('EventDiscountRegistrationPage', () => {
     expect(screen.getByText('파일을 선택하지 못했습니다. 다시 선택해주세요.')).toBeInTheDocument();
     expect(screen.queryByText('leaflet.png')).toBeNull();
     expect(screen.getByRole('button', { name: '파일 업로드' })).toBeDisabled();
+  });
+
+  it('shows the server message when the excel upload API fails', async () => {
+    const user = userEvent.setup();
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const uploadError = new ApiError({
+      code: 'FILE_SIZE_EXCEEDED',
+      message: '엑셀 파일 크기가 너무 큽니다.',
+      status: 413,
+      type: 'client',
+    });
+    const resolveExcelFileUrl = vi.fn().mockRejectedValue(uploadError);
+    const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderEventDiscountRegistrationPage({ resolveExcelFileUrl });
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    await user.upload(screen.getByLabelText('파일 선택'), excelFile);
+    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('엑셀 파일 크기가 너무 큽니다.');
+    expect(screen.getAllByText('엑셀 파일 크기가 너무 큽니다.')).toHaveLength(2);
+    expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      '[EventDiscountRegistration] Failed to upload excel file',
+      uploadError,
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('uses a user-facing fallback when the excel upload fails outside the API client', async () => {
+    const user = userEvent.setup();
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const resolveExcelFileUrl = vi
+      .fn()
+      .mockRejectedValue(new Error('Failed to upload file to presigned URL.'));
+    const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderEventDiscountRegistrationPage({ resolveExcelFileUrl });
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    await user.upload(screen.getByLabelText('파일 선택'), excelFile);
+    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      '파일 업로드에 실패했습니다. 다시 시도해주세요.',
+    );
+    expect(screen.getAllByText('파일 업로드에 실패했습니다. 다시 시도해주세요.')).toHaveLength(2);
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('shows the server message when starting product analysis fails', async () => {
+    const user = userEvent.setup();
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const analysisError = new ApiError({
+      code: 'UNAUTHORIZED',
+      message: '인증이 필요합니다.',
+      status: 401,
+      type: 'auth',
+    });
+    const startProductImport = vi.fn().mockRejectedValue(analysisError);
+    const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderEventDiscountRegistrationPage({ startProductImport });
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    await user.upload(screen.getByLabelText('파일 선택'), excelFile);
+    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+    await user.click(screen.getByRole('button', { name: '분석 시작' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('인증이 필요합니다.');
+    expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      '[EventDiscountRegistration] Failed to start product import',
+      analysisError,
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('keeps the upload button disabled until the presigned upload completes', async () => {
+    const user = userEvent.setup();
+    const deferredUpload = createDeferred<string>();
+    const resolveExcelFileUrl = vi.fn(() => deferredUpload.promise);
+    const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderEventDiscountRegistrationPage({ resolveExcelFileUrl });
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    await user.upload(screen.getByLabelText('파일 선택'), excelFile);
+
+    const uploadButton = screen.getByRole('button', { name: '파일 업로드' });
+
+    await user.click(uploadButton);
+
+    expect(uploadButton).toBeDisabled();
+
+    deferredUpload.resolve('https://static.dongchimi.kr/test/products.xlsx');
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' }),
+      ).toBeInTheDocument();
+    });
   });
 
   it('selects an excel file through drag and drop', async () => {

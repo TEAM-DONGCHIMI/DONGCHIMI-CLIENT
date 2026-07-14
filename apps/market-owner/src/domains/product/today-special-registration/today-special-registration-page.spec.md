@@ -6,7 +6,7 @@
 - Domain: `product`
 - Page: `today-special-registration`
 - Route: `/products/today-special/new`
-- Path: `apps/market-owner/src/domains/product/today-special-registration/TodaySpecialRegistrationPage.tsx`
+- Path: `apps/market-owner/src/domains/product/today-special-registration/today-special-registration-page.tsx`
 - Jira: DCMSM-21, DCMSM-54, DCMSM-56
 - Related API: DCMSM-50
 - Status: UI, Presigned image upload, product registration API implemented with temporary market ID
@@ -32,14 +32,14 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 
 ## Structure
 
-- `TodaySpecialRegistrationPage.tsx`
+- `today-special-registration-page.tsx`
   - 페이지 shell, section 조합, 등록 action별 성공 후속 동작을 담당합니다.
-- `hooks/useTodaySpecialForm.ts`
+- `hooks/use-today-special-form.ts`
   - 등록된 상품 snapshot과 현재 입력 상품의 RHF form, validation, submit/isSubmitting, 상품 이동 상태를 소유합니다.
-- `hooks/useTodaySpecialImageUpload.ts`
+- `hooks/use-today-special-image-upload.ts`
   - 현재 상품 이미지 1개의 TanStack Query Presigned URL mutation과 S3 PUT만 조합합니다.
   - 이미지가 없으면 `null`, 이미지가 있으면 후속 등록 payload용 `objectKey`를 반환합니다.
-- `hooks/useTodaySpecialProductRegistration.ts`
+- `hooks/use-today-special-product-registration.ts`
   - 이미지 업로드, 등록 payload 변환, 상품 등록 mutation, 실패 toast를 조합합니다.
   - 페이지가 버튼별 성공 후속 동작을 결정할 수 있도록 성공 여부를 반환합니다.
 - `hooks/useCurrentProductField.ts`
@@ -47,13 +47,13 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `hooks/useCategoryDropdown.tsx`
   - product domain 공용 `useProductOverlayDisclosure`로 open/close, 외부 click, Escape 동작을 관리합니다.
   - 등록 화면에 필요한 dropdown max height와 form category touched 처리만 담당합니다.
-- `sections/RegistrationTitleSection.tsx`
+- `sections/registration-title-section.tsx`
   - 등록 화면 title과 등록된 상품/현재 입력 상품 사이를 이동하는 화살표, 현재 순번을 렌더링합니다.
-- `sections/ProductInfoSection.tsx`
+- `sections/product-info-section.tsx`
   - 상품 이미지, 상품명, 상품 구분 dropdown, 상품 한줄 홍보문구를 렌더링합니다.
-- `sections/ProductPriceSection.tsx`
+- `sections/product-price-section.tsx`
   - 오늘의 특가, 판매가 input을 렌더링합니다.
-- `sections/ProductPeriodSection.tsx`
+- `sections/product-period-section.tsx`
   - 행사 시작일 field를 배치합니다.
 - `../components/date-field/DateField.tsx`
   - visible `YYYY-MM-DD` field와 투명 native `type=date` input overlay를 결합합니다.

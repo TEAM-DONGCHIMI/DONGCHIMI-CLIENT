@@ -1,8 +1,8 @@
 import type { ChangeEventHandler, FocusEventHandler } from 'react';
 
-import { FieldGroup } from '../components/FieldGroup';
+import { FieldGroup } from '../components/field-group';
 import type { TodaySpecialProductErrorMessageTypes, TodaySpecialProductFormTypes } from '../model';
-import * as S from '../TodaySpecialRegistrationPage.css';
+import * as S from '../today-special-registration-page.css';
 
 interface ProductPriceSectionProps {
   onSalePriceBlur: FocusEventHandler<HTMLInputElement>;

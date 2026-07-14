@@ -5,7 +5,7 @@ import {
   IcLineHorizontalSizeSmall,
 } from '@dongchimi/design-system/icons';
 
-import * as S from '../TodaySpecialRegistrationPage.css';
+import * as S from '../today-special-registration-page.css';
 
 interface RegistrationTitleSectionProps {
   canCancelCurrentDraft: boolean;

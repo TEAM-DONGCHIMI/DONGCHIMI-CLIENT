@@ -4,7 +4,7 @@ import { normalizeApiError } from '@/shared/api';
 
 import { useDailyProductRegistrationMutation } from '../../hooks/use-daily-product-registration-mutation';
 import { createDailyProductRequest, type TodaySpecialProductFormTypes } from '../model';
-import { useTodaySpecialImageUpload } from './useTodaySpecialImageUpload';
+import { useTodaySpecialImageUpload } from './use-today-special-image-upload';
 
 const registrationErrorMessages = {
   failed: '상품을 등록하지 못했습니다. 다시 시도해주세요.',

@@ -10,15 +10,15 @@ import { isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
 
 import { useCategoryDropdown } from './hooks/useCategoryDropdown';
 import { useCurrentProductField } from './hooks/useCurrentProductField';
-import { useTodaySpecialForm } from './hooks/useTodaySpecialForm';
-import { useTodaySpecialProductRegistration } from './hooks/useTodaySpecialProductRegistration';
+import { useTodaySpecialForm } from './hooks/use-today-special-form';
+import { useTodaySpecialProductRegistration } from './hooks/use-today-special-product-registration';
 import {
   ProductInfoSection,
   ProductPeriodSection,
   ProductPriceSection,
   RegistrationTitleSection,
 } from './sections';
-import * as S from './TodaySpecialRegistrationPage.css';
+import * as S from './today-special-registration-page.css';
 
 export const TodaySpecialRegistrationPage = () => {
   const navigate = useNavigate();

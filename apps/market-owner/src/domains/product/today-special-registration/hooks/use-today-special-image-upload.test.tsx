@@ -5,7 +5,7 @@ import { uploadFileToPresignedUrl } from '@/shared/api';
 
 import { usePresignedUploadMutation } from '../../hooks';
 import { createEmptyTodaySpecialProductForm } from '../model';
-import { useTodaySpecialImageUpload } from './useTodaySpecialImageUpload';
+import { useTodaySpecialImageUpload } from './use-today-special-image-upload';
 
 vi.mock('@/shared/api', () => ({
   uploadFileToPresignedUrl: vi.fn(),
