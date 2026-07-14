@@ -92,4 +92,28 @@ describe('useLoginMutation', () => {
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"isLoggedIn":true');
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBeNull();
   });
+
+  it('stores the authenticated market id when login succeeds', async () => {
+    mockLoginMarketOwner.mockResolvedValueOnce({
+      ...LOGIN_SUCCESS_RESPONSE,
+      data: {
+        ...LOGIN_SUCCESS_RESPONSE.data,
+        marketId: 12,
+      },
+    });
+    const { result } = renderHook(() => useLoginMutation(), {
+      wrapper: createWrapper(),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        email: 'owner@example.com',
+        password: 'password',
+        isAutoLogin: true,
+      });
+    });
+
+    expect(useAuthStore.getState().marketId).toBe(12);
+    expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"marketId":12');
+  });
 });
