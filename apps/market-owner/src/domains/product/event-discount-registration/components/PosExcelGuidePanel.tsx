@@ -9,6 +9,8 @@ export interface PosExcelGuidePanelProps {
 }
 
 const POS_GUIDE_TITLE_ID = 'pos-excel-guide-title';
+const POS_EXCEL_GUIDE_ALT =
+  'POS 엑셀 상품 등록 안내: 1. 상품관리 또는 상품목록 메뉴에서 CSV 내보내기나 엑셀 다운로드를 선택합니다. 2. 동치미 엑셀 양식의 첫 번째 행은 수정하지 않고 상품명, 판매가, 할인 기간을 필수로 입력하며 홍보 문구는 선택으로 입력합니다. 3. 작성한 파일을 CSV 또는 Excel 형식으로 저장해 동치미에 업로드합니다.';
 
 export const PosExcelGuidePanel = ({ open, onClose }: PosExcelGuidePanelProps) => {
   const { dialogRef, initialFocusRef, overlayRef } = usePosGuideModalBehavior({ open, onClose });
@@ -42,32 +44,13 @@ export const PosExcelGuidePanel = ({ open, onClose }: PosExcelGuidePanelProps) =
             {'POS에서 엑셀 파일을\n이렇게 다운 받으시면 돼요.'}
           </h2>
 
-          <div className={S.imageListClassName}>
-            <span
-              aria-label='POS에서 엑셀 파일 다운로드: 상품관리 또는 판매관리 화면에서 엑셀/CSV 추출 메뉴를 선택해주세요.'
-              className={[
-                S.guideImagePlaceholderClassName,
-                S.guideImagePlaceholderHeightClassNames.large,
-              ].join(' ')}
-              role='img'
-            />
-            <span
-              aria-label='CSV 또는 엑셀 파일 저장: 다운로드한 파일을 .xlsx 또는 .csv 형식으로 저장해주세요.'
-              className={[
-                S.guideImagePlaceholderClassName,
-                S.guideImagePlaceholderHeightClassNames.medium,
-              ].join(' ')}
-              role='img'
-            />
-            <span
-              aria-label='동치미에 파일 업로드: 저장한 파일을 행사 할인 상품 등록 홈에서 업로드해주세요.'
-              className={[
-                S.guideImagePlaceholderClassName,
-                S.guideImagePlaceholderHeightClassNames.small,
-              ].join(' ')}
-              role='img'
-            />
-          </div>
+          <img
+            alt={POS_EXCEL_GUIDE_ALT}
+            className={S.guideImageClassName}
+            height={722}
+            src='/images/pos-excel-guide.webp'
+            width={360}
+          />
         </div>
       </div>
     </div>
