@@ -1,6 +1,14 @@
 import { forwardRef, memo, type Ref, type SVGProps } from 'react';
 const SvgProductReplaceImage = (props: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>) => (
-  <svg xmlns='http://www.w3.org/2000/svg' width={112} height={112} fill='none' ref={ref} {...props}>
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width={112}
+    height={112}
+    fill='none'
+    ref={ref}
+    viewBox='0 0 112 112'
+    {...props}
+  >
     <g clipPath='url(#product-replace-image_svg__a)'>
       <path fill='#DDFAE0' d='M0 0h112v112H0z' />
       <path

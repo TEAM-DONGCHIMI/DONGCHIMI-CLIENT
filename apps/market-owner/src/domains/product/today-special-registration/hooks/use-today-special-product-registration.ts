@@ -26,8 +26,13 @@ export const useTodaySpecialProductRegistration = () => {
     product: TodaySpecialProductFormTypes,
   ): Promise<RegistrationResultTypes> => {
     try {
-      const uploadedImageObjectKey = await uploadProductImage(product);
       const { s3BaseUrl } = getMarketOwnerEnv();
+
+      if (product.imageFile != null && s3BaseUrl == null) {
+        throw new Error('VITE_PUBLIC_S3_BASE_URL is not configured.');
+      }
+
+      const uploadedImageObjectKey = await uploadProductImage(product);
 
       await dailyProductRegistrationMutation.mutateAsync({
         marketId: TEMPORARY_MARKET_ID,

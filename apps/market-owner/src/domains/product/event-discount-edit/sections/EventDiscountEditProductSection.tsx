@@ -86,11 +86,16 @@ export const EventDiscountEditProductSection = (props: EventDiscountEditProductS
     return <ProductEditProductListLoading />;
   }
 
+  if (productListQuery.isError) {
+    throw productListQuery.error;
+  }
+
   const products = (productListQuery.data?.data?.content ?? []).map(createProductEditListItem);
+  const productIdsKey = products.map(({ productId }) => productId).join('-');
 
   return (
     <EventDiscountEditProductList
-      key={`${props.selectedFilter}-${productListQuery.dataUpdatedAt}`}
+      key={`${props.selectedFilter}-${productIdsKey}`}
       {...props}
       initialProducts={products}
       marketId={marketId}
