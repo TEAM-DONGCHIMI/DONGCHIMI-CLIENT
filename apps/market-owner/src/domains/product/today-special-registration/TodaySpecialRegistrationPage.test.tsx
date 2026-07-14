@@ -41,6 +41,7 @@ const renderTodaySpecialRegistrationPage = () => {
 
 describe('TodaySpecialRegistrationPage', () => {
   beforeEach(() => {
+    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', 'https://static.example.com/');
     registerDailyProduct.mockReset();
     registerDailyProduct.mockResolvedValue({
       success: true,
@@ -53,6 +54,7 @@ describe('TodaySpecialRegistrationPage', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllEnvs();
   });
 
   it('keeps continue registration enabled and completion disabled while fields are empty', () => {
@@ -127,7 +129,7 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(registerDailyProduct).toHaveBeenCalledWith({
       marketId: 1,
       request: expect.objectContaining({
-        thumbnailUrl: uploadedImageObjectKey,
+        thumbnailUrl: 'https://static.example.com/tmp/PRODUCT_THUMBNAIL/product.png',
       }),
     });
     expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
