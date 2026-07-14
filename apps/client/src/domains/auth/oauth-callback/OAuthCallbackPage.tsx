@@ -66,7 +66,7 @@ const getCallbackErrorMessage = ({
 export const OAuthCallbackPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const kakaoLoginMutation = useKakaoLoginMutation();
+  const { data, error, isError, isSuccess, mutate } = useKakaoLoginMutation();
   const hasRequestedLoginRef = useRef(false);
   const [code] = useState(() => searchParams.get('code'));
   const oauthError = searchParams.get('error');
@@ -83,7 +83,7 @@ export const OAuthCallbackPage = () => {
     hasRequestedLoginRef.current = true;
     window.history.replaceState(window.history.state, '', CLIENT_ROUTES.oauthCallback);
 
-    kakaoLoginMutation.mutate(
+    mutate(
       { code },
       {
         onSuccess: (response) => {
@@ -98,14 +98,14 @@ export const OAuthCallbackPage = () => {
         },
       },
     );
-  }, [code, kakaoLoginMutation, oauthError, router]);
+  }, [code, mutate, oauthError, router]);
 
   const errorMessage = getCallbackErrorMessage({
     code,
-    hasAccessToken: Boolean(kakaoLoginMutation.data?.data?.accessToken),
-    isError: kakaoLoginMutation.isError,
-    isSuccess: kakaoLoginMutation.isSuccess,
-    mutationError: kakaoLoginMutation.error,
+    hasAccessToken: Boolean(data?.data?.accessToken),
+    isError,
+    isSuccess,
+    mutationError: error,
     oauthError,
   });
 
