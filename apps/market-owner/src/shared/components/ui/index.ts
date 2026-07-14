@@ -19,3 +19,9 @@ export { LeafletShareCard } from './leaflet-share-card';
 export type { LeafletShareCardProps } from './leaflet-share-card';
 export { ProductSearchPanel } from './product-search-panel';
 export type { ProductSearchPanelItemTypes, ProductSearchPanelProps } from './product-search-panel';
+export { ProductHeaderSearch } from './product-header-search';
+export type {
+  ProductHeaderSearchDealTypes,
+  ProductHeaderSearchProductTypes,
+  ProductHeaderSearchProps,
+} from './product-header-search';

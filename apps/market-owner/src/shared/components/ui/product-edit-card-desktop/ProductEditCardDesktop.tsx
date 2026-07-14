@@ -18,6 +18,7 @@ export interface ProductEditCardDesktopProps extends NativeArticleProps {
   originalPrice?: string;
   periodDiscountDate?: boolean;
   priceUnit?: string;
+  productId?: number | string;
   productName: string;
   promotionText?: string;
   salePercent?: string;
@@ -157,6 +158,7 @@ export const ProductEditCardDesktop = ({
   originalPrice,
   periodDiscountDate = true,
   priceUnit = DEFAULT_PRICE_UNIT,
+  productId,
   productName,
   salePercent,
   salePercentUnit = DEFAULT_SALE_PERCENT_UNIT,
@@ -190,6 +192,7 @@ export const ProductEditCardDesktop = ({
     <article
       aria-label={cardLabel}
       className={cn(S.rootRecipe({ selectionMode: isSelectionMode }), className)}
+      data-product-id={productId}
       {...props}
     >
       <div className={S.contentClassName}>

@@ -4,6 +4,7 @@
 
 - Jira: `DCMSM-50`
 - API helper: `createPresignedUploadUrl`
+- Related hook: `usePresignedUploadMutation`
 - Owner: `apps/market-owner/src/shared/api`
 - Status: Implemented
 
@@ -33,6 +34,7 @@
 - 요청 타입은 공통 OpenAPI generated `PresignedUploadRequest`를 사용합니다.
 - 성공 응답은 API boundary에서 검증하고 후속 S3 PUT에 필요한 `data`만 반환합니다.
 - HTTP 오류는 기존 `normalizeApiError` 경로로 전달하며 조용히 삼키지 않습니다.
+- product domain의 `usePresignedUploadMutation`은 TanStack Query mutation 상태와 실행 함수를 제공하고 mutation 객체를 그대로 반환합니다.
 - `createPresignedUploadUrl`은 S3 PUT, 상품 등록 mutation, cache invalidation을 수행하지 않습니다.
 
 ## Verification

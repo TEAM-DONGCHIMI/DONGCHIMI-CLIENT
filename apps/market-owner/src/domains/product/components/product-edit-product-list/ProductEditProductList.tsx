@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 import { ProductEditCardDesktop } from '@/shared/components';
 
 import * as S from './ProductEditProductList.css';
@@ -12,11 +14,14 @@ import { ProductEditEmptyView } from './product-edit-empty-view';
 interface ProductEditProductListProps {
   ariaLabel: string;
   editModalVariant: ProductEditCardVariantTypes;
+  autoOpenProductId?: string | null;
   groups: ProductEditProductGroup[];
   registrationHref: string;
   selectedProductNames?: string[];
   selectionMode?: boolean;
   onDeleteProduct?: (product: ProductEditCardProps) => void;
+  onAutoOpenProductMissing?: (productId: string) => void;
+  onAutoOpenProductModalClose?: () => void;
   onToggleProductSelection?: (product: ProductEditCardProps) => void;
   onUpdateProduct?: (productName: string, product: ProductEditCardProps) => void;
 }
@@ -27,14 +32,58 @@ const hasProducts = (groups: ProductEditProductGroup[]) =>
 export const ProductEditProductList = ({
   ariaLabel,
   editModalVariant,
+  autoOpenProductId,
   groups,
   selectedProductNames = [],
   selectionMode = false,
   registrationHref,
+  onAutoOpenProductMissing,
+  onAutoOpenProductModalClose,
   onDeleteProduct,
   onToggleProductSelection,
   onUpdateProduct,
 }: ProductEditProductListProps) => {
+  const openedProductIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (autoOpenProductId == null) {
+      openedProductIdRef.current = null;
+
+      return;
+    }
+
+    if (selectionMode || openedProductIdRef.current === autoOpenProductId) {
+      return;
+    }
+
+    const targetProduct = groups
+      .flatMap((group) => group.products)
+      .find((product) => String(product.productId) === autoOpenProductId);
+
+    openedProductIdRef.current = autoOpenProductId;
+
+    if (targetProduct == null) {
+      onAutoOpenProductMissing?.(autoOpenProductId);
+
+      return;
+    }
+
+    openProductEditModal({
+      product: targetProduct,
+      variant: editModalVariant,
+      onClose: onAutoOpenProductModalClose,
+      onSubmit: (updatedProduct) => onUpdateProduct?.(targetProduct.productName, updatedProduct),
+    });
+  }, [
+    autoOpenProductId,
+    editModalVariant,
+    groups,
+    onAutoOpenProductMissing,
+    onAutoOpenProductModalClose,
+    onUpdateProduct,
+    selectionMode,
+  ]);
+
   if (!hasProducts(groups)) {
     return <ProductEditEmptyView ariaLabel={ariaLabel} registrationHref={registrationHref} />;
   }

@@ -14,19 +14,25 @@ import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { type EventDiscountEditProductTypes } from '../fixtures';
 
 interface EventDiscountEditProductSectionProps {
+  autoOpenProductId?: string | null;
   products: EventDiscountEditProductTypes[];
   selection: ProductEditPageSelectionControls;
   selectedCategory: ProductCategoryTypes | null;
   selectedFilter: ProductEditFilterTypes;
+  onAutoOpenProductMissing?: (productId: string) => void;
+  onAutoOpenProductModalClose?: () => void;
   onDeleteProduct: (productName: string) => void;
   onUpdateProduct: (productName: string, product: ProductEditCardProps) => void;
 }
 
 export const EventDiscountEditProductSection = ({
+  autoOpenProductId,
   products,
   selection,
   selectedCategory,
   selectedFilter,
+  onAutoOpenProductMissing,
+  onAutoOpenProductModalClose,
   onDeleteProduct,
   onUpdateProduct,
 }: EventDiscountEditProductSectionProps) => {
@@ -45,11 +51,14 @@ export const EventDiscountEditProductSection = ({
   return (
     <ProductEditProductList
       ariaLabel='행사 할인 상품 수정 목록'
+      autoOpenProductId={autoOpenProductId}
       editModalVariant='eventDiscount'
       groups={productGroups}
       registrationHref={MARKET_OWNER_ROUTES.eventDiscountRegistration}
       selectedProductNames={selection.selectedProductNames}
       selectionMode={selection.selectionMode}
+      onAutoOpenProductMissing={onAutoOpenProductMissing}
+      onAutoOpenProductModalClose={onAutoOpenProductModalClose}
       onDeleteProduct={(product) => onDeleteProduct(product.productName)}
       onToggleProductSelection={selection.onToggleProductSelection}
       onUpdateProduct={onUpdateProduct}

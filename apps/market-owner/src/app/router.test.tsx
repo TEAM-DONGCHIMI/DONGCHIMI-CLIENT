@@ -12,12 +12,13 @@ const renderRoute = (path: string) => {
   const router = createMemoryRouter(marketOwnerRoutes, {
     initialEntries: [path],
   });
-
-  return render(
+  const renderResult = render(
     <AppProviders>
       <RouterProvider router={router} />
     </AppProviders>,
   );
+
+  return { ...renderResult, router };
 };
 
 const fillSignupForm = async (
@@ -337,7 +338,7 @@ describe('marketOwnerRoutes', () => {
   it('navigates a loaded search result to the product edit page', async () => {
     const user = userEvent.setup();
 
-    renderRoute('/');
+    const { router } = renderRoute('/');
 
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '콩나물 100g');
@@ -346,6 +347,46 @@ describe('marketOwnerRoutes', () => {
     expect(
       await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
     ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.todaySpecialEdit);
+    expect(router.state.location.search).toBe('?productId=124');
+    expect(
+      await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('상품명')).toHaveValue('풀무원 콩나물 100g');
+
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    await waitFor(() => expect(router.state.location.search).toBe(''));
+    expect(
+      screen.queryByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('navigates an event-discount search result to the product edit modal', async () => {
+    const user = userEvent.setup();
+
+    const { router } = renderRoute('/');
+
+    await screen.findByRole('heading', { name: '동치미 홈' });
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '햇감자');
+    await user.click(await screen.findByRole('button', { name: /햇감자 1kg/ }));
+
+    expect(
+      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.eventDiscountEdit);
+    expect(router.state.location.search).toBe('?productId=201');
+    expect(
+      await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('상품명')).toHaveValue('햇감자 1kg');
+
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    await waitFor(() => expect(router.state.location.search).toBe(''));
+    expect(
+      screen.queryByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows pending feedback before debounced search results are applied', async () => {
@@ -354,11 +395,11 @@ describe('marketOwnerRoutes', () => {
     renderRoute('/');
 
     await screen.findByRole('heading', { name: '동치미 홈' });
-    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '풀');
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '딸기');
 
     expect(screen.getByRole('status')).toHaveTextContent('검색 중...');
     expect(screen.queryByText('검색 결과가 없어요. 상품을 등록해보세요.')).not.toBeInTheDocument();
-    expect(await screen.findByRole('button', { name: /풀무원 두부 1팩/ })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /딸기 2팩/ })).toBeInTheDocument();
   });
 
   it('shows an error toast when selected search product info cannot be loaded', async () => {
@@ -367,8 +408,8 @@ describe('marketOwnerRoutes', () => {
     renderRoute('/');
 
     await screen.findByRole('heading', { name: '동치미 홈' });
-    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '두부 1팩');
-    await user.click(await screen.findByRole('button', { name: /풀무원 두부 1팩/ }));
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '대란 30구');
+    await user.click(await screen.findByRole('button', { name: /행사 할인.*대란 30구/ }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('상품 정보를 불러오지 못했어요.');
     expect(screen.getByRole('heading', { name: '동치미 홈' })).toBeInTheDocument();
@@ -408,6 +449,50 @@ describe('marketOwnerRoutes', () => {
     );
     expect(screen.getByRole('navigation', { name: '상품 수정 유형' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '행사 할인' })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('navigates between product edit pages from the shared header product search', async () => {
+    const user = userEvent.setup();
+
+    const { router } = renderRoute(MARKET_OWNER_ROUTES.todaySpecialEdit);
+
+    await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' });
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '햇감자');
+    await user.click(await screen.findByRole('button', { name: /햇감자 1kg/ }));
+
+    expect(
+      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.eventDiscountEdit);
+    expect(router.state.location.search).toBe('?productId=201');
+    expect(
+      await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('상품명')).toHaveValue('햇감자 1kg');
+
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    await waitFor(() => expect(router.state.location.search).toBe(''));
+    expect(
+      screen.queryByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('keeps the current edit page when shared header product info cannot be loaded', async () => {
+    const user = userEvent.setup();
+
+    const { router } = renderRoute(MARKET_OWNER_ROUTES.eventDiscountEdit);
+
+    await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' });
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '대란 30구');
+    await user.click(await screen.findByRole('button', { name: /행사 할인.*대란 30구/ }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('상품 정보를 불러오지 못했어요.');
+    expect(
+      screen.getByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.eventDiscountEdit);
+    expect(router.state.location.search).toBe('');
   });
 
   it('opens period bulk edit modal after selecting products on the edit page', async () => {
