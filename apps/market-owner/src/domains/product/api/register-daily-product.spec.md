@@ -50,7 +50,8 @@
 - Hook: `useDailyProductRegistrationMutation`
 - Variables: `{ marketId, request }`
 - Retry: 공통 mutation 기본값 사용
-- Cache: 등록 성공 후 Home으로 이동하므로 현재 범위에서는 직접 cache update/invalidation을 추가하지 않습니다.
+- Cache: 등록 성공 시 `productQueryKeys.list` prefix를 invalidate하여 `DAILY`, `PERIODIC`
+  목록 cache를 모두 stale 상태로 변경합니다.
 
 ## Integration Gate
 
@@ -63,6 +64,7 @@
 
 - [x] API helper request/response test
 - [x] mutation hook test
+- [x] 등록 성공 후 `DAILY`, `PERIODIC` 상품 목록 query invalidation test
 - [x] form-to-request mapper test
 - [x] Presigned `objectKey`가 상품 등록 `thumbnailUrl`에 연결되는 page test
 - [x] 이미지 미선택 시 기본 상품 이미지가 `thumbnailUrl`에 연결되는 mapper/page test
