@@ -72,4 +72,24 @@ describe('normalizeApiError', () => {
       type: 'server',
     });
   });
+
+  it.each([
+    { body: '', label: 'empty' },
+    { body: '   ', label: 'whitespace-only' },
+  ])('uses the status fallback for an $label text body', ({ body }) => {
+    const error = normalizeApiError(createHttpError({ body, status: 500 }));
+
+    expect(error.message).toBe('서버 에러가 발생했습니다.');
+  });
+
+  it('does not expose an HTML proxy error page', () => {
+    const error = normalizeApiError(
+      createHttpError({
+        body: '<html><body>Bad Gateway</body></html>',
+        status: 502,
+      }),
+    );
+
+    expect(error.message).toBe('서버 에러가 발생했습니다.');
+  });
 });

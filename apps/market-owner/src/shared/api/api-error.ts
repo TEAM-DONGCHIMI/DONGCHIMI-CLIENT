@@ -62,6 +62,22 @@ const parseErrorBody = (body: unknown) => {
   }
 };
 
+const getSafeErrorMessage = (value: unknown) => {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const message = value.trim();
+
+  return message === '' || message.startsWith('<') ? undefined : message;
+};
+
+const getResponseMessage = (status: number) => {
+  return status >= HTTP_STATUS.SERVER_ERROR
+    ? (RESPONSE_MESSAGE[status] ?? RESPONSE_MESSAGE[HTTP_STATUS.SERVER_ERROR])
+    : RESPONSE_MESSAGE[status];
+};
+
 const getErrorType = (status: number): ApiErrorCategoryTypes => {
   if (status === HTTP_STATUS.UNAUTHORIZED || status === HTTP_STATUS.FORBIDDEN) {
     return 'auth';
@@ -102,10 +118,10 @@ export const normalizeApiError = (error: unknown) => {
     const body = parseErrorBody(error.data);
     const status = error.response.status;
     const message =
-      getStringField(body, 'message') ??
-      getStringField(body, 'error') ??
-      (typeof body === 'string' ? body : undefined) ??
-      RESPONSE_MESSAGE[status] ??
+      getSafeErrorMessage(getStringField(body, 'message')) ??
+      getSafeErrorMessage(getStringField(body, 'error')) ??
+      getSafeErrorMessage(body) ??
+      getResponseMessage(status) ??
       error.message;
 
     return new ApiError({
