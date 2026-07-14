@@ -1,6 +1,6 @@
 export const todaySpecialEditProducts = [
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     originalPrice: '5,900',
     productId: 101,
@@ -11,7 +11,7 @@ export const todaySpecialEditProducts = [
     viewCount: 162,
   },
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     originalPrice: '9,900',
     productId: 102,
@@ -22,7 +22,7 @@ export const todaySpecialEditProducts = [
     viewCount: 148,
   },
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     originalPrice: '7,900',
     productId: 103,
@@ -33,7 +33,7 @@ export const todaySpecialEditProducts = [
     viewCount: 121,
   },
   {
-    categoryName: '정육･달걀',
+    categoryName: '정육/달걀',
     endDate: '2026. 8. 16',
     originalPrice: '12,900',
     productId: 104,
@@ -44,7 +44,7 @@ export const todaySpecialEditProducts = [
     viewCount: 201,
   },
   {
-    categoryName: '정육･달걀',
+    categoryName: '정육/달걀',
     endDate: '2026. 8. 16',
     originalPrice: '8,900',
     productId: 105,
@@ -66,7 +66,7 @@ export const todaySpecialEditProducts = [
     viewCount: 109,
   },
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     originalPrice: '5,000',
     productId: 124,

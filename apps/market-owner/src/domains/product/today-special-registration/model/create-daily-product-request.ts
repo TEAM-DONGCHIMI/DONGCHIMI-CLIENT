@@ -1,7 +1,8 @@
 import type { PresignedUploadResponseTypes } from '@/shared/api';
+import { PRODUCT_CATEGORY_CODE_BY_NAME } from '@/shared/constants/product-categories';
 
 import type { RegisterDailyProductRequestTypes } from '../../api/register-daily-product';
-import { isProductSelectableCategory, type ProductSelectableCategoryTypes } from '../../constants';
+import { isProductSelectableCategory } from '../../constants';
 import {
   parsePriceInput,
   sanitizeProductDescription,
@@ -10,21 +11,6 @@ import {
 import type { TodaySpecialProductFormTypes } from './product-form.types';
 
 const DEFAULT_PRODUCT_THUMBNAIL_URL = '/images/product-replace.svg';
-
-const productCategoryCodeByLabel = {
-  '채소･과일': 'VEGETABLE_FRUIT',
-  '정육･달걀': 'MEAT_EGG',
-  수산: 'SEAFOOD',
-  유제품: 'DAIRY',
-  간편식: 'CONVENIENCE_FOOD',
-  가공식품: 'PROCESSED_FOOD',
-  '음료･주류': 'BEVERAGE_ALCOHOL',
-  생활용품: 'HOUSEHOLD_GOODS',
-  기타: 'ETC',
-} as const satisfies Record<
-  ProductSelectableCategoryTypes,
-  RegisterDailyProductRequestTypes['category']
->;
 
 interface CreateDailyProductRequestParams {
   product: TodaySpecialProductFormTypes;
@@ -36,7 +22,7 @@ const getProductCategoryCode = (category: string) => {
     throw new Error(`Unsupported product category: ${category}`);
   }
 
-  return productCategoryCodeByLabel[category];
+  return PRODUCT_CATEGORY_CODE_BY_NAME[category];
 };
 
 export const createDailyProductRequest = ({
