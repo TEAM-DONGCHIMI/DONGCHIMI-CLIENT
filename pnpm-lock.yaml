@@ -145,6 +145,8 @@ catalogs:
       specifier: ^5.0.14
       version: 5.0.14
 
+packageExtensionsChecksum: sha256-iTn1gus6yTDJ+/cfftF+JFRLKOhbTznBYp0kdUxh/s8=
+
 importers:
 
   .:
@@ -299,7 +301,7 @@ importers:
         version: link:../../packages/shared
       '@hookform/resolvers':
         specifier: 'catalog:'
-        version: 5.4.0(react-hook-form@7.81.0(react@19.2.7))
+        version: 5.4.0(react-hook-form@7.81.0(react@19.2.7))(zod@4.4.3)
       '@lottiefiles/dotlottie-react':
         specifier: ^0.19.9
         version: 0.19.9(react@19.2.7)
@@ -1053,6 +1055,7 @@ packages:
     resolution: {integrity: sha512-EIsqr/t/qbinPIhGjMdtvutIN1Kk4uwbROE9/UQ93CAVGR7GkA7Y92+fX80OzXi/OB67jVFYwKGO1WzkxmkFZw==}
     peerDependencies:
       react-hook-form: ^7.55.0
+      zod: ^4.4.3
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -6991,10 +6994,11 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@hookform/resolvers@5.4.0(react-hook-form@7.81.0(react@19.2.7))':
+  '@hookform/resolvers@5.4.0(react-hook-form@7.81.0(react@19.2.7))(zod@4.4.3)':
     dependencies:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.81.0(react@19.2.7)
+      zod: 4.4.3
 
   '@humanfs/core@0.19.2':
     dependencies:
