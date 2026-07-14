@@ -1,14 +1,26 @@
 import { describe, expect, it } from 'vitest';
 
 import { productQueryKeys } from './query-keys';
-import { productListQueryOptions } from './query-options';
+import { productDetailQueryOptions, productListQueryOptions } from './query-options';
 
 describe('productQueryKeys', () => {
   it('declares static hierarchical product keys', () => {
     expect(productQueryKeys).toEqual({
       all: ['product'],
+      detail: ['product', 'detail'],
       list: ['product', 'list'],
     });
+  });
+
+  it('combines detail params in query options', () => {
+    expect(productDetailQueryOptions({ marketId: 1, productId: 101 }).queryKey).toEqual([
+      'product',
+      'detail',
+      { marketId: 1, productId: 101 },
+    ]);
+    expect(productDetailQueryOptions({ marketId: 1, productId: 101 }).queryKey).not.toEqual(
+      productDetailQueryOptions({ marketId: 1, productId: 102 }).queryKey,
+    );
   });
 
   it('combines list params in query options', () => {
