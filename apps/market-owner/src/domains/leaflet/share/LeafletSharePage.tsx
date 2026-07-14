@@ -5,12 +5,16 @@ import { overlay } from 'overlay-kit';
 import { IcCircleCheckFill, IcCircleExclamation } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
+import { isApiError } from '@/shared/api';
 import { DesktopHeader } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
 
 import { QrDownloadModal } from './components';
 import { leafletShareFixture } from './fixtures/leaflet-share.fixture';
+import { useIssueQrCodeMutation } from './hooks';
 import { LeafletConfirmSection, LeafletShareSection } from './sections';
+import { downloadQrCodeImage, getQrCodeImageSource } from './utils/qr-code-image';
 import * as S from './LeafletSharePage.css';
 
 type LeafletShareViewTypes = 'confirm' | 'share';
@@ -18,6 +22,9 @@ type LeafletShareViewTypes = 'confirm' | 'share';
 const TOAST_DURATION_MS = 3000;
 const TOAST_ICON_SIZE = '2.4rem';
 const QR_DOWNLOAD_MODAL_OVERLAY_ID = 'leaflet-share-qr-download-modal';
+const QR_DOWNLOAD_FILENAME = 'market-leaflet-qr.png';
+const QR_ISSUE_ERROR_MESSAGE = 'QR 코드를 불러오지 못했습니다. 다시 시도해주세요.';
+const MARKET_CONTEXT_ERROR_MESSAGE = '마트 정보를 확인할 수 없습니다. 다시 로그인해주세요.';
 
 const toastIconProps = {
   'aria-hidden': true,
@@ -28,6 +35,8 @@ const toastIconProps = {
 export const LeafletSharePage = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const marketId = useAuthStore((state) => state.marketId);
+  const issueQrCodeMutation = useIssueQrCodeMutation();
   const [shareView, setShareView] = useState<LeafletShareViewTypes>('confirm');
   const isConfirmView = shareView === 'confirm';
 
@@ -57,7 +66,13 @@ export const LeafletSharePage = () => {
       icon: <IcCircleExclamation {...toastIconProps} className={S.errorIconClassName} />,
     });
   };
-  const openQrModal = () => {
+  const showQrIssueErrorToast = (message: string) => {
+    toast.error(message, {
+      durationMs: TOAST_DURATION_MS,
+      icon: <IcCircleExclamation {...toastIconProps} className={S.errorIconClassName} />,
+    });
+  };
+  const openQrModal = (imageSource: string) => {
     overlay.open(
       ({ close, isOpen, unmount }) => {
         const closeQrModal = () => {
@@ -65,13 +80,18 @@ export const LeafletSharePage = () => {
           unmount();
         };
         const handleDownloadQrCode = () => {
-          closeQrModal();
-          showDownloadErrorToast();
+          try {
+            downloadQrCodeImage(imageSource, QR_DOWNLOAD_FILENAME);
+            closeQrModal();
+          } catch {
+            showDownloadErrorToast();
+          }
         };
 
         return (
           <QrDownloadModal
             imageLabel={leafletShareFixture.qrImageLabel}
+            imageSrc={imageSource}
             open={isOpen}
             onClose={closeQrModal}
             onDownload={handleDownloadQrCode}
@@ -80,6 +100,20 @@ export const LeafletSharePage = () => {
       },
       { overlayId: QR_DOWNLOAD_MODAL_OVERLAY_ID },
     );
+  };
+  const issueQrCodeAndOpenModal = async () => {
+    if (marketId == null) {
+      showQrIssueErrorToast(MARKET_CONTEXT_ERROR_MESSAGE);
+      return;
+    }
+
+    try {
+      const { qrCode } = await issueQrCodeMutation.mutateAsync(marketId);
+
+      openQrModal(getQrCodeImageSource(qrCode));
+    } catch (error) {
+      showQrIssueErrorToast(isApiError(error) ? error.message : QR_ISSUE_ERROR_MESSAGE);
+    }
   };
   const goHome = () => navigate(MARKET_OWNER_ROUTES.home);
 
@@ -94,11 +128,12 @@ export const LeafletSharePage = () => {
         />
       ) : (
         <LeafletShareSection
+          isQrCodePending={issueQrCodeMutation.isPending}
           shareUrl={leafletShareFixture.shareUrl}
           onCopyLinkError={showCopyErrorToast}
           onCopyLink={showCopiedToast}
           onGoHome={goHome}
-          onOpenQrModal={openQrModal}
+          onOpenQrModal={() => void issueQrCodeAndOpenModal()}
         />
       )}
     </main>
