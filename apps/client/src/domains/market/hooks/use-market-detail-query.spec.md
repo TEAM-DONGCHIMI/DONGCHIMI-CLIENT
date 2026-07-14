@@ -41,7 +41,6 @@
 - auth/validation API 오류도 app QueryClient 기본 정책에 따라 retry하지 않습니다.
 - 별도 cache duration이나 retry override는 추가하지 않고 app 기본값(`staleTime: 30초`)을 따릅니다.
 - API base URL은 browser public environment variable `NEXT_PUBLIC_API_BASE_URL`로 읽습니다.
-- 배포 테스트용 `NEXT_PUBLIC_API_TEST_TOKEN`이 있으면 app-local Ky client가 Bearer header를 추가합니다. 이 값은 browser bundle에 노출되므로 운영 인증에는 사용하지 않습니다.
 
 ## Verification
 

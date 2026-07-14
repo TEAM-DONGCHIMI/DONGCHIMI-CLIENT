@@ -5,12 +5,10 @@ import { server } from '@/test';
 import { httpClient } from './http-client';
 
 const API_BASE_URL = 'https://api.test';
-const API_TEST_TOKEN = 'test-access-token';
 
 describe('httpClient', () => {
   beforeAll(() => {
     vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', API_BASE_URL);
-    vi.stubEnv('NEXT_PUBLIC_API_TEST_TOKEN', API_TEST_TOKEN);
   });
 
   afterAll(() => {
@@ -21,7 +19,7 @@ describe('httpClient', () => {
     server.use(
       http.get(`${API_BASE_URL}/test-resource`, ({ request }) => {
         expect(request.headers.get('Accept')).toBe('application/json');
-        expect(request.headers.get('Authorization')).toBe(`Bearer ${API_TEST_TOKEN}`);
+        expect(request.headers.get('Authorization')).toBeNull();
 
         return HttpResponse.json({ name: '동치미' });
       }),
@@ -32,7 +30,7 @@ describe('httpClient', () => {
     expect(result).toEqual({ name: '동치미' });
   });
 
-  it('다른 origin으로는 테스트 토큰을 전송하지 않는다', async () => {
+  it('configured API origin 밖의 URL은 요청하지 않는다', async () => {
     await expect(httpClient.get('https://api.example.com/test-resource')).rejects.toMatchObject({
       type: 'configuration',
     });
