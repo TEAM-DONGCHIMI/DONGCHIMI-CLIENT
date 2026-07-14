@@ -11,7 +11,7 @@
 - Related Jira: DCMSM-32 홈 상품 0건 딤드 상태 UI, DCMSM-38 헤더 상품 검색 공통화,
   DCMSM-57 사장님 홈 화면 조회 API 연동
 - Related Jira: DCMSM-15 route scaffold
-- Status: In Progress
+- Status: Implemented
 
 ## Purpose
 
@@ -278,14 +278,14 @@ HomePage(main)
 - [x] `pnpm --filter market-owner typecheck`
 - [x] `pnpm --filter market-owner test`
 - [x] `pnpm --filter market-owner build`
-- [ ] owner home API helper validates the generated response contract
-- [ ] owner home query uses `homeQueryKeys.ownerHome()` and renders success data
-- [ ] dashboard renders loading, error with retry, product empty, and flyer empty states from API data
-- [ ] `pnpm format:check`
-- [ ] `pnpm --filter market-owner lint`
-- [ ] `pnpm --filter market-owner typecheck`
-- [ ] `pnpm --filter market-owner test`
-- [ ] `pnpm --filter market-owner build`
+- [x] owner home API helper validates the generated response contract
+- [x] owner home query uses `homeQueryKeys.ownerHome()` and renders success data
+- [x] dashboard renders loading, error with retry, product empty, and flyer empty states from API data
+- [x] `pnpm format:check`
+- [x] `pnpm --filter market-owner lint`
+- [x] `pnpm --filter market-owner typecheck`
+- [x] `pnpm --filter market-owner test`
+- [x] `pnpm --filter market-owner build`
 
 ## Open Questions
 
