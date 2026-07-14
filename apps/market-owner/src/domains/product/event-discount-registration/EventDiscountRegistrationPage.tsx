@@ -1,9 +1,10 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import { IcCircleCheckFill, IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader, UploadModal } from '@/shared/components';
+import { isApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { usePresignedUploadMutation } from '@/domains/product/hooks';
 
@@ -35,6 +36,10 @@ const toastIconProps = {
   height: TOAST_ICON_SIZE,
   width: TOAST_ICON_SIZE,
 } as const;
+
+const getFileAnalysisStartErrorMessage = (error: unknown) => {
+  return isApiError(error) ? error.message : FILE_ANALYSIS_START_ERROR_MESSAGE;
+};
 
 const SimulatedFileAnalysisProgressSection = ({
   onCancel,
@@ -70,18 +75,14 @@ export const EventDiscountRegistrationPage = ({
   const presignedUploadMutation = usePresignedUploadMutation();
   const startProductImportMutation = useStartProductImportMutation();
   const [isPosGuideOpen, setIsPosGuideOpen] = useState(false);
-  const resolveUploadedExcelFileUrl = useMemo(() => {
-    return resolveExcelFileUrl ?? resolvePresignedExcelFileUrl(presignedUploadMutation.mutateAsync);
-  }, [presignedUploadMutation.mutateAsync, resolveExcelFileUrl]);
-  const handleExcelUploadError = useCallback(
-    (message: string) => {
-      toast.error(message, {
-        id: EXCEL_UPLOAD_ERROR_TOAST_ID,
-        icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
-      });
-    },
-    [toast],
-  );
+  const resolveUploadedExcelFileUrl =
+    resolveExcelFileUrl ?? resolvePresignedExcelFileUrl(presignedUploadMutation.mutateAsync);
+  const handleExcelUploadError = (message: string) => {
+    toast.error(message, {
+      id: EXCEL_UPLOAD_ERROR_TOAST_ID,
+      icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
+    });
+  };
   const {
     cancelFileAnalysisConfirmation,
     cancelFileAnalysisProgress,
@@ -127,7 +128,7 @@ export const EventDiscountRegistrationPage = ({
   const handleFileAnalysisComplete = useCallback(() => {
     navigate(MARKET_OWNER_ROUTES.registrationResult);
   }, [navigate]);
-  const handleStartFileAnalysis = useCallback(async () => {
+  const handleStartFileAnalysis = async () => {
     if (marketId == null || uploadedExcelFileUrl == null) {
       toast.error(FILE_ANALYSIS_START_ERROR_MESSAGE, {
         id: FILE_ANALYSIS_ERROR_TOAST_ID,
@@ -138,28 +139,21 @@ export const EventDiscountRegistrationPage = ({
 
     try {
       const startImport = startProductImport ?? startProductImportMutation.mutateAsync;
-      const productImport = await startImport({
+      await startImport({
         marketId,
         request: {
           excelFileUrl: uploadedExcelFileUrl,
         },
       });
 
-      startFileAnalysis(productImport.jobId);
-    } catch {
-      toast.error(FILE_ANALYSIS_START_ERROR_MESSAGE, {
+      startFileAnalysis();
+    } catch (error) {
+      toast.error(getFileAnalysisStartErrorMessage(error), {
         id: FILE_ANALYSIS_ERROR_TOAST_ID,
         icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
       });
     }
-  }, [
-    marketId,
-    startFileAnalysis,
-    startProductImport,
-    startProductImportMutation.mutateAsync,
-    toast,
-    uploadedExcelFileUrl,
-  ]);
+  };
 
   let registrationContent: ReactNode = null;
 

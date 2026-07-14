@@ -9,11 +9,11 @@ const DEFAULT_EXCEL_CONTENT_TYPE = 'application/octet-stream';
 
 export type ResolveExcelFileUrlTypes = (file: File) => Promise<string> | string;
 
-export type RequestPresignedUploadUrlTypes = (
+type RequestPresignedUploadUrlTypes = (
   request: PresignedUploadRequestTypes,
 ) => Promise<PresignedUploadResponseTypes>;
 
-export interface UploadFileToPresignedUrlParams {
+interface UploadFileToPresignedUrlParams {
   file: File;
   presignedUpload: PresignedUploadResponseTypes;
 }
@@ -22,7 +22,7 @@ const getExcelUploadContentType = (file: File) => {
   return file.type || DEFAULT_EXCEL_CONTENT_TYPE;
 };
 
-export const uploadFileToPresignedUrl = async ({
+const uploadFileToPresignedUrl = async ({
   file,
   presignedUpload,
 }: UploadFileToPresignedUrlParams) => {

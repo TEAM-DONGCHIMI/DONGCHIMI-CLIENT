@@ -72,7 +72,7 @@ const request = async <ResponseDataTypes>(path: string, options?: Options) => {
 
     return await parseJsonResponse<ResponseDataTypes>(response);
   } catch (error) {
-    throw await normalizeApiError(error);
+    throw normalizeApiError(error);
   }
 };
 

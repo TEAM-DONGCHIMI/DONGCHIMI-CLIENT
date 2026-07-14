@@ -35,8 +35,8 @@ describe('normalizeApiError', () => {
         data: null,
       }),
     },
-  ])('preserves the server API error from a $label body', async ({ serverBody }) => {
-    const error = await normalizeApiError(
+  ])('preserves the server API error from a $label body', ({ serverBody }) => {
+    const error = normalizeApiError(
       createHttpError({
         body: serverBody,
         status: 401,
@@ -57,8 +57,8 @@ describe('normalizeApiError', () => {
     });
   });
 
-  it('uses a plain text error body as the message', async () => {
-    const error = await normalizeApiError(
+  it('uses a plain text error body as the message', () => {
+    const error = normalizeApiError(
       createHttpError({
         body: '일시적으로 요청을 처리할 수 없습니다.',
         status: 500,

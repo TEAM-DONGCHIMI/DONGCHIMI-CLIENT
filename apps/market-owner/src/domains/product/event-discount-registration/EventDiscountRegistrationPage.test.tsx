@@ -3,6 +3,7 @@ import { fireEvent, render, screen, userEvent } from '@/test';
 import { ToastProvider } from '@dongchimi/shared/toast';
 import { describe, expect, it, vi } from 'vitest';
 
+import { ApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { QueryProvider } from '@/shared/query';
 
@@ -165,12 +166,17 @@ describe('EventDiscountRegistrationPage', () => {
     expect(screen.getByRole('button', { name: '파일 업로드' })).toBeDisabled();
   });
 
-  it('shows toast feedback when excel upload fails', async () => {
+  it('shows the server message when the excel upload API fails', async () => {
     const user = userEvent.setup();
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    const resolveExcelFileUrl = vi
-      .fn()
-      .mockRejectedValue(new Error('엑셀 파일 크기가 너무 큽니다.'));
+    const resolveExcelFileUrl = vi.fn().mockRejectedValue(
+      new ApiError({
+        code: 'FILE_SIZE_EXCEEDED',
+        message: '엑셀 파일 크기가 너무 큽니다.',
+        status: 413,
+        type: 'client',
+      }),
+    );
     const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
@@ -186,6 +192,55 @@ describe('EventDiscountRegistrationPage', () => {
     expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
 
     consoleErrorSpy.mockRestore();
+  });
+
+  it('uses a user-facing fallback when the excel upload fails outside the API client', async () => {
+    const user = userEvent.setup();
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const resolveExcelFileUrl = vi
+      .fn()
+      .mockRejectedValue(new Error('Failed to upload file to presigned URL.'));
+    const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderEventDiscountRegistrationPage({ resolveExcelFileUrl });
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    await user.upload(screen.getByLabelText('파일 선택'), excelFile);
+    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      '파일 업로드에 실패했습니다. 다시 시도해주세요.',
+    );
+    expect(screen.getAllByText('파일 업로드에 실패했습니다. 다시 시도해주세요.')).toHaveLength(2);
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('shows the server message when starting product analysis fails', async () => {
+    const user = userEvent.setup();
+    const startProductImport = vi.fn().mockRejectedValue(
+      new ApiError({
+        code: 'UNAUTHORIZED',
+        message: '인증이 필요합니다.',
+        status: 401,
+        type: 'auth',
+      }),
+    );
+    const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderEventDiscountRegistrationPage({ startProductImport });
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    await user.upload(screen.getByLabelText('파일 선택'), excelFile);
+    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+    await user.click(screen.getByRole('button', { name: '분석 시작' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('인증이 필요합니다.');
+    expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
   });
 
   it('selects an excel file through drag and drop', async () => {

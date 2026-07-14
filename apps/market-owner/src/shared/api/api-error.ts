@@ -82,10 +82,6 @@ const getErrorType = (status: number): ApiErrorCategoryTypes => {
   return 'client';
 };
 
-const readErrorBody = async (error: HTTPError) => {
-  return parseErrorBody(error.data);
-};
-
 export const isApiError = (error: unknown): error is ApiError => {
   return error instanceof ApiError;
 };
@@ -97,13 +93,13 @@ export const createApiConfigurationError = (message: string) => {
   });
 };
 
-export const normalizeApiError = async (error: unknown) => {
+export const normalizeApiError = (error: unknown) => {
   if (isApiError(error)) {
     return error;
   }
 
   if (error instanceof HTTPError) {
-    const body = await readErrorBody(error);
+    const body = parseErrorBody(error.data);
     const status = error.response.status;
     const message =
       getStringField(body, 'message') ??

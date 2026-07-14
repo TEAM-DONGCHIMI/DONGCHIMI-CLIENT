@@ -14,7 +14,6 @@ type ExcelUploadModalStateTypes = 'default' | 'upload' | 'error';
 
 interface ExcelUploadFlowState {
   excelUploadErrorMessage?: string;
-  fileAnalysisJobId?: string;
   isExcelUploadModalOpen: boolean;
   registrationView: EventDiscountRegistrationViewTypes;
   selectedExcelFile?: File;
@@ -30,11 +29,11 @@ type ExcelUploadFlowActionTypes =
   | { errorMessage: string; type: 'REJECT_EXCEL_FILE' }
   | { excelFileUrl: string; type: 'UPLOAD_EXCEL_FILE_SUCCESS' }
   | { type: 'CANCEL_FILE_ANALYSIS_CONFIRMATION' }
-  | { jobId: string; type: 'START_FILE_ANALYSIS' }
+  | { type: 'START_FILE_ANALYSIS' }
   | { type: 'CANCEL_FILE_ANALYSIS_PROGRESS' };
 
 interface UseExcelUploadFlowParams {
-  onExcelUploadError?: (message: string, error: unknown) => void;
+  onExcelUploadError?: (message: string) => void;
   resolveExcelFileUrl?: ResolveExcelFileUrlTypes;
 }
 
@@ -77,11 +76,7 @@ const getExcelUploadModalState = (state: ExcelUploadFlowState): ExcelUploadModal
 };
 
 const getExcelUploadErrorMessage = (error: unknown) => {
-  if (isApiError(error) && error.message) {
-    return error.message;
-  }
-
-  if (error instanceof Error && error.message) {
+  if (isApiError(error)) {
     return error.message;
   }
 
@@ -142,7 +137,6 @@ const excelUploadFlowReducer = (
         ? state
         : {
             ...state,
-            fileAnalysisJobId: action.jobId,
             registrationView: 'progress',
           };
     case 'CANCEL_FILE_ANALYSIS_PROGRESS':
@@ -209,8 +203,8 @@ export const useExcelUploadFlow = ({
       dispatch({ type: 'OPEN_EXCEL_UPLOAD_MODAL' });
     },
     registrationView: state.registrationView,
-    startFileAnalysis: (jobId: string) => {
-      dispatch({ jobId, type: 'START_FILE_ANALYSIS' });
+    startFileAnalysis: () => {
+      dispatch({ type: 'START_FILE_ANALYSIS' });
     },
     uploadExcelFile: async () => {
       if (state.selectedExcelFile == null) {
@@ -228,7 +222,7 @@ export const useExcelUploadFlow = ({
 
         const errorMessage = getExcelUploadErrorMessage(error);
 
-        onExcelUploadError?.(errorMessage, error);
+        onExcelUploadError?.(errorMessage);
 
         dispatch({
           errorMessage,
@@ -236,7 +230,6 @@ export const useExcelUploadFlow = ({
         });
       }
     },
-    fileAnalysisJobId: state.fileAnalysisJobId,
     uploadedExcelFileUrl: state.uploadedExcelFileUrl,
     uploadedExcelFileName: state.uploadedExcelFileName,
   };

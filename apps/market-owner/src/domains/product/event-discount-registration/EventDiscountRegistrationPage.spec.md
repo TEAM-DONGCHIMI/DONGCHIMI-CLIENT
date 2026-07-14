@@ -106,8 +106,8 @@
 - Confirmation `취소` clears the uploaded file state and returns to the method view.
 - `분석 시작` calls `POST /v1/owners/markets/{marketId}/products/import` with `excelFileUrl` set to the uploaded file handoff value. The current presigned contract provides this as `objectKey`.
 - If `marketId` or `excelFileUrl` is missing, the page keeps the confirmation view and shows the same file-analysis start failure toast instead of sending a guessed request.
-- Import start success stores the returned `jobId` and switches to progress view.
-- Import start failure keeps the confirmation view and shows `파일 분석을 시작하지 못했습니다. 다시 시도해주세요.` as toast feedback.
+- Import start success switches to progress view. The returned `jobId` will be consumed when the real progress API or SSE transport is connected.
+- Import start failure keeps the confirmation view and shows the normalized server message for `ApiError`; non-API failures use `파일 분석을 시작하지 못했습니다. 다시 시도해주세요.` as fallback toast feedback.
 - Progress simulation starts at 24% with `상품명 등록` processing, then advances through 44%, 64%, 84%, and 100% at one-second intervals.
 - The 100% frame remains visible for one interval before navigating to `/products/registration-result`.
 - Progress `취소` returns to confirmation view, unmounts the simulation hook, and clears the pending timeout so delayed progress or navigation cannot occur.
