@@ -90,7 +90,7 @@ export const EventDiscountEditProductSection = (props: EventDiscountEditProductS
 
   return (
     <EventDiscountEditProductList
-      key={props.selectedFilter}
+      key={`${props.selectedFilter}-${productListQuery.dataUpdatedAt}`}
       {...props}
       initialProducts={products}
       marketId={marketId}
