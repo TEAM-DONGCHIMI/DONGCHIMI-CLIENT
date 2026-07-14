@@ -63,7 +63,7 @@
 - 네트워크 오류가 발생하면 `네트워크 연결을 확인한 후 다시 시도해주세요.`를 표시합니다.
 - 토스트는 `status='error'`로 렌더링하며 `role='alert'`, `aria-live='assertive'`는 디자인 시스템 `Toast` 기본값을 따릅니다.
 
-- Submit error toast is opened through the shared `ToastProvider`/`useToast` runtime so it follows the app-level fixed viewport placement instead of occupying space inside the form layout.
+- Submit error toast is opened through the shared `ToastProvider`/`useToast` runtime so it follows the nearest shared fixed viewport placement instead of occupying space inside the form layout.
 
 ## Password Validation
 

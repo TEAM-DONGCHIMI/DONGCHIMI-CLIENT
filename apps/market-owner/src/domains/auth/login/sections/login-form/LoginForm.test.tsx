@@ -13,7 +13,7 @@ const renderLoginForm = (props: LoginFormProps = {}) => {
   return render(
     <MemoryRouter>
       <QueryProvider>
-        <ToastProvider offset='2.4rem' placement='top-right'>
+        <ToastProvider offset='2.4rem' placement='top-center'>
           <LoginForm {...props} />
         </ToastProvider>
       </QueryProvider>
