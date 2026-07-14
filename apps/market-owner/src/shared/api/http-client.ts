@@ -30,7 +30,7 @@ const getApiBaseUrl = () => {
   const { apiBaseUrl } = getMarketOwnerEnv();
 
   if (!apiBaseUrl) {
-    throw createApiConfigurationError('VITE_API_BASE_URL is not configured.');
+    throw createApiConfigurationError('VITE_PUBLIC_API_SERVER_BASE_URL is not configured.');
   }
 
   return apiBaseUrl;

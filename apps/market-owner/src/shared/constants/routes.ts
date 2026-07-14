@@ -12,4 +12,8 @@ export const MARKET_OWNER_ROUTES = {
   todaySpecialRegistration: '/products/today-special/new',
 } as const;
 
+export const MARKET_OWNER_ROUTE_SEARCH_PARAMS = {
+  productEditTargetProductId: 'productId',
+} as const;
+
 export type MarketOwnerRouteTypes = (typeof MARKET_OWNER_ROUTES)[keyof typeof MARKET_OWNER_ROUTES];

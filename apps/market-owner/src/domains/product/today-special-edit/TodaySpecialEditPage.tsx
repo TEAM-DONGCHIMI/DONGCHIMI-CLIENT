@@ -1,11 +1,13 @@
 import { ProductEditPageShell } from '@/domains/product/components/product-edit-page-shell';
-import { useProductEditProducts } from '@/domains/product/hooks';
+import { useProductEditProducts, useProductEditTargetParam } from '@/domains/product/hooks';
 
 import { eventDiscountEditProducts } from '../event-discount-edit/fixtures';
 import { todaySpecialEditProducts } from './fixtures';
 import { TodaySpecialEditProductSection } from './sections/TodaySpecialEditProductSection';
 
 export const TodaySpecialEditPage = () => {
+  const { clearTargetProductId, handleTargetProductMissing, targetProductId } =
+    useProductEditTargetParam();
   const {
     deleteProduct,
     deleteProducts,
@@ -29,9 +31,12 @@ export const TodaySpecialEditPage = () => {
     >
       {(selectedFilter, _selectedCategory, selection) => (
         <TodaySpecialEditProductSection
+          autoOpenProductId={targetProductId}
           products={products}
           selection={selection}
           selectedFilter={selectedFilter}
+          onAutoOpenProductMissing={handleTargetProductMissing}
+          onAutoOpenProductModalClose={clearTargetProductId}
           onDeleteProduct={deleteProduct}
           onUpdateProduct={updateProduct}
         />

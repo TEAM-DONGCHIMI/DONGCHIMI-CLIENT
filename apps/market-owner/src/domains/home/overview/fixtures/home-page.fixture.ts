@@ -1,6 +1,5 @@
 import { type ProductCardItemTypes, type ProductCardProps } from '@dongchimi/shared';
 
-import { type ProductSearchPanelItemTypes } from '@/shared/components';
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
 
 export interface HomeProductSectionFixtureTypes {
@@ -19,11 +18,6 @@ interface HomeHeroActionFixtureTypes {
   title: string;
 }
 
-interface HomeSearchProductFixtureTypes extends ProductSearchPanelItemTypes {
-  editRoute: MarketOwnerRouteTypes;
-  isProductInfoLoadable?: boolean;
-}
-
 interface HomeFlyerFixtureTypes {
   flyerId: number;
   qrCode: string;
@@ -36,8 +30,6 @@ export interface HomeShareFixtureTypes {
   title: string;
   url: string;
 }
-
-const normalizeSearchText = (value: string) => value.toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
 
 const dailyProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
   discountRate: 10,
@@ -60,58 +52,6 @@ export const homeProductSummary = {
   periodicCount: 35,
   periodicProducts,
 } as const;
-
-export const homeSearchProducts: HomeSearchProductFixtureTypes[] = [
-  {
-    editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
-    id: 'search-daily-tofu',
-    isProductInfoLoadable: false,
-    label: '오늘의 특가',
-    name: '풀무원 두부 1팩',
-  },
-  {
-    editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
-    id: 'search-daily-bean-sprout',
-    label: '오늘의 특가',
-    name: '풀무원 콩나물 100g',
-  },
-  {
-    editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
-    id: 'search-periodic-pool-forest',
-    label: '행사 할인',
-    name: '풀숲',
-  },
-  {
-    editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
-    id: 'search-periodic-pool',
-    label: '행사 할인',
-    name: '풀풀풀',
-  },
-  {
-    editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
-    id: 'search-daily-soft-tofu',
-    label: '오늘의 특가',
-    name: '풀무원 순두부 350g',
-  },
-  {
-    editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
-    id: 'search-periodic-tofu-set',
-    label: '행사 할인',
-    name: '풀무원 두부 세트',
-  },
-] satisfies HomeSearchProductFixtureTypes[];
-
-export const getHomeSearchProductsByQuery = (query: string) => {
-  const normalizedQuery = normalizeSearchText(query);
-
-  if (normalizedQuery.length === 0) {
-    return [];
-  }
-
-  return homeSearchProducts.filter((product) =>
-    normalizeSearchText(`${product.label}${product.name}`).includes(normalizedQuery),
-  );
-};
 
 export const homeProductSections: HomeProductSectionFixtureTypes[] = [
   {

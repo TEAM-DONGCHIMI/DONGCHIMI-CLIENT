@@ -13,10 +13,6 @@ import {
   type OwnerSignupResponseTypes,
 } from '../model/auth-schema';
 
-const OWNER_LOGIN_RESPONSE_SCHEMA_DESCRIPTION = 'ApiResponseOwnerLoginResponse';
-const OWNER_SIGNUP_RESPONSE_SCHEMA_DESCRIPTION = 'ApiResponseOwnerSignupResponse';
-const AUTH_REFRESH_RESPONSE_SCHEMA_DESCRIPTION = 'ApiResponseAuthRefreshResponse';
-
 export type OwnerLoginRequestTypes = OwnerApiTypes.OwnerLoginRequest;
 export type OwnerSignupRequestTypes = OwnerApiTypes.OwnerSignupRequest;
 
@@ -35,7 +31,7 @@ export const loginMarketOwner = async (
 
   return validateApiResponse(ownerLoginResponseSchema, response, {
     endpoint,
-    schemaDescription: OWNER_LOGIN_RESPONSE_SCHEMA_DESCRIPTION,
+    schemaDescription: 'ApiResponseOwnerLoginResponse',
   });
 };
 
@@ -53,7 +49,7 @@ export const signupMarketOwner = async (
 
   return validateApiResponse(ownerSignupResponseSchema, response, {
     endpoint,
-    schemaDescription: OWNER_SIGNUP_RESPONSE_SCHEMA_DESCRIPTION,
+    schemaDescription: 'ApiResponseOwnerSignupResponse',
   });
 };
 
@@ -69,6 +65,6 @@ export const refreshMarketOwnerAuth = async (): Promise<AuthRefreshResponseTypes
 
   return validateApiResponse(authRefreshResponseSchema, response, {
     endpoint,
-    schemaDescription: AUTH_REFRESH_RESPONSE_SCHEMA_DESCRIPTION,
+    schemaDescription: 'ApiResponseAuthRefreshResponse',
   });
 };
