@@ -6,6 +6,8 @@ import {
 
 const PRODUCT_IMPORT_UPLOAD_PURPOSE = 'product_import';
 const DEFAULT_EXCEL_CONTENT_TYPE = 'application/octet-stream';
+const PRESIGNED_UPLOAD_TIMEOUT_MS = 60_000;
+const PRESIGNED_UPLOAD_ERROR_MESSAGE = '파일 업로드에 실패했습니다. 다시 시도해주세요.';
 
 export type ResolveExcelFileUrlTypes = (file: File) => Promise<string> | string;
 
@@ -26,14 +28,22 @@ const uploadFileToPresignedUrl = async ({
   file,
   presignedUpload,
 }: UploadFileToPresignedUrlParams) => {
-  const response = await fetch(presignedUpload.uploadUrl, {
-    body: file,
-    headers: presignedUpload.requiredHeaders,
-    method: 'PUT',
-  });
+  const controller = new AbortController();
+  const timeoutId = globalThis.setTimeout(() => controller.abort(), PRESIGNED_UPLOAD_TIMEOUT_MS);
 
-  if (!response.ok) {
-    throw new Error('Failed to upload file to presigned URL.');
+  try {
+    const response = await fetch(presignedUpload.uploadUrl, {
+      body: file,
+      headers: presignedUpload.requiredHeaders,
+      method: 'PUT',
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(PRESIGNED_UPLOAD_ERROR_MESSAGE);
+    }
+  } finally {
+    globalThis.clearTimeout(timeoutId);
   }
 };
 

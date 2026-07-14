@@ -4,6 +4,7 @@ import { resolvePresignedExcelFileUrl } from './resolve-excel-file-url';
 
 describe('resolvePresignedExcelFileUrl', () => {
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -42,6 +43,7 @@ describe('resolvePresignedExcelFileUrl', () => {
           'Content-Type': file.type,
         },
         method: 'PUT',
+        signal: expect.any(AbortSignal),
       },
     );
   });
@@ -62,7 +64,35 @@ describe('resolvePresignedExcelFileUrl', () => {
     );
 
     await expect(resolvePresignedExcelFileUrl(requestPresignedUploadUrl)(file)).rejects.toThrow(
-      'Failed to upload file to presigned URL.',
+      '파일 업로드에 실패했습니다. 다시 시도해주세요.',
     );
+  });
+
+  it('aborts a stalled presigned upload after the timeout', async () => {
+    vi.useFakeTimers();
+
+    const file = new File(['name,price'], 'products.csv', { type: 'text/csv' });
+    const requestPresignedUploadUrl = vi.fn().mockResolvedValue({
+      expiresAt: '2026-07-14T10:00:00.000Z',
+      objectKey: 'tmp/products/products.csv',
+      requiredHeaders: {},
+      uploadUrl: 'https://s3.ap-northeast-2.amazonaws.com/bucket/tmp/products.csv',
+    });
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation((_input, init) => {
+      return new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener('abort', () => {
+          reject(new DOMException('The operation was aborted.', 'AbortError'));
+        });
+      });
+    });
+    const uploadPromise = resolvePresignedExcelFileUrl(requestPresignedUploadUrl)(file);
+    const uploadExpectation = expect(uploadPromise).rejects.toMatchObject({ name: 'AbortError' });
+
+    await vi.advanceTimersByTimeAsync(60_000);
+    await uploadExpectation;
+
+    const fetchOptions = fetchSpy.mock.calls[0]?.[1];
+
+    expect(fetchOptions?.signal?.aborted).toBe(true);
   });
 });

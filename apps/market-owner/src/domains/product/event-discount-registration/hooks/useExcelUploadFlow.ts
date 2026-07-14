@@ -15,6 +15,7 @@ type ExcelUploadModalStateTypes = 'default' | 'upload' | 'error';
 interface ExcelUploadFlowState {
   excelUploadErrorMessage?: string;
   isExcelUploadModalOpen: boolean;
+  isUploading: boolean;
   registrationView: EventDiscountRegistrationViewTypes;
   selectedExcelFile?: File;
   selectedExcelFileName?: string;
@@ -27,6 +28,7 @@ type ExcelUploadFlowActionTypes =
   | { open: boolean; type: 'SET_EXCEL_UPLOAD_MODAL_OPEN' }
   | { file: File; type: 'SELECT_EXCEL_FILE' }
   | { errorMessage: string; type: 'REJECT_EXCEL_FILE' }
+  | { type: 'START_EXCEL_FILE_UPLOAD' }
   | { excelFileUrl: string; type: 'UPLOAD_EXCEL_FILE_SUCCESS' }
   | { type: 'CANCEL_FILE_ANALYSIS_CONFIRMATION' }
   | { type: 'START_FILE_ANALYSIS' }
@@ -44,6 +46,7 @@ const EXCEL_UPLOAD_ERROR_LOG_PREFIX = '[EventDiscountRegistration] Failed to upl
 
 const initialExcelUploadFlowState: ExcelUploadFlowState = {
   isExcelUploadModalOpen: false,
+  isUploading: false,
   registrationView: 'method',
 };
 
@@ -114,16 +117,29 @@ const excelUploadFlowReducer = (
       return {
         ...state,
         excelUploadErrorMessage: action.errorMessage,
+        isUploading: false,
         selectedExcelFile: undefined,
         selectedExcelFileName: undefined,
       };
+    case 'START_EXCEL_FILE_UPLOAD':
+      return {
+        ...state,
+        excelUploadErrorMessage: undefined,
+        isUploading: true,
+      };
     case 'UPLOAD_EXCEL_FILE_SUCCESS':
       if (state.selectedExcelFileName == null) {
-        return state;
+        return {
+          ...state,
+          isUploading: false,
+        };
       }
 
       return {
+        ...state,
+        excelUploadErrorMessage: undefined,
         isExcelUploadModalOpen: false,
+        isUploading: false,
         registrationView: 'confirm',
         selectedExcelFile: undefined,
         selectedExcelFileName: undefined,
@@ -207,9 +223,11 @@ export const useExcelUploadFlow = ({
       dispatch({ type: 'START_FILE_ANALYSIS' });
     },
     uploadExcelFile: async () => {
-      if (state.selectedExcelFile == null) {
+      if (state.selectedExcelFile == null || state.isUploading) {
         return;
       }
+
+      dispatch({ type: 'START_EXCEL_FILE_UPLOAD' });
 
       try {
         const excelFileUrl = await resolveExcelFileUrl(state.selectedExcelFile);
@@ -230,6 +248,7 @@ export const useExcelUploadFlow = ({
         });
       }
     },
+    isUploading: state.isUploading,
     uploadedExcelFileUrl: state.uploadedExcelFileUrl,
     uploadedExcelFileName: state.uploadedExcelFileName,
   };

@@ -13,7 +13,7 @@ import { PosExcelGuidePanel } from './components';
 import { fileAnalysisConfirmFixture } from './fixtures';
 import { useExcelUploadFlow } from './hooks/useExcelUploadFlow';
 import { useFileAnalysisSimulation } from './hooks/useFileAnalysisSimulation';
-import { useStartProductImportMutation } from './hooks/useStartProductImportMutation';
+import { useStartProductImportMutation } from './hooks/use-start-product-import-mutation';
 import {
   FileAnalysisConfirmSection,
   FileAnalysisProgressSection,
@@ -31,6 +31,7 @@ const TOAST_ICON_SIZE = '2.4rem';
 const EXCEL_UPLOAD_DEFAULT_LABEL =
   '상품이 등록된 엑셀 파일을 선택해주세요.\n업로드하면 상품이 자동으로 등록됩니다.';
 const FILE_ANALYSIS_START_ERROR_MESSAGE = '파일 분석을 시작하지 못했습니다. 다시 시도해주세요.';
+const FILE_ANALYSIS_ERROR_LOG_PREFIX = '[EventDiscountRegistration] Failed to start product import';
 
 const toastIconProps = {
   height: TOAST_ICON_SIZE,
@@ -90,6 +91,7 @@ export const EventDiscountRegistrationPage = ({
     handleExcelFileChange,
     handleExcelFileDrop,
     handleExcelUploadModalOpenChange,
+    isUploading,
     openExcelUpload,
     registrationView,
     startFileAnalysis,
@@ -148,6 +150,10 @@ export const EventDiscountRegistrationPage = ({
 
       startFileAnalysis();
     } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error(FILE_ANALYSIS_ERROR_LOG_PREFIX, error);
+      }
+
       toast.error(getFileAnalysisStartErrorMessage(error), {
         id: FILE_ANALYSIS_ERROR_TOAST_ID,
         icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
@@ -211,9 +217,7 @@ export const EventDiscountRegistrationPage = ({
         open={excelUploadModal.open}
         selectedFileText={excelUploadModal.selectedFileName ?? '선택된 파일이 없습니다.'}
         state={excelUploadModal.state}
-        uploadButtonDisabled={
-          excelUploadModal.state !== 'upload' || presignedUploadMutation.isPending
-        }
+        uploadButtonDisabled={excelUploadModal.state !== 'upload' || isUploading}
       />
 
       <PosExcelGuidePanel onClose={() => setIsPosGuideOpen(false)} open={isPosGuideOpen} />
