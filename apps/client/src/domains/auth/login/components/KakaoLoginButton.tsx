@@ -67,7 +67,7 @@ export const KakaoLoginButton = ({ disabled = false }: KakaoLoginButtonProps) =>
         <span>카카오톡으로 시작하기</span>
       </button>
 
-      {errorMessage ? <p role='alert'>{errorMessage}</p> : null}
+      {errorMessage && <p role='alert'>{errorMessage}</p>}
     </>
   );
 };
