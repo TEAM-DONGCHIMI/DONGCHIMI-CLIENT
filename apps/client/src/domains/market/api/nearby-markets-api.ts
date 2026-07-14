@@ -8,11 +8,10 @@ import {
   resolveNearbyMarketsResponse,
   type NearbyMarketsListParamsTypes,
   type NearbyMarketsLocationParamsTypes,
-  type NearbyMarketsParamsTypes,
   type NearbyMarketsResponseDataTypes,
 } from '../model/nearby-markets-schema';
 
-export type { NearbyMarketsListParamsTypes, NearbyMarketsParamsTypes };
+export type { NearbyMarketsListParamsTypes, NearbyMarketsLocationParamsTypes };
 
 const DEFAULT_PAGE_SIZE = 5;
 const DEFAULT_RADIUS_METERS = 1000;
@@ -33,7 +32,7 @@ const toNearbyMarketsSearchParams = ({
 });
 
 export const getNearbyMarkets = async (
-  rawParams: NearbyMarketsParamsTypes,
+  rawParams: NearbyMarketsLocationParamsTypes,
 ): Promise<NearbyMarketsResponseDataTypes> => {
   const params = resolveNearbyMarketsLocationParams(rawParams);
   const endpoint = API_ENDPOINTS.user.markets.location(toNearbyMarketsSearchParams(params));
@@ -47,7 +46,7 @@ export const getNearbyMarkets = async (
 };
 
 export const getNearbyMarketMarkers = async (
-  rawParams: NearbyMarketsListParamsTypes,
+  rawParams: NearbyMarketsLocationParamsTypes,
 ): Promise<NearbyMarketsResponseDataTypes> => {
   return getNearbyMarkets({
     ...rawParams,

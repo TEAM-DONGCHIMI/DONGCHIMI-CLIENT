@@ -56,10 +56,12 @@ export const nearbyMarketsSuccessResponseSchema = z.object({
   data: nearbyMarketsResponseDataSchema,
 });
 
+type NearbyMarketsSuccessResponseTypes = z.infer<typeof nearbyMarketsSuccessResponseSchema>;
+
 export const resolveNearbyMarketsResponse = (
-  rawResponse: unknown,
+  rawResponse: NearbyMarketsSuccessResponseTypes,
 ): NearbyMarketsResponseDataTypes => {
-  return nearbyMarketsSuccessResponseSchema.parse(rawResponse).data;
+  return rawResponse.data;
 };
 
 const optionalTrimmedNonEmptyStringSchema = z.preprocess((value) => {

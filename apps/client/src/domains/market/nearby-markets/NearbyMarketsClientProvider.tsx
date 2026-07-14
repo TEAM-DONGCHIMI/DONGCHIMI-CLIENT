@@ -83,7 +83,7 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
   const searchCoordinates = selectedCoordinates ?? coordinates;
   // 주소 검색 결과는 input 표시값일 뿐, 주변 마트 API에는 좌표만 전달합니다.
   const marketSearchKeyword = selectedMapAddress == null ? debouncedKeyword : undefined;
-  // 목록과 지도 마커가 같은 검색어/좌표 기준으로 조회되도록 query params를 공유합니다.
+  // 목록과 지도 마커가 같은 좌표 기준으로 조회되도록 query params를 공유합니다.
   const nearbyMarketsParams = {
     lat: searchCoordinates?.lat,
     lng: searchCoordinates?.lng,

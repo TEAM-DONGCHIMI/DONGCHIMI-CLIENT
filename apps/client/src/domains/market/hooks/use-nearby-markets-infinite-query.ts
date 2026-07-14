@@ -3,16 +3,17 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { getNearbyMarkets, type NearbyMarketsListParamsTypes } from '../api/nearby-markets-api';
+import { hasNearbyMarketsLocationParams } from './nearby-markets-location-params';
 import { nearbyMarketsQueryKeys } from '../query-keys';
-
-const hasNearbyMarketsLocationParams = ({ lat, lng }: NearbyMarketsListParamsTypes) => {
-  return typeof lat === 'number' && typeof lng === 'number';
-};
 
 export const useGetNearbyMarketsInfiniteQuery = (params: NearbyMarketsListParamsTypes = {}) => {
   return useInfiniteQuery({
     queryKey: nearbyMarketsQueryKeys.list(params),
     queryFn: async ({ pageParam }) => {
+      if (!hasNearbyMarketsLocationParams(params)) {
+        throw new Error('Nearby markets query requires location params.');
+      }
+
       const response = await getNearbyMarkets({ ...params, cursor: pageParam });
 
       return {

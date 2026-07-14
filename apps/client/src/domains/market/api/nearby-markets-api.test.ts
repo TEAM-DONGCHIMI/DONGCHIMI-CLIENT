@@ -3,7 +3,7 @@ import { HttpResponse, http } from 'msw';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { server } from '@/test';
-import { getNearbyMarkets } from './nearby-markets-api';
+import { getNearbyMarketMarkers, getNearbyMarkets } from './nearby-markets-api';
 
 const API_BASE_URL = 'https://api.test';
 const NEARBY_MARKETS_ENDPOINT = API_ENDPOINTS.user.markets.location({
@@ -11,6 +11,12 @@ const NEARBY_MARKETS_ENDPOINT = API_ENDPOINTS.user.markets.location({
   lng: 126.9895,
   radius: 1000,
   size: 5,
+});
+const NEARBY_MARKET_MARKERS_ENDPOINT = API_ENDPOINTS.user.markets.location({
+  lat: 37.5651,
+  lng: 126.9895,
+  radius: 1000,
+  size: 50,
 });
 
 const nearbyMarket = {
@@ -112,5 +118,26 @@ describe('getNearbyMarkets', () => {
     await expect(getNearbyMarkets({ lat: 37.5651, lng: 126.9895 })).rejects.toThrow(
       ApiResponseValidationError,
     );
+  });
+
+  it('requests marker list with default size 50', async () => {
+    server.use(
+      http.get(`${API_BASE_URL}${NEARBY_MARKET_MARKERS_ENDPOINT}`, () => {
+        return HttpResponse.json({
+          success: true,
+          code: 'SUCCESS',
+          message: '요청에 성공했습니다.',
+          data: {
+            hasNext: false,
+            nextCursor: null,
+            contents: [],
+          },
+        });
+      }),
+    );
+
+    const result = await getNearbyMarketMarkers({ lat: 37.5651, lng: 126.9895 });
+
+    expect(result.contents).toEqual([]);
   });
 });
