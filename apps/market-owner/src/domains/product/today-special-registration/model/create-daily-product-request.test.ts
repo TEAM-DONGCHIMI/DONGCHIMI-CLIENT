@@ -44,7 +44,7 @@ describe('createDailyProductRequest', () => {
     });
 
     expect(request).toEqual({
-      thumbnailUrl: '/images/product-empty.png',
+      thumbnailUrl: '/images/product-replace.svg',
       name: '상품',
       category: 'ETC',
       originalPrice: 2000,

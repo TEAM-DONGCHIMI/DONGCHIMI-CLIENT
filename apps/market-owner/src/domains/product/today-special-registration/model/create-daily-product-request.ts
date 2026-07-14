@@ -9,8 +9,7 @@ import {
 } from './product-form.utils';
 import type { TodaySpecialProductFormTypes } from './product-form.types';
 
-// TODO: 이미지 확정시 교체
-const DEFAULT_PRODUCT_THUMBNAIL_URL = '/images/product-empty.png';
+const DEFAULT_PRODUCT_THUMBNAIL_URL = '/images/product-replace.svg';
 
 const productCategoryCodeByLabel = {
   '채소･과일': 'VEGETABLE_FRUIT',
