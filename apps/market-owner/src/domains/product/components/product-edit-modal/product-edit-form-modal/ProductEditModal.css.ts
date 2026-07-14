@@ -24,13 +24,6 @@ export const bodyClassName = style({
   gap: '2rem',
 });
 
-export const queryStatusClassName = style({
-  display: 'flex',
-  flex: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
 export const sectionClassName = style({
   display: 'grid',
   width: '100%',
