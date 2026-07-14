@@ -53,7 +53,7 @@
 - market detail: `GET /v1/users/markets/{slug}`의 성공 envelope를 Zod로 검증하고 non-null `data`를 사용합니다.
 - market summary: `marketId`, `name`, `thumbnailUrl`, `address`, `isOpenNow`, `businessHours`, `marketPhone1`, optional `marketPhone2`, `ownerPhone`, `top3[]`. `businessHours[].days`는 Swagger의 `string[]` 계약을 그대로 받습니다.
 - top3 item: `productId`, `name`, `thumbnailUrl`, `discountedPrice`, `discountRate`. `thumbnailUrl`이 있으면 이미지, 없으면 fallback을 렌더링합니다.
-- local development auth: browser는 `/api/markets/{slug}`만 호출합니다. Route Handler가 `NODE_ENV=development`에서만 server-only `DEV_ACCESS_TOKEN`을 upstream Bearer header로 전달하며, production에서는 무시합니다.
+- API transport: browser는 `NEXT_PUBLIC_API_BASE_URL`을 prefix로 사용하는 app-local Ky client로 마트 상세 API를 직접 호출합니다. 배포 테스트용 `NEXT_PUBLIC_API_TEST_TOKEN`이 있으면 Ky가 Bearer header를 추가하며, 운영 인증에는 사용하지 않습니다.
 - today special, event discount, leaflet share는 이번 범위에서 fixture를 유지합니다.
 - today special response: `totalCount`, `products[]`.
 - today special item: `productId`, `name`, `thumbnailUrl`, `originalPrice`, `discountedPrice`, `discountRate`.

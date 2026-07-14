@@ -8,9 +8,9 @@
 
 - 서버 상태: TanStack Query
 - HTTP client: Ky
-- server API base URL: `API_BASE_URL`
+- API base URL: `NEXT_PUBLIC_API_BASE_URL`
 
-인증 token 은닉이 필요한 API는 Next Route Handler를 BFF로 두고, browser TanStack Query는 동일 출처 `/api/*` route만 호출합니다. Route Handler는 server-side `fetch`로 upstream API를 호출합니다.
+Next.js의 server-side fetch cache 또는 `revalidate` 동작이 필요한 경로에서는 Next `fetch`를 직접 사용합니다. Ky는 client-side REST helper와 TanStack Query query/mutation 함수의 기본 transport로 사용합니다.
 
 ## Query Client
 
@@ -24,12 +24,11 @@
 ## HTTP Client
 
 - HTTP client는 앱별 `src/shared/api` 위치에서 구성합니다.
-- `apps/client/src/shared/api/http-client.ts`는 browser에서 동일 출처 `/api/*` route를 호출합니다.
+- `apps/client/src/shared/api/http-client.ts`는 `NEXT_PUBLIC_API_BASE_URL`을 prefix URL로 사용합니다.
 - request timeout은 10초로 둡니다.
-- BFF Route Handler의 upstream `fetch`도 10초 timeout으로 제한합니다.
 - Ky transport retry는 기본 0회로 두고, query retry는 TanStack Query에서 제어합니다.
 - API error는 `auth`, `configuration`, `network`, `server`, `unknown`, `validation`으로 정규화합니다.
-- `API_BASE_URL`과 `DEV_ACCESS_TOKEN`은 server-only 환경 변수입니다. `DEV_ACCESS_TOKEN`은 development Route Handler에서만 upstream Bearer header로 사용하며, browser bundle이나 production route에 전달하지 않습니다.
+- `NEXT_PUBLIC_API_TEST_TOKEN`은 배포 테스트 전용으로만 Bearer header에 추가합니다. browser bundle에 노출되므로 운영 인증이나 장기 token에는 사용하지 않습니다.
 - 인증 side effect, refresh, redirect는 아직 전역화하지 않습니다.
 - 공통화가 필요해도 먼저 앱 요구사항을 확인합니다.
 
@@ -63,9 +62,9 @@ apps/{app}/src/domains/{domain}/query-keys.ts
 
 앱의 domain API helper는 아래 순서를 따릅니다.
 
-1. browser helper는 동일 출처 BFF route를 호출해 `unknown` 응답을 받는다.
-2. BFF Route Handler는 `API_ENDPOINTS`로 upstream path를 만들고, server-only 환경 변수로 인증을 조립한다.
-3. domain API boundary 가까이에 둔 zod schema로 `validateApiResponse`를 실행한다.
+1. `API_ENDPOINTS`로 path를 만든다.
+2. 앱의 `httpClient`로 `unknown` 응답을 받는다.
+3. API boundary 가까이에 둔 zod schema로 `validateApiResponse`를 실행한다.
 4. hook은 검증된 반환 타입만 사용한다.
 
 generated API client 함수와 generated React Query hook은 현재 경계에서 사용하지 않습니다.

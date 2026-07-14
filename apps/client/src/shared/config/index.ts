@@ -1,1 +1,1 @@
-export { getServerApiEnv } from './server-env';
+export { getClientEnv } from './env';

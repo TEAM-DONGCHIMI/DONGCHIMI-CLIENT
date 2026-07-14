@@ -1,4 +1,6 @@
-import { validateApiResponse, z } from '@dongchimi/shared/api';
+import { validateApiResponse, z, type ZodType } from '@dongchimi/shared/api';
+
+import type { UserApiTypes } from '@/shared/api';
 
 export const businessDaySchema = z.string();
 
@@ -45,7 +47,7 @@ export const marketDetailSchema = z.object({
   ownerPhone: z.string(),
   thumbnailUrl: nullableStringSchema,
   top3: z.array(popularProductSchema),
-});
+}) satisfies ZodType<UserApiTypes.MarketDetailResponse>;
 
 export type MarketDetailTypes = z.infer<typeof marketDetailSchema>;
 
@@ -54,7 +56,7 @@ const marketDetailResponseSchema = z.object({
   data: marketDetailSchema,
   message: z.string(),
   success: z.literal(true),
-});
+}) satisfies ZodType<UserApiTypes.ApiResponseMarketDetailResponse>;
 
 export const resolveMarketDetailResponse = (rawResponse: unknown): MarketDetailTypes => {
   return validateApiResponse(marketDetailResponseSchema, rawResponse, {

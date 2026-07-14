@@ -1,5 +1,6 @@
 import ky, { type KyInstance, type Options } from 'ky';
 
+import { getClientEnv } from '@/shared/config';
 import { createApiConfigurationError, normalizeApiError } from './api-error';
 
 type HttpMethodTypes = 'delete' | 'get' | 'patch' | 'post' | 'put';
@@ -17,22 +18,35 @@ const REQUEST_TIMEOUT_MS = 10_000;
 
 let cachedHttpClient: KyInstance | undefined;
 
-const getSameOriginRequestUrl = (path: string) => {
-  if (typeof window === 'undefined') {
-    throw createApiConfigurationError('httpClient is available only in the browser.');
+const getApiBaseUrl = () => {
+  const { apiBaseUrl } = getClientEnv();
+
+  if (!apiBaseUrl) {
+    throw createApiConfigurationError('NEXT_PUBLIC_API_BASE_URL is not configured.');
   }
 
-  const requestUrl = new URL(path, window.location.origin);
+  return apiBaseUrl;
+};
 
-  if (requestUrl.origin !== window.location.origin) {
-    throw createApiConfigurationError('httpClient accepts only same-origin API routes.');
+const isExternalRequestPath = (path: string) => {
+  if (path.startsWith('//')) {
+    return true;
   }
 
-  return requestUrl.toString();
+  try {
+    new URL(path);
+
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 export const createHttpClient = () => {
+  const apiBaseUrl = getApiBaseUrl();
+
   return ky.create({
+    prefix: apiBaseUrl,
     retry: {
       limit: 0,
     },
@@ -41,6 +55,12 @@ export const createHttpClient = () => {
       beforeRequest: [
         ({ request }) => {
           request.headers.set('Accept', 'application/json');
+
+          const token = process.env.NEXT_PUBLIC_API_TEST_TOKEN?.trim();
+
+          if (token) {
+            request.headers.set('Authorization', `Bearer ${token}`);
+          }
         },
       ],
     },
@@ -55,7 +75,13 @@ export const getHttpClient = () => {
 
 const request = async <ResponseDataTypes>(path: string, options?: Options) => {
   try {
-    return await getHttpClient()<ResponseDataTypes>(getSameOriginRequestUrl(path), options).json();
+    if (isExternalRequestPath(path)) {
+      throw createApiConfigurationError(
+        'httpClient accepts only relative paths for the configured API origin.',
+      );
+    }
+
+    return await getHttpClient()<ResponseDataTypes>(path, options).json();
   } catch (error) {
     throw await normalizeApiError(error);
   }

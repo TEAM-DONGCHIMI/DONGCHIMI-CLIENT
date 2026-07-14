@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import { HttpResponse, http } from 'msw';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { act, renderWithProviders, screen, server, userEvent, waitFor, within } from '@/test';
 
@@ -19,6 +19,8 @@ const router = {
 };
 
 const MARKET_SLUG = 'mangwon-fresh';
+const API_BASE_URL = 'https://api.test';
+const MARKET_DETAIL_API_PATH = `${API_BASE_URL}/v1/users/markets/:slug`;
 
 let intersectionObserverCallback: IntersectionObserverCallback | undefined;
 let intersectionObserverOptions: IntersectionObserverInit | undefined;
@@ -68,6 +70,14 @@ const getSectionQueries = (headingName: string) => {
 };
 
 describe('MarketProductsPage', () => {
+  beforeAll(() => {
+    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', API_BASE_URL);
+  });
+
+  afterAll(() => {
+    vi.unstubAllEnvs();
+  });
+
   beforeEach(() => {
     router.back.mockClear();
     router.push.mockClear();
@@ -75,7 +85,7 @@ describe('MarketProductsPage', () => {
     intersectionObserverOptions = undefined;
     vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
     server.use(
-      http.get('*/api/markets/:slug', ({ params }) => {
+      http.get(MARKET_DETAIL_API_PATH, ({ params }) => {
         if (params.slug !== MARKET_SLUG) {
           return HttpResponse.json({ message: '마트를 찾을 수 없어요.' }, { status: 404 });
         }
@@ -107,7 +117,7 @@ describe('MarketProductsPage', () => {
 
   it('마트 상세 조회 중 loading 상태를 표시한다', async () => {
     server.use(
-      http.get('*/api/markets/:slug', async () => {
+      http.get(MARKET_DETAIL_API_PATH, async () => {
         await new Promise((resolve) => setTimeout(resolve, 50));
 
         return HttpResponse.json(MARKET_DETAIL_API_RESPONSE_FIXTURE);
@@ -133,7 +143,7 @@ describe('MarketProductsPage', () => {
     });
 
     server.use(
-      http.get('*/api/markets/:slug', () => {
+      http.get(MARKET_DETAIL_API_PATH, () => {
         return HttpResponse.json({ message: '마트를 찾을 수 없어요.' }, { status: 404 });
       }),
     );
@@ -143,7 +153,7 @@ describe('MarketProductsPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('마트 정보를 불러오지 못했어요.');
 
     server.use(
-      http.get('*/api/markets/:slug', () => {
+      http.get(MARKET_DETAIL_API_PATH, () => {
         return HttpResponse.json(MARKET_DETAIL_API_RESPONSE_FIXTURE);
       }),
     );
@@ -159,7 +169,7 @@ describe('MarketProductsPage', () => {
     let requestCount = 0;
 
     server.use(
-      http.get('*/api/markets/:slug', () => {
+      http.get(MARKET_DETAIL_API_PATH, () => {
         requestCount += 1;
 
         return HttpResponse.json({
