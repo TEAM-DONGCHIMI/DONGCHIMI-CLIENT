@@ -9,8 +9,10 @@ describe('Toast', () => {
     render(<Toast>링크가 복사되었어요</Toast>);
 
     const toast = screen.getByRole('status');
+    const icon = toast.querySelector('svg');
 
     expect(toast).toHaveAttribute('aria-live', 'polite');
+    expect(icon).toBeInTheDocument();
     expect(toast).toHaveTextContent('링크가 복사되었어요');
   });
 
@@ -18,8 +20,10 @@ describe('Toast', () => {
     render(<Toast status='error'>링크가 복사되지 않았어요</Toast>);
 
     const toast = screen.getByRole('alert');
+    const icon = toast.querySelector('svg');
 
     expect(toast).toHaveAttribute('aria-live', 'assertive');
+    expect(icon).toBeInTheDocument();
     expect(toast).toHaveTextContent('링크가 복사되지 않았어요');
   });
 
@@ -31,6 +35,14 @@ describe('Toast', () => {
     );
 
     expect(screen.getByTestId('toast-icon').closest('[aria-hidden="true"]')).toBeInTheDocument();
+  });
+
+  it('allows consumers to hide the icon slot', () => {
+    render(<Toast icon={null}>quiet toast</Toast>);
+
+    expect(
+      screen.getByRole('status').querySelector('[aria-hidden="true"]'),
+    ).not.toBeInTheDocument();
   });
 
   it('allows consumers to override announcement semantics', () => {
