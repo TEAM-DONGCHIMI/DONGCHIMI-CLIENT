@@ -11,11 +11,6 @@ import { useAuthStore } from '@/shared/stores/auth-store';
 import { AppProviders } from './AppProviders';
 import { marketOwnerRoutes } from './router';
 
-vi.mock('@/domains/auth/api/auth-api', () => ({
-  loginMarketOwner: vi.fn(),
-  signupMarketOwner: vi.fn(),
-}));
-
 vi.mock('@/domains/product/hooks/use-product-list-query', () => ({
   useProductListQuery: ({ type }: { type: 'DAILY' | 'PERIODIC' }) => ({
     data: {
@@ -88,45 +83,7 @@ vi.mock('@/domains/product/hooks/use-product-detail-query', () => ({
   },
 }));
 
-const mockLoginMarketOwner = vi.mocked(loginMarketOwner);
-const mockSignupMarketOwner = vi.mocked(signupMarketOwner);
-
-beforeEach(() => {
-  vi.clearAllMocks();
-  useAuthStore.getState().clearSession();
-  localStorage.clear();
-  mockLoginMarketOwner.mockResolvedValue({
-    success: true,
-    code: 'SUCCESS',
-    message: 'ok',
-    data: {
-      accessToken: 'access-token',
-      ownerId: 1,
-      email: 'owner@example.com',
-    },
-  });
-  mockSignupMarketOwner.mockResolvedValue({
-    success: true,
-    code: 'SUCCESS',
-    message: 'ok',
-    data: {
-      ownerId: 1,
-      email: 'new@example.com',
-    },
-  });
-});
-
-const isPublicAuthRoute = (path: string) => {
-  return path === MARKET_OWNER_ROUTES.login || path === MARKET_OWNER_ROUTES.signup;
-};
-
-const renderRoute = (path: string, { authenticated = !isPublicAuthRoute(path) } = {}) => {
-  if (authenticated) {
-    useAuthStore.getState().setAccessToken('access-token');
-  } else {
-    useAuthStore.getState().clearSession();
-  }
-
+const renderRoute = (path: string) => {
   const router = createMemoryRouter(marketOwnerRoutes, {
     initialEntries: [path],
   });
