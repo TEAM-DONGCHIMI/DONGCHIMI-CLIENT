@@ -4,5 +4,6 @@ export { useProductCategoryDropdownLayout } from './use-product-category-dropdow
 export { useProductEditProducts } from './use-product-edit-products';
 export { useProductEditTargetParam } from './use-product-edit-target-param';
 export { useProductListQuery } from './use-product-list-query';
+export { useProductDetailQuery } from './use-product-detail-query';
 export { useProductOverlayDisclosure } from './use-product-overlay-disclosure';
 export { usePresignedUploadMutation } from './use-presigned-upload-mutation';
