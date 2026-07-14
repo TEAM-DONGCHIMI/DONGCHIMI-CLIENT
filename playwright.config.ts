@@ -54,6 +54,9 @@ export default defineConfig({
   webServer: [
     {
       command: 'pnpm --filter client exec next dev --webpack --port 3000 --hostname 127.0.0.1',
+      env: {
+        NEXT_PUBLIC_API_BASE_URL: clientBaseURL,
+      },
       url: clientBaseURL,
       reuseExistingServer: !isCI,
       timeout: 120_000,
