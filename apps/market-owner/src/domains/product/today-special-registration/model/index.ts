@@ -9,7 +9,11 @@ export {
   sanitizeProductDescription,
   sanitizeProductName,
 } from './product-form.utils';
-export { todaySpecialRegistrationFormSchema } from './product-form.schema';
+export { createDailyProductRequest } from './create-daily-product-request';
+export {
+  todaySpecialProductFormSchema,
+  todaySpecialRegistrationFormSchema,
+} from './product-form.schema';
 export type {
   TodaySpecialProductErrorMessageTypes,
   TodaySpecialProductFormTypes,

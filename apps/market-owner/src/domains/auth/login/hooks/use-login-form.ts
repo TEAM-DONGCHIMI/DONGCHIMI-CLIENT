@@ -8,7 +8,7 @@ export interface UseLoginFormOptions {
 export const useLoginForm = ({ submitLogin }: UseLoginFormOptions = {}) => {
   const {
     action: { clearLoginErrorMessage, submit },
-    state: { isSubmitting, loginErrorMessage },
+    state: { isSubmitting },
   } = useLoginSubmit({ submitLogin });
   const fields = useLoginFields({ onFieldChange: clearLoginErrorMessage });
   const isSubmitDisabled = isSubmitting || !fields.state.isValid;
@@ -40,7 +40,6 @@ export const useLoginForm = ({ submitLogin }: UseLoginFormOptions = {}) => {
       isSubmitDisabled,
       isSubmitting,
       keepSignedIn: fields.state.keepSignedIn,
-      loginErrorMessage,
       password: fields.state.password,
       passwordStatusProps: fields.state.passwordStatusProps,
     },

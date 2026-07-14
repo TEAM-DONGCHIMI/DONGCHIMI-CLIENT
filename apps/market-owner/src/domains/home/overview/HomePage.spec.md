@@ -39,7 +39,7 @@
 - Sidebar/protected layout responsibility stays in `src/app/layouts/SidebarLayout.tsx` and
   `src/app/routes/ProtectedRoute.tsx`.
 - Daily and periodic product summary cards use `packages/shared` `ProductCard`.
-- Home-only hero/checkerboard stays page-local until reuse and final desktop design are confirmed.
+- Home-only hero banner stays page-local until reuse and final desktop design are confirmed.
 - Home header uses the `market-owner` app-shared `DesktopHeader` with `variant="onlyHome"` and
   `showSearchBar={true}`.
 - Header product search uses the `market-owner` app-shared `ProductHeaderSearch` through
@@ -48,9 +48,9 @@
 
 ## Scope
 
-- 홈 상단 checkerboard/hero visual 영역을 구성합니다.
+- 홈 상단 banner hero visual 영역을 구성합니다.
 - `DesktopHeader`의 상품 검색 영역에 `ProductHeaderSearch`를 배치합니다.
-- hero checkerboard 영역 안에 quick action 카드 3개를 배치합니다.
+- hero banner 영역 안에 quick action 카드 3개를 배치합니다.
 - 오늘의 특가 상품 카드와 행사 할인 상품 카드를 `@dongchimi/shared` `ProductCard`와 page-local fixture
   데이터가 아닌 홈 조회 응답으로 렌더링하고, 각 등록 건수가 0이면 홈 전용 딤드 상태를 표시합니다.
 - 오른쪽 전단 공유 카드를 `LeafletShareCard`로 구성합니다.
@@ -76,7 +76,7 @@
 HomePage(main)
   h1("동치미 홈", visually hidden)
   DesktopHeader(variant=onlyHome, showSearchBar=true, searchSlot=ProductHeaderSearch)
-  HomeHeroSection          // checkerboard visual
+  HomeHeroSection          // banner visual
     HomeQuickButton * 3
   HomeDashboardSection
     HomeProductSummarySection
@@ -93,7 +93,7 @@ HomePage(main)
   `HomePage`에 전달합니다.
 - `HomePage`: 전달받은 상품의 `dealType`에 맞는 상품 수정 route를 만들고 `productId` search param을 붙여
   이동합니다. 상품 정보를 불러올 수 없는 선택 결과의 error feedback도 담당합니다.
-- `HomeHeroSection`: radius 20px checkerboard hero surface와 quick action 카드를 담당합니다.
+- `HomeHeroSection`: radius 20px banner hero surface와 quick action 카드를 담당합니다.
   - quick action의 오른쪽 mint 영역은 icon/PNG asset 확정 전 placeholder slot으로 유지합니다.
 - `HomeQuickButton`: Figma `button_home quick` node `2403:69244` 기준의 312x74 quick button입니다.
 - `HomeDashboardSection`: 홈 조회 query를 소유하고, 2개 상품 카드와 공유 카드를 같은 responsive grid에
@@ -129,7 +129,7 @@ HomePage(main)
 - not promoted:
   - `DesktopHeader`는 기존 `onlyHome`/`showSearchBar` 동작을 유지하고, 상품 검색 flow가 필요한 홈에서는
     `searchSlot`으로 `ProductSearchPanel`을 주입합니다.
-  - 홈 checkerboard/hero visual은 현재 홈 전용입니다.
+- 홈 banner hero visual은 현재 홈 전용입니다.
   - 공유 액션 content가 client/mobile과 실제로 동일하게 변한다고 확인되면 `packages/shared`
     `MarketShareContent` 추출을 별도 작업으로 검토합니다.
 
@@ -232,7 +232,7 @@ HomePage(main)
   시작점과 끝점은 같은 x축에 맞춥니다.
 - section spacing: hero와 dashboard card 영역 사이 gap은 16px입니다.
 - bottom spacing: 1440px x 900px Figma frame 기준 dashboard card 하단 여백은 26px입니다.
-- hero: hero surface는 radius 20px, overflow hidden으로 checkerboard를 clipping합니다.
+- hero: hero surface는 제공된 `1070 x 408` 원본 비율의 WebP를 `cover` 배경으로 렌더링하고, radius 20px과 overflow hidden으로 이미지를 clipping합니다.
 - dashboard cards: 오늘의 특가 상품, 행사 할인 상품, 전단 공유하기 카드는 같은 row에서 동일한 가변 폭을
   사용하고, 최소 폭 320px과 height 386px을 지킵니다.
 - product summary cards: 오늘의 특가 상품과 행사 할인 상품의 상품 row는 56px로 동일하게 맞추고, action은

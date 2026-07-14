@@ -3,20 +3,52 @@ import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { loginMarketOwner, signupMarketOwner } from '@/domains/auth/api/auth-api';
 import { ownerHomeFixture } from '@/domains/home/fixtures/owner-home-api.fixture';
 import { useOwnerHomeQuery } from '@/domains/home/hooks/use-owner-home-query';
+import { ApiError } from '@/shared/api';
 import { render, screen } from '@/test';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
 import { AppProviders } from './AppProviders';
 import { marketOwnerRoutes } from './router';
+
+vi.mock('@/domains/auth/api/auth-api', () => ({
+  loginMarketOwner: vi.fn(),
+  signupMarketOwner: vi.fn(),
+}));
 
 vi.mock('@/domains/home/hooks/use-owner-home-query', () => ({
   useOwnerHomeQuery: vi.fn(),
 }));
 
+const mockLoginMarketOwner = vi.mocked(loginMarketOwner);
+const mockSignupMarketOwner = vi.mocked(signupMarketOwner);
 const mockedUseOwnerHomeQuery = vi.mocked(useOwnerHomeQuery);
 
 beforeEach(() => {
+  vi.clearAllMocks();
+  useAuthStore.getState().clearSession();
+  localStorage.clear();
+  mockLoginMarketOwner.mockResolvedValue({
+    success: true,
+    code: 'SUCCESS',
+    message: 'ok',
+    data: {
+      accessToken: 'access-token',
+      ownerId: 1,
+      email: 'owner@example.com',
+    },
+  });
+  mockSignupMarketOwner.mockResolvedValue({
+    success: true,
+    code: 'SUCCESS',
+    message: 'ok',
+    data: {
+      ownerId: 1,
+      email: 'new@example.com',
+    },
+  });
   mockedUseOwnerHomeQuery.mockReturnValue({
     data: ownerHomeFixture,
     isError: false,
@@ -25,7 +57,17 @@ beforeEach(() => {
   } as unknown as ReturnType<typeof useOwnerHomeQuery>);
 });
 
-const renderRoute = (path: string) => {
+const isPublicAuthRoute = (path: string) => {
+  return path === MARKET_OWNER_ROUTES.login || path === MARKET_OWNER_ROUTES.signup;
+};
+
+const renderRoute = (path: string, { authenticated = !isPublicAuthRoute(path) } = {}) => {
+  if (authenticated) {
+    useAuthStore.getState().setAccessToken('access-token');
+  } else {
+    useAuthStore.getState().clearSession();
+  }
+
   const router = createMemoryRouter(marketOwnerRoutes, {
     initialEntries: [path],
   });
@@ -35,7 +77,16 @@ const renderRoute = (path: string) => {
     </AppProviders>,
   );
 
-  return { ...renderResult, router };
+  return {
+    router,
+    ...renderResult,
+  };
+};
+
+const ROUTE_RENDER_TIMEOUT_MS = 5_000;
+
+const findRouteHeading = (name: string) => {
+  return screen.findByRole('heading', { name }, { timeout: ROUTE_RENDER_TIMEOUT_MS });
 };
 
 const fillSignupForm = async (
@@ -70,12 +121,86 @@ const expectSidebarToastViewportToUseViewportTopCenter = () => {
   });
 };
 
+const expectAuthToastViewportToUseViewportTopCenter = () => {
+  const toastViewport = screen.getByRole('region', { name: '토스트 알림' });
+
+  expect(toastViewport.style.getPropertyValue('--toast-viewport-center-offset-x')).toBe('');
+  expect(toastViewport).toHaveStyle({
+    '--toast-viewport-offset-x': '2.4rem',
+    '--toast-viewport-offset-y': '2.4rem',
+  });
+};
+
 describe('marketOwnerRoutes', () => {
   it('renders public auth routes without the sidebar layout', async () => {
     renderRoute('/login');
 
     expect(await screen.findByRole('heading', { name: '마트 관리자 로그인' })).toBeInTheDocument();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
+  });
+
+  it('redirects authenticated users away from the login route', async () => {
+    const { router } = renderRoute('/login', { authenticated: true });
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.home);
+    });
+  });
+
+  it('centers login toasts over the viewport through the auth layout toast policy', async () => {
+    const user = userEvent.setup();
+
+    mockLoginMarketOwner.mockRejectedValueOnce(
+      new ApiError({
+        message: '이메일 또는 비밀번호가 일치하지 않습니다.',
+        type: 'auth',
+      }),
+    );
+
+    const { container } = renderRoute('/login');
+
+    await screen.findByRole('heading');
+
+    const emailInput = container.querySelector<HTMLInputElement>('input[type="email"]');
+    const passwordInput = container.querySelector<HTMLInputElement>('input[type="password"]');
+
+    expect(emailInput).not.toBeNull();
+    expect(passwordInput).not.toBeNull();
+
+    await user.type(emailInput as HTMLInputElement, 'owner@example.com');
+    await user.type(passwordInput as HTMLInputElement, 'password123!');
+    await user.click(screen.getByRole('button'));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expectAuthToastViewportToUseViewportTopCenter();
+  });
+
+  it('redirects unauthenticated protected route access to login and returns after login', async () => {
+    const user = userEvent.setup();
+    const { container, router } = renderRoute('/products/today-special/edit?productId=124', {
+      authenticated: false,
+    });
+
+    await screen.findByRole('heading');
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.login);
+    expect(router.state.location.state).toEqual({
+      from: '/products/today-special/edit?productId=124',
+    });
+
+    const emailInput = container.querySelector<HTMLInputElement>('input[type="email"]');
+    const passwordInput = container.querySelector<HTMLInputElement>('input[type="password"]');
+
+    expect(emailInput).not.toBeNull();
+    expect(passwordInput).not.toBeNull();
+
+    await user.type(emailInput as HTMLInputElement, 'owner@example.com');
+    await user.type(passwordInput as HTMLInputElement, 'password123!');
+    await user.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.todaySpecialEdit);
+    });
+    expect(router.state.location.search).toBe('?productId=124');
   });
 
   it('renders the signup form inside the public auth layout', async () => {
@@ -106,13 +231,9 @@ describe('marketOwnerRoutes', () => {
     await user.clear(emailInput);
     expect(screen.getByText('이메일을 입력해주세요.')).toBeInTheDocument();
 
-    await user.type(emailInput, 'used@example.com');
-    expect(screen.getByText('이미 사용 중인 이메일입니다.')).toBeInTheDocument();
-
     await user.clear(emailInput);
-    await user.type(emailInput, 'new@example.com');
+    await user.type(emailInput, 'used@example.com');
     expect(screen.queryByText('올바른 이메일 형식이 아닙니다.')).not.toBeInTheDocument();
-    expect(screen.queryByText('이미 사용 중인 이메일입니다.')).not.toBeInTheDocument();
   });
 
   it('validates signup password input after focus leaves the field', async () => {
@@ -190,10 +311,10 @@ describe('marketOwnerRoutes', () => {
     await waitFor(() => expect(submitButton).toBeEnabled());
   });
 
-  it('redirects to login page after valid signup submit', async () => {
+  it('redirects to market information registration page after valid signup submit', async () => {
     const user = userEvent.setup();
 
-    renderRoute('/signup');
+    const { router } = renderRoute('/signup');
 
     await fillSignupForm(user, {
       email: 'new@example.com',
@@ -202,7 +323,36 @@ describe('marketOwnerRoutes', () => {
     });
     await user.click(await screen.findByRole('button', { name: '가입 완료' }));
 
-    expect(await screen.findByRole('heading', { name: '마트 관리자 로그인' })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe(
+        MARKET_OWNER_ROUTES.marketInformationRegistration,
+      );
+    });
+  });
+
+  it('shows the server duplicate email message when signup API rejects with DUPLICATE_EMAIL', async () => {
+    const user = userEvent.setup();
+
+    mockSignupMarketOwner.mockRejectedValueOnce(
+      new ApiError({
+        code: 'DUPLICATE_EMAIL',
+        message: '이미 가입된 이메일입니다.',
+        status: 409,
+        type: 'validation',
+      }),
+    );
+
+    renderRoute('/signup');
+
+    await fillSignupForm(user, {
+      email: 'used@example.com',
+      password: 'abc123',
+      passwordConfirm: 'abc123',
+    });
+    await user.click(await screen.findByRole('button', { name: '가입 완료' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('이미 가입된 이메일입니다.');
+    expect(screen.getByRole('heading', { name: '회원가입' })).toBeInTheDocument();
   });
 
   it('renders protected work routes with the sidebar layout', async () => {
@@ -250,7 +400,7 @@ describe('marketOwnerRoutes', () => {
 
     renderRoute('/products/event-discount/new');
 
-    expect(await screen.findByRole('heading', { name: '상품 등록' })).toBeInTheDocument();
+    expect(await findRouteHeading('상품 등록')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '엑셀 양식 다운로드' }));
 
@@ -266,9 +416,7 @@ describe('marketOwnerRoutes', () => {
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.click(screen.getAllByRole('button', { name: '등록한 상품 전체보기' })[0]);
 
-    expect(
-      await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
-    ).toBeInTheDocument();
+    expect(await findRouteHeading('오늘의 특가 상품을 수정하세요')).toBeInTheDocument();
   });
 
   it('navigates a today-special product row to the edit page', async () => {
@@ -279,9 +427,7 @@ describe('marketOwnerRoutes', () => {
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.click(screen.getByRole('button', { name: '상품 보기: 삼겹살 500g' }));
 
-    expect(
-      await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
-    ).toBeInTheDocument();
+    expect(await findRouteHeading('오늘의 특가 상품을 수정하세요')).toBeInTheDocument();
   });
 
   it('navigates the event-discount summary action to the edit page', async () => {
@@ -292,9 +438,7 @@ describe('marketOwnerRoutes', () => {
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.click(screen.getAllByRole('button', { name: '등록한 상품 전체보기' })[1]);
 
-    expect(
-      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
-    ).toBeInTheDocument();
+    expect(await findRouteHeading('행사 할인 상품을 수정하세요')).toBeInTheDocument();
   });
 
   it('navigates an event-discount product row to the edit page', async () => {
@@ -305,9 +449,7 @@ describe('marketOwnerRoutes', () => {
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.click(screen.getByRole('button', { name: '1위 상품 보기: 깻잎 2묶음' }));
 
-    expect(
-      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
-    ).toBeInTheDocument();
+    expect(await findRouteHeading('행사 할인 상품을 수정하세요')).toBeInTheDocument();
   });
 
   it('shows a completed toast when leaflet link copy succeeds', async () => {
@@ -361,9 +503,7 @@ describe('marketOwnerRoutes', () => {
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '콩나물 100g');
     await user.click(await screen.findByRole('button', { name: /풀무원 콩나물 100g/ }));
 
-    expect(
-      await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
-    ).toBeInTheDocument();
+    expect(await findRouteHeading('오늘의 특가 상품을 수정하세요')).toBeInTheDocument();
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.todaySpecialEdit);
     expect(router.state.location.search).toBe('?productId=124');
     expect(
@@ -388,9 +528,7 @@ describe('marketOwnerRoutes', () => {
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '햇감자');
     await user.click(await screen.findByRole('button', { name: /햇감자 1kg/ }));
 
-    expect(
-      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
-    ).toBeInTheDocument();
+    expect(await findRouteHeading('행사 할인 상품을 수정하세요')).toBeInTheDocument();
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.eventDiscountEdit);
     expect(router.state.location.search).toBe('?productId=201');
     expect(
@@ -450,7 +588,7 @@ describe('marketOwnerRoutes', () => {
   it('keeps the registration result route outside the sidebar layout', async () => {
     renderRoute('/products/registration-result');
 
-    expect(await screen.findByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
+    expect(await findRouteHeading('상품 결과 등록 확인')).toBeInTheDocument();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   });
 
@@ -477,9 +615,7 @@ describe('marketOwnerRoutes', () => {
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '햇감자');
     await user.click(await screen.findByRole('button', { name: /햇감자 1kg/ }));
 
-    expect(
-      await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
-    ).toBeInTheDocument();
+    expect(await findRouteHeading('행사 할인 상품을 수정하세요')).toBeInTheDocument();
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.eventDiscountEdit);
     expect(router.state.location.search).toBe('?productId=201');
     expect(
