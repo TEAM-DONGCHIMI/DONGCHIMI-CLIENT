@@ -44,6 +44,7 @@ describe('API_ENDPOINTS', () => {
     expect(API_ENDPOINTS.user.markets.location({ lat: 37.5, lng: 127.1 })).toBe(
       '/v1/users/markets/location?lat=37.5&lng=127.1',
     );
+    expect(API_ENDPOINTS.common.auth.refresh).toBe('/v1/auth/token/refresh');
     expect(API_ENDPOINTS.common.uploads.presignedUrl).toBe('/v1/uploads/presigned-url');
   });
 });

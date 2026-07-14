@@ -1,14 +1,21 @@
-import ky, { type KyInstance, type Options } from 'ky';
+import ky, { type KyInstance } from 'ky';
 
 import { getMarketOwnerEnv } from '../config';
 import { createApiConfigurationError, normalizeApiError } from './api-error';
+import {
+  clearAuthSession,
+  createAuthorizedRequestOptions,
+  refreshAccessToken,
+  shouldRefreshAccessToken,
+  type HttpClientOptionsTypes,
+} from './http-auth';
 import { HTTP_STATUS } from './http-status';
 
 type HttpMethodTypes = 'delete' | 'get' | 'patch' | 'post' | 'put';
 
 type HttpRequestTypes = <ResponseDataTypes>(
   path: string,
-  options?: Options,
+  options?: HttpClientOptionsTypes,
 ) => Promise<ResponseDataTypes>;
 
 type HttpClientTypes = Record<HttpMethodTypes, HttpRequestTypes> & {
@@ -66,18 +73,57 @@ const parseJsonResponse = async <ResponseDataTypes>(response: Response) => {
   return JSON.parse(text) as ResponseDataTypes;
 };
 
-const request = async <ResponseDataTypes>(path: string, options?: Options) => {
-  try {
-    const response = await getHttpClient()(path, options);
+const performRequest = async <ResponseDataTypes>(
+  path: string,
+  options?: HttpClientOptionsTypes,
+  accessToken?: string,
+) => {
+  const response = await getHttpClient()(
+    path,
+    createAuthorizedRequestOptions(options, accessToken),
+  );
 
-    return await parseJsonResponse<ResponseDataTypes>(response);
+  return await parseJsonResponse<ResponseDataTypes>(response);
+};
+
+const request = async <ResponseDataTypes>(path: string, options?: HttpClientOptionsTypes) => {
+  try {
+    return await performRequest<ResponseDataTypes>(path, options);
   } catch (error) {
-    throw normalizeApiError(error);
+    if (!shouldRefreshAccessToken(error, options)) {
+      throw await normalizeApiError(error);
+    }
+
+    let accessToken: string;
+
+    try {
+      accessToken = await refreshAccessToken(performRequest);
+    } catch (refreshError) {
+      clearAuthSession();
+
+      throw await normalizeApiError(refreshError);
+    }
+
+    try {
+      return await performRequest<ResponseDataTypes>(
+        path,
+        {
+          ...options,
+          auth: {
+            ...options?.auth,
+            skipRefresh: true,
+          },
+        },
+        accessToken,
+      );
+    } catch (retryError) {
+      throw await normalizeApiError(retryError);
+    }
   }
 };
 
 const withMethod = (method: HttpMethodTypes) => {
-  return <ResponseDataTypes>(path: string, options?: Options) => {
+  return <ResponseDataTypes>(path: string, options?: HttpClientOptionsTypes) => {
     return request<ResponseDataTypes>(path, { ...options, method });
   };
 };
@@ -90,3 +136,5 @@ export const httpClient: HttpClientTypes = {
   put: withMethod('put'),
   request,
 };
+
+export type { HttpClientOptionsTypes } from './http-auth';
