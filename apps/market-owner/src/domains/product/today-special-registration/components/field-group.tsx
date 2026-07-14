@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import { InlineField, type InlineFieldProps } from '@dongchimi/design-system/components';
 
-import * as S from '../TodaySpecialRegistrationPage.css';
+import * as S from '../today-special-registration-page.css';
 
 interface CustomFieldGroupProps {
   children: ReactNode;

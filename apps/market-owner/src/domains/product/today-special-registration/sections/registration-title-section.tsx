@@ -5,21 +5,23 @@ import {
   IcLineHorizontalSizeSmall,
 } from '@dongchimi/design-system/icons';
 
-import * as S from '../TodaySpecialRegistrationPage.css';
+import * as S from '../today-special-registration-page.css';
 
 interface RegistrationTitleSectionProps {
+  canCancelCurrentDraft: boolean;
   currentIndex: number;
+  onCancelCurrentDraft: () => void;
   onNextProduct: () => void;
   onPreviousProduct: () => void;
-  onRemoveCurrentProduct: () => void;
   productCount: number;
 }
 
 export const RegistrationTitleSection = ({
+  canCancelCurrentDraft,
   currentIndex,
+  onCancelCurrentDraft,
   onNextProduct,
   onPreviousProduct,
-  onRemoveCurrentProduct,
   productCount,
 }: RegistrationTitleSectionProps) => {
   const shouldShowProductControls = productCount > 1;
@@ -47,6 +49,7 @@ export const RegistrationTitleSection = ({
                 disabled={currentIndex === 0}
                 icon={<IcChevronLeft />}
                 onClick={onPreviousProduct}
+                type='button'
                 variant='ghost'
               />
               <IconButton
@@ -56,19 +59,21 @@ export const RegistrationTitleSection = ({
                 disabled={currentIndex === productCount - 1}
                 icon={<IcChevronRight />}
                 onClick={onNextProduct}
+                type='button'
                 variant='ghost'
               />
             </div>
           )}
         </div>
 
-        {shouldShowProductControls && (
+        {canCancelCurrentDraft && (
           <IconButton
-            aria-label='현재 상품 삭제'
+            aria-label='현재 상품 등록 취소'
             className={S.titleRemoveButtonClassName}
             color='assistive'
             icon={<IcLineHorizontalSizeSmall />}
-            onClick={onRemoveCurrentProduct}
+            onClick={onCancelCurrentDraft}
+            type='button'
             variant='outlined'
           />
         )}

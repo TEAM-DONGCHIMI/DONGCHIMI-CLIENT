@@ -1,13 +1,13 @@
 import type { ChangeEventHandler, FocusEventHandler } from 'react';
 
 import { DateField } from '../../components/date-field';
-import { FieldGroup } from '../components/FieldGroup';
+import { FieldGroup } from '../components/field-group';
 import {
   getTodayDateInputValue,
   type TodaySpecialProductErrorMessageTypes,
   type TodaySpecialProductFormTypes,
 } from '../model';
-import * as S from '../TodaySpecialRegistrationPage.css';
+import * as S from '../today-special-registration-page.css';
 
 interface ProductPeriodSectionProps {
   onStartDateBlur: FocusEventHandler<HTMLInputElement>;
@@ -37,6 +37,7 @@ export const ProductPeriodSection = ({
             min={getTodayDateInputValue()}
             onBlur={onStartDateBlur}
             onChange={onStartDateChange}
+            readOnly
             value={product.startDate}
           />
         </div>

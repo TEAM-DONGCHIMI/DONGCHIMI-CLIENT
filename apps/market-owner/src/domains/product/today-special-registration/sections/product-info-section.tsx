@@ -18,12 +18,12 @@ import {
 } from '../../components/product-category-dropdown';
 import { productSelectableCategoryOptions } from '../../constants';
 import { productNameMaxLength, productPromotionTextMaxLength } from '../../utils/product-input';
-import { FieldGroup } from '../components/FieldGroup';
+import { FieldGroup } from '../components/field-group';
 import {
   type TodaySpecialProductErrorMessageTypes,
   type TodaySpecialProductFormTypes,
 } from '../model';
-import * as S from '../TodaySpecialRegistrationPage.css';
+import * as S from '../today-special-registration-page.css';
 
 interface ProductInfoSectionProps {
   categoryDropdownId: string;
