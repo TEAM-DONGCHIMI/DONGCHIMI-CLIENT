@@ -1,5 +1,6 @@
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { fireEvent, waitFor } from '@testing-library/react';
+import { ToastProvider } from '@dongchimi/shared/toast';
 import { OverlayProvider } from 'overlay-kit';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -51,25 +52,27 @@ const renderProductList = (
 ) => {
   return render(
     <MemoryRouter>
-      <OverlayProvider>
-        <Routes>
-          <Route
-            element={
-              <ProductEditProductList
-                ariaLabel='오늘의 특가 상품 수정 목록'
-                editModalVariant={editModalVariant}
-                groups={groups}
-                marketId={1}
-                registrationHref='/products/today-special/new'
-                onDeleteProduct={onDeleteProduct}
-                onUpdateProduct={onUpdateProduct}
-              />
-            }
-            path='/'
-          />
-          <Route element={<p>오늘의 특가 상품 등록 화면</p>} path='/products/today-special/new' />
-        </Routes>
-      </OverlayProvider>
+      <ToastProvider defaultDurationMs={null}>
+        <OverlayProvider>
+          <Routes>
+            <Route
+              element={
+                <ProductEditProductList
+                  ariaLabel='오늘의 특가 상품 수정 목록'
+                  editModalVariant={editModalVariant}
+                  groups={groups}
+                  marketId={1}
+                  registrationHref='/products/today-special/new'
+                  onDeleteProduct={onDeleteProduct}
+                  onUpdateProduct={onUpdateProduct}
+                />
+              }
+              path='/'
+            />
+            <Route element={<p>오늘의 특가 상품 등록 화면</p>} path='/products/today-special/new' />
+          </Routes>
+        </OverlayProvider>
+      </ToastProvider>
     </MemoryRouter>,
   );
 };
@@ -281,6 +284,40 @@ describe('ProductEditProductList', () => {
         productName: '햇감자 1kg',
       }),
     );
+  });
+
+  it('closes the overlay and shows a toast when product detail loading fails', async () => {
+    const user = userEvent.setup();
+
+    mockUseProductDetailQuery.mockReturnValueOnce({
+      data: undefined,
+      isError: true,
+      isPending: false,
+    });
+
+    renderProductList([
+      {
+        title: '2026년 8월 15일',
+        products: [
+          {
+            categoryName: '채소/과일',
+            endDate: '2026. 8. 16',
+            originalPrice: '5,000',
+            productId: 101,
+            productName: '딸기 2팩',
+            salePrice: '4,500',
+            viewCount: 162,
+          },
+        ],
+      },
+    ]);
+
+    await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 수정' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '상품 정보를 불러오지 못했어요. 다시 시도해주세요.',
+    );
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('keeps edit modal open when backdrop is pressed', async () => {

@@ -1,7 +1,8 @@
-import { useRef, useState, type ChangeEventHandler } from 'react';
+import { useEffect, useRef, useState, type ChangeEventHandler } from 'react';
 
 import { Button, Dialog, InlineField } from '@dongchimi/design-system/components';
 import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
+import { useToast } from '@dongchimi/shared/toast';
 
 import { useProductDetailQuery } from '@/domains/product/hooks';
 import { type OwnerApiTypes } from '@/shared/api';
@@ -69,6 +70,7 @@ interface ProductEditFormValues {
 }
 
 const PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID = 'product-edit-modal-category-dropdown';
+const PRODUCT_DETAIL_LOAD_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요. 다시 시도해주세요.';
 
 interface ProductEditModalFormProps extends Omit<ProductEditModalProps, 'marketId' | 'productId'> {
   detail: OwnerApiTypes.OwnerProductDetailResponse;
@@ -373,46 +375,20 @@ export const ProductEditModal = ({
   onClose,
   onSubmit,
 }: ProductEditModalProps) => {
+  const toast = useToast();
   const productDetailQuery = useProductDetailQuery({ marketId, productId });
 
-  if (productDetailQuery.isPending || productDetailQuery.isError) {
-    const isError = productDetailQuery.isError;
+  useEffect(() => {
+    if (!productDetailQuery.isError) {
+      return;
+    }
 
-    return (
-      <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
-        <Dialog.Content className={S.contentClassName}>
-          <div className={S.containerClassName}>
-            <Dialog.Title className={S.titleClassName}>판매 정보를 수정해주세요</Dialog.Title>
-            <p className={S.queryStatusClassName} role={isError ? 'alert' : 'status'}>
-              {isError
-                ? '상품 정보를 불러오지 못했어요. 다시 시도해주세요.'
-                : '상품 정보를 불러오는 중이에요.'}
-            </p>
-            <div className={S.footerClassName}>
-              <Button
-                className={S.footerButtonClassName}
-                color='assistive'
-                size='small'
-                variant='outlined'
-                onClick={onClose}
-              >
-                취소
-              </Button>
-              {isError && (
-                <Button
-                  className={S.footerButtonClassName}
-                  size='small'
-                  variant='solid'
-                  onClick={() => productDetailQuery.refetch()}
-                >
-                  다시 시도
-                </Button>
-              )}
-            </div>
-          </div>
-        </Dialog.Content>
-      </Dialog>
-    );
+    toast.error(PRODUCT_DETAIL_LOAD_ERROR_MESSAGE);
+    onClose();
+  }, [onClose, productDetailQuery.isError, toast]);
+
+  if (productDetailQuery.isPending || productDetailQuery.isError) {
+    return null;
   }
 
   return (
