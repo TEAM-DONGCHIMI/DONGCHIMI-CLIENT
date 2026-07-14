@@ -1,10 +1,11 @@
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import { IcCircleCheckFill, IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader, UploadModal } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { usePresignedUploadMutation } from '@/domains/product/hooks';
 
 import { type ProductImportResponseTypes, type StartProductImportParams } from './api';
 import { PosExcelGuidePanel } from './components';
@@ -19,6 +20,7 @@ import {
 } from './sections';
 import * as S from './EventDiscountRegistrationPage.css';
 import { type ResolveExcelFileUrlTypes } from './utils/resolve-excel-file-url';
+import { resolvePresignedExcelFileUrl } from './utils/resolve-excel-file-url';
 
 const EXCEL_UPLOAD_ACCEPT = '.xlsx,.csv';
 const ACTION_FEEDBACK_TOAST_ID = 'event-discount-registration-action-feedback';
@@ -64,8 +66,12 @@ export const EventDiscountRegistrationPage = ({
 }: EventDiscountRegistrationPageProps = {}) => {
   const navigate = useNavigate();
   const toast = useToast();
+  const presignedUploadMutation = usePresignedUploadMutation();
   const startProductImportMutation = useStartProductImportMutation();
   const [isPosGuideOpen, setIsPosGuideOpen] = useState(false);
+  const resolveUploadedExcelFileUrl = useMemo(() => {
+    return resolveExcelFileUrl ?? resolvePresignedExcelFileUrl(presignedUploadMutation.mutateAsync);
+  }, [presignedUploadMutation.mutateAsync, resolveExcelFileUrl]);
   const {
     cancelFileAnalysisConfirmation,
     cancelFileAnalysisProgress,
@@ -79,7 +85,7 @@ export const EventDiscountRegistrationPage = ({
     uploadExcelFile,
     uploadedExcelFileUrl,
     uploadedExcelFileName,
-  } = useExcelUploadFlow({ resolveExcelFileUrl });
+  } = useExcelUploadFlow({ resolveExcelFileUrl: resolveUploadedExcelFileUrl });
   const headerLabels =
     registrationView === 'method'
       ? {
@@ -198,6 +204,9 @@ export const EventDiscountRegistrationPage = ({
         open={excelUploadModal.open}
         selectedFileText={excelUploadModal.selectedFileName ?? '선택된 파일이 없습니다.'}
         state={excelUploadModal.state}
+        uploadButtonDisabled={
+          excelUploadModal.state !== 'upload' || presignedUploadMutation.isPending
+        }
       />
 
       <PosExcelGuidePanel onClose={() => setIsPosGuideOpen(false)} open={isPosGuideOpen} />

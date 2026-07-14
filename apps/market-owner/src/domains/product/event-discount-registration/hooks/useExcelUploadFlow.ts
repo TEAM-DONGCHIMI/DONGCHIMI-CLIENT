@@ -2,7 +2,7 @@ import { useReducer, type ChangeEventHandler } from 'react';
 
 import { useFileDrop } from '../../hooks';
 import {
-  resolveTemporaryExcelFileUrl,
+  resolvePresignedExcelFileUrl,
   type ResolveExcelFileUrlTypes,
 } from '../utils/resolve-excel-file-url';
 
@@ -140,7 +140,7 @@ const excelUploadFlowReducer = (
 };
 
 export const useExcelUploadFlow = ({
-  resolveExcelFileUrl = resolveTemporaryExcelFileUrl,
+  resolveExcelFileUrl = resolvePresignedExcelFileUrl(),
 }: UseExcelUploadFlowParams = {}) => {
   const [state, dispatch] = useReducer(excelUploadFlowReducer, initialExcelUploadFlowState);
 

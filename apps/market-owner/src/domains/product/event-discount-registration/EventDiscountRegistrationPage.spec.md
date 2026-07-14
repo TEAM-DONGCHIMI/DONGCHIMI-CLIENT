@@ -19,7 +19,7 @@
 ## Purpose
 
 행사 할인 상품 등록 flow의 첫 진입 화면에서 등록 방식을 선택하고, 엑셀 파일 업로드 UI 상태를 거쳐 등록 파일 확인과 AI 분석 진행 화면으로 이어집니다.
-사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, presigned S3 업로드 API, 다운로드 API, SSE transport, 분석 결과 확인 API는 후속 이슈에서 연결합니다.
+사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, 다운로드 API, SSE transport, 분석 결과 확인 API는 후속 이슈에서 연결합니다.
 엑셀 파일 업로드 후 파일 분석 시작 API를 호출하고, 실제 분석 진행 SSE를 연결하기 전까지 page-local fixture simulation으로 진행 상태를 순차 표시한 뒤 상품 결과 등록 확인 route로 이동합니다.
 
 ## Ownership
@@ -36,7 +36,7 @@
 - `useFileAnalysisSimulation` stays page-local because it temporarily advances fixture frames and owns only timer lifecycle; route navigation remains a page callback.
 - `startProductImport` stays page-local under `api/` because the owner product import endpoint is only used by this route.
 - `useStartProductImportMutation` stays page-local because it wraps the analysis-start mutation without introducing cross-page cache behavior.
-- `resolveTemporaryExcelFileUrl` is a temporary adapter boundary until the presigned S3 upload implementation is merged; the page accepts `resolveExcelFileUrl` so the later upload function can be injected without changing the import mutation call site.
+- `resolvePresignedExcelFileUrl` stays page-local because it orchestrates the flow-specific `product_import` presigned upload purpose, S3 PUT, and import-start handoff value.
 - `marketId` is accepted as a page prop until the owner market context/auth integration provides a route-level source.
 - `useFileDrop` is reused from product domain hooks for file drop event handling; accepted extension validation stays in `useExcelUploadFlow` because `.xlsx/.csv` is specific to this flow.
 - App-shared `UploadModal` is reused for the excel upload modal default/upload states.
@@ -75,6 +75,9 @@
 
 - query: none
 - mutation:
+  - `POST /v1/uploads/presigned-url`
+  - request body: `{ purpose, contentType, contentLength }`
+  - response data: `{ uploadUrl, objectKey, expiresAt, requiredHeaders }`
   - `POST /v1/owners/markets/{marketId}/products/import`
   - request body: `{ excelFileUrl }`
   - response data: `{ jobId }`
@@ -97,10 +100,11 @@
 - Drag over / drag leave / drop visual effects are intentionally out of scope for DCMSM-34.
 - The modal file format tooltip is hidden after the modal moves to upload state.
 - The page performs lightweight client-side extension checking for local selection and drag & drop. Files outside `.xlsx` and `.csv` move the modal to error state.
-- Presigned S3 upload is owned by a follow-up integration. Until that lands, `resolveTemporaryExcelFileUrl` creates a deterministic temporary static URL from the selected file name.
-- Upload success stores the selected file name and resolved excel file URL, then switches to confirmation.
+- Upload action requests a presigned URL with purpose `product_import`, the selected file content type, and file byte size.
+- Upload action PUTs the selected file to the returned `uploadUrl` with `requiredHeaders`.
+- Upload success stores the selected file name and the returned `objectKey` as the import handoff value, then switches to confirmation.
 - Confirmation `취소` clears the uploaded file state and returns to the method view.
-- `분석 시작` calls `POST /v1/owners/markets/{marketId}/products/import` with the resolved `excelFileUrl`.
+- `분석 시작` calls `POST /v1/owners/markets/{marketId}/products/import` with `excelFileUrl` set to the uploaded file handoff value. The current presigned contract provides this as `objectKey`.
 - If `marketId` or `excelFileUrl` is missing, the page keeps the confirmation view and shows the same file-analysis start failure toast instead of sending a guessed request.
 - Import start success stores the returned `jobId` and switches to progress view.
 - Import start failure keeps the confirmation view and shows `파일 분석을 시작하지 못했습니다. 다시 시도해주세요.` as toast feedback.

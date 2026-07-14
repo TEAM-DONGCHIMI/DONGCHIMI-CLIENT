@@ -7,6 +7,7 @@ export const HTTP_STATUS = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
+  PAYLOAD_TOO_LARGE: 413,
   UNPROCESSABLE_ENTITY: 422,
   SERVER_ERROR: 500,
 } as const;
@@ -20,6 +21,7 @@ export const RESPONSE_MESSAGE: Record<number, string> = {
   [HTTP_STATUS.FORBIDDEN]: '리소스에 대한 액세스가 금지되었습니다.',
   [HTTP_STATUS.NOT_FOUND]: '존재하지 않는 데이터입니다.',
   [HTTP_STATUS.CONFLICT]: '이미 존재하는 데이터입니다.',
+  [HTTP_STATUS.PAYLOAD_TOO_LARGE]: '파일 크기가 제한을 초과했습니다.',
   [HTTP_STATUS.UNPROCESSABLE_ENTITY]: '입력값이 올바르지 않습니다.',
   [HTTP_STATUS.SERVER_ERROR]: '서버 에러가 발생했습니다.',
 };
