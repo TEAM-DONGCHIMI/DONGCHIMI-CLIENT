@@ -4,18 +4,36 @@ import '@dongchimi/design-system/styles/reset.css';
 import '@dongchimi/design-system/styles/fonts.css';
 
 import { App } from '@/app/App';
+import { getMarketOwnerEnv } from '@/shared/config';
+
 import { getSentryReactRootOptions, initSentry } from './shared/config/sentry';
 
-initSentry();
+const enableMocking = async () => {
+  if (!import.meta.env.DEV || !getMarketOwnerEnv().enableMsw) {
+    return;
+  }
 
-const rootElement = document.getElementById('root');
+  const { worker } = await import('./mocks/browser');
 
-if (!rootElement) {
-  throw new Error('Root element not found.');
-}
+  await worker.start({ onUnhandledRequest: 'bypass' });
+};
 
-createRoot(rootElement, getSentryReactRootOptions()).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+const bootstrap = async () => {
+  await enableMocking();
+
+  initSentry();
+
+  const rootElement = document.getElementById('root');
+
+  if (!rootElement) {
+    throw new Error('Root element not found.');
+  }
+
+  createRoot(rootElement, getSentryReactRootOptions()).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+};
+
+void bootstrap();
