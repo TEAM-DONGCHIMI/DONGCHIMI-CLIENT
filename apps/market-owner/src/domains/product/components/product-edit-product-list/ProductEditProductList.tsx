@@ -16,6 +16,7 @@ interface ProductEditProductListProps {
   editModalVariant: ProductEditCardVariantTypes;
   autoOpenProductId?: string | null;
   groups: ProductEditProductGroup[];
+  marketId?: number;
   registrationHref: string;
   selectedProductNames?: string[];
   selectionMode?: boolean;
@@ -34,6 +35,7 @@ export const ProductEditProductList = ({
   editModalVariant,
   autoOpenProductId,
   groups,
+  marketId = 1,
   selectedProductNames = [],
   selectionMode = false,
   registrationHref,
@@ -69,7 +71,9 @@ export const ProductEditProductList = ({
     }
 
     openProductEditModal({
+      marketId,
       product: targetProduct,
+      productId: Number(targetProduct.productId),
       variant: editModalVariant,
       onClose: onAutoOpenProductModalClose,
       onSubmit: (updatedProduct) => onUpdateProduct?.(targetProduct.productName, updatedProduct),
@@ -78,6 +82,7 @@ export const ProductEditProductList = ({
     autoOpenProductId,
     editModalVariant,
     groups,
+    marketId,
     onAutoOpenProductMissing,
     onAutoOpenProductModalClose,
     onUpdateProduct,
@@ -92,6 +97,19 @@ export const ProductEditProductList = ({
     openProductEditConfirmModal({
       action: 'delete',
       onConfirm: () => onDeleteProduct?.(product),
+    });
+  };
+  const editProduct = (product: ProductEditCardProps) => {
+    if (product.productId == null) {
+      return;
+    }
+
+    openProductEditModal({
+      marketId,
+      product,
+      productId: Number(product.productId),
+      variant: editModalVariant,
+      onSubmit: (updatedProduct) => onUpdateProduct?.(product.productName, updatedProduct),
     });
   };
   const selectedProductNameSet = new Set(selectedProductNames);
@@ -116,17 +134,7 @@ export const ProductEditProductList = ({
                     selectionMode ? (isSelected ? 'selected' : 'selectable') : 'default'
                   }
                   onDeleteClick={selectionMode ? undefined : () => deleteProduct(product)}
-                  onEditClick={
-                    selectionMode
-                      ? undefined
-                      : () =>
-                          openProductEditModal({
-                            product,
-                            variant: editModalVariant,
-                            onSubmit: (updatedProduct) =>
-                              onUpdateProduct?.(product.productName, updatedProduct),
-                          })
-                  }
+                  onEditClick={selectionMode ? undefined : () => editProduct(product)}
                   onSelectClick={
                     selectionMode ? () => onToggleProductSelection?.(product) : undefined
                   }

@@ -3,11 +3,13 @@ import { useRef, useState, type ChangeEventHandler } from 'react';
 import { Button, Dialog, InlineField } from '@dongchimi/design-system/components';
 import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
 
+import { useProductDetailQuery } from '@/domains/product/hooks';
+import { type OwnerApiTypes } from '@/shared/api';
 import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
+import { getProductCategoryGroup } from '@/shared/utils/product-category.utils';
 import { imageUploadInputAccept, isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
 
 import {
-  isProductSelectableCategory,
   productSelectableCategoryOptions,
   type ProductSelectableCategoryTypes,
 } from '../../../constants';
@@ -36,15 +38,19 @@ import { keepProductEditDialogOpen, openProductEditOverlay } from '../open-produ
 import * as S from './ProductEditModal.css';
 
 interface ProductEditModalProps {
+  marketId: number;
   open: boolean;
   product: ProductEditCardProps;
+  productId: number;
   variant: ProductEditCardVariantTypes;
   onClose: () => void;
   onSubmit?: (product: ProductEditCardProps) => void;
 }
 
 interface OpenProductEditModalParams {
+  marketId: number;
   product: ProductEditCardProps;
+  productId: number;
   onClose?: () => void;
   onSubmit?: (product: ProductEditCardProps) => void;
   variant: ProductEditCardVariantTypes;
@@ -64,23 +70,25 @@ interface ProductEditFormValues {
 
 const PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID = 'product-edit-modal-category-dropdown';
 
-const createInitialValues = (product: ProductEditCardProps): ProductEditFormValues => {
-  const categoryName =
-    product.categoryName != null && isProductSelectableCategory(product.categoryName)
-      ? product.categoryName
-      : '기타';
-  const endDate = formatProductEditDateForInput(product.endDate);
+interface ProductEditModalFormProps extends Omit<ProductEditModalProps, 'marketId' | 'productId'> {
+  detail: OwnerApiTypes.OwnerProductDetailResponse;
+}
+
+const createInitialValues = (
+  detail: OwnerApiTypes.OwnerProductDetailResponse,
+): ProductEditFormValues => {
+  const categoryName = getProductCategoryGroup(detail.category);
 
   return {
     categoryName,
-    endDate,
+    endDate: formatProductEditDateForInput(detail.discountEndDate),
     imageFile: null,
-    imagePreviewUrl: null,
-    originalPrice: product.originalPrice ?? '',
-    productName: product.productName,
-    promotionText: product.promotionText ?? '',
-    salePrice: product.salePrice,
-    startDate: formatProductEditDateForInput(product.startDate ?? product.endDate),
+    imagePreviewUrl: detail.thumbnailUrl ?? null,
+    originalPrice: detail.originalPrice.toLocaleString('ko-KR'),
+    productName: detail.name,
+    promotionText: detail.promotionalPhrase ?? '',
+    salePrice: detail.discountedPrice.toLocaleString('ko-KR'),
+    startDate: formatProductEditDateForInput(detail.discountStartDate),
   };
 };
 
@@ -90,14 +98,15 @@ const isSameFormValues = (values: ProductEditFormValues, initialValues: ProductE
   );
 };
 
-export const ProductEditModal = ({
+const ProductEditModalForm = ({
+  detail,
   open,
   product,
   variant,
   onClose,
   onSubmit,
-}: ProductEditModalProps) => {
-  const [initialValues] = useState(() => createInitialValues(product));
+}: ProductEditModalFormProps) => {
+  const [initialValues] = useState(() => createInitialValues(detail));
   const [values, setValues] = useState(initialValues);
   const categoryFieldRef = useRef<HTMLDivElement>(null);
   const categoryTriggerRef = useRef<HTMLButtonElement>(null);
@@ -355,8 +364,73 @@ export const ProductEditModal = ({
   );
 };
 
-export const openProductEditModal = ({
+export const ProductEditModal = ({
+  marketId,
+  open,
   product,
+  productId,
+  variant,
+  onClose,
+  onSubmit,
+}: ProductEditModalProps) => {
+  const productDetailQuery = useProductDetailQuery({ marketId, productId });
+
+  if (productDetailQuery.isPending || productDetailQuery.isError) {
+    const isError = productDetailQuery.isError;
+
+    return (
+      <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
+        <Dialog.Content className={S.contentClassName}>
+          <div className={S.containerClassName}>
+            <Dialog.Title className={S.titleClassName}>판매 정보를 수정해주세요</Dialog.Title>
+            <p className={S.queryStatusClassName} role={isError ? 'alert' : 'status'}>
+              {isError
+                ? '상품 정보를 불러오지 못했어요. 다시 시도해주세요.'
+                : '상품 정보를 불러오는 중이에요.'}
+            </p>
+            <div className={S.footerClassName}>
+              <Button
+                className={S.footerButtonClassName}
+                color='assistive'
+                size='small'
+                variant='outlined'
+                onClick={onClose}
+              >
+                취소
+              </Button>
+              {isError && (
+                <Button
+                  className={S.footerButtonClassName}
+                  size='small'
+                  variant='solid'
+                  onClick={() => productDetailQuery.refetch()}
+                >
+                  다시 시도
+                </Button>
+              )}
+            </div>
+          </div>
+        </Dialog.Content>
+      </Dialog>
+    );
+  }
+
+  return (
+    <ProductEditModalForm
+      detail={productDetailQuery.data.data}
+      open={open}
+      product={product}
+      variant={variant}
+      onClose={onClose}
+      onSubmit={onSubmit}
+    />
+  );
+};
+
+export const openProductEditModal = ({
+  marketId,
+  product,
+  productId,
   variant,
   onClose,
   onSubmit,
@@ -364,8 +438,10 @@ export const openProductEditModal = ({
   openProductEditOverlay({
     render: ({ closeOverlay, isOpen }) => (
       <ProductEditModal
+        marketId={marketId}
         open={isOpen}
         product={product}
+        productId={productId}
         variant={variant}
         onClose={() => {
           closeOverlay();

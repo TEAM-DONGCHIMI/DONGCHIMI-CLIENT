@@ -61,6 +61,33 @@ vi.mock('@/domains/product/hooks/use-product-list-query', () => ({
   }),
 }));
 
+vi.mock('@/domains/product/hooks/use-product-detail-query', () => ({
+  useProductDetailQuery: ({ productId }: { productId: number }) => {
+    const isDaily = productId === 124;
+
+    return {
+      data: {
+        data: {
+          productId,
+          name: isDaily ? '풀무원 콩나물 100g' : '햇감자 1kg',
+          dealType: isDaily ? 'DAILY' : 'PERIODIC',
+          thumbnailUrl: null,
+          originalPrice: isDaily ? 5000 : 4500,
+          discountedPrice: isDaily ? 4500 : 3900,
+          category: 'VEGETABLE_FRUIT',
+          categoryName: '채소/과일',
+          promotionalPhrase: null,
+          discountStartDate: isDaily ? '2026-08-15' : '2026-08-12',
+          discountEndDate: '2026-08-16',
+        },
+      },
+      isError: false,
+      isPending: false,
+      refetch: vi.fn(),
+    };
+  },
+}));
+
 const mockLoginMarketOwner = vi.mocked(loginMarketOwner);
 const mockSignupMarketOwner = vi.mocked(signupMarketOwner);
 
