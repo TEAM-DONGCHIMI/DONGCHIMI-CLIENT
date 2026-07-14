@@ -59,7 +59,7 @@ export const heroSectionClassName = style({
   width: '100%',
   minHeight: '40.8rem',
   alignSelf: 'stretch',
-  backgroundImage: 'url(/images/home-hero-banner.png)',
+  backgroundImage: 'url(/images/home-hero-banner.webp)',
   backgroundPosition: 'center',
   backgroundRepeat: 'no-repeat',
   backgroundSize: 'cover',

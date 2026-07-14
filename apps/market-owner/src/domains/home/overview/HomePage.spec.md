@@ -215,7 +215,7 @@ HomePage(main)
   시작점과 끝점은 같은 x축에 맞춥니다.
 - section spacing: hero와 dashboard card 영역 사이 gap은 16px입니다.
 - bottom spacing: 1440px x 900px Figma frame 기준 dashboard card 하단 여백은 26px입니다.
-- hero: hero surface는 제공된 `1070 x 408` PNG를 `cover` 배경으로 렌더링하고, radius 20px과 overflow hidden으로 이미지를 clipping합니다.
+- hero: hero surface는 제공된 `1070 x 408` 원본 비율의 WebP를 `cover` 배경으로 렌더링하고, radius 20px과 overflow hidden으로 이미지를 clipping합니다.
 - dashboard cards: 오늘의 특가 상품, 행사 할인 상품, 전단 공유하기 카드는 같은 row에서 동일한 가변 폭을
   사용하고, 최소 폭 320px과 height 386px을 지킵니다.
 - product summary cards: 오늘의 특가 상품과 행사 할인 상품의 상품 row는 56px로 동일하게 맞추고, action은
