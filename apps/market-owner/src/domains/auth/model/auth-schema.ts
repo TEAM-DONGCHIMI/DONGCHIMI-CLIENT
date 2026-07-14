@@ -1,5 +1,9 @@
 import { z } from '@dongchimi/shared/api';
 
+import type { OwnerApiTypes } from '@/shared/api';
+
+export type OwnerSignupResponseTypes = OwnerApiTypes.ApiResponseOwnerSignupResponse;
+
 export const ownerSignupResponseSchema = z.object({
   success: z.literal(true),
   code: z.literal('SUCCESS'),
@@ -8,6 +12,4 @@ export const ownerSignupResponseSchema = z.object({
     ownerId: z.number(),
     email: z.string(),
   }),
-});
-
-export type OwnerSignupResponseTypes = z.infer<typeof ownerSignupResponseSchema>;
+}) satisfies z.ZodType<OwnerSignupResponseTypes>;
