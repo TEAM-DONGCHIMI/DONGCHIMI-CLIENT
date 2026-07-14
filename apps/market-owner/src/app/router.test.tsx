@@ -638,6 +638,18 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('link', { name: '행사 할인' })).toHaveAttribute('aria-current', 'page');
   });
 
+  it('does not render the category filter on the today-special edit page', async () => {
+    renderRoute('/products/today-special/edit');
+
+    await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' });
+
+    expect(screen.queryByRole('button', { name: '카테고리별' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '상품 등록 순' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
   it('navigates between product edit pages from the shared header product search', async () => {
     const user = userEvent.setup();
 
