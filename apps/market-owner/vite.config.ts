@@ -17,5 +17,12 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    proxy: {
+      '/v1': {
+        target: 'https://api.dongchiimi.com',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
 });
