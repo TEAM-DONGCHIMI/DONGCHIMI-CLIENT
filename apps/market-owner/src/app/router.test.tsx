@@ -353,6 +353,7 @@ describe('marketOwnerRoutes', () => {
     await user.click(await screen.findByRole('button', { name: '가입 완료' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('이미 가입된 이메일입니다.');
+    expectAuthToastViewportToUseViewportTopCenter();
     expect(screen.getByRole('heading', { name: '회원가입' })).toBeInTheDocument();
   });
 

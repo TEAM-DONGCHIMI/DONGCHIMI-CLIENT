@@ -29,7 +29,7 @@
 - Email-required/format and password-required copy is shared with `login` via `domains/auth/constants/auth-messages.ts`.
 - Zod validation schema, resolver, and default values stay in `schemas/signup-schema.ts`.
 - Email error messages and format/allowed-character patterns stay in `utils/email-validation.ts`; password error messages and length bounds stay in `utils/password-validation.ts`; shared whitespace/Korean-character patterns stay in `utils/text-pattern.ts`.
-- Form primitives use design-system `Flex`, `TextInput`, `Toast`, and `Button`.
+- Form primitives use design-system `Flex`, `TextInput`, and `Button`.
 
 ## UI States
 
@@ -41,7 +41,7 @@
 - success: 비밀번호 확인 입력이 비밀번호와 일치하면 우측 체크 아이콘을 표시합니다.
 - disabled: full validation 전이거나 회원가입 mutation이 pending 상태이면 `가입 완료` CTA가 disabled 상태입니다.
 - loading: 회원가입 mutation이 pending 상태이면 submit CTA를 disabled 처리해 중복 submit을 방지합니다.
-- error: field validation error는 각 `TextInput` 아래에 표시하고, 네트워크 또는 회원가입 실패 같은 submit error는 field group 아래 toast로 표시합니다.
+- error: field validation error는 각 `TextInput` 아래에 표시하고, 네트워크 또는 회원가입 실패 같은 submit error는 shared `ToastProvider` 고정 위치 toast로 표시합니다.
 - success: 유효한 form submit 이후 회원가입 API가 성공하면 `/markets/information-registration`으로 이동합니다.
 
 ## Data
