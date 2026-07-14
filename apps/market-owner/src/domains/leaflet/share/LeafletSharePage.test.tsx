@@ -67,7 +67,7 @@ describe('LeafletSharePage', () => {
     await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
 
     expect(mockedPublishLeaflet).toHaveBeenCalledOnce();
-    expect(mockedPublishLeaflet).toHaveBeenCalledWith(12);
+    expect(mockedPublishLeaflet.mock.calls[0]?.[0]).toBe(12);
     expect(
       await screen.findByText('https://app.dongchiimi.com/markets/VQ6EAOKbQdSnFkRlVUQAAA'),
     ).toBeInTheDocument();
