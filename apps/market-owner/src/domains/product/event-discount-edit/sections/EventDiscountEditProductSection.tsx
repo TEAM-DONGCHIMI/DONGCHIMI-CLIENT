@@ -28,11 +28,13 @@ interface EventDiscountEditProductSectionProps {
 
 interface EventDiscountEditProductListProps extends EventDiscountEditProductSectionProps {
   initialProducts: ProductEditListItemTypes[];
+  marketId: number;
 }
 
 const EventDiscountEditProductList = ({
   autoOpenProductId,
   initialProducts,
+  marketId,
   selection,
   selectedCategory,
   selectedFilter,
@@ -58,6 +60,7 @@ const EventDiscountEditProductList = ({
       autoOpenProductId={autoOpenProductId}
       editModalVariant='eventDiscount'
       groups={productGroups}
+      marketId={marketId}
       registrationHref={MARKET_OWNER_ROUTES.eventDiscountRegistration}
       selectedProductNames={selection.selectedProductNames}
       selectionMode={selection.selectionMode}
@@ -71,9 +74,10 @@ const EventDiscountEditProductList = ({
 };
 
 export const EventDiscountEditProductSection = (props: EventDiscountEditProductSectionProps) => {
+  // TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
+  const marketId = 1;
   const productListQuery = useProductListQuery({
-    // TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
-    marketId: 1,
+    marketId,
     sort: getProductListSort(props.selectedFilter),
     type: 'PERIODIC',
   });
@@ -89,6 +93,7 @@ export const EventDiscountEditProductSection = (props: EventDiscountEditProductS
       key={props.selectedFilter}
       {...props}
       initialProducts={products}
+      marketId={marketId}
     />
   );
 };

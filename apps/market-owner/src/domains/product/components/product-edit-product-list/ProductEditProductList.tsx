@@ -16,7 +16,7 @@ interface ProductEditProductListProps {
   editModalVariant: ProductEditCardVariantTypes;
   autoOpenProductId?: string | null;
   groups: ProductEditProductGroup[];
-  marketId?: number;
+  marketId: number;
   registrationHref: string;
   selectedProductNames?: string[];
   selectionMode?: boolean;
@@ -35,7 +35,7 @@ export const ProductEditProductList = ({
   editModalVariant,
   autoOpenProductId,
   groups,
-  marketId = 1,
+  marketId,
   selectedProductNames = [],
   selectionMode = false,
   registrationHref,
