@@ -223,4 +223,31 @@ describe('httpClient auth refresh', () => {
     expect(useAuthStore.getState().accessToken).toBe('refreshed-access-token');
     expect(useAuthStore.getState().bootstrapStatus).toBe('authenticated');
   });
+
+  it('returns a raw streaming response with authorization options intact', async () => {
+    const { httpClient } = await import('./http-client');
+    const response = new Response('event: progress\ndata: {}\n\n', {
+      headers: {
+        'Content-Type': 'text/event-stream',
+      },
+    });
+
+    useAuthStore.getState().setAccessToken('access-token');
+    mockKyRequest.mockResolvedValueOnce(response);
+
+    await expect(
+      httpClient.stream('/v1/progress', {
+        headers: {
+          Accept: 'text/event-stream',
+        },
+        timeout: false,
+      }),
+    ).resolves.toBe(response);
+
+    expect(mockKyRequest.mock.calls[0]?.[1]).toMatchObject({ timeout: false });
+    expect(mockKyRequest.mock.calls[0]?.[1].headers.get('Accept')).toBe('text/event-stream');
+    expect(mockKyRequest.mock.calls[0]?.[1].headers.get('Authorization')).toBe(
+      'Bearer access-token',
+    );
+  });
 });
