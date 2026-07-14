@@ -1,8 +1,6 @@
 import ky, { type KyInstance, type Options } from 'ky';
 
-import { getClientEnv } from '@/shared/config';
-import { getAccessToken } from '@/shared/auth';
-import { createApiConfigurationError, normalizeApiError } from './api-error';
+import { normalizeApiError } from './api-error';
 
 type HttpMethodTypes = 'delete' | 'get' | 'patch' | 'post' | 'put';
 
@@ -11,27 +9,18 @@ type HttpRequestTypes = <ResponseDataTypes>(
   options?: Options,
 ) => Promise<ResponseDataTypes>;
 
-type HttpClientTypes = Record<HttpMethodTypes, HttpRequestTypes> & {
+type BrowserApiTypes = Record<HttpMethodTypes, HttpRequestTypes> & {
   request: HttpRequestTypes;
 };
 
 const REQUEST_TIMEOUT_MS = 10_000;
 
-let cachedHttpClient: KyInstance | undefined;
+let cachedBrowserApi: KyInstance | undefined;
 
-const getApiBaseUrl = () => {
-  const { apiBaseUrl } = getClientEnv();
-
-  if (!apiBaseUrl) {
-    throw createApiConfigurationError('NEXT_PUBLIC_API_BASE_URL is not configured.');
-  }
-
-  return apiBaseUrl;
-};
-
-export const createHttpClient = () => {
+export const createBrowserApi = () => {
   return ky.create({
-    prefix: getApiBaseUrl(),
+    credentials: 'include',
+    prefix: new URL('/api/', window.location.origin).toString(),
     retry: {
       limit: 0,
     },
@@ -40,27 +29,21 @@ export const createHttpClient = () => {
       beforeRequest: [
         ({ request }) => {
           request.headers.set('Accept', 'application/json');
-
-          const accessToken = getAccessToken();
-
-          if (accessToken) {
-            request.headers.set('Authorization', `Bearer ${accessToken}`);
-          }
         },
       ],
     },
   });
 };
 
-export const getHttpClient = () => {
-  cachedHttpClient ??= createHttpClient();
+export const getBrowserApi = () => {
+  cachedBrowserApi ??= createBrowserApi();
 
-  return cachedHttpClient;
+  return cachedBrowserApi;
 };
 
 const request = async <ResponseDataTypes>(path: string, options?: Options) => {
   try {
-    return await getHttpClient()<ResponseDataTypes>(path, options).json();
+    return await getBrowserApi()<ResponseDataTypes>(path, options).json();
   } catch (error) {
     throw await normalizeApiError(error);
   }
@@ -72,7 +55,7 @@ const withMethod = (method: HttpMethodTypes) => {
   };
 };
 
-export const httpClient: HttpClientTypes = {
+export const browserApi: BrowserApiTypes = {
   delete: withMethod('delete'),
   get: withMethod('get'),
   patch: withMethod('patch'),

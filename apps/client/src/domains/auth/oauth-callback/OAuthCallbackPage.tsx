@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useKakaoLoginMutation } from '@/domains/auth/hooks/use-kakao-login-mutation';
-import { setAccessToken } from '@/shared/auth';
 import { isApiError } from '@/shared/api';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
@@ -29,18 +28,14 @@ const getLoginErrorMessage = (error: unknown) => {
 
 interface GetCallbackErrorMessageParams {
   code: string | null;
-  hasAccessToken: boolean;
   isError: boolean;
-  isSuccess: boolean;
   mutationError: unknown;
   oauthError: string | null;
 }
 
 const getCallbackErrorMessage = ({
   code,
-  hasAccessToken,
   isError,
-  isSuccess,
   mutationError,
   oauthError,
 }: GetCallbackErrorMessageParams) => {
@@ -56,17 +51,13 @@ const getCallbackErrorMessage = ({
     return getLoginErrorMessage(mutationError);
   }
 
-  if (isSuccess && !hasAccessToken) {
-    return '로그인 응답을 확인할 수 없습니다. 다시 시도해 주세요.';
-  }
-
   return undefined;
 };
 
 export const OAuthCallbackPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data, error, isError, isSuccess, mutate } = useKakaoLoginMutation();
+  const { error, isError, mutate } = useKakaoLoginMutation();
   const hasRequestedLoginRef = useRef(false);
   const [code] = useState(() => searchParams.get('code'));
   const oauthError = searchParams.get('error');
@@ -86,14 +77,7 @@ export const OAuthCallbackPage = () => {
     mutate(
       { code },
       {
-        onSuccess: (response) => {
-          const accessToken = response.data?.accessToken;
-
-          if (!accessToken) {
-            return;
-          }
-
-          setAccessToken(accessToken);
+        onSuccess: () => {
           router.replace(CLIENT_ROUTES.markets);
         },
       },
@@ -102,9 +86,7 @@ export const OAuthCallbackPage = () => {
 
   const errorMessage = getCallbackErrorMessage({
     code,
-    hasAccessToken: Boolean(data?.data?.accessToken),
     isError,
-    isSuccess,
     mutationError: error,
     oauthError,
   });

@@ -1,1 +1,1 @@
-export { clearAccessToken, getAccessToken, setAccessToken } from './access-token';
+export { AUTH_COOKIE_NAMES, AUTH_COOKIE_PATHS } from './auth-cookie';
