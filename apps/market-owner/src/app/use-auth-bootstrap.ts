@@ -44,6 +44,7 @@ export const useAuthBootstrap = () => {
 
     return () => {
       isCanceled = true;
+      hasRequestedRefreshRef.current = false;
     };
   }, [accessToken, isLoggedIn]);
 };

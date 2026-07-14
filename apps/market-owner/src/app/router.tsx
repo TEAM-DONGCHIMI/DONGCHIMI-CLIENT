@@ -11,10 +11,10 @@ import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 export const marketOwnerRoutes = [
   {
-    Component: GuestOnlyRoute,
+    Component: AuthLayout,
     children: [
       {
-        Component: AuthLayout,
+        Component: GuestOnlyRoute,
         children: [
           {
             path: MARKET_OWNER_ROUTES.login,

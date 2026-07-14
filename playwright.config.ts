@@ -60,6 +60,9 @@ export default defineConfig({
     },
     {
       command: 'pnpm --filter market-owner exec vite --host 127.0.0.1 --port 5173 --strictPort',
+      env: {
+        VITE_PUBLIC_API_SERVER_BASE_URL: marketOwnerBaseURL,
+      },
       url: marketOwnerBaseURL,
       reuseExistingServer: !isCI,
       timeout: 120_000,

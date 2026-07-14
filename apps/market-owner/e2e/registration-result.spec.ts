@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
+import { signInMarketOwner } from './auth';
+
 const FIXED_HEADER_LABELS = ['상품 이미지', '상품명', '판매가격', '카테고리', '할인 기간'];
 
 const getHeaderCellWidths = async (page: Page) => {
@@ -17,6 +19,7 @@ test('registration result table keeps fixed columns while the viewport resizes',
   page,
 }) => {
   await page.setViewportSize({ height: 900, width: 1600 });
+  await signInMarketOwner(page);
   await page.goto('/products/registration-result');
 
   await expect(page.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeVisible();
@@ -46,6 +49,7 @@ test('registration result table keeps fixed columns while the viewport resizes',
 test('registration result fields normalize input and expose validation messages', async ({
   page,
 }) => {
+  await signInMarketOwner(page);
   await page.goto('/products/registration-result');
 
   const productNameInput = page.getByPlaceholder('제품명을 입력하세요.').first();
