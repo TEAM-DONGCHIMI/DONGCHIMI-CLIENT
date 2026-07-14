@@ -1,10 +1,16 @@
+import { isApiResponseValidationError } from '@dongchimi/shared/api';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
-import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
+import { isApiError } from '@/shared/api';
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+
+import { useLoginMutation } from '../../hooks/use-login-mutation';
 
 const LOGIN_MISMATCH_ERROR_MESSAGE = '이메일 또는 비밀번호가 일치하지 않습니다.';
 const LOGIN_NETWORK_ERROR_MESSAGE = '네트워크 연결을 확인한 후 다시 시도해주세요.';
+const LOGIN_UNEXPECTED_ERROR_MESSAGE =
+  '로그인 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
 
 export interface LoginSubmitParams {
   email: string;
@@ -13,7 +19,7 @@ export interface LoginSubmitParams {
 }
 
 export interface LoginSubmitResult {
-  redirectTo: MarketOwnerRouteTypes;
+  redirectTo: string;
 }
 
 export type LoginSubmitHandlerTypes = (params: LoginSubmitParams) => Promise<LoginSubmitResult>;
@@ -26,11 +32,19 @@ export interface UseLoginSubmitOptions {
   submitLogin?: LoginSubmitHandlerTypes;
 }
 
-const defaultSubmitLogin: LoginSubmitHandlerTypes = async () => {
-  return { redirectTo: MARKET_OWNER_ROUTES.home };
-};
-
 const getLoginErrorMessage = (error: unknown) => {
+  if (isApiError(error)) {
+    if (error.type === 'auth') {
+      return LOGIN_MISMATCH_ERROR_MESSAGE;
+    }
+
+    if (error.type === 'network') {
+      return LOGIN_NETWORK_ERROR_MESSAGE;
+    }
+
+    return error.message.length > 0 ? error.message : LOGIN_UNEXPECTED_ERROR_MESSAGE;
+  }
+
   if (
     typeof error === 'object' &&
     error !== null &&
@@ -39,13 +53,21 @@ const getLoginErrorMessage = (error: unknown) => {
     return LOGIN_NETWORK_ERROR_MESSAGE;
   }
 
-  return LOGIN_MISMATCH_ERROR_MESSAGE;
+  if (typeof error === 'object' && error !== null && (error as LoginSubmitError).type === 'auth') {
+    return LOGIN_MISMATCH_ERROR_MESSAGE;
+  }
+
+  if (isApiResponseValidationError(error)) {
+    return LOGIN_UNEXPECTED_ERROR_MESSAGE;
+  }
+
+  return LOGIN_UNEXPECTED_ERROR_MESSAGE;
 };
 
-export const useLoginSubmit = ({
-  submitLogin = defaultSubmitLogin,
-}: UseLoginSubmitOptions = {}) => {
+export const useLoginSubmit = ({ submitLogin }: UseLoginSubmitOptions = {}) => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const loginMutation = useLoginMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginErrorMessage, setLoginErrorMessage] = useState<string>();
 
@@ -58,9 +80,17 @@ export const useLoginSubmit = ({
     setLoginErrorMessage(undefined);
 
     try {
-      const result = await submitLogin(params);
+      const result =
+        submitLogin !== undefined
+          ? await submitLogin(params)
+          : await loginMutation.mutateAsync(params).then(() => ({
+              redirectTo:
+                typeof location.state?.from === 'string'
+                  ? location.state.from
+                  : MARKET_OWNER_ROUTES.home,
+            }));
 
-      navigate(result.redirectTo);
+      navigate(result.redirectTo, { replace: true });
     } catch (error) {
       setLoginErrorMessage(getLoginErrorMessage(error));
     } finally {

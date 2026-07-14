@@ -1,10 +1,9 @@
-import { Navigate, Outlet, useLocation } from 'react-router';
+import { Navigate, Outlet } from 'react-router';
 
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/auth-store';
 
-export const ProtectedRoute = () => {
-  const location = useLocation();
+export const GuestOnlyRoute = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const bootstrapStatus = useAuthStore((state) => state.bootstrapStatus);
 
@@ -12,10 +11,8 @@ export const ProtectedRoute = () => {
     return null;
   }
 
-  if (!accessToken || bootstrapStatus === 'unauthenticated') {
-    const from = `${location.pathname}${location.search}${location.hash}`;
-
-    return <Navigate replace state={{ from }} to={MARKET_OWNER_ROUTES.login} />;
+  if (accessToken && bootstrapStatus === 'authenticated') {
+    return <Navigate replace to={MARKET_OWNER_ROUTES.home} />;
   }
 
   return <Outlet />;

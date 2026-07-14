@@ -62,7 +62,10 @@
 - Form content: 좌측 240px 이미지 업로드 영역과 우측 866px 입력 영역을 `Flex`, `Stack`, `Grid`로 조합합니다.
 - Address: 주소 read-only 입력과 주소 찾기 버튼을 같은 행에 배치하고 상세주소는 다음 행 full width로 배치합니다.
 - Business/contact: 영업 시간/휴무일과 마트 번호/점주 번호를 2열로 배치합니다. 영업 시간과 마트 번호 영역은 추가 row 슬롯 높이를 미리 확보해, 추가 row 노출 시 휴무일/점주 번호 영역이 아래로 밀리지 않게 합니다.
-- Submit: 하단 중앙에 disabled 가능한 등록 버튼을 배치합니다.
+- 휴무일 dropdown menu는 열린 상태에서 하단 좌우에 `1.2rem` radius를 유지합니다.
+- 마트 번호와 점주 번호는 대표 badge 유무와 관계없이 입력 필드의 수평 시작 위치를 동일하게 맞춥니다.
+- validation message가 노출되면 해당 field block이 확장되고 다음 행은 아래로 이동하며, field block 사이의 `3.2rem` 간격은 유지합니다.
+- Submit: validation message에 따른 form 높이와 관계없이 등록 버튼을 viewport 하단에서 `6.2rem` 떨어진 위치에 고정합니다.
 
 ## Routing And Access
 

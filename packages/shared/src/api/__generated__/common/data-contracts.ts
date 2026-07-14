@@ -29,11 +29,16 @@ export interface PresignedUploadRequest {
   contentLength: number;
 }
 
-export interface ApiResponsePresignedUploadResponse {
+export interface PresignedUploadsRequest {
+  /** 발급할 업로드 URL 목록 */
+  uploads: PresignedUploadRequest[];
+}
+
+export interface ApiResponsePresignedUploadsResponse {
   success: boolean;
   code: string;
   message: string;
-  data?: PresignedUploadResponse | null;
+  data?: PresignedUploadsResponse | null;
 }
 
 export interface PresignedUploadResponse {
@@ -50,6 +55,18 @@ export interface PresignedUploadResponse {
   requiredHeaders: Record<string, string>;
 }
 
+export interface PresignedUploadsResponse {
+  /** 발급된 업로드 URL 목록 */
+  uploads: PresignedUploadResponse[];
+}
+
+export interface ApiResponsePresignedUploadResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  data?: PresignedUploadResponse | null;
+}
+
 export interface ApiResponseReissueTokenResponse {
   success: boolean;
   code: string;
@@ -61,6 +78,8 @@ export interface ReissueTokenResponse {
   /** 동치미 서비스 access token (JWT) */
   accessToken: string;
 }
+
+export type CreatePresignedUrlsData = ApiResponsePresignedUploadsResponse;
 
 export type CreatePresignedUrlData = ApiResponsePresignedUploadResponse;
 

@@ -65,7 +65,7 @@ export const buildApiPath = (pathname: string, searchParams?: ApiSearchParamsTyp
 export const API_ENDPOINTS = {
   common: {
     auth: {
-      refresh: '/v1/auth/refresh',
+      refresh: '/v1/auth/token/refresh',
     },
     uploads: {
       presignedUrl: '/v1/uploads/presigned-url',
