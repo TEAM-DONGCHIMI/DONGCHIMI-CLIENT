@@ -23,7 +23,11 @@ const getDefaultAriaLive = (status: ToastStatusTypes) => {
 };
 
 const getDefaultIcon = (status: ToastStatusTypes) => {
-  return status === 'error' ? <IcCircleCheckColor0 /> : <IcCircleCheckFill />;
+  return status === 'error' ? (
+    <IcCircleCheckColor0 data-testid='toast-error-icon' />
+  ) : (
+    <IcCircleCheckFill data-testid='toast-completed-icon' />
+  );
 };
 
 export const Toast = ({
