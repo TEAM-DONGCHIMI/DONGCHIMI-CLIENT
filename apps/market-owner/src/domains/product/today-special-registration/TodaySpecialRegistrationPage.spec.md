@@ -41,7 +41,6 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 이미지가 없으면 `null`, 이미지가 있으면 후속 등록 payload용 `objectKey`를 반환합니다.
 - `hooks/useTodaySpecialProductRegistration.ts`
   - 이미지 업로드, 등록 payload 변환, 상품 등록 mutation, 실패 toast를 조합합니다.
-  - 이미지가 있으면 `VITE_PUBLIC_S3_BASE_URL`과 `objectKey`를 결합한 절대 URL을 `thumbnailUrl`로 사용하며, base URL이 없으면 상대경로를 등록하지 않습니다.
   - 페이지가 버튼별 성공 후속 동작을 결정할 수 있도록 성공 여부를 반환합니다.
 - `hooks/useCurrentProductField.ts`
   - 현재 상품의 text/date/price field change, blur, formatting, error message 계산을 담당합니다.
@@ -170,7 +169,6 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 현재 상품이 submit 가능 조건을 만족할 때만 활성화합니다.
   - 이미지가 있으면 `presigned URL 발급 -> storage PUT` 순서로 처리합니다.
   - 이미지가 없으면 Presigned 요청을 생략하고 payload mapper에서 `/images/product-replace.svg`를 기본 `thumbnailUrl`로 사용합니다.
-  - 이미지가 있으면 storage PUT 완료 후 S3 base URL과 `objectKey`를 결합한 절대 URL을 `thumbnailUrl`로 사용합니다.
   - 업로드 결과와 form 값을 상품 등록 payload로 변환해 임시 `marketId = 1`로 등록 API를 호출합니다.
   - 업로드 중에는 중복 submit을 막습니다.
   - 등록 실패 시 오류 toast를 표시하고 이동하지 않습니다.
