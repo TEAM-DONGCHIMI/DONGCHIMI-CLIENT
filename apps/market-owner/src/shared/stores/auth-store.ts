@@ -7,11 +7,13 @@ interface AuthStoreStateTypes {
   accessToken?: string;
   bootstrapStatus: AuthBootstrapStatusTypes;
   isLoggedIn: boolean;
+  marketId?: number;
   clearAccessToken: () => void;
   clearSession: () => void;
   setAccessToken: (accessToken: string, options?: { isAutoLogin?: boolean }) => void;
   setBootstrapStatus: (bootstrapStatus: AuthBootstrapStatusTypes) => void;
   setLoggedIn: (isLoggedIn: boolean) => void;
+  setMarketId: (marketId?: number) => void;
 }
 
 export const AUTH_STORE_STORAGE_KEY = 'market-owner-auth';
@@ -75,11 +77,17 @@ export const useAuthStore = create<AuthStoreStateTypes>()(
       accessToken: undefined,
       bootstrapStatus: 'idle',
       isLoggedIn: false,
+      marketId: undefined,
       clearAccessToken: () => {
         set({ accessToken: undefined });
       },
       clearSession: () => {
-        set({ accessToken: undefined, bootstrapStatus: 'unauthenticated', isLoggedIn: false });
+        set({
+          accessToken: undefined,
+          bootstrapStatus: 'unauthenticated',
+          isLoggedIn: false,
+          marketId: undefined,
+        });
       },
       setAccessToken: (accessToken, options) => {
         if (options?.isAutoLogin !== undefined) {
@@ -96,10 +104,13 @@ export const useAuthStore = create<AuthStoreStateTypes>()(
       setLoggedIn: (isLoggedIn) => {
         set({ isLoggedIn });
       },
+      setMarketId: (marketId) => {
+        set({ marketId });
+      },
     }),
     {
       name: AUTH_STORE_STORAGE_KEY,
-      partialize: ({ isLoggedIn }) => ({ isLoggedIn }),
+      partialize: ({ isLoggedIn, marketId }) => ({ isLoggedIn, marketId }),
       storage: createJSONStorage(() => authStorage),
     },
   ),
