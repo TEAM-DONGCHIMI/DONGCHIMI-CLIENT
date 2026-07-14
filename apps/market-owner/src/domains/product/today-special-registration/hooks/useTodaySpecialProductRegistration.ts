@@ -1,6 +1,7 @@
 import { useToast } from '@dongchimi/shared/toast';
 
 import { normalizeApiError } from '@/shared/api';
+import { getMarketOwnerEnv } from '@/shared/config';
 
 import { useDailyProductRegistrationMutation } from '../../hooks/use-daily-product-registration-mutation';
 import { createDailyProductRequest, type TodaySpecialProductFormTypes } from '../model';
@@ -26,10 +27,11 @@ export const useTodaySpecialProductRegistration = () => {
   ): Promise<RegistrationResultTypes> => {
     try {
       const uploadedImageObjectKey = await uploadProductImage(product);
+      const { s3BaseUrl } = getMarketOwnerEnv();
 
       await dailyProductRegistrationMutation.mutateAsync({
         marketId: TEMPORARY_MARKET_ID,
-        request: createDailyProductRequest({ product, uploadedImageObjectKey }),
+        request: createDailyProductRequest({ product, s3BaseUrl, uploadedImageObjectKey }),
       });
 
       return { success: true };
