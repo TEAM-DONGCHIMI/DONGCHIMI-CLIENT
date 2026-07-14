@@ -1,11 +1,15 @@
-const getPublicEnv = (key: keyof ImportMetaEnv) => {
-  const value = import.meta.env[key]?.trim();
+const normalizePublicEnv = (value: string | undefined) => {
+  const normalizedValue = value?.trim();
 
-  return value === '' ? undefined : value;
+  return normalizedValue === '' ? undefined : normalizedValue;
 };
 
 export const getMarketOwnerEnv = () => {
   return {
-    apiBaseUrl: getPublicEnv('VITE_PUBLIC_API_SERVER_BASE_URL')?.replace(/\/+$/, ''),
+    apiBaseUrl: normalizePublicEnv(import.meta.env.VITE_PUBLIC_API_SERVER_BASE_URL)?.replace(
+      /\/+$/,
+      '',
+    ),
+    kakaoMapAppKey: normalizePublicEnv(import.meta.env.VITE_PUBLIC_KAKAO_MAP_APP_KEY),
   };
 };
