@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  EMAIL_ERROR_MESSAGES,
-  getEmailErrorMessage,
-  isAllowedEmailInputValue,
-} from './email-validation';
+import { EMAIL_ERROR_MESSAGES, getEmailErrorMessage } from './email-validation';
 
 describe('email-validation', () => {
   it('returns required error for an empty email', () => {
@@ -22,10 +18,8 @@ describe('email-validation', () => {
     expect(getEmailErrorMessage('owner_01-test@example.co.kr')).toBeUndefined();
   });
 
-  it('allows only english letters, numbers, and email-safe symbols', () => {
-    expect(isAllowedEmailInputValue('owner_01-test@example.com')).toBe(true);
-    expect(isAllowedEmailInputValue('owner@example.com ')).toBe(false);
-    expect(isAllowedEmailInputValue('한글@example.com')).toBe(false);
-    expect(isAllowedEmailInputValue('owner+tag@example.com')).toBe(false);
+  it('returns format error for emails with Korean characters or unsupported symbols', () => {
+    expect(getEmailErrorMessage('한글@example.com')).toBe(EMAIL_ERROR_MESSAGES.invalidFormat);
+    expect(getEmailErrorMessage('owner+tag@example.com')).toBe(EMAIL_ERROR_MESSAGES.invalidFormat);
   });
 });
