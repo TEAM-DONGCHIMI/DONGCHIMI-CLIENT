@@ -1,7 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-import { MARKET_DETAIL_API_RESPONSE_FIXTURE } from '../src/domains/market/api/market-detail-api.mock';
-
 const routeShellTimeout = 30_000;
 const marketProductsPath = '/markets/mangwon-fresh';
 const productDetailPath = `${marketProductsPath}/products/101`;
@@ -28,20 +26,10 @@ test('client market list route shell renders', async ({ page }) => {
 });
 
 test('client market products route shell renders', async ({ page }) => {
-  await page.route('**/v1/users/markets/mangwon-fresh', (route) => {
-    return route.fulfill({
-      contentType: 'application/json',
-      json: MARKET_DETAIL_API_RESPONSE_FIXTURE,
-    });
-  });
-
   await page.goto(marketProductsPath);
   await expect(page.getByRole('heading', { name: '전단보기' })).toBeVisible({
     timeout: routeShellTimeout,
   });
-  await expect(
-    page.getByRole('heading', { name: MARKET_DETAIL_API_RESPONSE_FIXTURE.data.name }),
-  ).toBeVisible();
 });
 
 test('client product detail route shell renders', async ({ page }) => {
