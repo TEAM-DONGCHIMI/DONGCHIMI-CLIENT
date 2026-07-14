@@ -7,12 +7,17 @@ import { fireEvent, render, screen, userEvent } from '@/test';
 
 import { TodaySpecialRegistrationPage } from './TodaySpecialRegistrationPage';
 
-const { uploadProductImages } = vi.hoisted(() => ({
-  uploadProductImages: vi.fn(),
+const { registerDailyProduct, uploadProductImage } = vi.hoisted(() => ({
+  registerDailyProduct: vi.fn(),
+  uploadProductImage: vi.fn(),
+}));
+
+vi.mock('../hooks/use-daily-product-registration-mutation', () => ({
+  useDailyProductRegistrationMutation: () => ({ mutateAsync: registerDailyProduct }),
 }));
 
 vi.mock('./hooks/useTodaySpecialImageUpload', () => ({
-  useTodaySpecialImageUpload: () => ({ uploadProductImages }),
+  useTodaySpecialImageUpload: () => ({ uploadProductImage }),
 }));
 
 const renderTodaySpecialRegistrationPage = () => {
@@ -36,18 +41,41 @@ const renderTodaySpecialRegistrationPage = () => {
 
 describe('TodaySpecialRegistrationPage', () => {
   beforeEach(() => {
-    uploadProductImages.mockReset();
-    uploadProductImages.mockResolvedValue([null]);
+    registerDailyProduct.mockReset();
+    registerDailyProduct.mockResolvedValue({
+      success: true,
+      code: 'SUCCESS',
+      message: '요청에 성공했습니다.',
+    });
+    uploadProductImage.mockReset();
+    uploadProductImage.mockResolvedValue(null);
   });
 
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  it('keeps submit disabled while required fields are empty', () => {
+  it('keeps continue registration enabled and completion disabled while fields are empty', () => {
     renderTodaySpecialRegistrationPage();
 
+    expect(screen.getByRole('button', { name: '상품 계속 등록' })).toBeEnabled();
     expect(screen.getByRole('button', { name: '등록 완료' })).toBeDisabled();
+  });
+
+  it('shows field errors without registering when continue registration is invalid', async () => {
+    const user = userEvent.setup();
+
+    renderTodaySpecialRegistrationPage();
+
+    await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
+
+    expect(await screen.findByText('상품명을 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('카테고리를 선택해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('오늘의 특가를 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('판매가를 입력해주세요.')).toBeInTheDocument();
+    expect(uploadProductImage).not.toHaveBeenCalled();
+    expect(registerDailyProduct).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: '상품 계속 등록' })).toBeEnabled();
   });
 
   it('navigates to today special edit after registration completes', async () => {
@@ -63,14 +91,27 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
     expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
-    expect(uploadProductImages).toHaveBeenCalledWith([
+    expect(uploadProductImage).toHaveBeenCalledWith(
       expect.objectContaining({ imageFile: null, name: '딸기' }),
-    ]);
+    );
+    expect(registerDailyProduct).toHaveBeenCalledWith({
+      marketId: 1,
+      request: expect.objectContaining({
+        category: 'VEGETABLE_FRUIT',
+        discountedPrice: 4500,
+        name: '딸기',
+        originalPrice: 5000,
+        thumbnailUrl: '/images/product-empty.png',
+      }),
+    });
   });
 
   it('uploads a selected product image before completing registration', async () => {
     const user = userEvent.setup();
     const imageFile = new File(['image'], 'product.png', { type: 'image/png' });
+    const uploadedImageObjectKey = 'tmp/PRODUCT_THUMBNAIL/product.png';
+
+    uploadProductImage.mockResolvedValueOnce(uploadedImageObjectKey);
 
     renderTodaySpecialRegistrationPage();
 
@@ -82,14 +123,20 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
-    expect(uploadProductImages).toHaveBeenCalledWith([expect.objectContaining({ imageFile })]);
+    expect(uploadProductImage).toHaveBeenCalledWith(expect.objectContaining({ imageFile }));
+    expect(registerDailyProduct).toHaveBeenCalledWith({
+      marketId: 1,
+      request: expect.objectContaining({
+        thumbnailUrl: uploadedImageObjectKey,
+      }),
+    });
     expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
   });
 
   it('keeps the page open and shows an error toast when image upload fails', async () => {
     const user = userEvent.setup();
 
-    uploadProductImages.mockRejectedValue(new Error('upload failed'));
+    uploadProductImage.mockRejectedValue(new Error('upload failed'));
     renderTodaySpecialRegistrationPage();
 
     await user.type(screen.getByLabelText('상품명'), '딸기');
@@ -100,17 +147,36 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      '이미지를 업로드하지 못했습니다. 다시 시도해주세요.',
+      '상품을 등록하지 못했습니다. 다시 시도해주세요.',
     );
     expect(screen.queryByText('오늘의 특가 상품 수정 페이지')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '등록 완료' })).toBeEnabled();
   });
 
-  it('disables registration actions while images are uploading', async () => {
+  it('shows the network error message when product registration fails by network error', async () => {
     const user = userEvent.setup();
-    let completeUpload: ((objectKeys: (string | null)[]) => void) | undefined;
 
-    uploadProductImages.mockReturnValueOnce(
+    registerDailyProduct.mockRejectedValue(new TypeError('Failed to fetch'));
+    renderTodaySpecialRegistrationPage();
+
+    await user.type(screen.getByLabelText('상품명'), '딸기');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('채소･과일'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '4500');
+    await user.type(screen.getByLabelText('판매가'), '5000');
+    await user.click(screen.getByRole('button', { name: '등록 완료' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '인터넷 연결을 확인한 후 다시 시도해주세요.',
+    );
+    expect(screen.queryByText('오늘의 특가 상품 수정 페이지')).not.toBeInTheDocument();
+  });
+
+  it('disables registration actions while continuing registration is pending', async () => {
+    const user = userEvent.setup();
+    let completeUpload: ((objectKey: string | null) => void) | undefined;
+
+    uploadProductImage.mockReturnValueOnce(
       new Promise((resolve) => {
         completeUpload = resolve;
       }),
@@ -122,14 +188,15 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.click(await screen.findByText('채소･과일'));
     await user.type(screen.getByLabelText('오늘의 특가'), '4500');
     await user.type(screen.getByLabelText('판매가'), '5000');
-    await user.click(screen.getByRole('button', { name: '등록 완료' }));
+    await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
 
     expect(await screen.findByRole('button', { name: '등록 중' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '상품 계속 등록' })).toBeDisabled();
 
-    completeUpload?.([null]);
+    completeUpload?.(null);
 
-    expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
+    expect(await screen.findByLabelText('상품명')).toHaveValue('');
+    expect(screen.queryByText('오늘의 특가 상품 수정 페이지')).not.toBeInTheDocument();
   });
 
   it('limits product text fields including spaces', async () => {
@@ -150,25 +217,127 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(promotionTextInput).toHaveValue('1234567890 1234567890 123');
   });
 
-  it('sets today as the initial event period and minimum selectable date', () => {
+  it('keeps the initial event period read-only without opening the date picker', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 6, 11, 9));
+    const originalShowPicker = HTMLInputElement.prototype.showPicker;
+    const showPicker = vi.fn();
 
-    renderTodaySpecialRegistrationPage();
+    Object.defineProperty(HTMLInputElement.prototype, 'showPicker', {
+      configurable: true,
+      value: showPicker,
+    });
 
-    expect(screen.getByLabelText('행사 시작일')).toHaveValue('2026-07-11');
-    expect(screen.getByLabelText('행사 시작일')).toHaveAttribute('min', '2026-07-11');
+    try {
+      renderTodaySpecialRegistrationPage();
+
+      const startDateInput = screen.getByLabelText('행사 시작일');
+
+      expect(startDateInput).toHaveValue('2026-07-11');
+      expect(startDateInput).toHaveAttribute('min', '2026-07-11');
+      expect(startDateInput).toHaveAttribute('readonly');
+      expect(startDateInput).toHaveAttribute('tabindex', '-1');
+
+      fireEvent.click(startDateInput);
+      fireEvent.keyDown(startDateInput, { key: 'Enter' });
+
+      expect(showPicker).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(HTMLInputElement.prototype, 'showPicker', {
+        configurable: true,
+        value: originalShowPicker,
+      });
+    }
   });
 
-  it('starts an added product draft from today as the event period', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date(2026, 6, 11, 9));
+  it('registers the current product before resetting the form for the next product', async () => {
+    const user = userEvent.setup();
+    const imageFile = new File(['image'], 'first-product.png', { type: 'image/png' });
+
+    renderTodaySpecialRegistrationPage();
+    const initialStartDate = (screen.getByLabelText('행사 시작일') as HTMLInputElement).value;
+
+    await user.upload(screen.getByLabelText('상품 이미지'), imageFile);
+    await user.type(screen.getByLabelText('상품명'), '첫번째 상품');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('채소･과일'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '4500');
+    await user.type(screen.getByLabelText('판매가'), '5000');
+
+    expect(screen.getByRole('button', { name: '상품 계속 등록' })).toBeEnabled();
+
+    await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
+
+    expect(uploadProductImage).toHaveBeenCalledWith(
+      expect.objectContaining({ imageFile, name: '첫번째 상품' }),
+    );
+    expect(registerDailyProduct).toHaveBeenCalledWith({
+      marketId: 1,
+      request: expect.objectContaining({
+        category: 'VEGETABLE_FRUIT',
+        discountedPrice: 4500,
+        name: '첫번째 상품',
+        originalPrice: 5000,
+      }),
+    });
+    expect(screen.queryByAltText('등록할 상품 이미지 미리보기')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('상품명')).toHaveValue('');
+    expect(screen.getByRole('button', { name: '카테고리' })).toBeInTheDocument();
+    expect(screen.getByLabelText('오늘의 특가')).toHaveValue('');
+    expect(screen.getByLabelText('판매가')).toHaveValue('');
+    expect(screen.getByLabelText('행사 시작일')).toHaveValue(initialStartDate);
+    expect(
+      screen.getByRole('heading', { name: /오늘의 특가 상품을 등록하세요/ }),
+    ).toHaveTextContent('(2/2)');
+    expect(screen.getByRole('button', { name: '이전 상품' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: '다음 상품' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '상품 계속 등록' })).toBeEnabled();
+    expect(screen.queryByText('오늘의 특가 상품 수정 페이지')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '이전 상품' }));
+
+    expect(screen.getByLabelText('상품명')).toHaveValue('첫번째 상품');
+    expect(screen.getByLabelText('상품명')).toBeDisabled();
+    expect(screen.getByRole('button', { name: '등록 완료' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: '다음 상품' }));
+
+    expect(screen.getByLabelText('상품명')).toHaveValue('');
+    expect(screen.getByLabelText('상품명')).toBeEnabled();
+  });
+
+  it('registers the next product without submitting the previous product again', async () => {
+    const user = userEvent.setup();
 
     renderTodaySpecialRegistrationPage();
 
-    fireEvent.click(screen.getByRole('button', { name: '상품 계속 등록' }));
+    await user.type(screen.getByLabelText('상품명'), '첫번째 상품');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('채소･과일'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '4500');
+    await user.type(screen.getByLabelText('판매가'), '5000');
+    await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
 
-    expect(screen.getByLabelText('행사 시작일')).toHaveValue('2026-07-11');
+    await user.type(screen.getByLabelText('상품명'), '두번째 상품');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('정육･달걀'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '6000');
+    await user.type(screen.getByLabelText('판매가'), '7000');
+    await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
+
+    expect(registerDailyProduct).toHaveBeenCalledTimes(2);
+    expect(registerDailyProduct).toHaveBeenNthCalledWith(2, {
+      marketId: 1,
+      request: expect.objectContaining({
+        category: 'MEAT_EGG',
+        discountedPrice: 6000,
+        name: '두번째 상품',
+        originalPrice: 7000,
+      }),
+    });
+    expect(
+      screen.getByRole('heading', { name: /오늘의 특가 상품을 등록하세요/ }),
+    ).toHaveTextContent('(3/3)');
   });
 
   it('selects a category from the OverlayKit dropdown', async () => {
@@ -182,7 +351,7 @@ describe('TodaySpecialRegistrationPage', () => {
     const categoryOptions = Array.from(dropdown.querySelectorAll('button')).map(
       (option) => option.textContent,
     );
-    expect(categoryOptions.slice(0, 2)).toEqual(['전체', '채소･과일']);
+    expect(categoryOptions.slice(0, 2)).toEqual(['채소･과일', '정육･달걀']);
 
     await user.click(await screen.findByText('채소･과일'));
 
@@ -205,39 +374,26 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(dropdown).toBeInTheDocument();
   });
 
-  it('moves between product drafts without losing field values', async () => {
+  it('keeps current values when continuing registration fails', async () => {
     const user = userEvent.setup();
 
+    registerDailyProduct.mockRejectedValue(new Error('registration failed'));
     renderTodaySpecialRegistrationPage();
 
-    await user.type(screen.getByLabelText('상품명'), '첫번째 상품');
+    await user.type(screen.getByLabelText('상품명'), '유지할 상품');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('채소･과일'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '4500');
+    await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
 
-    expect(
-      screen.getByRole('heading', { name: /오늘의 특가 상품을 등록하세요/ }),
-    ).toHaveTextContent('(2/2)');
-
-    await user.type(screen.getByLabelText('상품명'), '두번째 상품');
-    await user.click(screen.getByRole('button', { name: '이전 상품' }));
-
-    expect(screen.getByLabelText('상품명')).toHaveValue('첫번째 상품');
-
-    await user.click(screen.getByRole('button', { name: '다음 상품' }));
-
-    expect(screen.getByLabelText('상품명')).toHaveValue('두번째 상품');
-  });
-
-  it('removes current product draft and keeps the remaining draft selected', async () => {
-    const user = userEvent.setup();
-
-    renderTodaySpecialRegistrationPage();
-
-    await user.type(screen.getByLabelText('상품명'), '남는 상품');
-    await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
-    await user.type(screen.getByLabelText('상품명'), '삭제할 상품');
-    await user.click(screen.getByRole('button', { name: '현재 상품 삭제' }));
-
-    expect(screen.getByLabelText('상품명')).toHaveValue('남는 상품');
-    expect(screen.queryByRole('button', { name: '현재 상품 삭제' })).not.toBeInTheDocument();
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '상품을 등록하지 못했습니다. 다시 시도해주세요.',
+    );
+    expect(screen.getByLabelText('상품명')).toHaveValue('유지할 상품');
+    expect(screen.getByRole('button', { name: '채소･과일' })).toBeInTheDocument();
+    expect(screen.getByLabelText('오늘의 특가')).toHaveValue('4,500');
+    expect(screen.getByLabelText('판매가')).toHaveValue('5,000');
+    expect(screen.getByRole('button', { name: '상품 계속 등록' })).toBeEnabled();
   });
 });

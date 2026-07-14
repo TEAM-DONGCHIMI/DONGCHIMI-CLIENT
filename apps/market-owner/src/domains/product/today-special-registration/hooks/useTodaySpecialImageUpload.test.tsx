@@ -28,7 +28,7 @@ describe('useTodaySpecialImageUpload', () => {
     } as never);
   });
 
-  it('uploads selected images and keeps null for a product without an image', async () => {
+  it('uploads a selected image and returns its object key', async () => {
     const file = new File(['image'], 'product.png', { type: 'image/png' });
     const uploadContract = {
       uploadUrl: 'https://s3.example.com/tmp/product.png?signature=temporary',
@@ -38,13 +38,10 @@ describe('useTodaySpecialImageUpload', () => {
         'Content-Type': 'image/png',
       },
     };
-    const products = [
-      {
-        ...createEmptyTodaySpecialProductForm(),
-        imageFile: file,
-      },
-      createEmptyTodaySpecialProductForm(),
-    ];
+    const product = {
+      ...createEmptyTodaySpecialProductForm(),
+      imageFile: file,
+    };
 
     createPresignedUploadUrl.mockResolvedValue(uploadContract);
     mockedUploadFileToPresignedUrl.mockResolvedValue();
@@ -53,9 +50,9 @@ describe('useTodaySpecialImageUpload', () => {
 
     await expect(
       act(async () => {
-        return result.current.uploadProductImages(products);
+        return result.current.uploadProductImage(product);
       }),
-    ).resolves.toEqual(['tmp/PRODUCT_THUMBNAIL/product.png', null]);
+    ).resolves.toBe('tmp/PRODUCT_THUMBNAIL/product.png');
     expect(createPresignedUploadUrl).toHaveBeenCalledWith({
       contentLength: file.size,
       contentType: 'image/png',
@@ -66,6 +63,18 @@ describe('useTodaySpecialImageUpload', () => {
       requiredHeaders: uploadContract.requiredHeaders,
       uploadUrl: uploadContract.uploadUrl,
     });
+  });
+
+  it('returns null without requesting a Presigned URL when there is no image', async () => {
+    const { result } = renderHook(() => useTodaySpecialImageUpload());
+
+    await expect(
+      act(async () => {
+        return result.current.uploadProductImage(createEmptyTodaySpecialProductForm());
+      }),
+    ).resolves.toBeNull();
+    expect(createPresignedUploadUrl).not.toHaveBeenCalled();
+    expect(mockedUploadFileToPresignedUrl).not.toHaveBeenCalled();
   });
 
   it('exposes an S3 upload failure to the form submit flow', async () => {
@@ -83,12 +92,10 @@ describe('useTodaySpecialImageUpload', () => {
 
     await expect(
       act(async () => {
-        return result.current.uploadProductImages([
-          {
-            ...createEmptyTodaySpecialProductForm(),
-            imageFile: file,
-          },
-        ]);
+        return result.current.uploadProductImage({
+          ...createEmptyTodaySpecialProductForm(),
+          imageFile: file,
+        });
       }),
     ).rejects.toThrow('S3 upload failed');
   });

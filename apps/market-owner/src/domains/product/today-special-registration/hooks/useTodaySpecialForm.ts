@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { type FieldError, useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { type FieldError, useForm, useWatch } from 'react-hook-form';
 
 import {
   createEmptyTodaySpecialProductForm,
+  todaySpecialProductFormSchema,
   todaySpecialRegistrationFormSchema,
   type TodaySpecialProductFormTypes,
   type TodaySpecialRegistrationFormTypes,
@@ -12,7 +13,7 @@ import {
 const createInitialProductForm = () => createEmptyTodaySpecialProductForm();
 
 interface UseTodaySpecialFormParams {
-  onSubmit: (values: TodaySpecialRegistrationFormTypes) => Promise<void> | void;
+  onSubmit: (product: TodaySpecialProductFormTypes) => Promise<void> | void;
 }
 
 type TodaySpecialProductTouchedFieldsTypes = Partial<
@@ -26,8 +27,10 @@ type TodaySpecialProductErrorsTypes = Partial<
 export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => {
   const {
     control,
-    formState: { errors, isSubmitted, isSubmitting, isValid, touchedFields },
+    formState: { errors, isSubmitted, isSubmitting, touchedFields },
     handleSubmit,
+    getValues,
+    reset,
     setValue,
   } = useForm<TodaySpecialRegistrationFormTypes>({
     defaultValues: {
@@ -36,13 +39,9 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
     mode: 'onChange',
     resolver: zodResolver(todaySpecialRegistrationFormSchema),
   });
-  const { append, remove } = useFieldArray({
-    control,
-    name: 'products',
-  });
-  const [currentIndex, setCurrentIndex] = useState(0);
   const watchedProducts = useWatch({ control, name: 'products' });
   const products = watchedProducts ?? [];
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const currentProduct = products[currentIndex] ?? createInitialProductForm();
   const currentProductErrors = errors.products?.[currentIndex] as
@@ -51,21 +50,56 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
   const currentProductTouchedFields = touchedFields.products?.[currentIndex] as
     | TodaySpecialProductTouchedFieldsTypes
     | undefined;
-  const isSubmitDisabled = products.length === 0 || !isValid || isSubmitting;
+  const isCurrentProductValid = todaySpecialProductFormSchema.safeParse(currentProduct).success;
+  const isRegisteredProduct = currentIndex < products.length - 1;
+  const isSubmitDisabled = isRegisteredProduct || !isCurrentProductValid || isSubmitting;
+
+  const createCurrentProductSubmitHandler = (
+    onValid: (product: TodaySpecialProductFormTypes) => Promise<void> | void,
+  ) =>
+    handleSubmit(async ({ products: submittedProducts }) => {
+      const submittedProduct = submittedProducts[currentIndex];
+
+      if (submittedProduct) {
+        await onValid(submittedProduct);
+      }
+    });
+
+  const resetForNextProduct = () => {
+    const currentProducts = getValues('products');
+
+    reset({ products: [...currentProducts, createInitialProductForm()] });
+    setCurrentIndex(currentProducts.length);
+  };
+
+  const moveToPreviousProduct = () => {
+    setCurrentIndex((previousIndex) => Math.max(previousIndex - 1, 0));
+  };
+
+  const moveToNextProduct = () => {
+    setCurrentIndex((previousIndex) => Math.min(previousIndex + 1, products.length - 1));
+  };
+
+  const moveToLatestProduct = () => {
+    setCurrentIndex(products.length - 1);
+  };
 
   return {
-    appendProduct: append,
+    createCurrentProductSubmitHandler,
     currentIndex,
     currentProduct,
     currentProductErrors,
     currentProductTouchedFields,
-    handleFormSubmit: handleSubmit(onSubmit),
+    handleFormSubmit: createCurrentProductSubmitHandler(onSubmit),
     isSubmitted,
     isSubmitting,
+    isRegisteredProduct,
     isSubmitDisabled,
+    moveToLatestProduct,
+    moveToNextProduct,
+    moveToPreviousProduct,
     products,
-    removeProduct: remove,
-    setCurrentIndex,
+    resetForNextProduct,
     setValue,
   };
 };

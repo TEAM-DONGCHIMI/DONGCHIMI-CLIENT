@@ -7,9 +7,9 @@
 - Page: `today-special-registration`
 - Route: `/products/today-special/new`
 - Path: `apps/market-owner/src/domains/product/today-special-registration/TodaySpecialRegistrationPage.tsx`
-- Jira: DCMSM-21, DCMSM-56
+- Jira: DCMSM-21, DCMSM-54, DCMSM-56
 - Related API: DCMSM-50
-- Status: UI and Presigned image upload implemented, product registration API pending
+- Status: UI, Presigned image upload, product registration API implemented with temporary market ID
 
 ## Purpose
 
@@ -17,8 +17,8 @@
 Figma `APPJAM` node `1553:80268`, `1553:80269`, `1553:80560`, `1553:80571`, dropdown node `1553:80444`
 및 화면설계서의 입력/노출 규칙을 기준으로 구현합니다.
 
-실제 상품 등록 API와 server validation error 표시는 후속 API 연동 범위입니다.
 선택 이미지는 등록 완료 시 Presigned URL 발급 후 S3 임시 저장소에 업로드합니다.
+업로드 결과를 상품 등록 payload에 연결하고, 로그인 session 연동 전까지 임시 `marketId = 1`을 사용합니다.
 Client-side field validation error는 필드 아래 메시지로 표시합니다.
 
 ## Ownership
@@ -33,9 +33,9 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 ## Structure
 
 - `TodaySpecialRegistrationPage.tsx`
-  - 페이지 shell, section 조합, submit 성공 후 route 이동을 담당합니다.
+  - 페이지 shell, section 조합, 등록 action별 성공 후속 동작을 담당합니다.
 - `hooks/useTodaySpecialForm.ts`
-  - RHF form 생성, field array, 현재 상품 index, submit/isSubmitting 상태를 소유합니다.
+  - 등록된 상품 snapshot과 현재 입력 상품의 RHF form, validation, submit/isSubmitting, 상품 이동 상태를 소유합니다.
 - `hooks/useTodaySpecialImageUpload.ts`
   - TanStack Query Presigned URL mutation과 S3 PUT을 상품 순서대로 조합합니다.
   - 이미지가 없는 상품은 `null`, 이미지가 있는 상품은 후속 등록 payload용 `objectKey`를 반환합니다.
@@ -44,10 +44,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `hooks/useCategoryDropdown.tsx`
   - product domain 공용 `useProductOverlayDisclosure`로 open/close, 외부 click, Escape 동작을 관리합니다.
   - 등록 화면에 필요한 dropdown max height와 form category touched 처리만 담당합니다.
-- `hooks/useProductDraftNavigation.ts`
-  - 상품 draft 추가, 삭제, 이전, 다음 이동을 담당합니다.
 - `sections/RegistrationTitleSection.tsx`
-  - title, `(현재/전체)` count, 이전/다음/삭제 icon button을 렌더링합니다.
+  - 등록 화면 title과 등록된 상품/현재 입력 상품 사이를 이동하는 화살표, 현재 순번을 렌더링합니다.
 - `sections/ProductInfoSection.tsx`
   - 상품 이미지, 상품명, 상품 구분 dropdown, 상품 한줄 홍보문구를 렌더링합니다.
 - `sections/ProductPriceSection.tsx`
@@ -77,19 +75,20 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - category overlay: trigger 바로 아래에 dropdown을 표시하고, 외부 click 또는 Escape로 닫습니다.
 - category scroll: dropdown 높이는 열릴 때와 viewport resize 때만 계산하고, 흰색 surface를 유지하며 목록 끝의 bounce와 배경 페이지로의 스크롤 전달을 막습니다.
 - category outside scroll: dropdown 내부 목록 스크롤은 높이 계산에서 제외하고, 주변 페이지가 스크롤되면 현재 trigger 위치를 기준으로 높이를 다시 계산합니다.
-- multi product: 상품이 2개 이상이면 title에 `(현재/전체)`, 이전/다음 button, 삭제 button을 표시합니다.
-- title row와 title main은 상품 control 표시 여부와 관계없이 높이 `4rem`을 유지하고, title은 상단 정렬해 등록·수정 전환과 상품 추가 시 위치가 움직이지 않게 합니다.
-- disabled submit: 필수값이 비어 있거나 form completion 조건을 만족하지 않으면 `등록 완료`를 disabled 처리합니다.
+- next product ready: `상품 계속 등록` 성공 후 새 빈 상품을 마지막에 추가하고 해당 상품으로 이동합니다.
+- registered product history: 이전 상품으로 이동하면 `(현재 순번/전체 상품 수)`와 이동 화살표를 표시하고, 이미 등록된 입력값은 읽기 전용으로 유지합니다.
+- continue registration: 입력 유효성과 무관하게 `상품 계속 등록`을 활성화하고, 클릭 시 현재 form을 검증합니다.
+- disabled submit: 필수값이 비어 있거나 form completion 조건을 만족하지 않으면 `등록 완료`만 disabled 처리합니다.
 - submit pending: action button을 disabled 처리하고 submit button copy를 `등록 중`으로 변경합니다.
-- submit success: 선택 이미지를 임시 저장소에 업로드한 뒤 오늘의 특가 상품 수정 route로 이동합니다.
+- submit success: 선택 이미지를 임시 저장소에 업로드하고 상품 등록 API가 성공하면 오늘의 특가 상품 수정 route로 이동합니다.
 - field error: blur 또는 submit validation 이후 필드 아래에 icon과 error message를 표시합니다.
-- upload error: 이미지 업로드 실패 toast를 표시하고 현재 페이지에 머뭅니다.
+- registration error: 일반 실패는 `상품을 등록하지 못했습니다. 다시 시도해주세요.`, 네트워크 실패는 `인터넷 연결을 확인한 후 다시 시도해주세요.` toast를 표시하고 현재 페이지에 머뭅니다.
 
 ## Form Rules
 
 - 이미지
   - 선택 등록입니다.
-  - 등록하지 않으면 후속 submit에서 기본 이미지를 사용합니다.
+  - 등록하지 않으면 Presigned 요청을 생략하고 후속 submit에서 `/images/product-empty.png` 기본 이미지를 사용합니다.
   - `.jpg`, `.jpeg`, `.png`만 선택할 수 있게 file accept를 제한합니다.
   - 실제 검사 기준은 MIME type `image/jpeg`, `image/png`입니다.
   - 10MB를 초과하거나 지원하지 않는 형식이면 선택을 무시합니다.
@@ -119,9 +118,9 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 1원 이상이고 오늘의 특가 이상이어야 submit 가능 상태가 됩니다.
   - 우측 `원` unit은 `InlineField` unit으로 표시합니다.
 - 행사 기간
-  - 시작일은 date picker로 선택합니다.
   - 시작일은 오늘 날짜가 기본값입니다.
-  - 시작일은 필수 입력이며, 오늘보다 이전 날짜는 선택할 수 없습니다.
+  - 오늘의 특가 등록 화면에서는 시작일을 읽기 전용으로 표시하고 date picker를 열지 않습니다.
+  - 공용 `DateField`의 다른 사용처에는 이 읽기 전용 조건을 적용하지 않습니다.
   - visible text는 `YYYY-MM-DD` 형식입니다.
 
 ## Field Error Messages
@@ -149,25 +148,25 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 ## Behavior
 
 - `상품 계속 등록`
-  - 기본 상태에서는 활성화하고 이미지 업로드가 포함된 submit 중에는 비활성화합니다.
-  - 새 빈 상품 draft를 추가하고 해당 draft로 이동합니다.
-  - 동일 화면에서 다음 상품을 이어서 입력합니다.
-- 이전/다음 icon button
-  - 상품 draft가 2개 이상일 때만 표시합니다.
-  - 첫 상품에서는 이전 button을 disabled 처리합니다.
-  - 마지막 상품에서는 다음 button을 disabled 처리합니다.
-  - 양쪽 chevron은 같은 left chevron SVG를 사용하고, 다음 icon만 180도 회전해 크기/두께 차이를 없앱니다.
-- 삭제 icon button
-  - 상품 draft가 2개 이상일 때만 표시합니다.
-  - 현재 draft를 제거하고, 제거한 draft의 preview URL을 정리합니다.
+  - 입력 유효성과 무관하게 항상 활성화하고, 등록 요청 중에만 중복 등록 방지를 위해 일시적으로 비활성화합니다.
+  - 클릭하면 현재 form을 검증하고, 유효하지 않으면 field error를 표시하며 등록 요청을 보내지 않습니다.
+  - 유효하면 현재 상품 1개만 등록 submit 흐름에 전달합니다.
+  - 성공 전에는 입력값을 초기화하거나 다음 상품 form을 만들지 않습니다.
+  - 성공하면 등록된 상품 snapshot을 유지한 채 새 빈 상품을 추가하고 touched/submitted, validation 상태를 초기화합니다.
+  - 상품이 2개 이상이면 제목 옆에 현재 순번과 전체 개수, 이전/다음 이동 화살표를 표시합니다.
+  - 이미 등록된 이전 상품은 다시 제출하거나 수정할 수 없고, `상품 계속 등록`을 누르면 다음 상품으로 이동합니다.
+  - route를 이동하지 않고 같은 화면에서 다음 상품 입력을 시작합니다.
+  - 실패하면 현재 입력값을 유지하고 오류를 안내합니다.
+  - submit 중에는 두 등록 action을 비활성화해 중복 등록을 막습니다.
 - `등록 완료`
   - 기본 form submit을 막습니다.
-  - 모든 draft가 submit 가능 조건을 만족할 때만 활성화합니다.
-  - 이미지가 있는 draft는 `presigned URL 발급 -> storage PUT` 순서로 처리합니다.
-  - 이미지가 없는 draft는 업로드 요청 없이 기본 이미지용 `null`을 유지합니다.
-  - 업로드 중에는 중복 submit과 상품 draft 추가를 막습니다.
-  - 업로드 실패 시 오류 toast를 표시하고 이동하지 않습니다.
-  - 상품 등록 API 연결 전까지 발급된 `objectKey`는 flow hook 반환값으로만 유지하고, 이미지 업로드 성공 후 기존 수정 route로 이동합니다.
+  - 현재 상품이 submit 가능 조건을 만족할 때만 활성화합니다.
+  - 이미지가 있으면 `presigned URL 발급 -> storage PUT` 순서로 처리합니다.
+  - 이미지가 없으면 Presigned 요청을 생략하고 payload mapper에서 `/images/product-empty.png`를 기본 `thumbnailUrl`로 사용합니다.
+  - 업로드 결과와 form 값을 상품 등록 payload로 변환해 임시 `marketId = 1`로 등록 API를 호출합니다.
+  - 업로드 중에는 중복 submit을 막습니다.
+  - 등록 실패 시 오류 toast를 표시하고 이동하지 않습니다.
+  - 상품 등록 API가 성공하면 오늘의 특가 상품 수정 route로 이동합니다.
 
 ## Accessibility
 
@@ -176,21 +175,19 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - Image upload는 hidden file input과 label click으로 native file picker를 엽니다.
 - DateField는 visible placeholder/value와 `aria-label`이 있는 native date input을 함께 둡니다.
 - Dropdown trigger는 `aria-expanded`를 사용합니다.
-- Product navigation group은 `aria-label='등록 상품 전환'`을 제공합니다.
 - Focus-visible 스타일을 제거하지 않습니다.
 
 ## Design / Component Notes
 
-- Design system components: `Button`, `IconButton`, `InlineField`, `Dropdown`, generated icon components.
+- Design system components: `Button`, `InlineField`, `Dropdown`, generated icon components.
 - Product domain components: `DateField`, `ProductImageUploadField`
 - Product domain shared UI: `ProductCategoryDropdown`.
 - 상품 등록과 수정 modal은 동일한 `ProductCategoryTrigger` typography, 크기, padding, chevron을 사용합니다.
-- Page-local hooks: `useTodaySpecialForm`, `useCurrentProductField`, `useCategoryDropdown`, `useProductDraftNavigation`.
+- Page-local hooks: `useTodaySpecialForm`, `useCurrentProductField`, `useCategoryDropdown`.
 - Page-local sections: title, product info, price, period.
 - App shared form util: touched/submitted 기준으로 visible error message를 계산합니다.
 - App shared image preview hook: object URL lifecycle을 관리합니다.
 - OverlayKit: category dropdown open/close controller로 사용합니다.
-- Title count는 title text 바로 뒤에 표시하고, count와 chevron group 사이 간격은 `0.8rem`입니다.
 - `DateField`는 native date input의 브라우저 기본 icon/text를 노출하지 않기 위해 visible field와 transparent native input overlay를 사용합니다.
 - 오늘의 특가 등록 시작일은 오늘 날짜를 기본값과 `min`으로 사용해 이전 날짜 선택을 막습니다.
 - 상품명 또는 상품 구분 error message가 표시되면 error message 아래와 `상품 한줄 홍보문구` label 사이 간격은 `0.9rem`입니다.
@@ -200,9 +197,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 ## Non-Goals / Follow-Ups
 
 - Server validation error 표시
-- 실제 상품 등록 mutation
-- 상품 등록 payload에 image `objectKey` 연결
-- 상품 등록 실패/네트워크 실패 toast 또는 field error
+- 로그인 session의 실제 `marketId` 연결
+- 상품 등록 API server validation field error mapping
 - Date picker custom component 공통화
 
 ## Verification
@@ -224,13 +220,16 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - [ ] price fields accept digits only and display comma-formatted values with `원` unit
 - [ ] submit stays disabled when sale price is lower than today special price
 - [ ] DateField displays today as the initial start date without browser date icon text
-- [ ] DateField prevents selecting a date before today
-- [ ] clicking DateField opens native date picker
-- [ ] pressing Enter or Space on DateField opens native date picker
-- [ ] `상품 계속 등록` stays enabled and opens a fresh product draft
-- [ ] title count and previous/next/delete controls render when there are multiple drafts
-- [x] valid `등록 완료` submit navigates to today special edit after image uploads complete
+- [x] 오늘의 특가 등록 DateField는 읽기 전용이며 클릭 또는 키보드 입력으로 picker를 열지 않는다
+- [x] `상품 계속 등록`은 입력 유효성과 무관하게 활성화되고 클릭 시 field validation을 실행한다
+- [x] `상품 계속 등록`은 현재 상품 submit 성공 후 동일 route에서 새 빈 상품으로 이동한다
+- [x] 등록 상품이 2개 이상이면 현재 순번과 이전/다음 이동 화살표를 표시한다
+- [x] 이미 등록된 이전 상품은 읽기 전용으로 표시하고 다시 등록하지 않는다
+- [x] `상품 계속 등록` 실패 시 현재 입력값을 유지한다
+- [x] 등록 요청 중 두 action이 disabled되어 중복 등록을 막는다
+- [x] valid `등록 완료` submit은 이미지 업로드와 상품 등록 API 성공 후 오늘의 특가 상품 수정 화면으로 이동한다
+- [x] 두 등록 action은 임시 `marketId = 1`로 상품 등록 API를 호출한다
 - [x] 이미지가 있는 상품은 Presigned URL 발급 후 API가 요구한 header로 S3 PUT한다
 - [x] 이미지가 없는 상품은 업로드 요청을 보내지 않는다
 - [x] 이미지 업로드 중 등록 action이 disabled되고 `등록 중`을 표시한다
-- [x] 이미지 업로드 실패 시 오류 toast를 표시하고 현재 route에 머문다
+- [x] 등록 실패와 네트워크 실패에 맞는 오류 toast를 표시하고 현재 route에 머문다

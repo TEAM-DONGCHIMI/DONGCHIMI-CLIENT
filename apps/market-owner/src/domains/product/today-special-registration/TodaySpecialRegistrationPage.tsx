@@ -5,18 +5,17 @@ import { IcCirclePlusSizeSmall } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader } from '@/shared/components/ui/desktop-header/DesktopHeader';
+import { normalizeApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
-import {
-  imageUploadErrorMessages,
-  isValidImageUploadFile,
-} from '@/shared/utils/image-upload.utils';
+import { isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
 
+import { useDailyProductRegistrationMutation } from '../hooks/use-daily-product-registration-mutation';
 import { useCategoryDropdown } from './hooks/useCategoryDropdown';
 import { useCurrentProductField } from './hooks/useCurrentProductField';
-import { useProductDraftNavigation } from './hooks/useProductDraftNavigation';
 import { useTodaySpecialForm } from './hooks/useTodaySpecialForm';
 import { useTodaySpecialImageUpload } from './hooks/useTodaySpecialImageUpload';
+import { createDailyProductRequest, type TodaySpecialProductFormTypes } from './model';
 import {
   ProductInfoSection,
   ProductPeriodSection,
@@ -25,22 +24,47 @@ import {
 } from './sections';
 import * as S from './TodaySpecialRegistrationPage.css';
 
+const registrationErrorMessages = {
+  failed: '상품을 등록하지 못했습니다. 다시 시도해주세요.',
+  network: '인터넷 연결을 확인한 후 다시 시도해주세요.',
+} as const;
+
+// TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
+const TEMPORARY_MARKET_ID = 1;
+
 export const TodaySpecialRegistrationPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { uploadProductImages } = useTodaySpecialImageUpload();
+  const { uploadProductImage } = useTodaySpecialImageUpload();
+  const dailyProductRegistrationMutation = useDailyProductRegistrationMutation();
+  const showRegistrationError = async (error: unknown) => {
+    const normalizedError = await normalizeApiError(error);
+    const message =
+      normalizedError.type === 'network'
+        ? registrationErrorMessages.network
+        : registrationErrorMessages.failed;
+
+    toast.error(message);
+  };
+  const registerProduct = async (product: TodaySpecialProductFormTypes) => {
+    const uploadedImageObjectKey = await uploadProductImage(product);
+
+    await dailyProductRegistrationMutation.mutateAsync({
+      marketId: TEMPORARY_MARKET_ID,
+      request: createDailyProductRequest({ product, uploadedImageObjectKey }),
+    });
+  };
   const form = useTodaySpecialForm({
-    onSubmit: async ({ products }) => {
+    onSubmit: async (product) => {
       try {
-        await uploadProductImages(products);
+        await registerProduct(product);
         navigate(MARKET_OWNER_ROUTES.todaySpecialEdit);
-      } catch {
-        toast.error(imageUploadErrorMessages.uploadFailed);
+      } catch (error) {
+        await showRegistrationError(error);
       }
     },
   });
   const { currentIndex, currentProduct, products, setValue } = form;
-  const productCount = products.length;
   const currentProductField = useCurrentProductField({
     currentIndex,
     currentProductErrors: form.currentProductErrors,
@@ -68,14 +92,14 @@ export const TodaySpecialRegistrationPage = () => {
     onPreviewChange: handleImagePreviewChange,
     previewUrls: products.map((product) => product.imagePreviewUrl),
   });
-  const draftNavigation = useProductDraftNavigation({
-    appendProduct: form.appendProduct,
-    closeCategoryDropdown: categoryDropdown.closeCategoryDropdown,
-    currentIndex,
-    productCount,
-    removeProduct: form.removeProduct,
-    revokeCurrentImagePreviewUrl: imagePreview.revokeCurrentPreviewUrl,
-    setCurrentIndex: form.setCurrentIndex,
+  const handleContinueRegistration = form.createCurrentProductSubmitHandler(async (product) => {
+    try {
+      await registerProduct(product);
+      categoryDropdown.closeCategoryDropdown();
+      form.resetForNextProduct();
+    } catch (error) {
+      await showRegistrationError(error);
+    }
   });
   const productInfoSectionProps = {
     ...categoryDropdown.productCategoryProps,
@@ -101,13 +125,24 @@ export const TodaySpecialRegistrationPage = () => {
           className={S.formContentClassName}
           aria-labelledby='today-special-registration-title'
         >
-          <RegistrationTitleSection {...draftNavigation.titleSectionProps} />
+          <RegistrationTitleSection
+            currentIndex={currentIndex}
+            onNextProduct={() => {
+              categoryDropdown.closeCategoryDropdown();
+              form.moveToNextProduct();
+            }}
+            onPreviousProduct={() => {
+              categoryDropdown.closeCategoryDropdown();
+              form.moveToPreviousProduct();
+            }}
+            productCount={products.length}
+          />
 
-          <div className={S.fieldSectionsClassName}>
+          <fieldset className={S.fieldSectionsClassName} disabled={form.isRegisteredProduct}>
             <ProductInfoSection {...productInfoSectionProps} />
             <ProductPriceSection {...productPriceSectionProps} />
             <ProductPeriodSection {...productPeriodSectionProps} />
-          </div>
+          </fieldset>
 
           <footer className={S.actionSectionClassName}>
             <Button
@@ -115,8 +150,11 @@ export const TodaySpecialRegistrationPage = () => {
               color='assistive'
               disabled={form.isSubmitting}
               leftIcon={<IcCirclePlusSizeSmall />}
-              onClick={draftNavigation.actionSectionProps.onAddProduct}
+              onClick={
+                form.isRegisteredProduct ? form.moveToLatestProduct : handleContinueRegistration
+              }
               size='small'
+              type='button'
               variant='outlined'
             >
               상품 계속 등록
