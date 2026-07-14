@@ -42,7 +42,7 @@ export const marketOwnerRoutes = [
             path: MARKET_OWNER_ROUTES.todaySpecialRegistration,
             ...createLazyRoute(
               () =>
-                import('@/domains/product/today-special-registration/TodaySpecialRegistrationPage'),
+                import('@/domains/product/today-special-registration/today-special-registration-page'),
               'TodaySpecialRegistrationPage',
             ),
           },
