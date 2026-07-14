@@ -14,21 +14,62 @@ type BrowserApiTypes = Record<HttpMethodTypes, HttpRequestTypes> & {
 };
 
 const REQUEST_TIMEOUT_MS = 10_000;
+const AUTH_API_PATH_PREFIX = '/api/auth/';
+const AUTH_REFRESH_PATH = '/api/auth/token/refresh';
 
 let cachedBrowserApi: KyInstance | undefined;
+let refreshSessionPromise: Promise<boolean> | undefined;
+
+const refreshSession = () => {
+  refreshSessionPromise ??= ky
+    .post(new URL(AUTH_REFRESH_PATH, window.location.origin), {
+      credentials: 'include',
+      retry: 0,
+      throwHttpErrors: false,
+    })
+    .then((response) => response.ok)
+    .catch(() => false)
+    .finally(() => {
+      refreshSessionPromise = undefined;
+    });
+
+  return refreshSessionPromise;
+};
 
 export const createBrowserApi = () => {
   return ky.create({
     credentials: 'include',
     prefix: new URL('/api/', window.location.origin).toString(),
     retry: {
-      limit: 0,
+      limit: 1,
+      methods: [],
+      statusCodes: [],
     },
     timeout: REQUEST_TIMEOUT_MS,
     hooks: {
       beforeRequest: [
         ({ request }) => {
           request.headers.set('Accept', 'application/json');
+        },
+      ],
+      afterResponse: [
+        async ({ request, response, retryCount }) => {
+          const isAuthRequest = new URL(request.url).pathname.startsWith(AUTH_API_PATH_PREFIX);
+
+          if (response.status !== 401 || retryCount > 0 || isAuthRequest) {
+            return response;
+          }
+
+          const isSessionRefreshed = await refreshSession();
+
+          if (!isSessionRefreshed) {
+            return response;
+          }
+
+          return ky.retry({
+            code: 'AUTH_SESSION_REFRESHED',
+            request: new Request(request),
+          });
         },
       ],
     },
