@@ -1,4 +1,5 @@
 import userEvent from '@testing-library/user-event';
+import { ToastProvider } from '@dongchimi/shared/toast';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -12,7 +13,9 @@ const renderLoginForm = (props: LoginFormProps = {}) => {
   return render(
     <MemoryRouter>
       <QueryProvider>
-        <LoginForm {...props} />
+        <ToastProvider offset='2.4rem' placement='top-right'>
+          <LoginForm {...props} />
+        </ToastProvider>
       </QueryProvider>
     </MemoryRouter>,
   );
