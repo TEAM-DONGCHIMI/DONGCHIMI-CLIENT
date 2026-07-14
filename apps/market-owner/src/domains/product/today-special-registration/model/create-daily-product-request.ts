@@ -9,7 +9,7 @@ import {
 } from './product-form.utils';
 import type { TodaySpecialProductFormTypes } from './product-form.types';
 
-// TODO: 서버에서 제공하는 동치미 기본 상품 이미지 URL이 확정되면 교체합니다.
+// TODO: 이미지 확정시 교체
 const DEFAULT_PRODUCT_THUMBNAIL_URL = '/images/product-empty.png';
 
 const productCategoryCodeByLabel = {

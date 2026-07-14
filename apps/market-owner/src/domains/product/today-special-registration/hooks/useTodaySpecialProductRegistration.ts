@@ -11,7 +11,7 @@ const registrationErrorMessages = {
   network: '인터넷 연결을 확인한 후 다시 시도해주세요.',
 } as const;
 
-// TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
+// TODO: 마트 등록 api 구현 후 교체
 const TEMPORARY_MARKET_ID = 1;
 
 type RegistrationResultTypes = { success: true } | { success: false };
