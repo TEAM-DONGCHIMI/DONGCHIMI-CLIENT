@@ -86,7 +86,7 @@ export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSec
 
   return (
     <TodaySpecialEditProductList
-      key={props.selectedFilter}
+      key={`${props.selectedFilter}-${productListQuery.dataUpdatedAt}`}
       {...props}
       initialProducts={products}
       marketId={marketId}
