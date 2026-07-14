@@ -2,6 +2,16 @@ import { validateApiResponse, z, type ZodType } from '@dongchimi/shared/api';
 
 import type { UserApiTypes } from '@/shared/api';
 
+export const marketDetailParamsSchema = z.object({
+  slug: z.string().min(1),
+});
+
+export type MarketDetailParamsTypes = z.infer<typeof marketDetailParamsSchema>;
+
+export const resolveMarketDetailParams = (rawParams: unknown): MarketDetailParamsTypes => {
+  return marketDetailParamsSchema.parse(rawParams);
+};
+
 export const businessDaySchema = z.string();
 
 export type BusinessDayTypes = z.infer<typeof businessDaySchema>;

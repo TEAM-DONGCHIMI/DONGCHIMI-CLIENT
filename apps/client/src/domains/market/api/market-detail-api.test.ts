@@ -50,6 +50,12 @@ describe('getMarketDetail', () => {
     });
   });
 
+  it('빈 slug path parameter는 요청 전에 validation error로 노출한다', async () => {
+    await expect(getMarketDetail({ slug: '' })).rejects.toMatchObject({
+      name: 'ZodError',
+    });
+  });
+
   it('요일 값은 Swagger의 string[] 계약을 그대로 보존한다', () => {
     const response = {
       ...MARKET_DETAIL_API_RESPONSE_FIXTURE,

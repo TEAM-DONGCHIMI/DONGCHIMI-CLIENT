@@ -27,9 +27,9 @@
 
 - endpoint: `GET /v1/users/markets/{slug}`
 - method: `GET`
-- request: path parameter `slug`; browser는 `NEXT_PUBLIC_API_BASE_URL`을 prefix로 사용하는 app-local Ky client로 요청합니다.
+- request: path parameter `slug`; non-empty string Zod schema로 검증한 뒤 browser는 `NEXT_PUBLIC_API_BASE_URL`을 prefix로 사용하는 app-local Ky client로 요청합니다.
 - response: 성공 envelope의 non-null `data`를 `market-detail-schema.ts`에서 검증합니다. `businessHours[].days`는 Swagger의 `string[]` 계약을 보존합니다.
-- query key: `marketDetailQueryKeys.query({ slug })`
+- query key: `marketQueryKeys.detail({ slug })`
 - query options: `marketDetailQueryOptions({ slug })`가 query key와 query function을 함께 정의하고, hook은 실행 조건만 추가합니다.
 - invalidation: read-only query이므로 없음
 
