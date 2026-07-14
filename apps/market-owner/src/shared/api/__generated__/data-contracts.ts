@@ -200,6 +200,71 @@ export interface MarketRegisterRequest {
   brn?: string | null;
 }
 
+export interface ProductImportRequest {
+  /**
+   * S3에 업로드한 엑셀 파일 URL
+   * @example "https://cdn.dongchimi.kr/products/imports/2026/07/x.xlsx"
+   */
+  excelFileUrl: string;
+}
+
+export interface ApiResponseProductImportResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  data?: ProductImportResponse | null;
+}
+
+export interface ProductImportResponse {
+  /** 실행 작업 아이디 */
+  jobId: string;
+}
+
+export interface ApiResponseProductImportSyncResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  data?: ProductImportSyncResponse | null;
+}
+
+export interface ProductImportSyncResponse {
+  /**
+   * 전체 분석 상품 수
+   * @format int32
+   */
+  totalCount: number;
+  /**
+   * 분석 성공(등록완료) 상품 수
+   * @format int32
+   */
+  successCount: number;
+  /**
+   * 분석 실패(수정필요) 상품 수
+   * @format int32
+   */
+  failCount: number;
+  /**
+   * download~persist 전체 소요시간(ms)
+   * @format int64
+   */
+  elapsedMs: number;
+  /** 단계별 소요시간(ms) */
+  stageElapsedMs: StageElapsedMs;
+}
+
+export interface StageElapsedMs {
+  /** @format int64 */
+  download: number;
+  /** @format int64 */
+  parse: number;
+  /** @format int64 */
+  classify: number;
+  /** @format int64 */
+  match: number;
+  /** @format int64 */
+  persist: number;
+}
+
 export interface DailyProductRegisterRequest {
   /** 상품 이미지 URL (미입력 시 null 저장) */
   thumbnailUrl?: string | null;
@@ -474,6 +539,35 @@ export interface OwnerProductDetailResponse {
    * @format date
    */
   discountEndDate: string;
+}
+
+export interface ApiResponseProductSearchResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  data?: ProductSearchResponse | null;
+}
+
+export interface ProductSearchItemResponse {
+  /**
+   * 상품 id
+   * @format int64
+   */
+  productId: number;
+  /** 상품명 */
+  name: string;
+  /** 판매 유형 */
+  dealType: 'PERIODIC' | 'DAILY';
+}
+
+export interface ProductSearchResponse {
+  /** 검색된 상품 목록 */
+  products: ProductSearchItemResponse[];
+}
+
+export interface SseEmitter {
+  /** @format int64 */
+  timeout?: number;
 }
 
 export interface ApiResponseOwnerPreparedProductDraftListResponse {
@@ -795,6 +889,12 @@ export type ConfirmDraftsData = ApiResponseUnit;
 
 export type DeleteAllData = ApiResponseUnit;
 
+export type StartImportData = ApiResponseProductImportResponse;
+
+export type CancelImportData = ApiResponseUnit;
+
+export type ImportSyncData = ApiResponseProductImportSyncResponse;
+
 export type RegisterDailyProductData = ApiResponseUnit;
 
 export type PublishData = ApiResponseFlyerPublishResponse;
@@ -806,6 +906,10 @@ export type SignupData = ApiResponseOwnerSignupResponse;
 export type LoginData = ApiResponseOwnerLoginResponse;
 
 export type UpdateDiscountPeriodData = ApiResponseUnit;
+
+export type SearchData = ApiResponseProductSearchResponse;
+
+export type SubscribeProgressData = SseEmitter;
 
 export type GetPeriodicPreviewData = ApiResponseFlyerPreviewResponse;
 
