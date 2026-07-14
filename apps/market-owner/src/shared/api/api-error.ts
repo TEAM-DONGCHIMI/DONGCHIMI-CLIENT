@@ -50,6 +50,18 @@ const getStringField = (value: unknown, fieldName: string) => {
   return typeof fieldValue === 'string' ? fieldValue : undefined;
 };
 
+const parseErrorBody = (body: unknown) => {
+  if (typeof body !== 'string') {
+    return body;
+  }
+
+  try {
+    return JSON.parse(body) as unknown;
+  } catch {
+    return body;
+  }
+};
+
 const getErrorType = (status: number): ApiErrorCategoryTypes => {
   if (status === HTTP_STATUS.UNAUTHORIZED || status === HTTP_STATUS.FORBIDDEN) {
     return 'auth';
@@ -71,7 +83,7 @@ const getErrorType = (status: number): ApiErrorCategoryTypes => {
 };
 
 const readErrorBody = async (error: HTTPError) => {
-  return error.data;
+  return parseErrorBody(error.data);
 };
 
 export const isApiError = (error: unknown): error is ApiError => {
@@ -96,6 +108,7 @@ export const normalizeApiError = async (error: unknown) => {
     const message =
       getStringField(body, 'message') ??
       getStringField(body, 'error') ??
+      (typeof body === 'string' ? body : undefined) ??
       RESPONSE_MESSAGE[status] ??
       error.message;
 
