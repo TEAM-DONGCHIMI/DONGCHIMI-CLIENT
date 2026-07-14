@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen } from '@/test';
 
-import { homeShare, type HomeShareFixtureTypes } from '../fixtures';
+import { homeShare } from '../fixtures';
+import { type HomeShareTypes } from '../model/home-dashboard-view-model';
 
 import { HomeShareSection, type HomeShareSectionProps } from './HomeShareSection';
 
@@ -11,7 +12,7 @@ const defaultProps = {
   onQrCodePreparing: vi.fn(),
 } satisfies Omit<HomeShareSectionProps, 'share'>;
 
-const availableShare: HomeShareFixtureTypes = {
+const availableShare: HomeShareTypes = {
   ...homeShare,
   flyer: {
     flyerId: 1,

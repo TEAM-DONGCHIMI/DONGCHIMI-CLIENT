@@ -1,12 +1,29 @@
 import { RouterProvider, createMemoryRouter } from 'react-router';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { ownerHomeFixture } from '@/domains/home/fixtures/owner-home-api.fixture';
+import { useOwnerHomeQuery } from '@/domains/home/hooks/use-owner-home-query';
 import { render, screen } from '@/test';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { AppProviders } from './AppProviders';
 import { marketOwnerRoutes } from './router';
+
+vi.mock('@/domains/home/hooks/use-owner-home-query', () => ({
+  useOwnerHomeQuery: vi.fn(),
+}));
+
+const mockedUseOwnerHomeQuery = vi.mocked(useOwnerHomeQuery);
+
+beforeEach(() => {
+  mockedUseOwnerHomeQuery.mockReturnValue({
+    data: ownerHomeFixture,
+    isError: false,
+    isPending: false,
+    refetch: vi.fn(),
+  } as unknown as ReturnType<typeof useOwnerHomeQuery>);
+});
 
 const renderRoute = (path: string) => {
   const router = createMemoryRouter(marketOwnerRoutes, {
@@ -260,7 +277,7 @@ describe('marketOwnerRoutes', () => {
     renderRoute('/');
 
     await screen.findByRole('heading', { name: '동치미 홈' });
-    await user.click(screen.getAllByRole('button', { name: '상품 보기: 풀무원 콩나물 500g' })[0]);
+    await user.click(screen.getByRole('button', { name: '상품 보기: 삼겹살 500g' }));
 
     expect(
       await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
@@ -286,7 +303,7 @@ describe('marketOwnerRoutes', () => {
     renderRoute('/');
 
     await screen.findByRole('heading', { name: '동치미 홈' });
-    await user.click(screen.getByRole('button', { name: '1위 상품 보기: 풀무원 콩나물 500g' }));
+    await user.click(screen.getByRole('button', { name: '1위 상품 보기: 깻잎 2묶음' }));
 
     expect(
       await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
