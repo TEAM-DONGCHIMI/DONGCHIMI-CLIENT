@@ -37,6 +37,7 @@ export const ProductPeriodSection = ({
             min={getTodayDateInputValue()}
             onBlur={onStartDateBlur}
             onChange={onStartDateChange}
+            readOnly
             value={product.startDate}
           />
         </div>
