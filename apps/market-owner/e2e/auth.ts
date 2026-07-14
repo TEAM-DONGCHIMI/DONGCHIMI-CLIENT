@@ -50,7 +50,11 @@ export const signInMarketOwner = async (page: Page) => {
   await expect
     .poll(() =>
       page.evaluate(() => {
-        return localStorage.getItem('market-owner-auth');
+        return (
+          localStorage.getItem('market-owner-auth') ??
+          sessionStorage.getItem('market-owner-auth') ??
+          ''
+        );
       }),
     )
     .toContain('"isLoggedIn":true');
