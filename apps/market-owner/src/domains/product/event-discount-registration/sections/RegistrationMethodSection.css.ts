@@ -83,15 +83,12 @@ export const methodCardClassName = style({
   },
 });
 
-export const imagePlaceholderClassName = style({
+export const methodImageClassName = style({
+  display: 'block',
   width: '8rem',
   height: '8rem',
   flexShrink: 0,
-  borderRadius: '1.6rem',
-  backgroundImage:
-    'linear-gradient(45deg, rgba(226, 232, 240, 0.76) 25%, transparent 25%), linear-gradient(-45deg, rgba(226, 232, 240, 0.76) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(226, 232, 240, 0.76) 75%), linear-gradient(-45deg, transparent 75%, rgba(226, 232, 240, 0.76) 75%)',
-  backgroundPosition: '0 0, 0 0.8rem, 0.8rem -0.8rem, -0.8rem 0',
-  backgroundSize: '1.6rem 1.6rem',
+  objectFit: 'contain',
 });
 
 export const cardTextGroupClassName = style({
