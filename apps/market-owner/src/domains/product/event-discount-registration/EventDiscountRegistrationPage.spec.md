@@ -66,7 +66,7 @@
 - toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback with the completed status icon.
 - toast/error: the page can render error toast feedback with the error status icon; `전단지 업로드` currently shows Figma error-style feedback because the actual upload API is out of scope.
 - guide line button: `POS에서 엑셀 파일 받는 방법 보기` keeps its visible action styling (`body-3-semibold`, neutral 60, underline) unchanged across default, hover, and focus-visible states.
-- panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel with a right-to-left slide-in animation, the two-line title (`POS에서 엑셀 파일을` / `이렇게 다운 받으시면 돼요.`), and the single 360×722 WebP guide image; Escape, backdrop click, or the close button hides it and restores focus.
+- panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel with a right-to-left slide-in animation, a `2.8rem × 4rem` close button frame aligned at the panel's `1.8rem` top and offset `0.555rem` left from the `2.5rem` content grid, the two-line title (`POS에서 엑셀 파일을` / `이렇게 다운 받으시면 돼요.`), and the single 360×722 WebP guide image; Escape, backdrop click, or the close button hides it and restores focus.
 - route error: unknown route is handled by the existing router fallback.
 
 ## Data
