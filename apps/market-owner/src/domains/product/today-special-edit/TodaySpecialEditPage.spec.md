@@ -70,7 +70,7 @@
 - [ ] sidebar `오늘의 특가 상품 수정` link has `aria-current="page"`
 - [ ] `오늘의 특가` tab link has `aria-current="page"`
 - [ ] `행사 할인` tab navigates to `/products/event-discount/edit`
-- [ ] category filter is not rendered
+- [x] category filter is not rendered
 - [x] `/products/today-special/edit?productId=...` opens the matching product edit modal
 - [x] closing the search-target edit modal removes `productId` search param
 - [x] empty product list renders registration link to `/products/today-special/new`

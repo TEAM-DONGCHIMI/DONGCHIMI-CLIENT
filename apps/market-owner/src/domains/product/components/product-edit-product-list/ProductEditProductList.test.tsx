@@ -46,9 +46,10 @@ describe('ProductEditProductList', () => {
   it('renders empty state with registration button when no products are available', async () => {
     const user = userEvent.setup();
 
-    renderProductList();
+    const { container } = renderProductList();
 
     expect(screen.getByRole('region', { name: '오늘의 특가 상품 수정 목록' })).toBeInTheDocument();
+    expect(container.querySelector('svg[aria-hidden="true"]')).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: '등록된 상품이 존재하지 않아요!' }),
     ).toBeInTheDocument();
