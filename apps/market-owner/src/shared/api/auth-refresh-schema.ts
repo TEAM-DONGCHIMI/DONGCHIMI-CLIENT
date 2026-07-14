@@ -1,4 +1,4 @@
-import { z } from '@dongchimi/shared/api';
+import { z, type CommonApiTypes } from '@dongchimi/shared/api';
 
 export const authRefreshResponseSchema = z.object({
   success: z.literal(true),
@@ -6,7 +6,7 @@ export const authRefreshResponseSchema = z.object({
   message: z.string(),
   data: z.object({
     accessToken: z.string(),
-  }),
-});
+  }) satisfies z.ZodType<CommonApiTypes.ReissueTokenResponse>,
+}) satisfies z.ZodType<CommonApiTypes.ReissueData>;
 
 export type AuthRefreshResponseTypes = z.infer<typeof authRefreshResponseSchema>;
