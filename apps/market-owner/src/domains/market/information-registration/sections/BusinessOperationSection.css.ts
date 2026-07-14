@@ -94,7 +94,7 @@ export const dropdownTriggerIconClassName = style({
 
 export const dropdownPopoverClassName = style({
   position: 'absolute',
-  zIndex: 10,
+  zIndex: 20,
   top: 'calc(100% + 0.8rem)',
   left: 0,
   maxHeight: '20.4rem',

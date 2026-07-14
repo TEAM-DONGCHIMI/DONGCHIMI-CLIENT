@@ -21,7 +21,7 @@ export const logoClassName = style({
 
 export const mainClassName = style({
   width: '100%',
-  padding: '3.6rem 2.4rem 4.8rem',
+  padding: '3.6rem 2.4rem 13.4rem',
 });
 
 export const pageContainerClassName = style({
@@ -82,7 +82,11 @@ export const fieldPairGridClassName = style({
 });
 
 export const submitAreaClassName = style({
-  marginTop: '7.4rem',
+  position: 'fixed',
+  right: 0,
+  bottom: '6.2rem',
+  left: 0,
+  padding: '0 2.4rem',
 });
 
 export const submitButtonClassName = style({
