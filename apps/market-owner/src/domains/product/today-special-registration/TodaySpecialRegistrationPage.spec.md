@@ -37,8 +37,11 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `hooks/useTodaySpecialForm.ts`
   - 등록된 상품 snapshot과 현재 입력 상품의 RHF form, validation, submit/isSubmitting, 상품 이동 상태를 소유합니다.
 - `hooks/useTodaySpecialImageUpload.ts`
-  - TanStack Query Presigned URL mutation과 S3 PUT을 상품 순서대로 조합합니다.
-  - 이미지가 없는 상품은 `null`, 이미지가 있는 상품은 후속 등록 payload용 `objectKey`를 반환합니다.
+  - 현재 상품 이미지 1개의 TanStack Query Presigned URL mutation과 S3 PUT만 조합합니다.
+  - 이미지가 없으면 `null`, 이미지가 있으면 후속 등록 payload용 `objectKey`를 반환합니다.
+- `hooks/useTodaySpecialProductRegistration.ts`
+  - 이미지 업로드, 등록 payload 변환, 상품 등록 mutation, 실패 toast를 조합합니다.
+  - 페이지가 버튼별 성공 후속 동작을 결정할 수 있도록 성공 여부를 반환합니다.
 - `hooks/useCurrentProductField.ts`
   - 현재 상품의 text/date/price field change, blur, formatting, error message 계산을 담당합니다.
 - `hooks/useCategoryDropdown.tsx`

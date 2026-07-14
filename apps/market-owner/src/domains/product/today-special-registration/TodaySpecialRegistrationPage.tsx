@@ -2,20 +2,16 @@ import { useNavigate } from 'react-router';
 
 import { Button } from '@dongchimi/design-system/components';
 import { IcCirclePlusSizeSmall } from '@dongchimi/design-system/icons';
-import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader } from '@/shared/components/ui/desktop-header/DesktopHeader';
-import { normalizeApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
 import { isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
 
-import { useDailyProductRegistrationMutation } from '../hooks/use-daily-product-registration-mutation';
 import { useCategoryDropdown } from './hooks/useCategoryDropdown';
 import { useCurrentProductField } from './hooks/useCurrentProductField';
 import { useTodaySpecialForm } from './hooks/useTodaySpecialForm';
-import { useTodaySpecialImageUpload } from './hooks/useTodaySpecialImageUpload';
-import { createDailyProductRequest, type TodaySpecialProductFormTypes } from './model';
+import { useTodaySpecialProductRegistration } from './hooks/useTodaySpecialProductRegistration';
 import {
   ProductInfoSection,
   ProductPeriodSection,
@@ -24,43 +20,15 @@ import {
 } from './sections';
 import * as S from './TodaySpecialRegistrationPage.css';
 
-const registrationErrorMessages = {
-  failed: '상품을 등록하지 못했습니다. 다시 시도해주세요.',
-  network: '인터넷 연결을 확인한 후 다시 시도해주세요.',
-} as const;
-
-// TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
-const TEMPORARY_MARKET_ID = 1;
-
 export const TodaySpecialRegistrationPage = () => {
   const navigate = useNavigate();
-  const toast = useToast();
-  const { uploadProductImage } = useTodaySpecialImageUpload();
-  const dailyProductRegistrationMutation = useDailyProductRegistrationMutation();
-  const showRegistrationError = async (error: unknown) => {
-    const normalizedError = await normalizeApiError(error);
-    const message =
-      normalizedError.type === 'network'
-        ? registrationErrorMessages.network
-        : registrationErrorMessages.failed;
-
-    toast.error(message);
-  };
-  const registerProduct = async (product: TodaySpecialProductFormTypes) => {
-    const uploadedImageObjectKey = await uploadProductImage(product);
-
-    await dailyProductRegistrationMutation.mutateAsync({
-      marketId: TEMPORARY_MARKET_ID,
-      request: createDailyProductRequest({ product, uploadedImageObjectKey }),
-    });
-  };
+  const { registerProduct } = useTodaySpecialProductRegistration();
   const form = useTodaySpecialForm({
     onSubmit: async (product) => {
-      try {
-        await registerProduct(product);
+      const result = await registerProduct(product);
+
+      if (result.success) {
         navigate(MARKET_OWNER_ROUTES.todaySpecialEdit);
-      } catch (error) {
-        await showRegistrationError(error);
       }
     },
   });
@@ -93,12 +61,11 @@ export const TodaySpecialRegistrationPage = () => {
     previewUrls: products.map((product) => product.imagePreviewUrl),
   });
   const handleContinueRegistration = form.createCurrentProductSubmitHandler(async (product) => {
-    try {
-      await registerProduct(product);
+    const result = await registerProduct(product);
+
+    if (result.success) {
       categoryDropdown.closeCategoryDropdown();
       form.resetForNextProduct();
-    } catch (error) {
-      await showRegistrationError(error);
     }
   });
   const productInfoSectionProps = {
