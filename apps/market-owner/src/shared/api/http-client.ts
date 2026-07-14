@@ -40,6 +40,13 @@ export const createHttpClient = () => {
       beforeRequest: [
         ({ request }) => {
           request.headers.set('Accept', 'application/json');
+
+          const { devAccessToken } = getMarketOwnerEnv();
+
+          // TODO: 로그인 세션 연동 후 개발용 토큰 주입을 제거합니다.
+          if (devAccessToken) {
+            request.headers.set('Authorization', `Bearer ${devAccessToken}`);
+          }
         },
       ],
     },
