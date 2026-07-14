@@ -38,8 +38,12 @@ beforeEach(() => {
     code: 'SUCCESS',
     message: 'ok',
     data: {
+      accessToken: 'signup-access-token',
       ownerId: 1,
       email: 'new@example.com',
+      marketId: null,
+      marketName: null,
+      marketThumbnailUrl: null,
     },
   });
 });
