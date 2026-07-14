@@ -4,6 +4,7 @@ import { httpClient } from './http-client';
 
 export type PresignedUploadRequestTypes = CommonApiTypes.PresignedUploadRequest;
 export type PresignedUploadResponseTypes = CommonApiTypes.PresignedUploadResponse;
+type PresignedUploadApiResponseTypes = CommonApiTypes.ApiResponsePresignedUploadResponse;
 
 const presignedUploadResponseSchema = z.object({
   success: z.literal(true),
@@ -15,7 +16,7 @@ const presignedUploadResponseSchema = z.object({
     expiresAt: z.iso.datetime(),
     requiredHeaders: z.record(z.string(), z.string()),
   }),
-});
+}) satisfies z.ZodType<PresignedUploadApiResponseTypes>;
 
 export const createPresignedUploadUrl = async (
   request: PresignedUploadRequestTypes,
