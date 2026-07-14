@@ -37,7 +37,7 @@ export const HomeShareSection = ({
       return;
     }
 
-    const isCopied = await copyToClipboard(share.url);
+    const isCopied = await copyToClipboard(share.copyUrl);
 
     onCopyLinkResult(isCopied);
   };
@@ -58,7 +58,7 @@ export const HomeShareSection = ({
         disabled={isFlyerUnavailable}
         onCopyLink={handleCopyShareUrl}
         onOpenQrCode={handleOpenQrCode}
-        shareUrl={isFlyerUnavailable ? '' : share.url}
+        shareUrl={isFlyerUnavailable ? '' : share.displayUrl}
         title={share.title}
       />
 

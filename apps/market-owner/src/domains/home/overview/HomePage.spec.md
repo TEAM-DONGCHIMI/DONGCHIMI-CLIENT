@@ -168,7 +168,8 @@ HomePage(main)
   - `todayRegisteredCount`는 응답 schema에서 검증하지만 이번 UI에 노출하지 않습니다.
   - `dailyCount`/`dailyProducts`, `periodicCount`/`periodicProducts`를 각 `ProductCard` 표시 모델로
     변환합니다.
-  - `flyer.slug`는 공유 URL로 변환하고, `flyer === null`은 전단 공유 empty state로 변환합니다.
+  - `flyer.slug`는 화면 표시용 `dongchimi.kr/{slug}`와 클립보드 복사용
+    `https://dongchimi.kr/{slug}`로 변환하고, `flyer === null`은 전단 공유 empty state로 변환합니다.
   - `flyer.qrCode`는 schema에서 검증하지만 QR UI가 범위 밖이므로 소비하지 않습니다.
 
 ## Behavior

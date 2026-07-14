@@ -462,7 +462,7 @@ describe('marketOwnerRoutes', () => {
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.click(screen.getByRole('button', { name: '링크 복사' }));
 
-    expect(writeText).toHaveBeenCalledWith('dongchimi.kr/mangwon-fresh');
+    expect(writeText).toHaveBeenCalledWith('https://dongchimi.kr/mangwon-fresh');
     expect(await screen.findByRole('status')).toHaveTextContent('전단 링크가 복사되었습니다.');
     expectSidebarToastViewportToUseViewportTopCenter();
   });

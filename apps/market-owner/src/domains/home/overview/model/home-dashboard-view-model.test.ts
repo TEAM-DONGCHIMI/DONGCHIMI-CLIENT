@@ -35,7 +35,8 @@ describe('createHomeDashboardViewModel', () => {
         ],
       }),
     ]);
-    expect(viewModel.share.url).toBe('dongchimi.kr/mangwon-fresh');
+    expect(viewModel.share.displayUrl).toBe('dongchimi.kr/mangwon-fresh');
+    expect(viewModel.share.copyUrl).toBe('https://dongchimi.kr/mangwon-fresh');
   });
 
   it('keeps the flyer empty state when the API returns no flyer', () => {
@@ -45,6 +46,7 @@ describe('createHomeDashboardViewModel', () => {
     });
 
     expect(viewModel.share.flyer).toBeNull();
-    expect(viewModel.share.url).toBe('');
+    expect(viewModel.share.displayUrl).toBe('');
+    expect(viewModel.share.copyUrl).toBe('');
   });
 });

@@ -77,12 +77,13 @@ export const homeHeroActions: HomeHeroActionFixtureTypes[] = [
 ] satisfies HomeHeroActionFixtureTypes[];
 
 export const homeShare: HomeShareTypes = {
+  copyUrl: 'https://dongchimi.kr/mangwon-fresh',
   description: '카카오톡, 문자로 공유하거나 마트에 QR을 붙여보세요.',
+  displayUrl: 'dongchimi.kr/mangwon-fresh',
   flyer: {
     flyerId: 1,
     qrCode: 'QR코드 base64 이미지',
     slug: 'mangwon-fresh',
   },
   title: '전단 공유하기',
-  url: 'dongchimi.kr/mangwon-fresh',
 };
