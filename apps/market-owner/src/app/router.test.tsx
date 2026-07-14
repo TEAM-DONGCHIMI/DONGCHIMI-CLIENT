@@ -236,24 +236,34 @@ describe('marketOwnerRoutes', () => {
     const passwordInput = await screen.findByLabelText('비밀번호');
 
     await user.type(passwordInput, 'abc');
-    expect(screen.queryByText('6-20자로 입력해주세요.')).not.toBeInTheDocument();
+    expect(screen.queryByText('6~20자로 입력해주세요.')).not.toBeInTheDocument();
 
     await user.click(emailInput);
-    expect(screen.getByText('6-20자로 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('6~20자로 입력해주세요.')).toBeInTheDocument();
 
     await user.clear(passwordInput);
     expect(screen.getByText('비밀번호를 입력해주세요.')).toBeInTheDocument();
 
+    await user.type(passwordInput, 'abc 1');
+    expect(screen.getByText('6~20자로 입력해주세요.')).toBeInTheDocument();
+
+    await user.clear(passwordInput);
     await user.type(passwordInput, 'abc 123');
-    expect(screen.getByText('6-20자로 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('공백은 사용할 수 없습니다.')).toBeInTheDocument();
+
+    await user.clear(passwordInput);
+    await user.type(passwordInput, '한글1');
+    expect(screen.getByText('6~20자로 입력해주세요.')).toBeInTheDocument();
 
     await user.clear(passwordInput);
     await user.type(passwordInput, '한글1234');
-    expect(screen.getByText('6-20자로 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('한글은 사용할 수 없습니다.')).toBeInTheDocument();
 
     await user.clear(passwordInput);
     await user.type(passwordInput, 'abc123');
-    expect(screen.queryByText('6-20자로 입력해주세요.')).not.toBeInTheDocument();
+    expect(screen.queryByText('6~20자로 입력해주세요.')).not.toBeInTheDocument();
+    expect(screen.queryByText('공백은 사용할 수 없습니다.')).not.toBeInTheDocument();
+    expect(screen.queryByText('한글은 사용할 수 없습니다.')).not.toBeInTheDocument();
     expect(screen.queryByText('비밀번호를 입력해주세요.')).not.toBeInTheDocument();
   });
 

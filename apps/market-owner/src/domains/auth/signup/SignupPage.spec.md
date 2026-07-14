@@ -35,7 +35,8 @@
 
 - default: logo slot, `회원가입` heading, helper description, email/password/password confirm fields, disabled submit CTA를 렌더링합니다.
 - validation: 이메일 입력은 touched 이후 실시간으로 필수값, 공백, 한글, 허용 문자, 이메일 형식을 검증합니다. 중복 이메일 여부는 submit 이후 서버 `DUPLICATE_EMAIL` 응답으로 처리합니다.
-- validation: 비밀번호 입력은 touched 이후 실시간으로 필수값, 6-20자 길이, 공백, 한글 여부를 검증합니다.
+- validation: 비밀번호 입력은 touched 이후 실시간으로 필수값, 6~20자 길이, 공백, 한글 여부를 검증합니다.
+- validation: 비밀번호가 여러 조건을 동시에 만족하지 않으면 길이, 공백, 한글 순서로 하나의 에러 메시지만 표시합니다.
 - validation: 비밀번호 확인 입력은 touched 이후 실시간으로 필수값과 비밀번호 일치 여부를 검증합니다.
 - success: 비밀번호 확인 입력이 비밀번호와 일치하면 우측 체크 아이콘을 표시합니다.
 - disabled: full validation 전이거나 회원가입 mutation이 pending 상태이면 `가입 완료` CTA가 disabled 상태입니다.
@@ -57,7 +58,7 @@
 - 이메일 입력은 공백과 한글을 허용하지 않습니다.
 - 이메일 형식은 `local@domain.com` 또는 `local@domain.co.kr`만 유효합니다.
 - 이메일 형식이 유효하면 중복 여부는 submit 이후 서버 `DUPLICATE_EMAIL` 응답으로 확인합니다.
-- 비밀번호 입력은 6-20자만 유효합니다.
+- 비밀번호 입력은 6~20자만 유효합니다.
 - 비밀번호 입력은 공백과 한글을 허용하지 않습니다.
 - 비밀번호 확인 입력은 비밀번호와 동일한 값을 입력해야 유효합니다.
 - 비밀번호 확인 입력값이 유효하면 입력창 우측에 `IcCircleCheckFill` trailing icon을 표시합니다.
@@ -84,7 +85,9 @@
 - [ ] invalid email renders `올바른 이메일 형식이 아닙니다.`
 - [ ] empty touched email renders `이메일을 입력해주세요.`
 - [ ] duplicate email submit failure renders the server error message as a form-level toast
-- [ ] invalid password renders `6-20자로 입력해주세요.`
+- [ ] invalid password length renders `6~20자로 입력해주세요.`
+- [ ] password with whitespace renders `공백은 사용할 수 없습니다.`
+- [ ] password with Korean characters renders `한글은 사용할 수 없습니다.`
 - [ ] empty touched password renders `비밀번호를 입력해주세요.`
 - [ ] password confirmation mismatch renders `비밀번호가 일치하지 않습니다.`
 - [ ] empty touched password confirmation renders `비밀번호를 다시 입력해주세요.`
