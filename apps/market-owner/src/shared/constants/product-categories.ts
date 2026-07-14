@@ -20,6 +20,15 @@ export const PRODUCT_CATEGORY_FILTER_OPTIONS = [
 ] as const;
 
 export const PRODUCT_CATEGORY_GROUP_BY_SOURCE = {
+  BEVERAGE_ALCOHOL: '음료･주류',
+  CONVENIENCE_FOOD: '간편식',
+  DAIRY: '유제품',
+  ETC: '기타',
+  HOUSEHOLD_GOODS: '생활용품',
+  MEAT_EGG: '정육･달걀',
+  PROCESSED_FOOD: '가공식품',
+  SEAFOOD: '수산',
+  VEGETABLE_FRUIT: '채소･과일',
   김치: '가공식품',
   '김치/반찬': '가공식품',
   수산: '수산',

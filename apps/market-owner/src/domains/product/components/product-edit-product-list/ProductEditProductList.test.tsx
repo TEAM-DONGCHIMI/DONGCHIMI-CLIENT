@@ -1,7 +1,7 @@
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { fireEvent, waitFor } from '@testing-library/react';
 import { OverlayProvider } from 'overlay-kit';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent } from '@/test';
 
@@ -11,6 +11,37 @@ import {
   type ProductEditCardVariantTypes,
   type ProductEditProductGroup,
 } from './display-groups';
+
+const mockUseProductDetailQuery = vi.hoisted(() => vi.fn());
+
+vi.mock('@/domains/product/hooks/use-product-detail-query', () => ({
+  useProductDetailQuery: mockUseProductDetailQuery,
+}));
+
+mockUseProductDetailQuery.mockImplementation(({ productId }: { productId: number }) => {
+  const isEventDiscount = productId === 201;
+
+  return {
+    data: {
+      data: {
+        productId,
+        name: isEventDiscount ? '햇감자 1kg' : '딸기 2팩',
+        dealType: isEventDiscount ? 'PERIODIC' : 'DAILY',
+        thumbnailUrl: null,
+        originalPrice: isEventDiscount ? 4500 : 5000,
+        discountedPrice: isEventDiscount ? 3900 : 4500,
+        category: 'VEGETABLE_FRUIT',
+        categoryName: '채소/과일',
+        promotionalPhrase: isEventDiscount ? '상세 조회 홍보글' : null,
+        discountStartDate: isEventDiscount ? '2026-08-12' : '2026-08-16',
+        discountEndDate: '2026-08-16',
+      },
+    },
+    isError: false,
+    isPending: false,
+    refetch: vi.fn(),
+  };
+});
 
 const renderProductList = (
   groups: ProductEditProductGroup[] = [],
@@ -28,6 +59,7 @@ const renderProductList = (
                 ariaLabel='오늘의 특가 상품 수정 목록'
                 editModalVariant={editModalVariant}
                 groups={groups}
+                marketId={1}
                 registrationHref='/products/today-special/new'
                 onDeleteProduct={onDeleteProduct}
                 onUpdateProduct={onUpdateProduct}
@@ -43,6 +75,10 @@ const renderProductList = (
 };
 
 describe('ProductEditProductList', () => {
+  beforeEach(() => {
+    mockUseProductDetailQuery.mockClear();
+  });
+
   it('renders empty state with registration button when no products are available', async () => {
     const user = userEvent.setup();
 
@@ -88,6 +124,7 @@ describe('ProductEditProductList', () => {
               },
             ]}
             registrationHref='/products/today-special/new'
+            marketId={1}
             selectedProductNames={['딸기 2팩']}
             selectionMode
             onToggleProductSelection={handleToggleProductSelection}
@@ -121,6 +158,7 @@ describe('ProductEditProductList', () => {
             categoryName: '채소･과일',
             endDate: '2026. 8. 16',
             originalPrice: '5,000',
+            productId: 101,
             productName: '딸기 2팩',
             salePrice: '4,500',
             viewCount: 162,
@@ -139,6 +177,7 @@ describe('ProductEditProductList', () => {
     });
     expect(screen.getByLabelText('상품명')).toHaveValue('딸기 2팩');
     expect(screen.getByLabelText('오늘의 특가')).toHaveValue('4,500');
+    expect(mockUseProductDetailQuery).toHaveBeenCalledWith({ marketId: 1, productId: 101 });
     expect(screen.getByRole('button', { name: '변경하기' })).toBeDisabled();
 
     await user.clear(screen.getByLabelText('상품명'));
@@ -190,6 +229,7 @@ describe('ProductEditProductList', () => {
             {
               categoryName: '채소･과일',
               endDate: '2026. 8. 16',
+              productId: 201,
               productName: '햇감자 1kg',
               salePrice: '3,900',
               startDate: '2026. 8. 12',
@@ -208,6 +248,11 @@ describe('ProductEditProductList', () => {
     expect(
       await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
     ).toBeInTheDocument();
+    expect(mockUseProductDetailQuery).toHaveBeenCalledWith({ marketId: 1, productId: 201 });
+    expect(screen.getByLabelText('상품 한줄 홍보글')).toHaveValue('상세 조회 홍보글');
+    expect(screen.getByLabelText('판매가')).toHaveValue('3,900');
+    expect(screen.getByLabelText('행사 시작일')).toHaveValue('2026-08-12');
+    expect(screen.getByLabelText('행사 종료일')).toHaveValue('2026-08-16');
 
     await user.click(screen.getByRole('button', { name: '채소･과일' }));
 
@@ -249,6 +294,7 @@ describe('ProductEditProductList', () => {
             categoryName: '채소･과일',
             endDate: '2026. 8. 16',
             originalPrice: '5,000',
+            productId: 101,
             productName: '딸기 2팩',
             salePrice: '4,500',
             viewCount: 162,
@@ -277,6 +323,7 @@ describe('ProductEditProductList', () => {
             {
               categoryName: '채소･과일',
               endDate: '2026. 8. 16',
+              productId: 201,
               productName: '햇감자 1kg',
               salePrice: '3,900',
               startDate: '2026. 8. 12',
