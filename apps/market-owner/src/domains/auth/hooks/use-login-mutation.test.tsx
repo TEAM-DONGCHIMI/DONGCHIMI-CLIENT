@@ -14,6 +14,20 @@ vi.mock('../api/auth-api', () => ({
 
 const mockLoginMarketOwner = vi.mocked(loginMarketOwner);
 
+const LOGIN_SUCCESS_RESPONSE = {
+  success: true,
+  code: 'SUCCESS',
+  message: 'ok',
+  data: {
+    accessToken: 'access-token',
+    ownerId: 1,
+    email: 'owner@example.com',
+    marketId: null,
+    marketName: null,
+    marketThumbnailUrl: null,
+  },
+} as const;
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -31,6 +45,22 @@ const createWrapper = () => {
   return TestQueryProvider;
 };
 
+const submitLogin = async (isAutoLogin: boolean) => {
+  mockLoginMarketOwner.mockResolvedValueOnce(LOGIN_SUCCESS_RESPONSE);
+
+  const { result } = renderHook(() => useLoginMutation(), {
+    wrapper: createWrapper(),
+  });
+
+  await act(async () => {
+    await result.current.mutateAsync({
+      email: 'owner@example.com',
+      password: 'password',
+      isAutoLogin,
+    });
+  });
+};
+
 describe('useLoginMutation', () => {
   beforeEach(() => {
     mockLoginMarketOwner.mockReset();
@@ -46,35 +76,20 @@ describe('useLoginMutation', () => {
   });
 
   it('passes isAutoLogin to the auth store when login succeeds', async () => {
-    mockLoginMarketOwner.mockResolvedValueOnce({
-      success: true,
-      code: 'SUCCESS',
-      message: 'ok',
-      data: {
-        accessToken: 'access-token',
-        ownerId: 1,
-        email: 'owner@example.com',
-        marketId: null,
-        marketName: null,
-        marketThumbnailUrl: null,
-      },
-    });
-
-    const { result } = renderHook(() => useLoginMutation(), {
-      wrapper: createWrapper(),
-    });
-
-    await act(async () => {
-      await result.current.mutateAsync({
-        email: 'owner@example.com',
-        password: 'password',
-        isAutoLogin: false,
-      });
-    });
+    await submitLogin(false);
 
     expect(useAuthStore.getState().accessToken).toBe('access-token');
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBeNull();
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('access-token');
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"isLoggedIn":true');
+  });
+
+  it('stores the login hint in local storage when auto login succeeds', async () => {
+    await submitLogin(true);
+
+    expect(useAuthStore.getState().accessToken).toBe('access-token');
+    expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('access-token');
+    expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"isLoggedIn":true');
+    expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBeNull();
   });
 });

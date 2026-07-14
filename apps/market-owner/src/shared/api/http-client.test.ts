@@ -102,7 +102,7 @@ describe('httpClient auth refresh', () => {
     const unauthorizedError = new HTTPErrorMock(new Response(null, { status: 401 }), {
       success: false,
       code: 'INVALID_INPUT',
-      message: '?좏슚?섏? ?딆? ?좏겙?낅땲??',
+      message: '유효하지 않은 토큰입니다.',
     });
     const retryError = new HTTPErrorMock(new Response(null, { status: 500 }), {
       success: false,

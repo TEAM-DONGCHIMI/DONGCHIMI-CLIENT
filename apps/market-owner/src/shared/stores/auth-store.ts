@@ -18,16 +18,31 @@ export const AUTH_STORE_STORAGE_KEY = 'market-owner-auth';
 
 let selectedAuthStorage: Storage | undefined;
 
-const getStoredAuthStorage = (key: string) => {
-  if (localStorage.getItem(key) !== null) {
-    return localStorage;
+const getAuthStorageEntry = (key: string) => {
+  const localStorageValue = localStorage.getItem(key);
+
+  if (localStorageValue !== null) {
+    return { storage: localStorage, value: localStorageValue };
   }
 
-  return sessionStorage.getItem(key) !== null ? sessionStorage : localStorage;
+  const sessionStorageValue = sessionStorage.getItem(key);
+
+  return {
+    storage: sessionStorageValue !== null ? sessionStorage : localStorage,
+    value: sessionStorageValue,
+  };
 };
 
-const getSelectedAuthStorage = () =>
-  selectedAuthStorage ?? getStoredAuthStorage(AUTH_STORE_STORAGE_KEY);
+const getSelectedAuthStorageEntry = (key: string) => {
+  if (selectedAuthStorage !== undefined) {
+    return {
+      storage: selectedAuthStorage,
+      value: selectedAuthStorage.getItem(key),
+    };
+  }
+
+  return getAuthStorageEntry(key);
+};
 
 const selectAuthStorage = (isAutoLogin: boolean) => {
   selectedAuthStorage = isAutoLogin ? localStorage : sessionStorage;
@@ -35,16 +50,18 @@ const selectAuthStorage = (isAutoLogin: boolean) => {
 
 const authStorage = {
   getItem: (key: string) => {
-    selectedAuthStorage = getStoredAuthStorage(key);
+    const { storage, value } = getAuthStorageEntry(key);
 
-    return selectedAuthStorage.getItem(key);
+    selectedAuthStorage = storage;
+
+    return value;
   },
   removeItem: (key: string) => {
     localStorage.removeItem(key);
     sessionStorage.removeItem(key);
   },
   setItem: (key: string, value: string) => {
-    const storage = getSelectedAuthStorage();
+    const { storage } = getSelectedAuthStorageEntry(key);
     const staleStorage = storage === localStorage ? sessionStorage : localStorage;
 
     storage.setItem(key, value);
@@ -67,11 +84,7 @@ export const useAuthStore = create<AuthStoreStateTypes>()(
       setAccessToken: (accessToken, options) => {
         if (options?.isAutoLogin !== undefined) {
           selectAuthStorage(options.isAutoLogin);
-        } else if (
-          selectedAuthStorage?.getItem(AUTH_STORE_STORAGE_KEY) === null &&
-          localStorage.getItem(AUTH_STORE_STORAGE_KEY) === null &&
-          sessionStorage.getItem(AUTH_STORE_STORAGE_KEY) === null
-        ) {
+        } else if (getSelectedAuthStorageEntry(AUTH_STORE_STORAGE_KEY).value === null) {
           selectAuthStorage(true);
         }
 
