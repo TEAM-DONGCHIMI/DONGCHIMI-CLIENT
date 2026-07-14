@@ -10,18 +10,18 @@
 ## Purpose
 
 - 카카오가 전달한 authorization code를 동치미 로그인 API로 한 번만 전송합니다.
-- 로그인 성공 시 access token을 저장하고 `/markets`로 이동합니다.
+- 로그인 성공 시 token을 직접 저장하지 않고 `/markets`로 이동합니다.
 
 ## Scope
 
 - `code`, `error` search param 처리
 - 카카오 로그인 mutation의 loading, success, error 상태 안내
 - 동일 code의 Strict Mode 재실행 및 새로고침 재전송 방지
-- access token 저장과 성공 후 replace navigation
+- HttpOnly cookie 기반 로그인 성공과 replace navigation
 
 ## Out Of Scope
 
-- refresh token 직접 접근 또는 저장
+- access token과 refresh token 직접 접근 또는 저장
 - access token 재발급
 - callback 화면의 별도 디자인 시안
 

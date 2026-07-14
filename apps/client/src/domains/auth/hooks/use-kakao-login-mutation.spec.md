@@ -13,11 +13,13 @@
 
 ## API Contract
 
-- endpoint: `/v1/users/login/oauth2/kakao`
+- browser endpoint: `/api/auth/kakao/login`
+- upstream endpoint: `/v1/users/login/oauth2/kakao`
 - method: `POST`
 - payload: `{ code: string }`
-- response: `{ success, code, message, data: { accessToken } }`
+- response: `{ success, code, message }` (token은 client에 노출하지 않음)
 - credentials: `include`
+- cookie: Route Handler가 `access_token`, `refresh_token`을 HttpOnly 쿠키로 전달
 - retry: 비활성화. authorization code는 일회용이므로 자동 재시도하지 않습니다.
 - error: 공통 `ApiError`로 정규화하고 callback page에서 서버 code를 매핑합니다.
 
