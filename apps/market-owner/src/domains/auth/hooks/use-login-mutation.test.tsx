@@ -22,9 +22,9 @@ const LOGIN_SUCCESS_RESPONSE = {
     accessToken: 'access-token',
     ownerId: 1,
     email: 'owner@example.com',
-    marketId: null,
-    marketName: null,
-    marketThumbnailUrl: null,
+    marketId: 10,
+    marketName: '동치미 마트',
+    marketThumbnailUrl: 'https://static.dongchimi.kr/market.png',
   },
 } as const;
 
@@ -79,15 +79,18 @@ describe('useLoginMutation', () => {
     await submitLogin(false);
 
     expect(useAuthStore.getState().accessToken).toBe('access-token');
+    expect(useAuthStore.getState().marketId).toBe(10);
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBeNull();
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('access-token');
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"isLoggedIn":true');
+    expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"marketId":10');
   });
 
   it('stores the login hint in local storage when auto login succeeds', async () => {
     await submitLogin(true);
 
     expect(useAuthStore.getState().accessToken).toBe('access-token');
+    expect(useAuthStore.getState().marketId).toBe(10);
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('access-token');
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"isLoggedIn":true');
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBeNull();

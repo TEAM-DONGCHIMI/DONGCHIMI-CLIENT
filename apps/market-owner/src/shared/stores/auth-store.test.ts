@@ -67,6 +67,14 @@ describe('useAuthStore', () => {
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBeNull();
   });
 
+  it('persists the non-sensitive market id without persisting the access token', () => {
+    useAuthStore.getState().setAccessToken('access-token', { isAutoLogin: false, marketId: 10 });
+
+    expect(useAuthStore.getState().marketId).toBe(10);
+    expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"marketId":10');
+    expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('access-token');
+  });
+
   it('clears access token from memory', () => {
     useAuthStore.getState().setAccessToken('access-token');
 
@@ -85,6 +93,7 @@ describe('useAuthStore', () => {
     expect(useAuthStore.getState().accessToken).toBeUndefined();
     expect(useAuthStore.getState().bootstrapStatus).toBe('unauthenticated');
     expect(useAuthStore.getState().isLoggedIn).toBe(false);
+    expect(useAuthStore.getState().marketId).toBeUndefined();
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('access-token');
   });
 
