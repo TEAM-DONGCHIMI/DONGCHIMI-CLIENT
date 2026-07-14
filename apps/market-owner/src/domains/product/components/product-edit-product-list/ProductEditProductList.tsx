@@ -139,3 +139,11 @@ export const ProductEditProductList = ({
     </section>
   );
 };
+
+export const ProductEditProductListLoading = () => {
+  return (
+    <p aria-live='polite' className={S.loadingClassName} role='status'>
+      상품 목록을 불러오는 중이에요.
+    </p>
+  );
+};

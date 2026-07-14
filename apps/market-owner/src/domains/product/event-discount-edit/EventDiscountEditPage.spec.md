@@ -7,7 +7,7 @@
 - Page: `event-discount-edit`
 - Route: `/products/event-discount/edit`
 - Path: `apps/market-owner/src/domains/product/event-discount-edit/EventDiscountEditPage.tsx`
-- Jira: DCMSM-15, DCMSM-38
+- Jira: DCMSM-15, DCMSM-38, DCMSM-60
 - Status: Implemented
 
 ## Purpose
@@ -25,25 +25,27 @@
 
 ## UI States
 
-- loading: 이번 범위에서 다루지 않습니다.
+- loading: 상품 목록 query가 pending이면 목록 영역에 로딩 안내를 표시합니다.
 - empty: 등록된 상품이 없으면 `ProductEditProductList`가 empty image, 안내 문구, `/products/event-discount/new` 등록 link를 표시합니다.
-- error: 알 수 없는 route는 router fallback에서 처리합니다.
+- error: 상품 목록 query error는 route `AsyncBoundary`의 복구 가능한 error fallback에서 처리합니다.
+  알 수 없는 route는 router fallback에서 처리합니다.
   `productId` search param에 해당하는 상품을 찾지 못하면 error toast를 표시하고 search param을 제거합니다.
 - success: `/products/event-discount/edit` route가 `행사 할인 상품을 수정하세요` heading과 행사 할인 상품 수정 카드 section을 렌더링합니다.
 
 ## Data
 
-- query: none
+- query: `useProductListQuery({ marketId: 1, type: 'PERIODIC', sort })`
 - mutation: none
-- fixture: `fixtures/event-discount-edit.fixture.ts`
-- model: none
+- fixture: 목록 렌더링에 사용하지 않음
+- model: `domains/product/model/product-list.ts`
 
 ## Behavior
 
 - `행사 할인` tab은 selected/current 상태입니다.
 - `오늘의 특가` tab은 `/products/today-special/edit`으로 route 이동합니다.
 - 행사 할인 수정 페이지의 기본 filter는 `카테고리별`입니다.
-- page content는 선택된 filter에 따라 행사 할인 샘플 상품 수정 카드를 카테고리별, 등록일별, 조회수순으로 표시합니다.
+- page content는 `PERIODIC` 목록 응답을 행사 할인 상품 수정 카드로 표시합니다.
+- 카테고리별은 `sort=CATEGORY`, 상품 등록 순은 `sort=LATEST`, 조회수 순은 `sort=VIEW_COUNT`로 재조회합니다.
 - 표시할 상품이 없으면 `상품 등록하러 가기` link로 행사 할인 상품 등록 화면에 이동합니다.
 - `카테고리별` filter는 shared shell에서 dropdown으로 열립니다.
 - `카테고리별` trigger 클릭만으로는 목록 grouping이 바뀌지 않고, dropdown option 선택 후 카테고리별 섹션을 표시합니다.
@@ -52,10 +54,10 @@
 - 개별 상품 카드의 수정 버튼을 누르면 행사 할인 variant의 판매 정보 수정 modal을 엽니다.
 - `/products/event-discount/edit?productId={id}`로 진입하면 같은 `productId`를 가진 행사 할인 상품의 개별 수정 modal을 자동으로 엽니다.
 - 자동으로 열린 modal이 닫히면 URL에서 `productId` search param을 제거합니다.
-- 일괄 기간 수정, 일괄 삭제 버튼은 shared shell에서 레이아웃 button으로 렌더링합니다.
-- 초기화 버튼은 shared shell에서 초기화 확인 modal을 열고, 확인하면 행사 할인 상품 목록을 비웁니다.
+- 일괄 기간 수정, 일괄 삭제, 초기화 버튼은 기존 활성 스타일을 유지합니다.
 - 개별 상품 카드의 삭제 버튼은 행사 기간이 남았으면 삭제 확인 modal 확인 후 해당 카드를 목록에서 제거하고, 기간이 지났으면 바로 제거합니다.
-- 실제 상품 목록 query, mutation, selection, pagination, table/list 확장은 후속 이슈 범위입니다.
+- 개별 수정/삭제는 기존 UI 확인을 위해 현재 조회 결과의 로컬 상태만 변경하며 서버에는 반영하지 않습니다.
+- 실제 mutation, 상세 조회, cursor pagination은 후속 범위입니다.
 
 ## Accessibility
 
@@ -75,3 +77,5 @@
 - [x] `/products/event-discount/edit?productId=...` opens the matching product edit modal
 - [x] closing the search-target edit modal removes `productId` search param
 - [x] empty product list renders registration link to `/products/event-discount/new`
+- [x] `type=PERIODIC`으로 상품 목록을 조회한다
+- [x] 정렬 filter가 `CATEGORY`, `LATEST`, `VIEW_COUNT` query로 연결된다
