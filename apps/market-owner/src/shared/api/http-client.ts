@@ -86,6 +86,10 @@ const performRequest = async <ResponseDataTypes>(
   return await parseJsonResponse<ResponseDataTypes>(response);
 };
 
+export const refreshAuthSession = () => {
+  return refreshAccessToken(performRequest);
+};
+
 const request = async <ResponseDataTypes>(path: string, options?: HttpClientOptionsTypes) => {
   try {
     return await performRequest<ResponseDataTypes>(path, options);
@@ -97,7 +101,7 @@ const request = async <ResponseDataTypes>(path: string, options?: HttpClientOpti
     let accessToken: string;
 
     try {
-      accessToken = await refreshAccessToken(performRequest);
+      accessToken = await refreshAuthSession();
     } catch (refreshError) {
       clearAuthSession();
 

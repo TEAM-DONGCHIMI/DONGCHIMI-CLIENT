@@ -1,3 +1,4 @@
+import { ApiResponseValidationError } from '@dongchimi/shared/api';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useAuthStore } from '../stores/auth-store';
@@ -95,6 +96,93 @@ describe('httpClient auth refresh', () => {
       'Bearer refreshed-access-token',
     );
     expect(useAuthStore.getState().accessToken).toBe('refreshed-access-token');
+  });
+
+  it('shares one in-flight refresh request across concurrent callers', async () => {
+    const { refreshAuthSession } = await import('./http-client');
+    let resolveRefresh!: (response: Response) => void;
+    const refreshResponse = new Promise<Response>((resolve) => {
+      resolveRefresh = resolve;
+    });
+
+    useAuthStore.getState().setLoggedIn(true);
+    mockKyRequest.mockReturnValueOnce(refreshResponse);
+
+    const firstRefresh = refreshAuthSession();
+    const secondRefresh = refreshAuthSession();
+
+    expect(firstRefresh).toBe(secondRefresh);
+    expect(mockKyRequest).toHaveBeenCalledTimes(1);
+
+    resolveRefresh(
+      new Response(
+        JSON.stringify({
+          success: true,
+          code: 'SUCCESS',
+          message: 'ok',
+          data: {
+            accessToken: 'shared-access-token',
+          },
+        }),
+      ),
+    );
+
+    await expect(Promise.all([firstRefresh, secondRefresh])).resolves.toEqual([
+      'shared-access-token',
+      'shared-access-token',
+    ]);
+    expect(useAuthStore.getState().accessToken).toBe('shared-access-token');
+  });
+
+  it('does not restore the auth session when refresh completes after logout', async () => {
+    const { refreshAuthSession } = await import('./http-client');
+    let resolveRefresh!: (response: Response) => void;
+    const refreshResponse = new Promise<Response>((resolve) => {
+      resolveRefresh = resolve;
+    });
+
+    useAuthStore.getState().setLoggedIn(true);
+    mockKyRequest.mockReturnValueOnce(refreshResponse);
+
+    const refresh = refreshAuthSession();
+
+    useAuthStore.getState().clearSession();
+    resolveRefresh(
+      new Response(
+        JSON.stringify({
+          success: true,
+          code: 'SUCCESS',
+          message: 'ok',
+          data: {
+            accessToken: 'ignored-access-token',
+          },
+        }),
+      ),
+    );
+
+    await expect(refresh).resolves.toBe('ignored-access-token');
+    expect(useAuthStore.getState().accessToken).toBeUndefined();
+    expect(useAuthStore.getState().isLoggedIn).toBe(false);
+    expect(useAuthStore.getState().bootstrapStatus).toBe('unauthenticated');
+  });
+
+  it('rejects a refresh response that does not match the API contract', async () => {
+    const { refreshAuthSession } = await import('./http-client');
+
+    useAuthStore.getState().setLoggedIn(true);
+    mockKyRequest.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: true,
+          code: 'SUCCESS',
+          message: 'ok',
+          data: {},
+        }),
+      ),
+    );
+
+    await expect(refreshAuthSession()).rejects.toBeInstanceOf(ApiResponseValidationError);
+    expect(useAuthStore.getState().accessToken).toBeUndefined();
   });
 
   it('keeps the auth session when the retry request fails after a successful refresh', async () => {
