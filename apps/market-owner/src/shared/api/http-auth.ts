@@ -20,10 +20,6 @@ type HttpAuthRequestTypes = <ResponseDataTypes>(
   accessToken?: string,
 ) => Promise<ResponseDataTypes>;
 
-const AUTHORIZATION_HEADER = 'Authorization';
-const AUTHORIZATION_TOKEN_PREFIX = 'Bearer';
-const AUTH_REFRESH_RESPONSE_SCHEMA_DESCRIPTION = 'ApiResponseAuthRefreshResponse';
-
 let refreshAccessTokenPromise: Promise<string> | undefined;
 
 const createHeaders = (headers: Options['headers']) => {
@@ -65,7 +61,7 @@ export const createAuthorizedRequestOptions = (
   }
 
   const headers = createHeaders(requestOptions.headers);
-  headers.set(AUTHORIZATION_HEADER, `${AUTHORIZATION_TOKEN_PREFIX} ${accessToken}`);
+  headers.set('Authorization', `Bearer ${accessToken}`);
 
   return {
     ...requestOptions,
@@ -85,7 +81,7 @@ const requestRefreshAccessToken = async (request: HttpAuthRequestTypes) => {
   });
   const result = validateApiResponse(authRefreshResponseSchema, response, {
     endpoint,
-    schemaDescription: AUTH_REFRESH_RESPONSE_SCHEMA_DESCRIPTION,
+    schemaDescription: 'ApiResponseAuthRefreshResponse',
   });
   const { accessToken } = result.data;
 
