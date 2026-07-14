@@ -15,5 +15,6 @@ const normalizeApiBaseUrl = (value: string | undefined) => {
 export const getMarketOwnerEnv = () => {
   return {
     apiBaseUrl: normalizeApiBaseUrl(getPublicEnv('VITE_PUBLIC_API_SERVER_BASE_URL')),
+    devAccessToken: import.meta.env.DEV ? getPublicEnv('VITE_DEV_ACCESS_TOKEN') : undefined,
   };
 };

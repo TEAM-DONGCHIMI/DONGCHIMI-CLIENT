@@ -6,6 +6,12 @@ export type PresignedUploadRequestTypes = CommonApiTypes.PresignedUploadRequest;
 export type PresignedUploadResponseTypes = CommonApiTypes.PresignedUploadResponse;
 type PresignedUploadApiResponseTypes = CommonApiTypes.ApiResponsePresignedUploadResponse;
 
+interface UploadFileToPresignedUrlParams {
+  file: File;
+  requiredHeaders: Record<string, string>;
+  uploadUrl: string;
+}
+
 const presignedUploadResponseSchema = z.object({
   success: z.literal(true),
   code: z.string(),
@@ -13,7 +19,7 @@ const presignedUploadResponseSchema = z.object({
   data: z.object({
     uploadUrl: z.url(),
     objectKey: z.string().min(1),
-    expiresAt: z.iso.datetime(),
+    expiresAt: z.iso.datetime({ local: true, offset: true }),
     requiredHeaders: z.record(z.string(), z.string()),
   }),
 }) satisfies z.ZodType<PresignedUploadApiResponseTypes>;
@@ -30,4 +36,20 @@ export const createPresignedUploadUrl = async (
   });
 
   return validatedResponse.data;
+};
+
+export const uploadFileToPresignedUrl = async ({
+  file,
+  requiredHeaders,
+  uploadUrl,
+}: UploadFileToPresignedUrlParams) => {
+  const response = await fetch(uploadUrl, {
+    body: file,
+    headers: requiredHeaders,
+    method: 'PUT',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Presigned upload failed with status ${response.status}.`);
+  }
 };
