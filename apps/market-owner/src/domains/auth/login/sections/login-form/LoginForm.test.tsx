@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 
 import { QueryProvider } from '@/shared/query';
+import { ApiError } from '@/shared/api';
 
 import { render, screen, waitFor } from '../../../../../test';
 import { LoginForm, type LoginFormProps } from './LoginForm';
@@ -189,5 +190,23 @@ describe('LoginForm', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       '네트워크 연결을 확인한 후 다시 시도해주세요.',
     );
+  });
+
+  it('shows the API error message when login fails outside auth mismatch', async () => {
+    const user = userEvent.setup();
+    const submitLogin = vi.fn().mockRejectedValue(
+      new ApiError({
+        message: '서버 오류가 발생했습니다.',
+        type: 'server',
+      }),
+    );
+
+    renderLoginForm({ submitLogin });
+
+    await user.type(screen.getByLabelText('이메일'), 'owner@example.com');
+    await user.type(screen.getByLabelText('비밀번호'), 'secret');
+    await user.click(screen.getByRole('button', { name: '로그인' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('서버 오류가 발생했습니다.');
   });
 });
