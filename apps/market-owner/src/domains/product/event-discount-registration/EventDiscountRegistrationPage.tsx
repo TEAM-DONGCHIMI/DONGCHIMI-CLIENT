@@ -24,6 +24,7 @@ import { resolvePresignedExcelFileUrl } from './utils/resolve-excel-file-url';
 
 const EXCEL_UPLOAD_ACCEPT = '.xlsx,.csv';
 const ACTION_FEEDBACK_TOAST_ID = 'event-discount-registration-action-feedback';
+const EXCEL_UPLOAD_ERROR_TOAST_ID = 'event-discount-registration-excel-upload-error';
 const FILE_ANALYSIS_ERROR_TOAST_ID = 'event-discount-registration-file-analysis-error';
 const TOAST_ICON_SIZE = '2.4rem';
 const EXCEL_UPLOAD_DEFAULT_LABEL =
@@ -72,6 +73,15 @@ export const EventDiscountRegistrationPage = ({
   const resolveUploadedExcelFileUrl = useMemo(() => {
     return resolveExcelFileUrl ?? resolvePresignedExcelFileUrl(presignedUploadMutation.mutateAsync);
   }, [presignedUploadMutation.mutateAsync, resolveExcelFileUrl]);
+  const handleExcelUploadError = useCallback(
+    (message: string) => {
+      toast.error(message, {
+        id: EXCEL_UPLOAD_ERROR_TOAST_ID,
+        icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
+      });
+    },
+    [toast],
+  );
   const {
     cancelFileAnalysisConfirmation,
     cancelFileAnalysisProgress,
@@ -85,7 +95,10 @@ export const EventDiscountRegistrationPage = ({
     uploadExcelFile,
     uploadedExcelFileUrl,
     uploadedExcelFileName,
-  } = useExcelUploadFlow({ resolveExcelFileUrl: resolveUploadedExcelFileUrl });
+  } = useExcelUploadFlow({
+    onExcelUploadError: handleExcelUploadError,
+    resolveExcelFileUrl: resolveUploadedExcelFileUrl,
+  });
   const headerLabels =
     registrationView === 'method'
       ? {

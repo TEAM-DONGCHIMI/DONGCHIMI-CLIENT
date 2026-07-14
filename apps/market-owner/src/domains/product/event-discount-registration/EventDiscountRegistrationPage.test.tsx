@@ -165,6 +165,29 @@ describe('EventDiscountRegistrationPage', () => {
     expect(screen.getByRole('button', { name: '파일 업로드' })).toBeDisabled();
   });
 
+  it('shows toast feedback when excel upload fails', async () => {
+    const user = userEvent.setup();
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const resolveExcelFileUrl = vi
+      .fn()
+      .mockRejectedValue(new Error('엑셀 파일 크기가 너무 큽니다.'));
+    const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderEventDiscountRegistrationPage({ resolveExcelFileUrl });
+
+    await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    await user.upload(screen.getByLabelText('파일 선택'), excelFile);
+    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('엑셀 파일 크기가 너무 큽니다.');
+    expect(screen.getAllByText('엑셀 파일 크기가 너무 큽니다.')).toHaveLength(2);
+    expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
+
+    consoleErrorSpy.mockRestore();
+  });
+
   it('selects an excel file through drag and drop', async () => {
     const user = userEvent.setup();
     const excelFile = new File(['name,price'], '상품목록_드롭.xlsx', {

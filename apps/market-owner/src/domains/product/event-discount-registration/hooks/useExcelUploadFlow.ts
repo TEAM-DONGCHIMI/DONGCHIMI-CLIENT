@@ -1,5 +1,7 @@
 import { useReducer, type ChangeEventHandler } from 'react';
 
+import { isApiError } from '@/shared/api';
+
 import { useFileDrop } from '../../hooks';
 import {
   resolvePresignedExcelFileUrl,
@@ -32,12 +34,14 @@ type ExcelUploadFlowActionTypes =
   | { type: 'CANCEL_FILE_ANALYSIS_PROGRESS' };
 
 interface UseExcelUploadFlowParams {
+  onExcelUploadError?: (message: string, error: unknown) => void;
   resolveExcelFileUrl?: ResolveExcelFileUrlTypes;
 }
 
 const EXCEL_UPLOAD_ACCEPTED_EXTENSIONS = ['.xlsx', '.csv'] as const;
 const EXCEL_UPLOAD_FILE_FORMAT_ERROR_MESSAGE = '파일을 선택하지 못했습니다. 다시 선택해주세요.';
 const EXCEL_UPLOAD_FAILED_ERROR_MESSAGE = '파일 업로드에 실패했습니다. 다시 시도해주세요.';
+const EXCEL_UPLOAD_ERROR_LOG_PREFIX = '[EventDiscountRegistration] Failed to upload excel file';
 
 const initialExcelUploadFlowState: ExcelUploadFlowState = {
   isExcelUploadModalOpen: false,
@@ -70,6 +74,18 @@ const getExcelUploadModalState = (state: ExcelUploadFlowState): ExcelUploadModal
   }
 
   return 'default';
+};
+
+const getExcelUploadErrorMessage = (error: unknown) => {
+  if (isApiError(error) && error.message) {
+    return error.message;
+  }
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return EXCEL_UPLOAD_FAILED_ERROR_MESSAGE;
 };
 
 const excelUploadFlowReducer = (
@@ -140,6 +156,7 @@ const excelUploadFlowReducer = (
 };
 
 export const useExcelUploadFlow = ({
+  onExcelUploadError,
   resolveExcelFileUrl = resolvePresignedExcelFileUrl(),
 }: UseExcelUploadFlowParams = {}) => {
   const [state, dispatch] = useReducer(excelUploadFlowReducer, initialExcelUploadFlowState);
@@ -204,9 +221,17 @@ export const useExcelUploadFlow = ({
         const excelFileUrl = await resolveExcelFileUrl(state.selectedExcelFile);
 
         dispatch({ excelFileUrl, type: 'UPLOAD_EXCEL_FILE_SUCCESS' });
-      } catch {
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.error(EXCEL_UPLOAD_ERROR_LOG_PREFIX, error);
+        }
+
+        const errorMessage = getExcelUploadErrorMessage(error);
+
+        onExcelUploadError?.(errorMessage, error);
+
         dispatch({
-          errorMessage: EXCEL_UPLOAD_FAILED_ERROR_MESSAGE,
+          errorMessage,
           type: 'REJECT_EXCEL_FILE',
         });
       }
