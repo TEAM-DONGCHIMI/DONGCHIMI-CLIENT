@@ -340,6 +340,34 @@ describe('TodaySpecialRegistrationPage', () => {
     ).toHaveTextContent('(3/3)');
   });
 
+  it('cancels only the current unregistered product and can open a new draft again', async () => {
+    const user = userEvent.setup();
+
+    renderTodaySpecialRegistrationPage();
+
+    await user.type(screen.getByLabelText('상품명'), '등록된 상품');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('채소･과일'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '4500');
+    await user.type(screen.getByLabelText('판매가'), '5000');
+    await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
+
+    await user.type(screen.getByLabelText('상품명'), '취소할 상품');
+    await user.click(screen.getByRole('button', { name: '현재 상품 등록 취소' }));
+
+    expect(registerDailyProduct).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText('상품명')).toHaveValue('등록된 상품');
+    expect(screen.getByLabelText('상품명')).toBeDisabled();
+    expect(screen.queryByRole('button', { name: '현재 상품 등록 취소' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
+
+    expect(registerDailyProduct).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText('상품명')).toHaveValue('');
+    expect(screen.getByLabelText('상품명')).toBeEnabled();
+    expect(screen.getByRole('button', { name: '현재 상품 등록 취소' })).toBeInTheDocument();
+  });
+
   it('selects a category from the OverlayKit dropdown', async () => {
     const user = userEvent.setup();
 

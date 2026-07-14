@@ -72,6 +72,11 @@ export const titleNavigationButtonClassName = style({
   fontSize: '2.4rem',
 });
 
+export const titleRemoveButtonClassName = style({
+  borderColor: atomic.neutral[20],
+  color: atomic.neutral[90],
+});
+
 export const fieldSectionsClassName = style({
   display: 'flex',
   flexDirection: 'column',

@@ -79,6 +79,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - category scroll: dropdown 높이는 열릴 때와 viewport resize 때만 계산하고, 흰색 surface를 유지하며 목록 끝의 bounce와 배경 페이지로의 스크롤 전달을 막습니다.
 - category outside scroll: dropdown 내부 목록 스크롤은 높이 계산에서 제외하고, 주변 페이지가 스크롤되면 현재 trigger 위치를 기준으로 높이를 다시 계산합니다.
 - next product ready: `상품 계속 등록` 성공 후 새 빈 상품을 마지막에 추가하고 해당 상품으로 이동합니다.
+- cancel next product: 마지막 미등록 상품에서는 `-` 버튼을 표시하고, 클릭하면 서버 요청 없이 해당 입력을 취소한 뒤 직전 등록 상품으로 이동합니다.
 - registered product history: 이전 상품으로 이동하면 `(현재 순번/전체 상품 수)`와 이동 화살표를 표시하고, 이미 등록된 입력값은 읽기 전용으로 유지합니다.
 - continue registration: 입력 유효성과 무관하게 `상품 계속 등록`을 활성화하고, 클릭 시 현재 form을 검증합니다.
 - disabled submit: 필수값이 비어 있거나 form completion 조건을 만족하지 않으면 `등록 완료`만 disabled 처리합니다.
@@ -158,6 +159,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 성공하면 등록된 상품 snapshot을 유지한 채 새 빈 상품을 추가하고 touched/submitted, validation 상태를 초기화합니다.
   - 상품이 2개 이상이면 제목 옆에 현재 순번과 전체 개수, 이전/다음 이동 화살표를 표시합니다.
   - 이미 등록된 이전 상품은 다시 제출하거나 수정할 수 없고, `상품 계속 등록`을 누르면 다음 상품으로 이동합니다.
+  - 마지막 미등록 상품의 `-` 버튼은 등록 취소만 수행하며, 등록 완료된 상품을 삭제하지 않습니다.
+  - 미등록 상품을 취소한 뒤 등록 상품에서 `상품 계속 등록`을 누르면 POST 없이 새 빈 상품을 다시 엽니다.
   - route를 이동하지 않고 같은 화면에서 다음 상품 입력을 시작합니다.
   - 실패하면 현재 입력값을 유지하고 오류를 안내합니다.
   - submit 중에는 두 등록 action을 비활성화해 중복 등록을 막습니다.

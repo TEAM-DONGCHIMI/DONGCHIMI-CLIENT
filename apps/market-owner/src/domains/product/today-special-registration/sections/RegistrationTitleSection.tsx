@@ -1,17 +1,25 @@
 import { IconButton } from '@dongchimi/design-system/components';
-import { IcChevronLeft, IcChevronRight } from '@dongchimi/design-system/icons';
+import {
+  IcChevronLeft,
+  IcChevronRight,
+  IcLineHorizontalSizeSmall,
+} from '@dongchimi/design-system/icons';
 
 import * as S from '../TodaySpecialRegistrationPage.css';
 
 interface RegistrationTitleSectionProps {
+  canCancelCurrentDraft: boolean;
   currentIndex: number;
+  onCancelCurrentDraft: () => void;
   onNextProduct: () => void;
   onPreviousProduct: () => void;
   productCount: number;
 }
 
 export const RegistrationTitleSection = ({
+  canCancelCurrentDraft,
   currentIndex,
+  onCancelCurrentDraft,
   onNextProduct,
   onPreviousProduct,
   productCount,
@@ -57,6 +65,18 @@ export const RegistrationTitleSection = ({
             </div>
           )}
         </div>
+
+        {canCancelCurrentDraft && (
+          <IconButton
+            aria-label='현재 상품 등록 취소'
+            className={S.titleRemoveButtonClassName}
+            color='assistive'
+            icon={<IcLineHorizontalSizeSmall />}
+            onClick={onCancelCurrentDraft}
+            type='button'
+            variant='outlined'
+          />
+        )}
       </div>
     </header>
   );

@@ -42,6 +42,7 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
   const watchedProducts = useWatch({ control, name: 'products' });
   const products = watchedProducts ?? [];
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [registeredProductCount, setRegisteredProductCount] = useState(0);
 
   const currentProduct = products[currentIndex] ?? createInitialProductForm();
   const currentProductErrors = errors.products?.[currentIndex] as
@@ -51,7 +52,8 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
     | TodaySpecialProductTouchedFieldsTypes
     | undefined;
   const isCurrentProductValid = todaySpecialProductFormSchema.safeParse(currentProduct).success;
-  const isRegisteredProduct = currentIndex < products.length - 1;
+  const hasUnregisteredDraft = products.length > registeredProductCount;
+  const isRegisteredProduct = currentIndex < registeredProductCount;
   const isSubmitDisabled = isRegisteredProduct || !isCurrentProductValid || isSubmitting;
 
   const createCurrentProductSubmitHandler = (
@@ -69,7 +71,19 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
     const currentProducts = getValues('products');
 
     reset({ products: [...currentProducts, createInitialProductForm()] });
+    setRegisteredProductCount(currentProducts.length);
     setCurrentIndex(currentProducts.length);
+  };
+
+  const cancelCurrentDraft = () => {
+    if (isRegisteredProduct || registeredProductCount === 0) {
+      return;
+    }
+
+    const registeredProducts = getValues('products').slice(0, registeredProductCount);
+
+    reset({ products: registeredProducts });
+    setCurrentIndex(registeredProductCount - 1);
   };
 
   const moveToPreviousProduct = () => {
@@ -80,11 +94,22 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
     setCurrentIndex((previousIndex) => Math.min(previousIndex + 1, products.length - 1));
   };
 
-  const moveToLatestProduct = () => {
-    setCurrentIndex(products.length - 1);
+  const openNextProductDraft = () => {
+    if (hasUnregisteredDraft) {
+      setCurrentIndex(products.length - 1);
+
+      return;
+    }
+
+    const currentProducts = getValues('products');
+
+    reset({ products: [...currentProducts, createInitialProductForm()] });
+    setCurrentIndex(currentProducts.length);
   };
 
   return {
+    canCancelCurrentDraft: hasUnregisteredDraft && !isRegisteredProduct && products.length > 1,
+    cancelCurrentDraft,
     createCurrentProductSubmitHandler,
     currentIndex,
     currentProduct,
@@ -95,9 +120,9 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
     isSubmitting,
     isRegisteredProduct,
     isSubmitDisabled,
-    moveToLatestProduct,
     moveToNextProduct,
     moveToPreviousProduct,
+    openNextProductDraft,
     products,
     resetForNextProduct,
     setValue,

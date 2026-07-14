@@ -93,7 +93,13 @@ export const TodaySpecialRegistrationPage = () => {
           aria-labelledby='today-special-registration-title'
         >
           <RegistrationTitleSection
+            canCancelCurrentDraft={form.canCancelCurrentDraft}
             currentIndex={currentIndex}
+            onCancelCurrentDraft={() => {
+              imagePreview.revokeCurrentPreviewUrl();
+              categoryDropdown.closeCategoryDropdown();
+              form.cancelCurrentDraft();
+            }}
             onNextProduct={() => {
               categoryDropdown.closeCategoryDropdown();
               form.moveToNextProduct();
@@ -118,7 +124,7 @@ export const TodaySpecialRegistrationPage = () => {
               disabled={form.isSubmitting}
               leftIcon={<IcCirclePlusSizeSmall />}
               onClick={
-                form.isRegisteredProduct ? form.moveToLatestProduct : handleContinueRegistration
+                form.isRegisteredProduct ? form.openNextProductDraft : handleContinueRegistration
               }
               size='small'
               type='button'
