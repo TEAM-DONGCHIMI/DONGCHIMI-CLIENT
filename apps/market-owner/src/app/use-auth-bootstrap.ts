@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import { refreshMarketOwnerAuth } from '@/domains/auth/api/auth-api';
+import { refreshAuthSession } from '@/shared/api';
 import { useAuthStore } from '@/shared/stores/auth-store';
 
 export const useAuthBootstrap = () => {
@@ -17,6 +17,7 @@ export const useAuthBootstrap = () => {
     }
 
     if (accessToken) {
+      hasRequestedRefreshRef.current = false;
       useAuthStore.getState().setBootstrapStatus('authenticated');
 
       return;
@@ -29,20 +30,10 @@ export const useAuthBootstrap = () => {
     hasRequestedRefreshRef.current = true;
     useAuthStore.getState().setBootstrapStatus('refreshing');
 
-    refreshMarketOwnerAuth()
-      .then((response) => {
-        if (useAuthStore.getState().isLoggedIn) {
-          useAuthStore.getState().setAccessToken(response.data.accessToken);
-        }
-      })
-      .catch(() => {
-        if (useAuthStore.getState().isLoggedIn) {
-          useAuthStore.getState().clearSession();
-        }
-      });
-
-    return () => {
-      hasRequestedRefreshRef.current = false;
-    };
+    refreshAuthSession().catch(() => {
+      if (useAuthStore.getState().isLoggedIn) {
+        useAuthStore.getState().clearSession();
+      }
+    });
   }, [accessToken, isLoggedIn]);
 };

@@ -85,15 +85,21 @@ const requestRefreshAccessToken = async (request: HttpAuthRequestTypes) => {
   });
   const { accessToken } = result.data;
 
-  useAuthStore.getState().setAccessToken(accessToken);
-
   return accessToken;
 };
 
 export const refreshAccessToken = (request: HttpAuthRequestTypes) => {
-  refreshAccessTokenPromise ??= requestRefreshAccessToken(request).finally(() => {
-    refreshAccessTokenPromise = undefined;
-  });
+  refreshAccessTokenPromise ??= requestRefreshAccessToken(request)
+    .then((accessToken) => {
+      if (useAuthStore.getState().isLoggedIn) {
+        useAuthStore.getState().setAccessToken(accessToken);
+      }
+
+      return accessToken;
+    })
+    .finally(() => {
+      refreshAccessTokenPromise = undefined;
+    });
 
   return refreshAccessTokenPromise;
 };
