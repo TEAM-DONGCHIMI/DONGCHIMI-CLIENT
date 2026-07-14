@@ -13,6 +13,7 @@ describe('useAuthStore', () => {
     useAuthStore.getState().setAccessToken('access-token');
 
     expect(useAuthStore.getState().accessToken).toBe('access-token');
+    expect(useAuthStore.getState().bootstrapStatus).toBe('authenticated');
     expect(useAuthStore.getState().isLoggedIn).toBe(true);
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBe(
       JSON.stringify({
@@ -32,6 +33,7 @@ describe('useAuthStore', () => {
     useAuthStore.getState().clearAccessToken();
 
     expect(useAuthStore.getState().accessToken).toBeUndefined();
+    expect(useAuthStore.getState().bootstrapStatus).toBe('authenticated');
     expect(useAuthStore.getState().isLoggedIn).toBe(true);
   });
 
@@ -41,7 +43,22 @@ describe('useAuthStore', () => {
     useAuthStore.getState().clearSession();
 
     expect(useAuthStore.getState().accessToken).toBeUndefined();
+    expect(useAuthStore.getState().bootstrapStatus).toBe('unauthenticated');
     expect(useAuthStore.getState().isLoggedIn).toBe(false);
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('access-token');
+  });
+
+  it('updates bootstrap status without persisting it', () => {
+    useAuthStore.getState().setBootstrapStatus('refreshing');
+
+    expect(useAuthStore.getState().bootstrapStatus).toBe('refreshing');
+    expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBe(
+      JSON.stringify({
+        state: {
+          isLoggedIn: false,
+        },
+        version: 0,
+      }),
+    );
   });
 });

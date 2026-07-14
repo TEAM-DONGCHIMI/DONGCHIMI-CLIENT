@@ -40,13 +40,26 @@ describe('useAuthBootstrap', () => {
     await waitFor(() => {
       expect(useAuthStore.getState().accessToken).toBe('refreshed-access-token');
     });
+    expect(useAuthStore.getState().bootstrapStatus).toBe('authenticated');
     expect(mockRefreshMarketOwnerAuth).toHaveBeenCalledTimes(1);
   });
 
   it('skips refresh when there is no login hint', () => {
     renderHook(() => useAuthBootstrap());
 
+    expect(useAuthStore.getState().bootstrapStatus).toBe('unauthenticated');
     expect(mockRefreshMarketOwnerAuth).not.toHaveBeenCalled();
+  });
+
+  it('marks bootstrap as refreshing while refresh request is pending', async () => {
+    useAuthStore.getState().setLoggedIn(true);
+    mockRefreshMarketOwnerAuth.mockImplementationOnce(() => new Promise(() => undefined));
+
+    renderHook(() => useAuthBootstrap());
+
+    await waitFor(() => {
+      expect(useAuthStore.getState().bootstrapStatus).toBe('refreshing');
+    });
   });
 
   it('clears login hint when bootstrap refresh fails', async () => {
@@ -58,6 +71,7 @@ describe('useAuthBootstrap', () => {
     await waitFor(() => {
       expect(useAuthStore.getState().isLoggedIn).toBe(false);
     });
+    expect(useAuthStore.getState().bootstrapStatus).toBe('unauthenticated');
     expect(useAuthStore.getState().accessToken).toBeUndefined();
   });
 });

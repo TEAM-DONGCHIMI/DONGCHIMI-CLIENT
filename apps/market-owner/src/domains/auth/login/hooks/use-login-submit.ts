@@ -1,9 +1,9 @@
 import { isApiResponseValidationError } from '@dongchimi/shared/api';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 import { isApiError } from '@/shared/api';
-import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 import { useLoginMutation } from '../../hooks/use-login-mutation';
 
@@ -19,7 +19,7 @@ export interface LoginSubmitParams {
 }
 
 export interface LoginSubmitResult {
-  redirectTo: MarketOwnerRouteTypes;
+  redirectTo: string;
 }
 
 export type LoginSubmitHandlerTypes = (params: LoginSubmitParams) => Promise<LoginSubmitResult>;
@@ -65,6 +65,7 @@ const getLoginErrorMessage = (error: unknown) => {
 };
 
 export const useLoginSubmit = ({ submitLogin }: UseLoginSubmitOptions = {}) => {
+  const location = useLocation();
   const navigate = useNavigate();
   const loginMutation = useLoginMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,10 +84,13 @@ export const useLoginSubmit = ({ submitLogin }: UseLoginSubmitOptions = {}) => {
         submitLogin !== undefined
           ? await submitLogin(params)
           : await loginMutation.mutateAsync(params).then(() => ({
-              redirectTo: MARKET_OWNER_ROUTES.home,
+              redirectTo:
+                typeof location.state?.from === 'string'
+                  ? location.state.from
+                  : MARKET_OWNER_ROUTES.home,
             }));
 
-      navigate(result.redirectTo);
+      navigate(result.redirectTo, { replace: true });
     } catch (error) {
       setLoginErrorMessage(getLoginErrorMessage(error));
     } finally {

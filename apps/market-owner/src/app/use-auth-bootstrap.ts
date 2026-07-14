@@ -10,17 +10,25 @@ export const useAuthBootstrap = () => {
 
   useEffect(() => {
     if (!isLoggedIn) {
+      useAuthStore.getState().setBootstrapStatus('unauthenticated');
       hasRequestedRefreshRef.current = false;
 
       return;
     }
 
-    if (accessToken || hasRequestedRefreshRef.current) {
+    if (accessToken) {
+      useAuthStore.getState().setBootstrapStatus('authenticated');
+
+      return;
+    }
+
+    if (hasRequestedRefreshRef.current) {
       return;
     }
 
     let isCanceled = false;
     hasRequestedRefreshRef.current = true;
+    useAuthStore.getState().setBootstrapStatus('refreshing');
 
     refreshMarketOwnerAuth()
       .then((response) => {

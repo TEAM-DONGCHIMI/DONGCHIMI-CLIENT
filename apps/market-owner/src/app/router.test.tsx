@@ -7,6 +7,7 @@ import { loginMarketOwner, signupMarketOwner } from '@/domains/auth/api/auth-api
 import { ApiError } from '@/shared/api';
 import { render, screen } from '@/test';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
 import { AppProviders } from './AppProviders';
 import { marketOwnerRoutes } from './router';
 
@@ -20,6 +21,8 @@ const mockSignupMarketOwner = vi.mocked(signupMarketOwner);
 
 beforeEach(() => {
   vi.clearAllMocks();
+  useAuthStore.getState().clearSession();
+  localStorage.clear();
   mockLoginMarketOwner.mockResolvedValue({
     success: true,
     code: 'SUCCESS',
@@ -41,7 +44,17 @@ beforeEach(() => {
   });
 });
 
-const renderRoute = (path: string) => {
+const isPublicAuthRoute = (path: string) => {
+  return path === MARKET_OWNER_ROUTES.login || path === MARKET_OWNER_ROUTES.signup;
+};
+
+const renderRoute = (path: string, { authenticated = !isPublicAuthRoute(path) } = {}) => {
+  if (authenticated) {
+    useAuthStore.getState().setAccessToken('access-token');
+  } else {
+    useAuthStore.getState().clearSession();
+  }
+
   const router = createMemoryRouter(marketOwnerRoutes, {
     initialEntries: [path],
   });
@@ -101,6 +114,42 @@ describe('marketOwnerRoutes', () => {
 
     expect(await screen.findByRole('heading', { name: '마트 관리자 로그인' })).toBeInTheDocument();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
+  });
+
+  it('redirects authenticated users away from the login route', async () => {
+    const { router } = renderRoute('/login', { authenticated: true });
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.home);
+    });
+  });
+
+  it('redirects unauthenticated protected route access to login and returns after login', async () => {
+    const user = userEvent.setup();
+    const { container, router } = renderRoute('/products/today-special/edit?productId=124', {
+      authenticated: false,
+    });
+
+    await screen.findByRole('heading');
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.login);
+    expect(router.state.location.state).toEqual({
+      from: '/products/today-special/edit?productId=124',
+    });
+
+    const emailInput = container.querySelector<HTMLInputElement>('input[type="email"]');
+    const passwordInput = container.querySelector<HTMLInputElement>('input[type="password"]');
+
+    expect(emailInput).not.toBeNull();
+    expect(passwordInput).not.toBeNull();
+
+    await user.type(emailInput as HTMLInputElement, 'owner@example.com');
+    await user.type(passwordInput as HTMLInputElement, 'password123!');
+    await user.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.todaySpecialEdit);
+    });
+    expect(router.state.location.search).toBe('?productId=124');
   });
 
   it('renders the signup form inside the public auth layout', async () => {
