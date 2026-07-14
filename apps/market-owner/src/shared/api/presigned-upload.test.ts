@@ -46,6 +46,32 @@ describe('createPresignedUploadUrl', () => {
     });
   });
 
+  it('accepts the local OpenAPI date-time returned by the server', async () => {
+    const data = {
+      uploadUrl: 'https://s3.ap-northeast-2.amazonaws.com/bucket/tmp/image.png',
+      objectKey: 'tmp/PRODUCT_THUMBNAIL/image.png',
+      expiresAt: '2026-07-14T15:56:38.811782288',
+      requiredHeaders: {
+        'Content-Type': 'image/png',
+      },
+    };
+
+    mockedPost.mockResolvedValue({
+      success: true,
+      code: 'SUCCESS',
+      message: '요청에 성공했습니다.',
+      data,
+    });
+
+    await expect(
+      createPresignedUploadUrl({
+        purpose: 'PRODUCT_THUMBNAIL',
+        contentType: 'image/png',
+        contentLength: 1024,
+      }),
+    ).resolves.toEqual(data);
+  });
+
   it('rejects a success response with an invalid upload contract', async () => {
     mockedPost.mockResolvedValue({
       success: true,

@@ -19,7 +19,7 @@ const presignedUploadResponseSchema = z.object({
   data: z.object({
     uploadUrl: z.url(),
     objectKey: z.string().min(1),
-    expiresAt: z.iso.datetime(),
+    expiresAt: z.iso.datetime({ local: true, offset: true }),
     requiredHeaders: z.record(z.string(), z.string()),
   }),
 }) satisfies z.ZodType<PresignedUploadApiResponseTypes>;
