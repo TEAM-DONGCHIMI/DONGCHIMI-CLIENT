@@ -28,7 +28,7 @@ const createWrapper = () => {
     },
   });
 
-  return ({ children }: { children: ReactNode }) => (
+  const LeafletSharePageTestWrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <OverlayProvider>
@@ -37,6 +37,10 @@ const createWrapper = () => {
       </ToastProvider>
     </QueryClientProvider>
   );
+
+  LeafletSharePageTestWrapper.displayName = 'LeafletSharePageTestWrapper';
+
+  return LeafletSharePageTestWrapper;
 };
 
 describe('LeafletSharePage', () => {
