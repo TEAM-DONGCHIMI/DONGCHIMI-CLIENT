@@ -24,6 +24,21 @@ DONGCHIMI-CLIENT는 하나의 GitHub monorepo를 유지하고, 사용자 웹과 
 - 앱별 Project는 각각 독립 URL, 환경 변수, preview/prod deployment history를 가집니다.
 - shared package 또는 root lockfile 변경은 Vercel의 affected project detection 기준으로 필요한 앱만 배포되도록 합니다.
 
+## Market Owner API Routing
+
+`apps/market-owner`의 인증 API는 refresh token을 HttpOnly cookie로 전달합니다. 브라우저와 API의 origin이 달라지는 Preview에서는 `SameSite=Lax` cookie를 안정적으로 사용하기 위해 Vercel deployment origin의 `/v1/*` 경로를 실제 API로 rewrite합니다.
+
+| Environment | `VITE_PUBLIC_API_SERVER_BASE_URL` | Routing                                                                        |
+| ----------- | --------------------------------- | ------------------------------------------------------------------------------ |
+| Local       | `http://localhost:5173`           | Vite dev server가 `/v1/*`를 `https://api.dongchiimi.com`으로 proxy합니다.      |
+| Preview     | `/`                               | Vercel이 `/v1/*`를 `https://api.dongchiimi.com/v1/*`로 external rewrite합니다. |
+| Production  | `https://api.dongchiimi.com`      | 브라우저가 API origin을 직접 호출합니다.                                       |
+
+- Preview 값에 `localhost`를 사용하지 않습니다.
+- `VITE_*` 환경 변수는 Vite build 시점에 번들에 포함되므로 Vercel Preview 환경 변수 변경 후 새 deployment가 필요합니다.
+- `/v1/*`는 인증 및 사용자별 응답을 포함하므로 external rewrite caching을 비활성화합니다.
+- SPA의 unknown route `404` fallback은 기존 `routes` 설정에서 계속 관리합니다.
+
 ## Manual Deployment
 
 로컬 CLI는 최신 Vercel CLI를 임시 실행합니다. 전역 CLI가 오래되면 upload endpoint에서 실패할 수 있습니다.
