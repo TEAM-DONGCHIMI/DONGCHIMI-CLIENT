@@ -21,8 +21,8 @@
 ## Purpose
 
 행사 할인 상품 등록 flow의 첫 진입 화면에서 등록 방식을 선택하고, 엑셀 파일 업로드 UI 상태를 거쳐 등록 파일 확인과 AI 분석 진행 화면으로 이어집니다.
-사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, 다운로드 API, SSE transport, 분석 결과 확인 API는 후속 이슈에서 연결합니다.
-엑셀 파일 업로드 후 파일 분석 시작 API를 호출하고, 실제 분석 진행 SSE를 연결하기 전까지 page-local fixture simulation으로 진행 상태를 순차 표시한 뒤 상품 결과 등록 확인 route로 이동합니다.
+사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, 다운로드 API와 분석 결과 확인 API는 후속 이슈에서 연결합니다.
+엑셀 파일 업로드 후 파일 분석 시작 API로 발급받은 `jobId`를 이용해 실제 분석 진행 SSE를 구독하고, 완료 이벤트 수신 시 상품 결과 등록 확인 route로 이동합니다.
 
 ## Ownership
 
@@ -34,12 +34,14 @@
 - `RegistrationMethodSection` is page-local because upload method copy, CTA behavior, POS guide entry, and toast feedback are tied to this registration flow.
 - `PosExcelGuidePanel` is page-local because its title and single guide image are specific to the event discount registration upload guide.
 - `usePosGuideModalBehavior` stays page-local because the POS guide is an event discount registration specific modal with its own drawer positioning and modal behavior contract.
-- `useExcelUploadFlow` stays page-local because it owns only the excel upload modal, uploaded excel URL handoff, and file-analysis view transitions for this route.
-- `useFileAnalysisSimulation` stays page-local because it temporarily advances fixture frames and owns only timer lifecycle; route navigation remains a page callback.
+- `useExcelUploadFlow` stays page-local because it owns only the excel upload modal, uploaded excel URL and `jobId` handoff, and file-analysis view transitions for this route.
+- `useProductImportProgress` stays page-local because it owns the SSE subscription, bounded reconnect, progress mapping, and cleanup lifecycle for this route.
 - `startProductImport` stays page-local under `api/` because the owner product import endpoint is only used by this route.
 - `useStartProductImportMutation` stays page-local because it wraps the analysis-start mutation without introducing cross-page cache behavior.
+- `cancelProductImport` and `useCancelProductImportMutation` stay page-local because canceling an active import is specific to this flow and does not invalidate a cached query.
+- `subscribeProductImportProgress` stays page-local because SSE is a long-lived transport connection rather than query cache state; it uses the app HTTP client's authenticated raw response path instead of a query key.
 - `resolvePresignedExcelFileUrl` stays page-local because it orchestrates the flow-specific `product_import` presigned upload purpose, S3 PUT, and import-start handoff value.
-- `marketId` is accepted as a page prop until the owner market context/auth integration provides a route-level source.
+- The page uses the optional `marketId` prop for isolated tests and otherwise reads the non-sensitive market id persisted from the owner login response; the access token remains memory-only.
 - `useFileDrop` is reused from product domain hooks for file drop event handling; accepted extension validation stays in `useExcelUploadFlow` because `.xlsx/.csv` is specific to this flow.
 - App-shared `UploadModal` is reused for the excel upload modal default/upload states.
 - Shared `ToastProvider`/`useToast` runtime is reused for action feedback while design-system `Toast` remains the rendered UI.
@@ -64,9 +66,11 @@
 - modal/upload: selecting or dropping a `.xlsx` or `.csv` file shows the selected file name and enables the upload button.
 - modal/error: selecting or dropping a file outside `.xlsx` or `.csv` shows the upload modal error state and keeps the upload button disabled.
 - success/confirm: clicking the enabled upload button closes the modal and renders `FileAnalysisConfirmSection` with the selected file name.
-- loading/progress: `분석 시작` renders `FileAnalysisProgressSection` at 24%, then advances the processing step and progress fixture once per second.
+- loading/progress: `분석 시작` renders `FileAnalysisProgressSection` with pending steps, then applies each `progress` SSE event to the progressbar and ordered step list.
 - loading/icon: only the current `processing` step replaces the default progress icon with the autoplaying, looping spinner Lottie.
-- completed: all steps reach `completed` and progress reaches 100%, disabling cancel for one interval before automatic navigation.
+- completed: a `completed` SSE event sets progress to 100%, marks the visible steps complete, and navigates to the result route once.
+- failed: a `failed` SSE event shows the server message and returns to file confirmation so analysis can be retried.
+- canceling: cancel action is disabled as `취소 중` while the POST request is pending and after the request is accepted; the view returns to file confirmation only after the SSE `canceled` event confirms cancellation.
 - toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback with the completed status icon.
 - toast/error: the page can render error toast feedback with the error status icon; `전단지 업로드` currently shows Figma error-style feedback because the actual upload API is out of scope.
 - guide line button: `POS에서 엑셀 파일 받는 방법 보기` keeps its visible action styling (`body-3-semibold`, neutral 60, underline) unchanged across default, hover, and focus-visible states.
@@ -83,10 +87,14 @@
   - `POST /v1/owners/markets/{marketId}/products/import`
   - request body: `{ excelFileUrl }`
   - response data: `{ jobId }`
+  - `GET /v1/owners/markets/{marketId}/products/import/{jobId}/progress`
+  - response content type: `text/event-stream`
+  - event: `progress`, `completed`, `failed`, `canceled`
+  - `POST /v1/owners/markets/{marketId}/products/import/{jobId}/cancel`
+  - response: success envelope without data
 - fixture:
   - `fileAnalysisConfirmFixture`
   - `fileAnalysisProgressFixtures`
-  - `fileAnalysisSimulationFrames`
 - static registration-method, upload-modal, POS guide, and toast copy is colocated with the component that renders or triggers it.
 - registration method card assets are page-local `assets/img-excel-upload.svg` and `assets/img-leaflet-upload.svg`; both are pure-vector SVGs and render as decorative 80×80 images because the adjacent heading and description provide the card meaning.
 - the POS guide asset is `/images/pos-excel-guide.webp` and renders at the Figma size of 360×722; it is informative and uses one alt text that preserves the three-step instructions.
@@ -110,11 +118,15 @@
 - Confirmation `취소` clears the uploaded file state and returns to the method view.
 - `분석 시작` calls `POST /v1/owners/markets/{marketId}/products/import` with `excelFileUrl` set to the uploaded file handoff value. The current presigned contract provides this as `objectKey`.
 - If `marketId` or `excelFileUrl` is missing, the page keeps the confirmation view and shows the same file-analysis start failure toast instead of sending a guessed request.
-- Import start success switches to progress view. The returned `jobId` will be consumed when the real progress API or SSE transport is connected.
+- Import start success stores the returned `jobId`, switches to progress view, and subscribes to the matching progress endpoint.
 - Import start failure keeps the confirmation view and shows the normalized server message for `ApiError`; non-API failures use `파일 분석을 시작하지 못했습니다. 다시 시도해주세요.` as fallback toast feedback.
-- Progress simulation starts at 24% with `상품명 등록` processing, then advances through 44%, 64%, 84%, and 100% at one-second intervals.
-- The 100% frame remains visible for one interval before navigating to `/products/registration-result`.
-- Progress `취소` returns to confirmation view, unmounts the simulation hook, and clears the pending timeout so delayed progress or navigation cannot occur.
+- Progress events map backend step codes and statuses to the existing `ProcessingStep` labels and UI statuses.
+- The SSE request uses `Accept: text/event-stream`, keeps the app's Authorization/401 refresh policy, disables the normal request timeout, and aborts on unmount.
+- If the stream ends with a network error before a terminal event, the hook reconnects at most three total attempts with a one-second delay. Auth, validation, and other non-network errors are surfaced immediately without reconnecting or silently starting a new import job.
+- Unknown SSE event names and comment heartbeat frames are ignored. Malformed known event data is treated as a validation error.
+- A `completed` terminal event navigates once to `/products/registration-result`; `failed` and `canceled` terminal events do not navigate to the result route.
+- Progress `취소` posts the current `marketId` and string `jobId` to the cancel endpoint. API acceptance only locks the cancel action; the SSE `canceled` event returns to confirmation and shows completed feedback.
+- Cancel API failure keeps the progress stream active, unlocks cancel, and shows the normalized server message when available.
 - `엑셀 양식 다운로드` shows the success toast. Actual file download/API failure mapping is out of scope.
 - `전단지 업로드` shows the Figma toast feedback. Actual leaflet image upload/API is out of scope.
 - Toast feedback uses the shared toast runtime. The page passes the Figma status icon through the toast `icon` slot and uses a stable toast id for registration action feedback so triggering a new toast replaces the visible toast and resets the runtime timer.
@@ -157,9 +169,12 @@
 - [x] AI analysis progress section renders step status labels and progressbar value
 - [x] the current processing step renders the supplied spinner Lottie with autoplay and loop enabled
 - [x] completed AI analysis progress disables cancel action
-- [x] fixture progress advances at one-second intervals and reaches the completed frame
-- [x] completed fixture analysis navigates to `/products/registration-result`
-- [x] canceling progress clears the timer and prevents delayed navigation
+- [x] progress SSE updates progress and ordered step status from the current `jobId`
+- [x] completed SSE analysis navigates to `/products/registration-result`
+- [x] failed SSE analysis shows the server message and returns to confirmation
+- [x] cancel posts the current `marketId` and `jobId`, locks duplicate actions, and waits for `canceled`
+- [x] canceled SSE analysis returns to confirmation and closes the stream
+- [x] premature disconnect retries at most three attempts and unmount aborts the active stream
 - [x] clicking `엑셀 양식 다운로드` renders toast feedback with icon
 - [x] clicking POS guide link opens the modal panel; close button, Escape, and backdrop click close it
 - [x] POS guide panel renders the Figma 360×722 guide as one informative WebP image

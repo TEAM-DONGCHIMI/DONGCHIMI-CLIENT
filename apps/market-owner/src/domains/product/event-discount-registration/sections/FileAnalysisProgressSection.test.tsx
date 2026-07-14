@@ -97,6 +97,12 @@ describe('FileAnalysisProgressSection', () => {
     expect(handleCancel).toHaveBeenCalledTimes(1);
   });
 
+  it('disables cancel while the cancel request is pending', () => {
+    renderFileAnalysisProgressSection({ isCancelPending: true });
+
+    expect(screen.getByRole('button', { name: '취소 중' })).toBeDisabled();
+  });
+
   it('disables cancel when the analysis is completed', () => {
     renderFileAnalysisProgressSection({
       progressPercentage: fileAnalysisProgressFixtures.completed.progressPercentage,

@@ -6,19 +6,20 @@ import { useToast } from '@dongchimi/shared/toast';
 import { DesktopHeader, UploadModal } from '@/shared/components';
 import { isApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
 import { usePresignedUploadMutation } from '@/domains/product/hooks';
 
-import { type ProductImportResponseTypes, type StartProductImportParams } from './api';
-import { PosExcelGuidePanel } from './components';
+import type {
+  CancelProductImportParams,
+  ProductImportResponseTypes,
+  StartProductImportParams,
+  SubscribeProductImportProgressTypes,
+} from './api';
+import { PosExcelGuidePanel, ProductImportProgress } from './components';
 import { fileAnalysisConfirmFixture } from './fixtures';
 import { useExcelUploadFlow } from './hooks/useExcelUploadFlow';
-import { useFileAnalysisSimulation } from './hooks/useFileAnalysisSimulation';
 import { useStartProductImportMutation } from './hooks/use-start-product-import-mutation';
-import {
-  FileAnalysisConfirmSection,
-  FileAnalysisProgressSection,
-  RegistrationMethodSection,
-} from './sections';
+import { FileAnalysisConfirmSection, RegistrationMethodSection } from './sections';
 import * as S from './EventDiscountRegistrationPage.css';
 import { type ResolveExcelFileUrlTypes } from './utils/resolve-excel-file-url';
 import { resolvePresignedExcelFileUrl } from './utils/resolve-excel-file-url';
@@ -42,39 +43,27 @@ const getFileAnalysisStartErrorMessage = (error: unknown) => {
   return isApiError(error) ? error.message : FILE_ANALYSIS_START_ERROR_MESSAGE;
 };
 
-const SimulatedFileAnalysisProgressSection = ({
-  onCancel,
-  onComplete,
-}: {
-  onCancel: () => void;
-  onComplete: () => void;
-}) => {
-  const { progressPercentage, steps } = useFileAnalysisSimulation({ onComplete });
-
-  return (
-    <FileAnalysisProgressSection
-      onCancel={onCancel}
-      progressPercentage={progressPercentage}
-      steps={steps}
-    />
-  );
-};
-
 export interface EventDiscountRegistrationPageProps {
+  cancelProductImport?: (params: CancelProductImportParams) => Promise<void>;
   marketId?: StartProductImportParams['marketId'];
   resolveExcelFileUrl?: ResolveExcelFileUrlTypes;
   startProductImport?: (params: StartProductImportParams) => Promise<ProductImportResponseTypes>;
+  subscribeProductImportProgress?: SubscribeProductImportProgressTypes;
 }
 
 export const EventDiscountRegistrationPage = ({
+  cancelProductImport,
   marketId,
   resolveExcelFileUrl,
   startProductImport,
+  subscribeProductImportProgress,
 }: EventDiscountRegistrationPageProps = {}) => {
   const navigate = useNavigate();
   const toast = useToast();
   const presignedUploadMutation = usePresignedUploadMutation();
   const startProductImportMutation = useStartProductImportMutation();
+  const sessionMarketId = useAuthStore((state) => state.marketId);
+  const resolvedMarketId = marketId ?? sessionMarketId;
   const [isPosGuideOpen, setIsPosGuideOpen] = useState(false);
   const resolveUploadedExcelFileUrl =
     resolveExcelFileUrl ?? resolvePresignedExcelFileUrl(presignedUploadMutation.mutateAsync);
@@ -86,14 +75,15 @@ export const EventDiscountRegistrationPage = ({
   };
   const {
     cancelFileAnalysisConfirmation,
-    cancelFileAnalysisProgress,
     excelUploadModal,
     handleExcelFileChange,
     handleExcelFileDrop,
     handleExcelUploadModalOpenChange,
     isUploading,
     openExcelUpload,
+    productImportJobId,
     registrationView,
+    returnToFileAnalysisConfirmation,
     startFileAnalysis,
     uploadExcelFile,
     uploadedExcelFileUrl,
@@ -131,7 +121,7 @@ export const EventDiscountRegistrationPage = ({
     navigate(MARKET_OWNER_ROUTES.registrationResult);
   }, [navigate]);
   const handleStartFileAnalysis = async () => {
-    if (marketId == null || uploadedExcelFileUrl == null) {
+    if (resolvedMarketId == null || uploadedExcelFileUrl == null) {
       toast.error(FILE_ANALYSIS_START_ERROR_MESSAGE, {
         id: FILE_ANALYSIS_ERROR_TOAST_ID,
         icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
@@ -141,14 +131,14 @@ export const EventDiscountRegistrationPage = ({
 
     try {
       const startImport = startProductImport ?? startProductImportMutation.mutateAsync;
-      await startImport({
-        marketId,
+      const result = await startImport({
+        marketId: resolvedMarketId,
         request: {
           excelFileUrl: uploadedExcelFileUrl,
         },
       });
 
-      startFileAnalysis();
+      startFileAnalysis(result.jobId);
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error(FILE_ANALYSIS_ERROR_LOG_PREFIX, error);
@@ -172,11 +162,19 @@ export const EventDiscountRegistrationPage = ({
         onUploadLeaflet={handleUploadLeaflet}
       />
     );
-  } else if (registrationView === 'progress') {
+  } else if (
+    registrationView === 'progress' &&
+    resolvedMarketId != null &&
+    productImportJobId != null
+  ) {
     registrationContent = (
-      <SimulatedFileAnalysisProgressSection
-        onCancel={cancelFileAnalysisProgress}
-        onComplete={handleFileAnalysisComplete}
+      <ProductImportProgress
+        cancelProductImport={cancelProductImport}
+        jobId={productImportJobId}
+        marketId={resolvedMarketId}
+        onCompleted={handleFileAnalysisComplete}
+        onReturnToConfirmation={returnToFileAnalysisConfirmation}
+        subscribeProductImportProgress={subscribeProductImportProgress}
       />
     );
   } else if (uploadedExcelFileName != null) {

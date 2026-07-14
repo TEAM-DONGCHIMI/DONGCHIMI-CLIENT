@@ -16,6 +16,7 @@ interface ExcelUploadFlowState {
   excelUploadErrorMessage?: string;
   isExcelUploadModalOpen: boolean;
   isUploading: boolean;
+  productImportJobId?: string;
   registrationView: EventDiscountRegistrationViewTypes;
   selectedExcelFile?: File;
   selectedExcelFileName?: string;
@@ -31,7 +32,7 @@ type ExcelUploadFlowActionTypes =
   | { type: 'START_EXCEL_FILE_UPLOAD' }
   | { excelFileUrl: string; type: 'UPLOAD_EXCEL_FILE_SUCCESS' }
   | { type: 'CANCEL_FILE_ANALYSIS_CONFIRMATION' }
-  | { type: 'START_FILE_ANALYSIS' }
+  | { jobId: string; type: 'START_FILE_ANALYSIS' }
   | { type: 'CANCEL_FILE_ANALYSIS_PROGRESS' };
 
 interface UseExcelUploadFlowParams {
@@ -153,6 +154,7 @@ const excelUploadFlowReducer = (
         ? state
         : {
             ...state,
+            productImportJobId: action.jobId,
             registrationView: 'progress',
           };
     case 'CANCEL_FILE_ANALYSIS_PROGRESS':
@@ -160,6 +162,7 @@ const excelUploadFlowReducer = (
         ? initialExcelUploadFlowState
         : {
             ...state,
+            productImportJobId: undefined,
             registrationView: 'confirm',
           };
   }
@@ -201,9 +204,6 @@ export const useExcelUploadFlow = ({
     cancelFileAnalysisConfirmation: () => {
       dispatch({ type: 'CANCEL_FILE_ANALYSIS_CONFIRMATION' });
     },
-    cancelFileAnalysisProgress: () => {
-      dispatch({ type: 'CANCEL_FILE_ANALYSIS_PROGRESS' });
-    },
     excelUploadModal: {
       errorMessage: state.excelUploadErrorMessage,
       open: state.isExcelUploadModalOpen,
@@ -218,9 +218,13 @@ export const useExcelUploadFlow = ({
     openExcelUpload: () => {
       dispatch({ type: 'OPEN_EXCEL_UPLOAD_MODAL' });
     },
+    productImportJobId: state.productImportJobId,
     registrationView: state.registrationView,
-    startFileAnalysis: () => {
-      dispatch({ type: 'START_FILE_ANALYSIS' });
+    returnToFileAnalysisConfirmation: () => {
+      dispatch({ type: 'CANCEL_FILE_ANALYSIS_PROGRESS' });
+    },
+    startFileAnalysis: (jobId: string) => {
+      dispatch({ jobId, type: 'START_FILE_ANALYSIS' });
     },
     uploadExcelFile: async () => {
       if (state.selectedExcelFile == null || state.isUploading) {
