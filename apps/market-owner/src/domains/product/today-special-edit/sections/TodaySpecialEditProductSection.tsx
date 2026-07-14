@@ -26,11 +26,13 @@ interface TodaySpecialEditProductSectionProps {
 
 interface TodaySpecialEditProductListProps extends TodaySpecialEditProductSectionProps {
   initialProducts: ProductEditListItemTypes[];
+  marketId: number;
 }
 
 const TodaySpecialEditProductList = ({
   autoOpenProductId,
   initialProducts,
+  marketId,
   selection,
   selectedFilter,
   onAutoOpenProductMissing,
@@ -54,6 +56,7 @@ const TodaySpecialEditProductList = ({
       autoOpenProductId={autoOpenProductId}
       editModalVariant='todaySpecial'
       groups={productGroups}
+      marketId={marketId}
       registrationHref={MARKET_OWNER_ROUTES.todaySpecialRegistration}
       selectedProductNames={selection.selectedProductNames}
       selectionMode={selection.selectionMode}
@@ -67,9 +70,10 @@ const TodaySpecialEditProductList = ({
 };
 
 export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSectionProps) => {
+  // TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
+  const marketId = 1;
   const productListQuery = useProductListQuery({
-    // TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
-    marketId: 1,
+    marketId,
     sort: getProductListSort(props.selectedFilter),
     type: 'DAILY',
   });
@@ -81,6 +85,11 @@ export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSec
   const products = (productListQuery.data?.data?.content ?? []).map(createProductEditListItem);
 
   return (
-    <TodaySpecialEditProductList key={props.selectedFilter} {...props} initialProducts={products} />
+    <TodaySpecialEditProductList
+      key={props.selectedFilter}
+      {...props}
+      initialProducts={products}
+      marketId={marketId}
+    />
   );
 };
