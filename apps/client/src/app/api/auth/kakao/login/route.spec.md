@@ -23,7 +23,7 @@
 ## Cookie Policy
 
 - `access_token`: `HttpOnly`, production `Secure`, `SameSite=Lax`, `Path=/`
-- `refresh_token`: 백엔드 속성을 유지하되 BFF refresh route에서 사용할 수 있도록 Path를 `/api/auth/token/refresh`로 변경
+- `refreshToken`: 백엔드 속성을 유지하되 BFF refresh route에서 사용할 수 있도록 Path를 `/api/auth/token/refresh`로 변경
 - client component는 두 token을 읽거나 저장하지 않습니다.
 
 ## Error

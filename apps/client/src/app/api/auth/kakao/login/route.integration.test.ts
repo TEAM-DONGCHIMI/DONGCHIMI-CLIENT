@@ -30,7 +30,7 @@ describe('POST /api/auth/kakao/login', () => {
           {
             headers: {
               'Set-Cookie':
-                'refresh_token=refresh-token; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth/token/refresh',
+                'refreshToken=refresh-token; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth/token/refresh',
             },
           },
         );
@@ -56,7 +56,7 @@ describe('POST /api/auth/kakao/login', () => {
     expect(setCookieHeaders).toEqual(
       expect.arrayContaining([
         expect.stringContaining('access_token=access-token'),
-        expect.stringContaining('refresh_token=refresh-token'),
+        expect.stringContaining('refreshToken=refresh-token'),
       ]),
     );
     expect(setCookieHeaders.join(';')).toContain('Path=/api/auth/token/refresh');
