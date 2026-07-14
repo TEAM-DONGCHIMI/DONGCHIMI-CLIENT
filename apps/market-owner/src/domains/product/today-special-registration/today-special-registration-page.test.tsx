@@ -101,7 +101,7 @@ describe('TodaySpecialRegistrationPage', () => {
         discountedPrice: 4500,
         name: '딸기',
         originalPrice: 5000,
-        thumbnailUrl: '/images/product-empty.png',
+        thumbnailUrl: '/images/product-replace.svg',
       }),
     });
   });

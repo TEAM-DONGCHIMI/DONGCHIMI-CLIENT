@@ -13,7 +13,7 @@
 ## Request
 
 - Generated type: `OwnerApiTypes.DailyProductRegisterRequest`
-- `thumbnailUrl`: 선택 이미지가 있으면 Presigned 업로드 결과 `objectKey`, 이미지가 없으면 임시 기본 이미지 `/images/product-empty.png`
+- `thumbnailUrl`: 선택 이미지가 있으면 Presigned 업로드 결과 `objectKey`, 이미지가 없으면 기본 이미지 `/images/product-replace.svg`
 - `name`: 앞뒤 공백을 제거한 상품명
 - `category`: 화면의 한글 카테고리를 서버 enum code로 변환
 - `promotionalPhrase`: 앞뒤 공백을 제거하고, 빈 값이면 생략
@@ -57,7 +57,7 @@
 - `marketId`는 최종적으로 로그인 응답의 `OwnerLoginResponse.marketId`를 session에서 제공해야 합니다.
 - 현재 로그인/session이 fixture이므로 page 호출부는 임시 `marketId = 1`을 사용하고 교체 위치에 TODO를 남깁니다.
 - 이미지가 있으면 기존 Presigned API와 S3 PUT 흐름을 재사용하고, OpenAPI `PresignedUploadResponse.objectKey`를 `thumbnailUrl`에 전달합니다.
-- 이미지가 없으면 Presigned 요청을 생략하고 저장소의 기본 상품 이미지 `/images/product-empty.png`를 `thumbnailUrl`에 전달합니다.
+- 이미지가 없으면 Presigned 요청을 생략하고 저장소의 기본 상품 이미지 `/images/product-replace.svg`를 `thumbnailUrl`에 전달합니다.
 
 ## Verification
 
