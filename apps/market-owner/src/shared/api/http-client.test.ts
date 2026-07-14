@@ -85,7 +85,7 @@ describe('httpClient auth refresh', () => {
     await expect(httpClient.get('/v1/protected')).resolves.toEqual({ ok: true });
 
     expect(mockKyRequest).toHaveBeenCalledTimes(3);
-    expect(mockKyRequest.mock.calls[1]?.[0]).toBe('/v1/auth/refresh');
+    expect(mockKyRequest.mock.calls[1]?.[0]).toBe('/v1/auth/token/refresh');
     expect(mockKyRequest.mock.calls[1]?.[1]).toMatchObject({
       credentials: 'include',
       method: 'post',

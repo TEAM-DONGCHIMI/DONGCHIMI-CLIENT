@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 
 const OWNER_LOGIN_ENDPOINT_PATTERN = '**/v1/owners/auth/login';
-const AUTH_REFRESH_ENDPOINT_PATTERN = '**/v1/auth/refresh';
+const AUTH_REFRESH_ENDPOINT_PATTERN = '**/v1/auth/token/refresh';
 
 const AUTH_SUCCESS_RESPONSE = {
   code: 'SUCCESS',
