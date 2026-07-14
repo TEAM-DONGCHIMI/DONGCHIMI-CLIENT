@@ -5,8 +5,8 @@ import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/d
 
 import { useProductDetailQuery } from '@/domains/product/hooks';
 import { type OwnerApiTypes } from '@/shared/api';
+import { PRODUCT_CATEGORY_NAME_BY_CODE } from '@/shared/constants/product-categories';
 import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
-import { getProductCategoryGroup } from '@/shared/utils/product-category.utils';
 import { imageUploadInputAccept, isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
 
 import {
@@ -77,7 +77,7 @@ interface ProductEditModalFormProps extends Omit<ProductEditModalProps, 'marketI
 const createInitialValues = (
   detail: OwnerApiTypes.OwnerProductDetailResponse,
 ): ProductEditFormValues => {
-  const categoryName = getProductCategoryGroup(detail.category);
+  const categoryName = PRODUCT_CATEGORY_NAME_BY_CODE[detail.category];
 
   return {
     categoryName,

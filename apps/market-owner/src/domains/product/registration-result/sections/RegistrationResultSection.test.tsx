@@ -161,9 +161,9 @@ describe('RegistrationResultSection', () => {
       'true',
     );
 
-    await user.click(within(dropdown).getByRole('checkbox', { name: '정육･달걀' }));
+    await user.click(within(dropdown).getByRole('checkbox', { name: '정육/달걀' }));
 
-    expect(within(dropdown).getByRole('checkbox', { name: '정육･달걀' })).toHaveAttribute(
+    expect(within(dropdown).getByRole('checkbox', { name: '정육/달걀' })).toHaveAttribute(
       'aria-checked',
       'true',
     );
@@ -232,9 +232,9 @@ describe('RegistrationResultSection', () => {
 
     const dropdown = await screen.findByRole('group', { name: '상품 카테고리' });
 
-    await user.click(within(dropdown).getByRole('button', { name: '수산' }));
+    await user.click(within(dropdown).getByRole('button', { name: '수산물' }));
 
-    expect(categoryButton).toHaveTextContent('수산');
+    expect(categoryButton).toHaveTextContent('수산물');
   });
 
   it('keeps the product category dropdown anchored while scrolling', async () => {

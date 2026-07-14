@@ -20,7 +20,7 @@ describe('product list model', () => {
         createdAt: '2026-08-15T10:00:00',
       }),
     ).toEqual({
-      categoryName: '정육･달걀',
+      categoryName: '정육/달걀',
       endDate: '2026-08-22',
       originalPrice: '5,000',
       productId: 101,

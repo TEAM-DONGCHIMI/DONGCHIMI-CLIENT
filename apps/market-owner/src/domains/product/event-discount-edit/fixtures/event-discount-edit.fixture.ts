@@ -1,6 +1,6 @@
 export const eventDiscountEditProducts = [
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     productId: 201,
     productName: '햇감자 1kg',
@@ -10,7 +10,7 @@ export const eventDiscountEditProducts = [
     viewCount: 241,
   },
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     productId: 202,
     productName: '대추방울토마토 750g',
@@ -20,7 +20,7 @@ export const eventDiscountEditProducts = [
     viewCount: 198,
   },
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     productId: 203,
     productName: '청상추 200g',
@@ -30,7 +30,7 @@ export const eventDiscountEditProducts = [
     viewCount: 176,
   },
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     productId: 204,
     productName: '제주 감귤 1.5kg',
@@ -40,7 +40,7 @@ export const eventDiscountEditProducts = [
     viewCount: 154,
   },
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     productId: 205,
     productName: '깐마늘 300g',
@@ -50,7 +50,7 @@ export const eventDiscountEditProducts = [
     viewCount: 138,
   },
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     productId: 206,
     productName: '애호박 1개',
@@ -60,7 +60,7 @@ export const eventDiscountEditProducts = [
     viewCount: 119,
   },
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     productId: 207,
     productName: '사과 4입',
@@ -70,7 +70,7 @@ export const eventDiscountEditProducts = [
     viewCount: 97,
   },
   {
-    categoryName: '정육･달걀',
+    categoryName: '정육/달걀',
     endDate: '2026. 8. 16',
     productId: 208,
     productName: '삼겹살 500g',
@@ -80,7 +80,7 @@ export const eventDiscountEditProducts = [
     viewCount: 162,
   },
   {
-    categoryName: '정육･달걀',
+    categoryName: '정육/달걀',
     endDate: '2026. 8. 16',
     productId: 209,
     productName: '한우 불고기 300g',
@@ -90,7 +90,7 @@ export const eventDiscountEditProducts = [
     viewCount: 144,
   },
   {
-    categoryName: '정육･달걀',
+    categoryName: '정육/달걀',
     endDate: '2026. 8. 16',
     productId: 210,
     productName: '닭볶음탕용 닭 1kg',
@@ -100,7 +100,7 @@ export const eventDiscountEditProducts = [
     viewCount: 132,
   },
   {
-    categoryName: '정육･달걀',
+    categoryName: '정육/달걀',
     endDate: '2026. 8. 16',
     productId: 211,
     productName: '대란 30구',
@@ -110,7 +110,7 @@ export const eventDiscountEditProducts = [
     viewCount: 121,
   },
   {
-    categoryName: '정육･달걀',
+    categoryName: '정육/달걀',
     endDate: '2026. 8. 16',
     productId: 212,
     productName: '목살 구이용 500g',
@@ -120,7 +120,7 @@ export const eventDiscountEditProducts = [
     viewCount: 110,
   },
   {
-    categoryName: '정육･달걀',
+    categoryName: '정육/달걀',
     endDate: '2026. 8. 16',
     productId: 213,
     productName: '훈제오리 400g',
@@ -130,7 +130,7 @@ export const eventDiscountEditProducts = [
     viewCount: 88,
   },
   {
-    categoryName: '채소･과일',
+    categoryName: '채소/과일',
     endDate: '2026. 8. 16',
     productId: 125,
     productName: '풀숲',

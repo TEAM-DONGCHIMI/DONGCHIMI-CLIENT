@@ -8,7 +8,7 @@ describe('createDailyProductRequest', () => {
     const request = createDailyProductRequest({
       product: {
         ...createEmptyTodaySpecialProductForm(),
-        category: '채소･과일',
+        category: '채소/과일',
         description: '  멋쟁이 토마토  ',
         name: '  토마토  ',
         salePrice: '5,000',

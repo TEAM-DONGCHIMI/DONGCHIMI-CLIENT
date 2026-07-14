@@ -1,23 +1,8 @@
 import { type OwnerProductSortTypes } from '@dongchimi/shared/api';
 
 import { type OwnerApiTypes } from '@/shared/api';
+import { PRODUCT_CATEGORY_NAME_BY_CODE } from '@/shared/constants/product-categories';
 import { type ProductEditFilterTypes } from '../components/product-edit-page-shell';
-import { type ProductSelectableCategoryTypes } from '../constants';
-
-const productCategoryNameByCode = {
-  VEGETABLE_FRUIT: '채소･과일',
-  MEAT_EGG: '정육･달걀',
-  SEAFOOD: '수산',
-  DAIRY: '유제품',
-  CONVENIENCE_FOOD: '간편식',
-  PROCESSED_FOOD: '가공식품',
-  BEVERAGE_ALCOHOL: '음료･주류',
-  HOUSEHOLD_GOODS: '생활용품',
-  ETC: '기타',
-} satisfies Record<
-  OwnerApiTypes.OwnerProductListItemResponse['category'],
-  ProductSelectableCategoryTypes
->;
 
 const productListSortByFilter = {
   category: 'CATEGORY',
@@ -54,7 +39,7 @@ export const getProductListSort = (filter: ProductEditFilterTypes) => {
 
 export const createProductEditListItem = (product: OwnerApiTypes.OwnerProductListItemResponse) => {
   return {
-    categoryName: productCategoryNameByCode[product.category],
+    categoryName: PRODUCT_CATEGORY_NAME_BY_CODE[product.category],
     endDate: product.discountEndDate,
     originalPrice: formatPrice(product.originalPrice),
     productId: product.productId,

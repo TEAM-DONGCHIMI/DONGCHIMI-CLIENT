@@ -85,7 +85,7 @@ describe('TodaySpecialRegistrationPage', () => {
 
     await user.type(screen.getByLabelText('상품명'), '딸기');
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('채소･과일'));
+    await user.click(await screen.findByText('채소/과일'));
     await user.type(screen.getByLabelText('오늘의 특가'), '4500');
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
@@ -118,7 +118,7 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.upload(screen.getByLabelText('상품 이미지'), imageFile);
     await user.type(screen.getByLabelText('상품명'), '딸기');
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('채소･과일'));
+    await user.click(await screen.findByText('채소/과일'));
     await user.type(screen.getByLabelText('오늘의 특가'), '4500');
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
@@ -141,7 +141,7 @@ describe('TodaySpecialRegistrationPage', () => {
 
     await user.type(screen.getByLabelText('상품명'), '딸기');
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('채소･과일'));
+    await user.click(await screen.findByText('채소/과일'));
     await user.type(screen.getByLabelText('오늘의 특가'), '4500');
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
@@ -161,7 +161,7 @@ describe('TodaySpecialRegistrationPage', () => {
 
     await user.type(screen.getByLabelText('상품명'), '딸기');
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('채소･과일'));
+    await user.click(await screen.findByText('채소/과일'));
     await user.type(screen.getByLabelText('오늘의 특가'), '4500');
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
@@ -185,7 +185,7 @@ describe('TodaySpecialRegistrationPage', () => {
 
     await user.type(screen.getByLabelText('상품명'), '딸기');
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('채소･과일'));
+    await user.click(await screen.findByText('채소/과일'));
     await user.type(screen.getByLabelText('오늘의 특가'), '4500');
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
@@ -260,7 +260,7 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.upload(screen.getByLabelText('상품 이미지'), imageFile);
     await user.type(screen.getByLabelText('상품명'), '첫번째 상품');
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('채소･과일'));
+    await user.click(await screen.findByText('채소/과일'));
     await user.type(screen.getByLabelText('오늘의 특가'), '4500');
     await user.type(screen.getByLabelText('판매가'), '5000');
 
@@ -313,14 +313,14 @@ describe('TodaySpecialRegistrationPage', () => {
 
     await user.type(screen.getByLabelText('상품명'), '첫번째 상품');
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('채소･과일'));
+    await user.click(await screen.findByText('채소/과일'));
     await user.type(screen.getByLabelText('오늘의 특가'), '4500');
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
 
     await user.type(screen.getByLabelText('상품명'), '두번째 상품');
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('정육･달걀'));
+    await user.click(await screen.findByText('정육/달걀'));
     await user.type(screen.getByLabelText('오늘의 특가'), '6000');
     await user.type(screen.getByLabelText('판매가'), '7000');
     await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
@@ -347,7 +347,7 @@ describe('TodaySpecialRegistrationPage', () => {
 
     await user.type(screen.getByLabelText('상품명'), '등록된 상품');
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('채소･과일'));
+    await user.click(await screen.findByText('채소/과일'));
     await user.type(screen.getByLabelText('오늘의 특가'), '4500');
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
@@ -379,11 +379,11 @@ describe('TodaySpecialRegistrationPage', () => {
     const categoryOptions = Array.from(dropdown.querySelectorAll('button')).map(
       (option) => option.textContent,
     );
-    expect(categoryOptions.slice(0, 2)).toEqual(['채소･과일', '정육･달걀']);
+    expect(categoryOptions.slice(0, 2)).toEqual(['채소/과일', '정육/달걀']);
 
-    await user.click(await screen.findByText('채소･과일'));
+    await user.click(await screen.findByText('채소/과일'));
 
-    expect(screen.getByRole('button', { name: '채소･과일' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '채소/과일' })).toBeInTheDocument();
   });
 
   it('keeps category dropdown open while its list or page scrolls', async () => {
@@ -410,7 +410,7 @@ describe('TodaySpecialRegistrationPage', () => {
 
     await user.type(screen.getByLabelText('상품명'), '유지할 상품');
     await user.click(screen.getByRole('button', { name: '카테고리' }));
-    await user.click(await screen.findByText('채소･과일'));
+    await user.click(await screen.findByText('채소/과일'));
     await user.type(screen.getByLabelText('오늘의 특가'), '4500');
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
@@ -419,7 +419,7 @@ describe('TodaySpecialRegistrationPage', () => {
       '상품을 등록하지 못했습니다. 다시 시도해주세요.',
     );
     expect(screen.getByLabelText('상품명')).toHaveValue('유지할 상품');
-    expect(screen.getByRole('button', { name: '채소･과일' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '채소/과일' })).toBeInTheDocument();
     expect(screen.getByLabelText('오늘의 특가')).toHaveValue('4,500');
     expect(screen.getByLabelText('판매가')).toHaveValue('5,000');
     expect(screen.getByRole('button', { name: '상품 계속 등록' })).toBeEnabled();

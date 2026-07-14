@@ -1,39 +1,41 @@
+import type { OwnerApiTypes } from '@/shared/api';
+
 export const PRODUCT_CATEGORY_ALL_OPTION = '전체';
 
-export const PRODUCT_CATEGORY_GROUP_OPTIONS = [
-  '채소･과일',
-  '정육･달걀',
-  '수산',
-  '유제품',
-  '간편식',
-  '가공식품',
-  '음료･주류',
-  '생활용품',
-  '기타',
-] as const;
+type ProductCategoryCodeTypes = OwnerApiTypes.OwnerProductListItemResponse['category'];
 
-export type ProductCategoryGroupTypes = (typeof PRODUCT_CATEGORY_GROUP_OPTIONS)[number];
+export const PRODUCT_CATEGORY_NAME_BY_CODE = {
+  VEGETABLE_FRUIT: '채소/과일',
+  MEAT_EGG: '정육/달걀',
+  SEAFOOD: '수산물',
+  DAIRY: '유제품',
+  CONVENIENCE_FOOD: '간편식',
+  PROCESSED_FOOD: '가공식품',
+  BEVERAGE_ALCOHOL: '음료/주류',
+  HOUSEHOLD_GOODS: '생활용품',
+  ETC: '기타',
+} as const satisfies Record<ProductCategoryCodeTypes, string>;
+
+export type ProductCategoryGroupTypes =
+  (typeof PRODUCT_CATEGORY_NAME_BY_CODE)[ProductCategoryCodeTypes];
+
+export const PRODUCT_CATEGORY_GROUP_OPTIONS = Object.values(PRODUCT_CATEGORY_NAME_BY_CODE);
 
 export const PRODUCT_CATEGORY_FILTER_OPTIONS = [
   PRODUCT_CATEGORY_ALL_OPTION,
   ...PRODUCT_CATEGORY_GROUP_OPTIONS,
 ] as const;
 
+export const PRODUCT_CATEGORY_CODE_BY_NAME = Object.fromEntries(
+  Object.entries(PRODUCT_CATEGORY_NAME_BY_CODE).map(([code, name]) => [name, code]),
+) as Readonly<Record<ProductCategoryGroupTypes, ProductCategoryCodeTypes>>;
+
 export const PRODUCT_CATEGORY_GROUP_BY_SOURCE = {
-  BEVERAGE_ALCOHOL: '음료･주류',
-  CONVENIENCE_FOOD: '간편식',
-  DAIRY: '유제품',
-  ETC: '기타',
-  HOUSEHOLD_GOODS: '생활용품',
-  MEAT_EGG: '정육･달걀',
-  PROCESSED_FOOD: '가공식품',
-  SEAFOOD: '수산',
-  VEGETABLE_FRUIT: '채소･과일',
   김치: '가공식품',
   '김치/반찬': '가공식품',
-  수산: '수산',
-  정육: '정육･달걀',
-  채소: '채소･과일',
+  수산: '수산물',
+  정육: '정육/달걀',
+  채소: '채소/과일',
 } satisfies Record<string, ProductCategoryGroupTypes>;
 
 export type ProductCategoryFilterOptionTypes = (typeof PRODUCT_CATEGORY_FILTER_OPTIONS)[number];
