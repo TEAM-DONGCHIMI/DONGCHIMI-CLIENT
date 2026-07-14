@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from '@dongchimi/shared/api';
+import { API_ENDPOINTS, isApiResponseValidationError } from '@dongchimi/shared/api';
 import { describe, expect, it, vi } from 'vitest';
 
 import { httpClient } from '@/shared/api';
@@ -46,5 +46,23 @@ describe('startProductImport', () => {
         excelFileUrl: 'https://static.dongchimi.kr/test.xlsx',
       },
     });
+  });
+
+  it('rejects a failed API envelope without product import data', async () => {
+    mockedHttpClientPost.mockResolvedValueOnce({
+      success: false,
+      code: 'UNAUTHORIZED',
+      message: '인증이 필요합니다.',
+      data: null,
+    });
+
+    await expect(
+      startProductImport({
+        marketId: 12,
+        request: {
+          excelFileUrl: 'https://static.dongchimi.kr/test.xlsx',
+        },
+      }),
+    ).rejects.toSatisfy(isApiResponseValidationError);
   });
 });

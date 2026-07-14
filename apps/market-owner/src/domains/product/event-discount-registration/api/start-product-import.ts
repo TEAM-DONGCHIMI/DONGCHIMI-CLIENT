@@ -9,15 +9,16 @@ import { httpClient, type OwnerApiTypes } from '@/shared/api';
 
 export type ProductImportRequestTypes = OwnerApiTypes.ProductImportRequest;
 export type ProductImportResponseTypes = OwnerApiTypes.ProductImportResponse;
+type ProductImportApiResponseTypes = OwnerApiTypes.ApiResponseProductImportResponse;
 
 const productImportResponseSchema = z.object({
-  success: z.boolean(),
+  success: z.literal(true),
   code: z.string(),
   message: z.string(),
   data: z.object({
     jobId: z.string(),
   }),
-});
+}) satisfies z.ZodType<ProductImportApiResponseTypes>;
 
 export interface StartProductImportParams {
   marketId: ApiPathParamTypes;
