@@ -26,24 +26,22 @@ export const useAuthBootstrap = () => {
       return;
     }
 
-    let isCanceled = false;
     hasRequestedRefreshRef.current = true;
     useAuthStore.getState().setBootstrapStatus('refreshing');
 
     refreshMarketOwnerAuth()
       .then((response) => {
-        if (!isCanceled) {
+        if (useAuthStore.getState().isLoggedIn) {
           useAuthStore.getState().setAccessToken(response.data.accessToken);
         }
       })
       .catch(() => {
-        if (!isCanceled) {
+        if (useAuthStore.getState().isLoggedIn) {
           useAuthStore.getState().clearSession();
         }
       });
 
     return () => {
-      isCanceled = true;
       hasRequestedRefreshRef.current = false;
     };
   }, [accessToken, isLoggedIn]);

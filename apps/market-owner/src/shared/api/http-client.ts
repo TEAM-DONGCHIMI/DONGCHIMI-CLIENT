@@ -94,9 +94,17 @@ const request = async <ResponseDataTypes>(path: string, options?: HttpClientOpti
       throw await normalizeApiError(error);
     }
 
-    try {
-      const accessToken = await refreshAccessToken(performRequest);
+    let accessToken: string;
 
+    try {
+      accessToken = await refreshAccessToken(performRequest);
+    } catch (refreshError) {
+      clearAuthSession();
+
+      throw await normalizeApiError(refreshError);
+    }
+
+    try {
       return await performRequest<ResponseDataTypes>(
         path,
         {
@@ -108,10 +116,8 @@ const request = async <ResponseDataTypes>(path: string, options?: HttpClientOpti
         },
         accessToken,
       );
-    } catch (refreshError) {
-      clearAuthSession();
-
-      throw await normalizeApiError(refreshError);
+    } catch (retryError) {
+      throw await normalizeApiError(retryError);
     }
   }
 };

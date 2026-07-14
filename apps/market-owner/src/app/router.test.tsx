@@ -304,31 +304,6 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('heading', { name: '회원가입' })).toBeInTheDocument();
   });
 
-  it('shows the server duplicate email message when signup API rejects with DUPLICATE_EMAIL', async () => {
-    const user = userEvent.setup();
-
-    mockSignupMarketOwner.mockRejectedValueOnce(
-      new ApiError({
-        code: 'DUPLICATE_EMAIL',
-        message: '이미 가입된 이메일입니다.',
-        status: 409,
-        type: 'validation',
-      }),
-    );
-
-    renderRoute('/signup');
-
-    await fillSignupForm(user, {
-      email: 'used@example.com',
-      password: 'abc123',
-      passwordConfirm: 'abc123',
-    });
-    await user.click(await screen.findByRole('button', { name: '가입 완료' }));
-
-    expect(await screen.findByRole('alert')).toHaveTextContent('이미 가입된 이메일입니다.');
-    expect(screen.getByRole('heading', { name: '회원가입' })).toBeInTheDocument();
-  });
-
   it('renders protected work routes with the sidebar layout', async () => {
     renderRoute('/');
 

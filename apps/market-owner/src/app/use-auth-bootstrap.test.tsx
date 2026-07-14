@@ -12,6 +12,17 @@ vi.mock('@/domains/auth/api/auth-api', () => ({
 
 const mockRefreshMarketOwnerAuth = vi.mocked(refreshMarketOwnerAuth);
 
+const createDeferredRefreshResponse = () => {
+  let resolve!: (value: Awaited<ReturnType<typeof refreshMarketOwnerAuth>>) => void;
+  const promise = new Promise<Awaited<ReturnType<typeof refreshMarketOwnerAuth>>>(
+    (promiseResolve) => {
+      resolve = promiseResolve;
+    },
+  );
+
+  return { promise, resolve };
+};
+
 describe('useAuthBootstrap', () => {
   beforeEach(() => {
     mockRefreshMarketOwnerAuth.mockReset();
@@ -72,6 +83,52 @@ describe('useAuthBootstrap', () => {
       expect(useAuthStore.getState().isLoggedIn).toBe(false);
     });
     expect(useAuthStore.getState().bootstrapStatus).toBe('unauthenticated');
+    expect(useAuthStore.getState().accessToken).toBeUndefined();
+  });
+
+  it('keeps the refresh result when the bootstrap effect is cleaned up while still logged in', async () => {
+    useAuthStore.getState().setLoggedIn(true);
+    const deferredRefresh = createDeferredRefreshResponse();
+    mockRefreshMarketOwnerAuth.mockReturnValueOnce(deferredRefresh.promise);
+
+    const { unmount } = renderHook(() => useAuthBootstrap());
+
+    unmount();
+    deferredRefresh.resolve({
+      success: true,
+      code: 'SUCCESS',
+      message: 'ok',
+      data: {
+        accessToken: 'strict-mode-access-token',
+      },
+    });
+
+    await waitFor(() => {
+      expect(useAuthStore.getState().accessToken).toBe('strict-mode-access-token');
+    });
+    expect(useAuthStore.getState().bootstrapStatus).toBe('authenticated');
+  });
+
+  it('skips applying the refresh result after the user logs out', async () => {
+    useAuthStore.getState().setLoggedIn(true);
+    const deferredRefresh = createDeferredRefreshResponse();
+    mockRefreshMarketOwnerAuth.mockReturnValueOnce(deferredRefresh.promise);
+
+    renderHook(() => useAuthBootstrap());
+
+    useAuthStore.getState().clearSession();
+    deferredRefresh.resolve({
+      success: true,
+      code: 'SUCCESS',
+      message: 'ok',
+      data: {
+        accessToken: 'ignored-access-token',
+      },
+    });
+
+    await waitFor(() => {
+      expect(useAuthStore.getState().bootstrapStatus).toBe('unauthenticated');
+    });
     expect(useAuthStore.getState().accessToken).toBeUndefined();
   });
 });

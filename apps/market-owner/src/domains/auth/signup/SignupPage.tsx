@@ -1,31 +1,12 @@
-import { useNavigate } from 'react-router';
-
 import { Button, Flex, TextInput, Toast } from '@dongchimi/design-system/components';
 import { IcCircleCheckFill } from '@dongchimi/design-system/icons';
 
-import { isApiError } from '@/shared/api';
-import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
-
-import { useSignupMutation } from '../hooks/use-signup-mutation';
 import { useSignupForm } from './hooks/use-signup-form';
 import * as S from './SignupPage.css';
 
-const SIGNUP_FALLBACK_ERROR_MESSAGE = '회원가입에 실패했습니다. 다시 시도해주세요.';
-
-const getSignupErrorMessage = (error: unknown) => {
-  if (isApiError(error) && error.message.length > 0) {
-    return error.message;
-  }
-
-  return SIGNUP_FALLBACK_ERROR_MESSAGE;
-};
-
 export const SignupPage = () => {
-  const navigate = useNavigate();
-  const signupMutation = useSignupMutation();
   const {
     action: {
-      clearSubmitErrorMessage,
       handleEmailBlur,
       handleEmailChange,
       handlePasswordBlur,
@@ -33,13 +14,12 @@ export const SignupPage = () => {
       handlePasswordConfirmBlur,
       handlePasswordConfirmChange,
       handleSubmit,
-      setSubmitErrorMessage,
     },
     state: {
       email,
       emailStatusProps,
       isPasswordConfirmValid,
-      isValid,
+      isSubmitDisabled,
       password,
       passwordConfirm,
       passwordConfirmStatusProps,
@@ -47,19 +27,6 @@ export const SignupPage = () => {
       submitErrorMessage,
     },
   } = useSignupForm();
-  const handleSignupSubmit = handleSubmit(async ({ email, password }) => {
-    clearSubmitErrorMessage();
-
-    try {
-      await signupMutation.mutateAsync({
-        email,
-        password,
-      });
-      navigate(MARKET_OWNER_ROUTES.marketInformationRegistration);
-    } catch (error) {
-      setSubmitErrorMessage(getSignupErrorMessage(error));
-    }
-  });
 
   return (
     <main className={S.pageClassName}>
@@ -73,7 +40,7 @@ export const SignupPage = () => {
         </p>
       </Flex>
 
-      <form className={S.formClassName} noValidate onSubmit={handleSignupSubmit}>
+      <form className={S.formClassName} noValidate onSubmit={handleSubmit}>
         <Flex className={S.fieldGroupClassName} direction='column'>
           <TextInput
             autoComplete='email'
@@ -121,7 +88,7 @@ export const SignupPage = () => {
 
         <Button
           className={S.submitButtonClassName}
-          disabled={!isValid || signupMutation.isPending}
+          disabled={isSubmitDisabled}
           size='large'
           type='submit'
         >
