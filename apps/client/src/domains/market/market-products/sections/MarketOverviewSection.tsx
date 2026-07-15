@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 import { IcCalendar, IcLocation, IcPhone } from '@dongchimi/design-system/icons';
-import { formatBusinessHour } from '@dongchimi/shared';
+import { formatBusinessHour } from '@dongchimi/shared/business-hours';
 
 import { MarketOverviewActions } from '../components/MarketOverviewActions';
 import { MarketStatusChip } from '../components/MarketStatusChip';

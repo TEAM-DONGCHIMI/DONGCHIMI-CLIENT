@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { formatBusinessDays } from '@dongchimi/shared';
+import { formatBusinessDays } from '@dongchimi/shared/business-hours';
 
 import { act, renderWithProviders, screen, userEvent, waitFor, within } from '@/test';
 

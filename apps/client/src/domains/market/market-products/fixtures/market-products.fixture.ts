@@ -1,4 +1,4 @@
-import type { BusinessDayTypes, BusinessHourTypes } from '@dongchimi/shared';
+import type { BusinessDayTypes, BusinessHourTypes } from '@dongchimi/shared/business-hours';
 
 export type { BusinessDayTypes, BusinessHourTypes };
 

@@ -1,4 +1,4 @@
-import { getCurrentBusinessCloseTime } from '@dongchimi/shared';
+import { getCurrentBusinessCloseTime } from '@dongchimi/shared/business-hours';
 
 type CallModalDescriptionParamsTypes = Readonly<{
   closeTime: string | undefined;
