@@ -10,13 +10,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from '@/shared/api';
 import { useAuthStore } from '@/shared/stores/auth-store';
 
-import { publishLeaflet } from './api';
+import { issueQrCode, publishLeaflet } from './api';
 import { LeafletSharePage } from './LeafletSharePage';
 
 vi.mock('./api', () => ({
+  issueQrCode: vi.fn(),
   publishLeaflet: vi.fn(),
 }));
 
+const mockedIssueQrCode = vi.mocked(issueQrCode);
 const mockedPublishLeaflet = vi.mocked(publishLeaflet);
 
 const createWrapper = () => {
@@ -46,6 +48,7 @@ const createWrapper = () => {
 describe('LeafletSharePage', () => {
   beforeEach(() => {
     vi.stubEnv('VITE_PUBLIC_CLIENT_BASE_URL', 'https://app.dongchiimi.com');
+    mockedIssueQrCode.mockReset();
     mockedPublishLeaflet.mockReset();
     useAuthStore.getState().clearSession();
     useAuthStore.getState().setMarketId(12);
