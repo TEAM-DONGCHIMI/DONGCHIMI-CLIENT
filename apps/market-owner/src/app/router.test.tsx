@@ -1,5 +1,5 @@
 import { RouterProvider, createMemoryRouter } from 'react-router';
-import { waitFor } from '@testing-library/react';
+import { waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -481,11 +481,13 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('button', { name: '수정 완료' })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: '취소' }));
 
-    expect(
-      await screen.findByRole('dialog', { name: '저장하지 않고 나가시겠어요?' }),
-    ).toBeInTheDocument();
+    const leaveDialog = await screen.findByRole('dialog', {
+      name: '저장하지 않고 나가시겠어요?',
+    });
 
-    await user.click(screen.getByRole('button', { name: '취소' }));
+    expect(leaveDialog).toBeInTheDocument();
+
+    await user.click(within(leaveDialog).getByRole('button', { name: '취소' }));
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.marketInformationManagement);
     expect(marketNameInput).toHaveValue('새 마트');
 
