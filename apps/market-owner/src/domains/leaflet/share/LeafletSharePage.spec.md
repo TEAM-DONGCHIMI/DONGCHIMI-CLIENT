@@ -7,7 +7,7 @@
 - Page: `share`
 - Route: `/leaflets/share`
 - Path: `apps/market-owner/src/domains/leaflet/share/LeafletSharePage.tsx`
-- Jira: DCMSM-29
+- Jira: DCMSM-29, DCMSM-67
 - Status: Implemented
 
 ## Purpose
@@ -30,20 +30,23 @@
 - copy error toast: clipboard 미지원 또는 복사 실패 시 재시도 안내 toast UI를 표시합니다.
 - QR modal: `매장 고유 QR코드 보기` 클릭 후 dim overlay와 QR 다운로드 모달 UI를 표시합니다.
 - download error toast: QR 다운로드 버튼 클릭 후 `QR 이미지 다운로드를 실패했습니다.` toast UI를 표시합니다.
-- loading: UI-only 범위라 다루지 않습니다.
+- loading: 전단 발행 mutation이 pending인 동안 `전단 공유하기` 버튼을 `전단 발행 중` 문구와 native disabled 상태로 표시합니다.
 - empty: fixture 기반 화면이라 다루지 않습니다.
 
 ## Data
 
 - query: none
-- mutation: none
-- fixture: `fixtures/leaflet-share.fixture.ts`
+- mutation: `POST /v1/owners/markets/{marketId}/flyers`
+- fixture: 상품 개수와 QR label만 `fixtures/leaflet-share.fixture.ts`에서 사용합니다.
 - model: none
 
 ## Behavior
 
-- `전단 공유하기`는 실제 공유 요청 없이 share UI 상태로 전환합니다.
-- 공유 링크, QR 이미지, 상품 개수는 fixture 값을 사용합니다.
+- `전단 공유하기`는 auth store의 현재 `marketId`로 전단 발행 mutation을 호출합니다.
+- 발행 성공 시 응답 `slug`를 `VITE_PUBLIC_CLIENT_BASE_URL/markets/{slug}` 형태로 조합하고 share UI 상태로 전환합니다.
+- 발행 실패 시 서버 오류 메시지를 우선 표시하고 confirm UI를 유지합니다.
+- `marketId`가 없으면 요청하지 않고 재로그인 안내 toast를 표시합니다.
+- QR 이미지와 상품 개수는 fixture 값을 사용합니다.
 - `링크 복사`는 fixture 공유 링크를 clipboard에 기록하고 성공한 경우에만 toast UI를 표시합니다.
 - clipboard 미지원 또는 복사 실패 시 `링크를 복사하지 못했습니다. 다시 시도해주세요.` error toast를 표시합니다.
 - QR 다운로드 버튼은 실제 파일 다운로드 없이 `QR 이미지 다운로드를 실패했습니다.` toast UI 상태만 보여줍니다.
@@ -60,7 +63,10 @@
 ## Verification
 
 - [ ] `/leaflets/share` route renders `오늘의 전단 최종 확인`
-- [ ] clicking `전단 공유하기` renders `오늘의 전단 공유`
+- [ ] clicking `전단 공유하기` publishes the leaflet with the current marketId
+- [ ] pending publish disables the action and renders `전단 발행 중`
+- [ ] successful publish renders `오늘의 전단 공유` and the slug-based URL
+- [ ] failed publish renders an error toast and keeps the confirmation view
 - [ ] clicking `링크 복사` renders copied toast UI
 - [ ] clipboard write failure renders copy error toast UI
 - [ ] clicking `홈으로 돌아가기` navigates to the home route
