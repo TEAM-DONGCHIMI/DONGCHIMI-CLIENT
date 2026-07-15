@@ -37,6 +37,15 @@ describe('API_ENDPOINTS', () => {
     ).toBe(
       '/v1/owners/markets/market-1/products/draft?category=%EA%B3%BC%EC%9D%BC&page=1&search=%EC%82%AC%EA%B3%BC&size=20',
     );
+
+    expect(
+      API_ENDPOINTS.owner.products.search('market-1', {
+        keyword: '풀 무원',
+        size: 10,
+      }),
+    ).toBe(
+      '/v1/owners/markets/market-1/products/search?keyword=%ED%92%80+%EB%AC%B4%EC%9B%90&size=10',
+    );
   });
 
   it('exposes user and common endpoints', () => {
