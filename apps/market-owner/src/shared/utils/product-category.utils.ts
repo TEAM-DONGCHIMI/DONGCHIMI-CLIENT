@@ -8,6 +8,10 @@ const productCategoryGroupSet: ReadonlySet<string> = new Set(PRODUCT_CATEGORY_GR
 const productCategoryGroupBySource: Readonly<Record<string, ProductCategoryGroupTypes>> =
   PRODUCT_CATEGORY_GROUP_BY_SOURCE;
 
+export const formatProductCategoryDisplayName = (category: string) => {
+  return category.replaceAll('/', '･');
+};
+
 export const isProductCategoryGroup = (category: string): category is ProductCategoryGroupTypes => {
   return productCategoryGroupSet.has(category);
 };

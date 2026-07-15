@@ -1,6 +1,8 @@
 import { Button, Flex, LineButton } from '@dongchimi/design-system/components';
 import { IcDownload, IcUploadSizeSmallColor0 } from '@dongchimi/design-system/icons';
 
+import excelUploadImageUrl from '../assets/img-excel-upload.svg';
+import leafletUploadImageUrl from '../assets/img-leaflet-upload.svg';
 import * as S from './RegistrationMethodSection.css';
 
 export interface RegistrationMethodSectionProps {
@@ -41,7 +43,13 @@ export const RegistrationMethodSection = ({
           className={S.methodCardClassName}
           direction='column'
         >
-          <span aria-hidden='true' className={S.imagePlaceholderClassName} />
+          <img
+            alt=''
+            className={S.methodImageClassName}
+            height={80}
+            src={excelUploadImageUrl}
+            width={80}
+          />
           <Flex align='center' className={S.cardTextGroupClassName} direction='column'>
             <h2 className={S.cardTitleClassName} id={registrationMethodExcelTitleId}>
               엑셀 파일 업로드
@@ -96,7 +104,13 @@ export const RegistrationMethodSection = ({
           className={S.methodCardClassName}
           direction='column'
         >
-          <span aria-hidden='true' className={S.imagePlaceholderClassName} />
+          <img
+            alt=''
+            className={S.methodImageClassName}
+            height={80}
+            src={leafletUploadImageUrl}
+            width={80}
+          />
           <Flex align='center' className={S.cardTextGroupClassName} direction='column'>
             <h2 className={S.cardTitleClassName} id={registrationMethodLeafletTitleId}>
               전단지 업로드

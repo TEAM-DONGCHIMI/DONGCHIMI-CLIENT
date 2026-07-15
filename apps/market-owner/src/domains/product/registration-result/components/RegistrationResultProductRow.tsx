@@ -14,6 +14,8 @@ import {
   IcPlus,
 } from '@dongchimi/design-system/icons';
 
+import { formatProductCategoryDisplayName } from '@/shared/utils/product-category.utils';
+
 import type { RegistrationResultProduct } from '../fixtures';
 import type { RegistrationResultEditableProductFieldTypes } from '../hooks/useRegistrationResultProductDrafts';
 import {
@@ -23,6 +25,7 @@ import {
   type RegistrationResultProductFieldValues,
 } from '../utils/registration-result-product-validation';
 import * as S from './RegistrationResult.css';
+import ProductReplaceImage from './ProductReplaceImage';
 
 export interface ImagePreview {
   alt: string;
@@ -52,8 +55,12 @@ interface ProductFieldParams {
 
 const ProductPreview = ({ productName }: { productName: string }) => {
   return (
-    <span aria-hidden='true' className={S.productPreviewClassName}>
-      {productName.slice(0, 1)}
+    <span className={S.productPreviewClassName}>
+      <ProductReplaceImage
+        aria-label={`${productName} 기본 상품 이미지`}
+        className={S.productReplaceImageClassName}
+        role='img'
+      />
     </span>
   );
 };
@@ -205,7 +212,7 @@ const getProductFields = ({
       id: `${productId}-category`,
       onClick: onCategoryClick,
       trailingIcon: <IcChevronDownSizeSmall />,
-      value: fieldValues.category,
+      value: formatProductCategoryDisplayName(fieldValues.category),
       width: '12.8rem',
     },
     {

@@ -32,7 +32,7 @@
 ## UI States
 
 - loading: 이번 컴포넌트 범위에서 다루지 않습니다.
-- empty: 등록된 상품이 없으면 `ProductEditEmptyView`가 Figma `Image_empty`, 제목, 설명, `상품 등록하러 가기` link를 중앙에 표시합니다.
+- empty: 등록된 상품이 없으면 `ProductEditEmptyView`가 `ImageEmpty` 일러스트, 제목, 설명, `상품 등록하러 가기` link를 중앙에 표시합니다.
 - error: 이번 컴포넌트 범위에서 다루지 않습니다.
 - success: 상품이 있으면 그룹 제목과 상품 수정 카드를 grid로 표시합니다.
 - delete confirm: 개별 상품 카드 삭제 버튼을 누르면 삭제 확인 modal을 표시합니다.

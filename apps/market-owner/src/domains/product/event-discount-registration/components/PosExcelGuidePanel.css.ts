@@ -1,4 +1,4 @@
-import { keyframes, style, styleVariants } from '@vanilla-extract/css';
+import { keyframes, style } from '@vanilla-extract/css';
 
 import { atomic, semantic, shadow, typography } from '@dongchimi/design-system/tokens';
 
@@ -75,33 +75,10 @@ export const titleClassName = style({
   whiteSpace: 'pre-line',
 });
 
-export const imageListClassName = style({
-  display: 'flex',
+export const guideImageClassName = style({
+  display: 'block',
   width: '36rem',
   maxWidth: '100%',
+  height: 'auto',
   alignSelf: 'center',
-  flexDirection: 'column',
-  gap: '1.6rem',
-});
-
-export const guideImagePlaceholderClassName = style({
-  flex: '0 0 auto',
-  width: '100%',
-  backgroundColor: atomic.neutral[10],
-  backgroundImage:
-    'linear-gradient(45deg, rgba(226, 232, 240, 0.72) 25%, transparent 25%), linear-gradient(-45deg, rgba(226, 232, 240, 0.72) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(226, 232, 240, 0.72) 75%), linear-gradient(-45deg, transparent 75%, rgba(226, 232, 240, 0.72) 75%)',
-  backgroundPosition: '0 0, 0 1rem, 1rem -1rem, -1rem 0',
-  backgroundSize: '2rem 2rem',
-});
-
-export const guideImagePlaceholderHeightClassNames = styleVariants({
-  large: {
-    height: '27.4rem',
-  },
-  medium: {
-    height: '24.1rem',
-  },
-  small: {
-    height: '17.5rem',
-  },
 });

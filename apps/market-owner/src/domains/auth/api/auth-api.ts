@@ -1,9 +1,5 @@
 import { API_ENDPOINTS, validateApiResponse } from '@dongchimi/shared/api';
 
-import {
-  authRefreshResponseSchema,
-  type AuthRefreshResponseTypes,
-} from '@/shared/api/auth-refresh-schema';
 import { httpClient, type OwnerApiTypes } from '@/shared/api';
 
 import {
@@ -44,27 +40,12 @@ export const signupMarketOwner = async (
       skipAuthorization: true,
       skipRefresh: true,
     },
+    credentials: 'include',
     json: body,
   });
 
   return validateApiResponse(ownerSignupResponseSchema, response, {
     endpoint,
-    schemaDescription: 'ApiResponseOwnerSignupResponse',
-  });
-};
-
-export const refreshMarketOwnerAuth = async (): Promise<AuthRefreshResponseTypes> => {
-  const endpoint = API_ENDPOINTS.common.auth.refresh;
-  const response = await httpClient.post<unknown>(endpoint, {
-    auth: {
-      skipAuthorization: true,
-      skipRefresh: true,
-    },
-    credentials: 'include',
-  });
-
-  return validateApiResponse(authRefreshResponseSchema, response, {
-    endpoint,
-    schemaDescription: 'ApiResponseAuthRefreshResponse',
+    schemaDescription: 'ApiResponseOwnerLoginResponse',
   });
 };

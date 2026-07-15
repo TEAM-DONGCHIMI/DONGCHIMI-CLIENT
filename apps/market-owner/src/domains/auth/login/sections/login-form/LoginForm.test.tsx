@@ -1,4 +1,5 @@
 import userEvent from '@testing-library/user-event';
+import { ToastProvider } from '@dongchimi/shared/toast';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -12,7 +13,9 @@ const renderLoginForm = (props: LoginFormProps = {}) => {
   return render(
     <MemoryRouter>
       <QueryProvider>
-        <LoginForm {...props} />
+        <ToastProvider offset='2.4rem' placement='top-center'>
+          <LoginForm {...props} />
+        </ToastProvider>
       </QueryProvider>
     </MemoryRouter>,
   );
@@ -77,12 +80,13 @@ describe('LoginForm', () => {
     expect(emailInput).toBeInvalid();
   });
 
-  it('accepts only email-safe characters and clears the error for a valid email', async () => {
+  it('allows Korean email input and keeps the email format validation', async () => {
     const user = userEvent.setup();
 
     renderLoginForm();
 
     const emailInput = screen.getByLabelText('이메일');
+    const passwordInput = screen.getByLabelText('비밀번호');
 
     await user.type(emailInput, 'owner_01-test@example.co.kr');
 
@@ -92,7 +96,12 @@ describe('LoginForm', () => {
 
     await user.type(emailInput, '한글!');
 
-    expect(emailInput).toHaveValue('owner_01-test@example.co.kr');
+    expect(emailInput).toHaveValue('owner_01-test@example.co.kr한글!');
+
+    await user.click(passwordInput);
+
+    expect(screen.getByText('올바른 이메일 형식이 아닙니다.')).toBeInTheDocument();
+    expect(emailInput).toBeInvalid();
   });
 
   it('shows the password field error after focus leaves the field', async () => {

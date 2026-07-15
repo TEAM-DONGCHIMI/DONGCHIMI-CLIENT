@@ -9,6 +9,7 @@ import {
   type ProductCategoryFilterOptionTypes,
   type ProductCategoryGroupTypes,
 } from '@/shared/constants/product-categories';
+import { formatProductCategoryDisplayName } from '@/shared/utils/product-category.utils';
 
 import * as S from './RegistrationResult.css';
 
@@ -257,7 +258,7 @@ export const CategoryFilterDropdown = ({
               onClick={() => handleOptionClick(option)}
               selected={selected}
             >
-              {option}
+              {formatProductCategoryDisplayName(option)}
             </Dropdown.Item>
           );
         })}
@@ -326,7 +327,7 @@ export const ProductCategoryDropdown = ({
             }}
             selected={selectedCategory === option}
           >
-            {option}
+            {formatProductCategoryDisplayName(option)}
           </Dropdown.Item>
         ))}
       </Dropdown>

@@ -18,8 +18,11 @@ type HttpRequestTypes = <ResponseDataTypes>(
   options?: HttpClientOptionsTypes,
 ) => Promise<ResponseDataTypes>;
 
+type HttpStreamRequestTypes = (path: string, options?: HttpClientOptionsTypes) => Promise<Response>;
+
 type HttpClientTypes = Record<HttpMethodTypes, HttpRequestTypes> & {
   request: HttpRequestTypes;
+  stream: HttpStreamRequestTypes;
 };
 
 const REQUEST_TIMEOUT_MS = 10_000;
@@ -46,7 +49,16 @@ export const createHttpClient = () => {
     hooks: {
       beforeRequest: [
         ({ request }) => {
-          request.headers.set('Accept', 'application/json');
+          if (!request.headers.has('Accept')) {
+            request.headers.set('Accept', 'application/json');
+          }
+
+          const { devAccessToken } = getMarketOwnerEnv();
+
+          // TODO: 로그인 세션 연동 후 개발용 토큰 주입을 제거합니다.
+          if (devAccessToken && !request.headers.has('Authorization')) {
+            request.headers.set('Authorization', `Bearer ${devAccessToken}`);
+          }
         },
       ],
     },
@@ -73,22 +85,30 @@ const parseJsonResponse = async <ResponseDataTypes>(response: Response) => {
   return JSON.parse(text) as ResponseDataTypes;
 };
 
+const performResponse = (path: string, options?: HttpClientOptionsTypes, accessToken?: string) => {
+  return getHttpClient()(path, createAuthorizedRequestOptions(options, accessToken));
+};
+
 const performRequest = async <ResponseDataTypes>(
   path: string,
   options?: HttpClientOptionsTypes,
   accessToken?: string,
 ) => {
-  const response = await getHttpClient()(
-    path,
-    createAuthorizedRequestOptions(options, accessToken),
-  );
+  const response = await performResponse(path, options, accessToken);
 
   return await parseJsonResponse<ResponseDataTypes>(response);
 };
 
-const request = async <ResponseDataTypes>(path: string, options?: HttpClientOptionsTypes) => {
+export const refreshAuthSession = () => {
+  return refreshAccessToken(performRequest);
+};
+
+const requestWithAuthRefresh = async <ResponseDataTypes>(
+  perform: (accessToken?: string) => Promise<ResponseDataTypes>,
+  options?: HttpClientOptionsTypes,
+) => {
   try {
-    return await performRequest<ResponseDataTypes>(path, options);
+    return await perform();
   } catch (error) {
     if (!shouldRefreshAccessToken(error, options)) {
       throw await normalizeApiError(error);
@@ -97,7 +117,7 @@ const request = async <ResponseDataTypes>(path: string, options?: HttpClientOpti
     let accessToken: string;
 
     try {
-      accessToken = await refreshAccessToken(performRequest);
+      accessToken = await refreshAuthSession();
     } catch (refreshError) {
       clearAuthSession();
 
@@ -105,21 +125,42 @@ const request = async <ResponseDataTypes>(path: string, options?: HttpClientOpti
     }
 
     try {
-      return await performRequest<ResponseDataTypes>(
-        path,
-        {
-          ...options,
-          auth: {
-            ...options?.auth,
-            skipRefresh: true,
-          },
-        },
-        accessToken,
-      );
+      return await perform(accessToken);
     } catch (retryError) {
       throw await normalizeApiError(retryError);
     }
   }
+};
+
+const request = <ResponseDataTypes>(path: string, options?: HttpClientOptionsTypes) => {
+  const retryOptions = {
+    ...options,
+    auth: {
+      ...options?.auth,
+      skipRefresh: true,
+    },
+  } satisfies HttpClientOptionsTypes;
+
+  return requestWithAuthRefresh(
+    (accessToken) =>
+      performRequest<ResponseDataTypes>(path, accessToken ? retryOptions : options, accessToken),
+    options,
+  );
+};
+
+const stream = (path: string, options?: HttpClientOptionsTypes) => {
+  const retryOptions = {
+    ...options,
+    auth: {
+      ...options?.auth,
+      skipRefresh: true,
+    },
+  } satisfies HttpClientOptionsTypes;
+
+  return requestWithAuthRefresh(
+    (accessToken) => performResponse(path, accessToken ? retryOptions : options, accessToken),
+    options,
+  );
 };
 
 const withMethod = (method: HttpMethodTypes) => {
@@ -135,6 +176,7 @@ export const httpClient: HttpClientTypes = {
   post: withMethod('post'),
   put: withMethod('put'),
   request,
+  stream,
 };
 
 export type { HttpClientOptionsTypes } from './http-auth';

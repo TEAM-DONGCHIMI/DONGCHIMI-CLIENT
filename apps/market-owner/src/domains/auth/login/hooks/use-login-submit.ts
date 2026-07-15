@@ -1,4 +1,5 @@
 import { isApiResponseValidationError } from '@dongchimi/shared/api';
+import { useToast } from '@dongchimi/shared/toast';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
@@ -64,20 +65,22 @@ const getLoginErrorMessage = (error: unknown) => {
   return LOGIN_UNEXPECTED_ERROR_MESSAGE;
 };
 
+const LOGIN_ERROR_TOAST_ID = 'login-submit-error';
+
 export const useLoginSubmit = ({ submitLogin }: UseLoginSubmitOptions = {}) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const toast = useToast();
   const loginMutation = useLoginMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loginErrorMessage, setLoginErrorMessage] = useState<string>();
 
   const clearLoginErrorMessage = () => {
-    setLoginErrorMessage(undefined);
+    toast.dismiss(LOGIN_ERROR_TOAST_ID);
   };
 
   const submit = async (params: LoginSubmitParams) => {
     setIsSubmitting(true);
-    setLoginErrorMessage(undefined);
+    toast.dismiss(LOGIN_ERROR_TOAST_ID);
 
     try {
       const result =
@@ -92,7 +95,7 @@ export const useLoginSubmit = ({ submitLogin }: UseLoginSubmitOptions = {}) => {
 
       navigate(result.redirectTo, { replace: true });
     } catch (error) {
-      setLoginErrorMessage(getLoginErrorMessage(error));
+      toast.error(getLoginErrorMessage(error), { id: LOGIN_ERROR_TOAST_ID });
     } finally {
       setIsSubmitting(false);
     }
@@ -105,7 +108,6 @@ export const useLoginSubmit = ({ submitLogin }: UseLoginSubmitOptions = {}) => {
     },
     state: {
       isSubmitting,
-      loginErrorMessage,
     },
   };
 };

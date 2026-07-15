@@ -1,4 +1,4 @@
-import { Button, TextInput, Toast } from '@dongchimi/design-system/components';
+import { Button, TextInput } from '@dongchimi/design-system/components';
 import { IcCheckboxActionSizeSmall, IcCheckboxSizeSmall } from '@dongchimi/design-system/icons';
 
 import { useLoginForm } from '../../hooks/use-login-form';
@@ -24,7 +24,6 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
       emailStatusProps,
       isSubmitDisabled,
       keepSignedIn,
-      loginErrorMessage,
       password,
       passwordStatusProps,
     },
@@ -80,8 +79,6 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
       >
         로그인
       </Button>
-
-      {loginErrorMessage !== undefined && <Toast status='error'>{loginErrorMessage}</Toast>}
     </form>
   );
 };

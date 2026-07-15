@@ -42,7 +42,7 @@ export const marketOwnerRoutes = [
             path: MARKET_OWNER_ROUTES.todaySpecialRegistration,
             ...createLazyRoute(
               () =>
-                import('@/domains/product/today-special-registration/TodaySpecialRegistrationPage'),
+                import('@/domains/product/today-special-registration/today-special-registration-page'),
               'TodaySpecialRegistrationPage',
             ),
           },
@@ -80,6 +80,14 @@ export const marketOwnerRoutes = [
       {
         Component: NoSidebarLayout,
         children: [
+          {
+            path: MARKET_OWNER_ROUTES.marketInformationManagement,
+            ...createLazyRoute(
+              () =>
+                import('@/domains/market/information-management/MarketInformationManagementPage'),
+              'MarketInformationManagementPage',
+            ),
+          },
           {
             path: MARKET_OWNER_ROUTES.marketInformationRegistration,
             ...createLazyRoute(
