@@ -21,6 +21,9 @@ export const getMarketOwnerEnv = () => {
       /\/+$/,
       '',
     ),
+    devAccessToken: import.meta.env.DEV
+      ? normalizePublicEnv(import.meta.env.VITE_DEV_ACCESS_TOKEN)
+      : undefined,
     kakaoMapAppKey: normalizePublicEnv(import.meta.env.VITE_PUBLIC_KAKAO_MAP_APP_KEY),
     s3BaseUrl: normalizeBaseUrl(import.meta.env.VITE_PUBLIC_S3_BASE_URL),
   };

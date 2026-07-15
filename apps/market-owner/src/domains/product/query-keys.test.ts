@@ -1,15 +1,81 @@
 import { describe, expect, it } from 'vitest';
 
 import { productQueryKeys } from './query-keys';
-import { productDetailQueryOptions, productListQueryOptions } from './query-options';
+import {
+  productDetailQueryOptions,
+  productListQueryOptions,
+  productSearchQueryOptions,
+} from './query-options';
 
 describe('productQueryKeys', () => {
-  it('declares static hierarchical product keys', () => {
-    expect(productQueryKeys).toEqual({
-      all: ['product'],
-      detail: ['product', 'detail'],
-      list: ['product', 'list'],
-    });
+  it('declares root keys and key factories', () => {
+    expect(productQueryKeys.all).toEqual(['product']);
+    expect(productQueryKeys.searchRoot).toEqual(['product', 'search']);
+    expect(productQueryKeys.detailRoot).toEqual(['product', 'detail']);
+    expect(productQueryKeys.listRoot).toEqual(['product', 'list']);
+    expect(
+      productQueryKeys.search({
+        keyword: '풀무원',
+        marketId: 1,
+        size: 10,
+      }),
+    ).toEqual([
+      'product',
+      'search',
+      {
+        keyword: '풀무원',
+        marketId: 1,
+        size: 10,
+      },
+    ]);
+    expect(productQueryKeys.detail({ marketId: 1, productId: 101 })).toEqual([
+      'product',
+      'detail',
+      { marketId: 1, productId: 101 },
+    ]);
+    expect(productQueryKeys.list({ marketId: 1, sort: 'CATEGORY', type: 'DAILY' })).toEqual([
+      'product',
+      'list',
+      { marketId: 1, sort: 'CATEGORY', type: 'DAILY' },
+    ]);
+  });
+
+  it('combines normalized search params in query options', () => {
+    const defaultSizeKey = productSearchQueryOptions({
+      keyword: '  풀무원  ',
+      marketId: 1,
+    }).queryKey;
+
+    expect(defaultSizeKey).toEqual([
+      'product',
+      'search',
+      {
+        keyword: '풀무원',
+        marketId: 1,
+        size: 10,
+      },
+    ]);
+    expect(defaultSizeKey).toEqual(
+      productSearchQueryOptions({ keyword: '풀무원', marketId: 1, size: 10 }).queryKey,
+    );
+  });
+
+  it('separates cache entries by market, keyword, and size', () => {
+    const baseKey = productSearchQueryOptions({ keyword: '풀', marketId: 1, size: 10 }).queryKey;
+
+    expect(baseKey).not.toEqual(
+      productSearchQueryOptions({ keyword: '풀', marketId: 2, size: 10 }).queryKey,
+    );
+    expect(baseKey).not.toEqual(
+      productSearchQueryOptions({ keyword: '감자', marketId: 1, size: 10 }).queryKey,
+    );
+    expect(baseKey).not.toEqual(
+      productSearchQueryOptions({ keyword: '풀', marketId: 1, size: 5 }).queryKey,
+    );
+  });
+
+  it('disables a blank search keyword', () => {
+    expect(productSearchQueryOptions({ keyword: '   ', marketId: 1 }).enabled).toBe(false);
   });
 
   it('combines detail params in query options', () => {
@@ -38,6 +104,10 @@ describe('productQueryKeys', () => {
     expect(defaultSortKey).toEqual(
       productListQueryOptions({ marketId: 1, sort: 'CATEGORY', type: 'DAILY' }).queryKey,
     );
+  });
+
+  it('disables product list without a market id', () => {
+    expect(productListQueryOptions({ marketId: undefined, type: 'DAILY' }).enabled).toBe(false);
   });
 
   it('separates cache entries by market, deal type, and sort', () => {

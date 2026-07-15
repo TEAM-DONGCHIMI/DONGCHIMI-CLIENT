@@ -8,6 +8,7 @@ import { Button, Flex, Stack } from '@dongchimi/design-system/components';
 import { IcCircleExclamation } from '@dongchimi/design-system/icons';
 
 import { DesktopHeader } from '@/shared/components';
+import dongchimiLogo from '@/shared/assets/images/Img_pavicon.svg';
 import * as S from './MarketInformationForm.css';
 import {
   createMarketInformationRegistrationRequest,
@@ -298,7 +299,10 @@ export const MarketInformationForm = ({
 
   return (
     <div className={S.pageRootClassName}>
-      <DesktopHeader logo={<span className={S.logoClassName}>DC</span>} variant='logoOnly' />
+      <DesktopHeader
+        logo={<img alt='동치미' className={S.logoClassName} src={dongchimiLogo} />}
+        variant='logoOnly'
+      />
 
       <main className={S.mainClassName}>
         <Stack className={S.pageContainerClassName} gap='none'>
