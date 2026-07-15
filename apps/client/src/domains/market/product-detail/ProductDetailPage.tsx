@@ -12,7 +12,7 @@ import {
 import * as S from './ProductDetailPage.css';
 
 type ProductDetailPageProps = Readonly<{
-  marketId: string;
+  marketSlug: string;
   productId: string;
 }>;
 
@@ -61,9 +61,9 @@ const MartCommentSection = ({ comment }: { comment?: string }) => {
   return <MartCommentCard comment={comment} />;
 };
 
-export const ProductDetailPage = ({ marketId, productId }: ProductDetailPageProps) => {
+export const ProductDetailPage = ({ marketSlug, productId }: ProductDetailPageProps) => {
   const productDetail = getProductDetailFixture(productId);
-  const marketProductsHref = CLIENT_ROUTES.market(marketId);
+  const marketProductsHref = CLIENT_ROUTES.market(marketSlug);
 
   if (productDetail == null) {
     notFound();

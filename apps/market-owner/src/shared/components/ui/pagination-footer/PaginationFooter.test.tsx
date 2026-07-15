@@ -24,7 +24,7 @@ describe('PaginationFooter', () => {
 
     expect(screen.getByText('전체')).toBeInTheDocument();
     expect(screen.getByText('128')).toBeInTheDocument();
-    expect(screen.getByText('1-10')).toBeInTheDocument();
+    expect(screen.getByText('1~10')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '2 페이지, 현재 페이지' })).toHaveAttribute(
       'aria-current',
       'page',
@@ -60,5 +60,12 @@ describe('PaginationFooter', () => {
       screen.queryByRole('button', { name: /페이지당 표시 개수 선택/ }),
     ).not.toBeInTheDocument();
     expect(screen.queryByText('씩 보기')).not.toBeInTheDocument();
+  });
+
+  it('can hide page navigation while keeping the range summary', () => {
+    renderFooter({ pages: [1], showNavigation: false, totalCount: 10 });
+
+    expect(screen.getByText('1~10')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '1 페이지, 현재 페이지' })).not.toBeInTheDocument();
   });
 });

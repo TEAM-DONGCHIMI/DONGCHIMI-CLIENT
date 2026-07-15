@@ -9,11 +9,8 @@ import {
   CategoryFilterDropdown,
   ProductCategoryDropdown,
 } from '../components/RegistrationResultDropdown';
-import type { RegistrationResultProduct } from '../fixtures';
-import {
-  getRegistrationResultProductFieldValue,
-  type RegistrationResultProductDraftMapTypes,
-} from './useRegistrationResultProductDrafts';
+import type { RegistrationResultProduct, RegistrationResultProductDraftMapTypes } from '../model';
+import { getRegistrationResultProductFieldValue } from '../model';
 
 interface UseRegistrationResultCategoryDropdownsParams {
   productDrafts: RegistrationResultProductDraftMapTypes;
@@ -97,7 +94,10 @@ export const useRegistrationResultCategoryDropdowns = ({
         productDrafts,
         'category',
       );
-      const selectedCategory = getProductCategoryGroup(selectedCategoryValue);
+      const selectedCategory =
+        selectedCategoryValue.trim().length > 0
+          ? getProductCategoryGroup(selectedCategoryValue)
+          : '';
       const overlayId = getProductCategoryDropdownOverlayId(product.id);
 
       closeProductCategoryDropdown(productCategoryDropdownOverlayIdRef.current);

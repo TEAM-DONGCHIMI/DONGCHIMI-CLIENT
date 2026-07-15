@@ -1,21 +1,15 @@
 import Image from 'next/image';
 
 import { IcCalendar, IcLocation, IcPhone } from '@dongchimi/design-system/icons';
-import { formatBusinessHour, type BusinessHourTypes } from '@dongchimi/shared/business-hours';
+import { formatBusinessHour } from '@dongchimi/shared/business-hours';
 
 import { MarketOverviewActions } from '../components/MarketOverviewActions';
 import { MarketStatusChip } from '../components/MarketStatusChip';
 import * as S from '../MarketProductsPage.css';
+import type { MarketDetailTypes } from '../../model/market-detail-schema';
 
 interface MarketOverviewSectionProps {
-  market: {
-    address: string;
-    businessHours: BusinessHourTypes[];
-    isOpenNow: boolean;
-    marketPhone1: string;
-    name: string;
-    thumbnailUrl: string | null;
-  };
+  market: MarketDetailTypes;
   shareUrl: string;
 }
 
