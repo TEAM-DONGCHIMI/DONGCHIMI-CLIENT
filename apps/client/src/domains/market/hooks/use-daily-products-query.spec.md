@@ -34,16 +34,17 @@
 
 ## API Contract
 
-- browser endpoint: `GET /api/markets/{marketId}/products/daily`
+- browser endpoint: `GET /api/markets/products/daily?marketId={marketId}`
 - backend endpoint: `GET /v1/users/markets/{marketId}/products/daily`
 - method: `GET`
-- params: path의 `marketId`
+- params: BFF search parameter의 `marketId`, backend path의 `marketId`
 - response: `totalCount`와 `productId`, `name`, nullable `thumbnailUrl`, `originalPrice`, `discountedPrice`, `discountRate`를 가진 `products`
+- invariant: pagination 없는 전체 목록이므로 `totalCount`는 `products.length`와 일치해야 합니다.
 - error: browser client가 정규화한 API 오류 또는 response validation 오류를 노출합니다.
 
 ## Query Key
 
-- factory: `dailyProductsQueryKeys`
+- factory: `marketQueryKeys.dailyProducts`
 - response-changing params: `marketId`
 
 ## Behavior
@@ -61,17 +62,14 @@
 - cache: 앱 기본 `staleTime`을 사용합니다.
 - concurrency/cancellation: TanStack Query와 Ky 기본 동작을 사용합니다.
 - accessibility impact: 사용처가 loading/empty/error 상태와 재시도 버튼의 accessible name을 제공합니다.
-
-## Open Questions
-
-- 페이지 연결은 `DCMCL-18`의 마트 상세 응답이 숫자 `marketId`를 공급하는 조합부가 develop에 반영된 뒤 진행합니다.
 - Swagger 확인 값 `2`는 테스트 근거로만 사용하고 제품 코드에 고정하지 않습니다.
+- 화면에서는 마트 상세 응답의 `marketId`를 사용합니다.
 
 ## Verification
 
 - [x] `git diff --check`
 - [x] Frontend Fundamentals self-check
 - [x] Logic composition self-check
-- [ ] state transitions covered
+- [x] state transitions covered
 - [x] API contract checked
 - [x] query key includes response-changing params
