@@ -630,6 +630,83 @@ describe('RegistrationResultSection', () => {
       });
     });
     expect(handleRegister).toHaveBeenCalledTimes(1);
+    expect(handleSaveDrafts.mock.invocationCallOrder[0]).toBeLessThan(
+      handleRegister.mock.invocationCallOrder[0],
+    );
+  });
+
+  it('forces a final draft save before completing registration without local changes', async () => {
+    const user = userEvent.setup();
+    const handleSaveDrafts = vi.fn().mockResolvedValue(undefined);
+    const handleRegister = vi.fn();
+    const product: RegistrationResultProduct = {
+      category: '수산물',
+      discountPeriod: '2026-07-15 ~ 2026-07-21',
+      id: '12',
+      imageUrl: 'https://static.dongchimi.kr/product.png',
+      price: '4000',
+      productName: '고등어',
+      promotionText: '맛이 미쳤어요',
+      status: 'completed',
+    };
+
+    renderSection({
+      products: [product],
+      summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
+      onRegister: handleRegister,
+      onSaveDrafts: handleSaveDrafts,
+    });
+
+    await user.click(screen.getByRole('button', { name: /^등록 완료$/ }));
+
+    await waitFor(() => {
+      expect(handleSaveDrafts).toHaveBeenCalledWith({
+        preparedProducts: [
+          {
+            preparedProductId: 12,
+            name: '고등어',
+            thumbnailUrl: 'https://static.dongchimi.kr/product.png',
+            discountedPrice: 4000,
+            category: 'SEAFOOD',
+            promotionalPhrase: '맛이 미쳤어요',
+            discountStartDate: '2026-07-15',
+            discountEndDate: '2026-07-21',
+            dealType: 'PERIODIC',
+          },
+        ],
+      });
+    });
+    expect(handleRegister).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not complete registration when the final draft save fails', async () => {
+    const user = userEvent.setup();
+    const handleSaveDrafts = vi.fn().mockRejectedValue(new Error('save failed'));
+    const handleRegister = vi.fn();
+    const product: RegistrationResultProduct = {
+      category: '수산물',
+      discountPeriod: '2026-07-15 ~ 2026-07-21',
+      id: '12',
+      imageUrl: 'https://static.dongchimi.kr/product.png',
+      price: '4000',
+      productName: '고등어',
+      promotionText: '',
+      status: 'completed',
+    };
+
+    renderSection({
+      products: [product],
+      summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
+      onRegister: handleRegister,
+      onSaveDrafts: handleSaveDrafts,
+    });
+
+    await user.click(screen.getByRole('button', { name: /^등록 완료$/ }));
+
+    await waitFor(() => {
+      expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
+    });
+    expect(handleRegister).not.toHaveBeenCalled();
   });
 
   it('auto-saves the latest changed drafts without resetting the configured interval', async () => {

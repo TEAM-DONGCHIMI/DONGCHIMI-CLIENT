@@ -20,6 +20,7 @@ vi.mock('@/domains/product/hooks', () => ({
 const mockedUsePreparedProductDraftsQuery = vi.mocked(usePreparedProductDraftsQuery);
 const mockedUsePresignedUploadMutation = vi.mocked(usePresignedUploadMutation);
 const mockedUseSavePreparedProductDraftsMutation = vi.mocked(useSavePreparedProductDraftsMutation);
+const mockedSavePreparedProductDrafts = vi.fn();
 
 const preparedDraftsQueryData = {
   success: true,
@@ -46,6 +47,23 @@ const preparedDraftsQueryData = {
   },
 } as const;
 
+const completedPreparedDraftsQueryData = {
+  ...preparedDraftsQueryData,
+  data: {
+    ...preparedDraftsQueryData.data,
+    successCount: 1,
+    failCount: 0,
+    preparedProducts: [
+      {
+        ...preparedDraftsQueryData.data.preparedProducts[0],
+        thumbnailUrl: 'https://static.dongchimi.kr/product.png',
+        draftStatus: 'SUCCESS',
+        failReason: null,
+      },
+    ],
+  },
+} as const;
+
 const renderPage = () => {
   const router = createMemoryRouter(
     [
@@ -56,6 +74,10 @@ const renderPage = () => {
       {
         path: '/products/registration-result',
         element: <RegistrationResultPage />,
+      },
+      {
+        path: '/leaflets/share',
+        element: <h1>오늘의 전단 최종 확인</h1>,
       },
     ],
     {
@@ -72,6 +94,7 @@ const renderPage = () => {
 
 describe('RegistrationResultPage', () => {
   beforeEach(() => {
+    mockedSavePreparedProductDrafts.mockReset().mockResolvedValue(undefined);
     useAuthStore.getState().clearSession();
     useAuthStore.getState().setMarketId(12);
     mockedUsePreparedProductDraftsQuery.mockReturnValue({
@@ -81,7 +104,7 @@ describe('RegistrationResultPage', () => {
     } as unknown as ReturnType<typeof usePreparedProductDraftsQuery>);
     mockedUseSavePreparedProductDraftsMutation.mockReturnValue({
       isPending: false,
-      mutateAsync: vi.fn(),
+      mutateAsync: mockedSavePreparedProductDrafts,
     } as unknown as ReturnType<typeof useSavePreparedProductDraftsMutation>);
     mockedUsePresignedUploadMutation.mockReturnValue({
       mutateAsync: vi.fn(),
@@ -121,5 +144,41 @@ describe('RegistrationResultPage', () => {
     await user.click(screen.getByRole('button', { name: '이전' }));
 
     expect(await screen.findByRole('heading', { name: '등록 파일 분석' })).toBeInTheDocument();
+  });
+
+  it('saves the final drafts and routes to the leaflet confirmation page', async () => {
+    const user = userEvent.setup();
+
+    mockedUsePreparedProductDraftsQuery.mockReturnValue({
+      data: completedPreparedDraftsQueryData,
+      isError: false,
+      isPending: false,
+    } as unknown as ReturnType<typeof usePreparedProductDraftsQuery>);
+
+    renderPage();
+
+    await user.click(screen.getByRole('button', { name: /^등록 완료$/ }));
+
+    expect(mockedSavePreparedProductDrafts).toHaveBeenCalledWith({
+      marketId: 12,
+      request: {
+        preparedProducts: [
+          {
+            preparedProductId: 12,
+            name: '고등어',
+            thumbnailUrl: 'https://static.dongchimi.kr/product.png',
+            discountedPrice: 4000,
+            category: 'SEAFOOD',
+            promotionalPhrase: '맛이 미쳤어요',
+            discountStartDate: '2026-07-15',
+            discountEndDate: '2026-07-21',
+            dealType: 'PERIODIC',
+          },
+        ],
+      },
+    });
+    expect(
+      await screen.findByRole('heading', { name: '오늘의 전단 최종 확인' }),
+    ).toBeInTheDocument();
   });
 });

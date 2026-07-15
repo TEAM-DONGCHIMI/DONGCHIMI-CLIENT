@@ -108,7 +108,7 @@ export const RegistrationResultPage = () => {
         summary={summary}
         onDraftQueryChange={setDraftQueryParams}
         onPrevious={() => navigate(MARKET_OWNER_ROUTES.eventDiscountRegistration)}
-        onRegister={() => undefined}
+        onRegister={() => navigate(MARKET_OWNER_ROUTES.leafletShare)}
         resolveProductImageFileUrl={resolveProductImageFileUrl}
         onSaveDrafts={handleSaveDrafts}
       />

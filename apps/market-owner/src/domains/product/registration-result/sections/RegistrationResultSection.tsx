@@ -32,6 +32,10 @@ interface RegistrationResultSummary {
   totalCount: number;
 }
 
+interface SaveCurrentDraftsOptions {
+  force?: boolean;
+}
+
 export interface RegistrationResultSectionProps {
   emptyMessage?: string;
   isSavingDrafts?: boolean;
@@ -327,43 +331,46 @@ export const RegistrationResultSection = ({
     return productImageUrls;
   }, [imagePreviews, resolveProductImageFileUrl]);
 
-  const saveCurrentDrafts = useCallback(async () => {
-    if (onSaveDrafts == null) {
-      return true;
-    }
-
-    try {
-      const productImageUrls = await resolveChangedProductImageUrls();
-      const request = createPreparedProductDraftSaveRequest({
-        productImageUrls,
-        productDrafts,
-        products: currentProducts,
-      });
-      const draftKey = JSON.stringify(request);
-
-      if (!hasPendingChanges || draftKey === lastSavedDraftKeyRef.current) {
+  const saveCurrentDrafts = useCallback(
+    async ({ force = false }: SaveCurrentDraftsOptions = {}) => {
+      if (onSaveDrafts == null) {
         return true;
       }
 
-      await onSaveDrafts(request);
-      lastSavedDraftKeyRef.current = draftKey;
+      try {
+        const productImageUrls = await resolveChangedProductImageUrls();
+        const request = createPreparedProductDraftSaveRequest({
+          productImageUrls,
+          productDrafts,
+          products: currentProducts,
+        });
+        const draftKey = JSON.stringify(request);
 
-      return true;
-    } catch {
-      toast.error('임시 저장에 실패했습니다. 잠시 후 다시 시도해주세요.', {
-        id: SAVE_DRAFT_ERROR_TOAST_ID,
-      });
+        if (!force && (!hasPendingChanges || draftKey === lastSavedDraftKeyRef.current)) {
+          return true;
+        }
 
-      return false;
-    }
-  }, [
-    currentProducts,
-    hasPendingChanges,
-    onSaveDrafts,
-    productDrafts,
-    resolveChangedProductImageUrls,
-    toast,
-  ]);
+        await onSaveDrafts(request);
+        lastSavedDraftKeyRef.current = draftKey;
+
+        return true;
+      } catch {
+        toast.error('임시 저장에 실패했습니다. 잠시 후 다시 시도해주세요.', {
+          id: SAVE_DRAFT_ERROR_TOAST_ID,
+        });
+
+        return false;
+      }
+    },
+    [
+      currentProducts,
+      hasPendingChanges,
+      onSaveDrafts,
+      productDrafts,
+      resolveChangedProductImageUrls,
+      toast,
+    ],
+  );
   const saveCurrentDraftsRef = useRef(saveCurrentDrafts);
   const canAutoSave = onSaveDrafts != null;
 
@@ -386,7 +393,7 @@ export const RegistrationResultSection = ({
   }, [canAutoSave, hasPendingChanges, saveIntervalMs]);
 
   const handleRegister = async () => {
-    const isSaved = await saveCurrentDrafts();
+    const isSaved = await saveCurrentDrafts({ force: true });
 
     if (isSaved) {
       onRegister();
