@@ -16,7 +16,7 @@ export const formContentClassName = style({
   gap: '4rem',
   width: '90rem',
   marginLeft: '4rem',
-  padding: '3.2rem 0 0',
+  padding: '3.2rem 0 7.2rem',
 });
 
 export const titleSectionClassName = style({
@@ -180,11 +180,7 @@ export const categoryDropdownClassName = style({
   left: 0,
   zIndex: 1,
   width: '20.6rem',
-  maxHeight: 'var(--product-category-dropdown-max-height)',
   backgroundColor: atomic.common[0],
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  overscrollBehaviorY: 'none',
 });
 
 export const dateSingleFieldClassName = style({

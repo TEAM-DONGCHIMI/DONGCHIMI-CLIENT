@@ -217,7 +217,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - 오늘의 특가 등록 시작일은 오늘 날짜를 기본값과 `min`으로 사용해 이전 날짜 선택을 막습니다.
 - 상품명 또는 상품 구분 error message가 표시되면 error message 아래와 `상품 한줄 홍보문구` label 사이 간격은 `0.9rem`입니다.
 - 카테고리 목록은 product domain 공용 `ProductCategoryDropdown`의 기본 테두리와 item layout을 유지합니다.
-- Layout은 desktop Figma frame 기준으로 sidebar layout 내부 no-scroll form 화면을 목표로 합니다.
+- Layout은 desktop Figma frame 기준으로 구성하고, viewport 높이가 작아 스크롤되는 경우 마지막 action button과 화면 하단 사이에 `7.2rem` 여백을 유지합니다.
 
 ## Non-Goals / Follow-Ups
 
