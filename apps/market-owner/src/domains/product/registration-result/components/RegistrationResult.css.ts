@@ -228,20 +228,6 @@ export const emptyStateClassName = style({
   color: atomic.neutral[60],
 });
 
-export const productPreviewClassName = style({
-  display: 'inline-flex',
-  width: '100%',
-  height: '100%',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-export const productReplaceImageClassName = style({
-  display: 'block',
-  width: '100%',
-  height: '100%',
-});
-
 export const uploadedImageButtonClassName = style({
   appearance: 'none',
   display: 'block',

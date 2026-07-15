@@ -1,12 +1,7 @@
-import type { RegistrationResultEditableProductFieldTypes } from '../hooks/useRegistrationResultProductDrafts';
-
-export interface RegistrationResultProductFieldValues {
-  category: string;
-  discountPeriod: string;
-  price: string;
-  productName: string;
-  promotionText: string;
-}
+import type {
+  RegistrationResultEditableProductFieldTypes,
+  RegistrationResultProductFieldValues,
+} from '../model';
 
 export type RegistrationResultProductFieldErrorTypes = Partial<
   Record<RegistrationResultEditableProductFieldTypes, string>
@@ -14,7 +9,7 @@ export type RegistrationResultProductFieldErrorTypes = Partial<
 
 const PRODUCT_NAME_MAX_LENGTH = 15;
 const PROMOTION_TEXT_MAX_LENGTH = 30;
-const PRICE_MAX_VALUE = 100_000_000;
+const PRICE_MAX_VALUE = 9_999_999;
 const DATE_RANGE_PATTERN = /^(\d{4}-\d{2}-\d{2}) ~ (\d{4}-\d{2}-\d{2})$/;
 const PRICE_PATTERN = /^(?:\d+|\d{1,3}(?:,\d{3})+)$/;
 
@@ -96,7 +91,15 @@ const getPriceError = (value: string) => {
   const numericValue = Number(normalizedValue.replaceAll(',', ''));
 
   if (numericValue > PRICE_MAX_VALUE) {
-    return '1억원 이하로 입력하세요.';
+    return '9,999,999원 이하로 입력해 주세요.';
+  }
+
+  return undefined;
+};
+
+const getCategoryError = (value: string) => {
+  if (value.trim().length === 0) {
+    return '카테고리 미입력';
   }
 
   return undefined;
@@ -124,6 +127,18 @@ const isValidDate = (value: string) => {
   );
 };
 
+const getUtcDate = (value: string) => {
+  const [year, month, day] = value.split('-').map(Number);
+
+  return new Date(Date.UTC(year, month - 1, day));
+};
+
+const getOneYearLaterDate = (value: string) => {
+  const [year, month, day] = value.split('-').map(Number);
+
+  return new Date(Date.UTC(year + 1, month - 1, day));
+};
+
 const getDiscountPeriodError = (value: string) => {
   const normalizedValue = value.trim();
 
@@ -147,6 +162,10 @@ const getDiscountPeriodError = (value: string) => {
     return '종료일은 시작일 이후 날짜를 선택해주세요.';
   }
 
+  if (getUtcDate(endDate) > getOneYearLaterDate(startDate)) {
+    return '할인 기간은 최대 1년까지 설정 가능합니다.';
+  }
+
   return undefined;
 };
 
@@ -156,6 +175,7 @@ export const validateRegistrationResultProductFields = (
   const errors: RegistrationResultProductFieldErrorTypes = {};
   const productNameError = getProductNameError(fieldValues.productName);
   const priceError = getPriceError(fieldValues.price);
+  const categoryError = getCategoryError(fieldValues.category);
   const promotionTextError = getPromotionTextError(fieldValues.promotionText);
   const discountPeriodError = getDiscountPeriodError(fieldValues.discountPeriod);
 
@@ -165,6 +185,10 @@ export const validateRegistrationResultProductFields = (
 
   if (priceError != null) {
     errors.price = priceError;
+  }
+
+  if (categoryError != null) {
+    errors.category = categoryError;
   }
 
   if (promotionTextError != null) {

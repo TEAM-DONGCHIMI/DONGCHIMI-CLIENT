@@ -1,17 +1,4 @@
-export type RegistrationResultProductStatusTypes = 'completed' | 'needsEdit';
-
-export interface RegistrationResultProduct {
-  category: string;
-  discountPeriod: string;
-  id: string;
-  imageAlt?: string;
-  imageUrl?: string;
-  price: string;
-  productName: string;
-  promotionText: string;
-  status: RegistrationResultProductStatusTypes;
-  statusReason?: string;
-}
+import type { RegistrationResultProduct } from '../model';
 
 interface RegistrationResultProductImageFixture {
   imageAlt?: string;
@@ -41,6 +28,7 @@ const completedProducts: RegistrationResultProduct[] = [
     productName: '전라도 포기김치 3kg',
     promotionText: '오늘만 특가로 준비했어요',
     status: 'completed',
+    ...existingProductImageFixture,
   },
   {
     category: '정육/달걀',
@@ -50,6 +38,7 @@ const completedProducts: RegistrationResultProduct[] = [
     productName: '한돈 앞다리살 600g',
     promotionText: '구이와 찌개에 모두 좋아요',
     status: 'completed',
+    ...existingProductImageFixture,
   },
   {
     category: '채소/과일',
@@ -59,6 +48,7 @@ const completedProducts: RegistrationResultProduct[] = [
     productName: '햇감자 1봉',
     promotionText: '포슬포슬한 제철 감자',
     status: 'completed',
+    ...existingProductImageFixture,
   },
   {
     category: '수산물',
@@ -68,6 +58,7 @@ const completedProducts: RegistrationResultProduct[] = [
     productName: '손질 고등어 2팩',
     promotionText: '저녁 반찬으로 간편하게',
     status: 'completed',
+    ...existingProductImageFixture,
   },
 ];
 
@@ -91,8 +82,8 @@ export const registrationResultFixture = {
   pageSize: 10,
   products: [...needsEditProducts, ...completedProducts],
   summary: {
-    completedCount: 112,
+    completedCount: 4,
     needsEditCount: 12,
-    totalCount: 124,
+    totalCount: 16,
   },
 };

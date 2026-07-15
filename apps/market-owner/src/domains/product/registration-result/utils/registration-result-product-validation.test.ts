@@ -5,8 +5,8 @@ import {
   getRegistrationResultFieldBlurValue,
   getRegistrationResultFieldInputValue,
   validateRegistrationResultProductFields,
-  type RegistrationResultProductFieldValues,
 } from './registration-result-product-validation';
+import type { RegistrationResultProductFieldValues } from '../model';
 
 const createFieldValues = (
   overrides: Partial<RegistrationResultProductFieldValues> = {},
@@ -32,10 +32,11 @@ describe('registration result product validation', () => {
 
   it('returns required errors for empty required fields', () => {
     const errors = validateRegistrationResultProductFields(
-      createFieldValues({ discountPeriod: '', price: '', productName: '   ' }),
+      createFieldValues({ category: '', discountPeriod: '', price: '', productName: '   ' }),
     );
 
     expect(errors).toMatchObject({
+      category: '카테고리 미입력',
       discountPeriod: '할인 기간을 입력해주세요.',
       price: '가격을 입력해주세요.',
       productName: '상품명을 입력해주세요.',
@@ -58,15 +59,15 @@ describe('registration result product validation', () => {
     });
   });
 
-  it('allows prices up to 100 million won', () => {
+  it('allows prices up to 9,999,999 won', () => {
     expect(
-      validateRegistrationResultProductFields(createFieldValues({ price: '100000000' })).price,
+      validateRegistrationResultProductFields(createFieldValues({ price: '9999999' })).price,
     ).toBeUndefined();
     expect(
-      validateRegistrationResultProductFields(createFieldValues({ price: '100000001' })).price,
-    ).toBe('1억원 이하로 입력하세요.');
+      validateRegistrationResultProductFields(createFieldValues({ price: '10000000' })).price,
+    ).toBe('9,999,999원 이하로 입력해 주세요.');
     expect(
-      validateRegistrationResultProductFields(createFieldValues({ price: '100,000,000' })).price,
+      validateRegistrationResultProductFields(createFieldValues({ price: '9,999,999' })).price,
     ).toBeUndefined();
   });
 
@@ -102,5 +103,18 @@ describe('registration result product validation', () => {
     );
 
     expect(errors.discountPeriod).toBeUndefined();
+  });
+
+  it('rejects a period longer than one year', () => {
+    expect(
+      validateRegistrationResultProductFields(
+        createFieldValues({ discountPeriod: '2026-07-13 ~ 2027-07-14' }),
+      ).discountPeriod,
+    ).toBe('할인 기간은 최대 1년까지 설정 가능합니다.');
+    expect(
+      validateRegistrationResultProductFields(
+        createFieldValues({ discountPeriod: '2026-07-13 ~ 2027-07-13' }),
+      ).discountPeriod,
+    ).toBeUndefined();
   });
 });
