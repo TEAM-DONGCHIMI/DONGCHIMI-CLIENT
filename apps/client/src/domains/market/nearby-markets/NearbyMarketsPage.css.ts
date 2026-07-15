@@ -8,14 +8,10 @@ export const pageClassName = style({
   color: atomic.neutral[90],
 });
 
-const checkerboardColor = 'rgba(229, 232, 235, 0.68)';
-
-export const logoPlaceholderClassName = style({
+export const logoClassName = style({
   width: '100%',
   height: '100%',
-  backgroundImage: `repeating-conic-gradient(from 90deg, ${checkerboardColor} 0 25%, transparent 0 50%)`,
-  backgroundPosition: 'center top',
-  backgroundSize: '0.8rem 0.8rem',
+  objectFit: 'contain',
 });
 
 export const searchSectionClassName = style({

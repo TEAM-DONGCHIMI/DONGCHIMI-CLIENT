@@ -483,6 +483,14 @@ export const eventProductGridClassName = style({
   display: 'grid',
   gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
   gap: '1.2rem',
+  contentVisibility: 'auto',
+  containIntrinsicSize: 'auto 64rem',
+});
+
+export const eventProductPagesClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1.2rem',
 });
 
 export const eventProductCardClassName = style({
@@ -494,6 +502,13 @@ export const eventProductCardClassName = style({
 export const eventDiscountLoadMoreSentinelClassName = style({
   width: '100%',
   height: '1px',
+});
+
+export const eventDiscountStateClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '0.8rem',
 });
 
 export const emptyTextClassName = style({

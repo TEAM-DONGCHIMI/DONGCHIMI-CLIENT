@@ -1,5 +1,4 @@
 import { QueryClient, type DefaultOptions } from '@tanstack/react-query';
-
 import { isApiResponseValidationError } from '@dongchimi/shared/api';
 
 import { isApiError } from '@/shared/api';

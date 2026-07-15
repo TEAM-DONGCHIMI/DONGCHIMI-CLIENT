@@ -81,11 +81,10 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
   const shouldOpenPostcodeSearch = errorCode === 'PERMISSION_DENIED';
   // 주소 검색 좌표가 있으면 현재 위치보다 우선해서 주변 마트 조회 기준으로 사용합니다.
   const searchCoordinates = selectedCoordinates ?? coordinates;
-  // 주소 검색 결과는 input 표시값일 뿐, 마트명/주소 keyword 필터에는 넣지 않습니다.
+  // 주소 검색 결과는 input 표시값일 뿐, 주변 마트 API에는 좌표만 전달합니다.
   const marketSearchKeyword = selectedMapAddress == null ? debouncedKeyword : undefined;
-  // 목록과 지도 마커가 같은 검색어/좌표 기준으로 조회되도록 query params를 공유합니다.
+  // 목록과 지도 마커가 같은 좌표 기준으로 조회되도록 query params를 공유합니다.
   const nearbyMarketsParams = {
-    keyword: marketSearchKeyword,
     lat: searchCoordinates?.lat,
     lng: searchCoordinates?.lng,
   };

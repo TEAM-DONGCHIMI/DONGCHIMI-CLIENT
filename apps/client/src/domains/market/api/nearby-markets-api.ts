@@ -1,124 +1,56 @@
-import { paginateByCursor } from '@/shared/utils';
+import { buildApiPath, validateApiResponse } from '@dongchimi/shared/api';
+
+import { browserApi } from '@/shared/api';
 
 import {
-  resolveNearbyMarketsParams,
+  nearbyMarketsSuccessResponseSchema,
+  resolveNearbyMarketsLocationParams,
   resolveNearbyMarketsResponse,
-  type NearbyMarketDtoTypes,
   type NearbyMarketsListParamsTypes,
-  type NearbyMarketsParamsTypes,
+  type NearbyMarketsLocationParamsTypes,
   type NearbyMarketsResponseDataTypes,
 } from '../model/nearby-markets-schema';
-import { MOCK_NEARBY_MARKETS } from './nearby-markets-api.mock';
 
-export type { NearbyMarketsListParamsTypes, NearbyMarketsParamsTypes };
+export type { NearbyMarketsListParamsTypes, NearbyMarketsLocationParamsTypes };
 
 const DEFAULT_PAGE_SIZE = 5;
-const MOCK_NETWORK_DELAY_MS = 400;
-const MOCK_SUCCESS_CODE = 'SUCCESS';
-const MOCK_SUCCESS_MESSAGE = '요청에 성공했습니다.';
-const EARTH_RADIUS_METERS = 6371000;
+const DEFAULT_RADIUS_METERS = 1000;
+const MARKER_PAGE_SIZE = 50;
+const NEARBY_MARKETS_API_ROUTE = 'markets/location';
 
-const delay = (delayMs: number) => {
-  return new Promise<void>((resolve) => setTimeout(resolve, delayMs));
-};
-
-const filterMarketsByKeyword = (
-  markets: readonly NearbyMarketDtoTypes[],
-  keyword?: string,
-): NearbyMarketDtoTypes[] => {
-  const normalizedKeyword = keyword?.trim().toLowerCase();
-
-  if (!normalizedKeyword) {
-    return [...markets];
-  }
-
-  return markets.filter(
-    (market) =>
-      market.name.toLowerCase().includes(normalizedKeyword) ||
-      market.address.toLowerCase().includes(normalizedKeyword),
-  );
-};
-
-const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
-
-const calculateDistanceMeters = (
-  origin: { lat: number; lng: number },
-  market: NearbyMarketDtoTypes,
-): number => {
-  const deltaLat = toRadians(market.latitude - origin.lat);
-  const deltaLng = toRadians(market.longitude - origin.lng);
-  const a =
-    Math.sin(deltaLat / 2) ** 2 +
-    Math.cos(toRadians(origin.lat)) *
-      Math.cos(toRadians(market.latitude)) *
-      Math.sin(deltaLng / 2) ** 2;
-
-  return EARTH_RADIUS_METERS * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-};
-
-const sortMarketsByDistance = (
-  markets: readonly NearbyMarketDtoTypes[],
-  origin: { lat: number; lng: number },
-): NearbyMarketDtoTypes[] => {
-  return [...markets].sort(
-    (marketA, marketB) =>
-      calculateDistanceMeters(origin, marketA) - calculateDistanceMeters(origin, marketB),
-  );
-};
+const toNearbyMarketsSearchParams = ({
+  cursor,
+  lat,
+  lng,
+  radius = DEFAULT_RADIUS_METERS,
+  size = DEFAULT_PAGE_SIZE,
+}: NearbyMarketsLocationParamsTypes) => ({
+  cursor,
+  lat,
+  lng,
+  radius,
+  size,
+});
 
 export const getNearbyMarkets = async (
-  rawParams: NearbyMarketsParamsTypes,
+  rawParams: NearbyMarketsLocationParamsTypes,
 ): Promise<NearbyMarketsResponseDataTypes> => {
-  const {
-    cursor,
-    keyword,
-    lat,
-    lng,
-    size = DEFAULT_PAGE_SIZE,
-  } = resolveNearbyMarketsParams(rawParams);
-
-  await delay(MOCK_NETWORK_DELAY_MS);
-
-  const filteredMarkets = filterMarketsByKeyword(MOCK_NEARBY_MARKETS, keyword);
-  const sortedMarkets =
-    lat === undefined || lng === undefined
-      ? filteredMarkets
-      : sortMarketsByDistance(filteredMarkets, { lat, lng });
-  const page = paginateByCursor(sortedMarkets, { cursor, pageSize: size });
-
-  return resolveNearbyMarketsResponse({
-    code: MOCK_SUCCESS_CODE,
-    data: {
-      contents: page.items,
-      hasNext: page.nextCursor !== null,
-      nextCursor: page.nextCursor,
-    },
-    message: MOCK_SUCCESS_MESSAGE,
-    success: true,
+  const params = resolveNearbyMarketsLocationParams(rawParams);
+  const endpoint = buildApiPath(NEARBY_MARKETS_API_ROUTE, toNearbyMarketsSearchParams(params));
+  const response = await browserApi.get<unknown>(endpoint);
+  const nearbyMarketsResponse = validateApiResponse(nearbyMarketsSuccessResponseSchema, response, {
+    endpoint,
+    schemaDescription: 'ApiResponseCursorSliceResponseNearbyMarketResponse',
   });
+
+  return resolveNearbyMarketsResponse(nearbyMarketsResponse);
 };
 
 export const getNearbyMarketMarkers = async (
-  rawParams: NearbyMarketsListParamsTypes,
+  rawParams: NearbyMarketsLocationParamsTypes,
 ): Promise<NearbyMarketsResponseDataTypes> => {
-  const { keyword, lat, lng } = resolveNearbyMarketsParams(rawParams);
-
-  await delay(MOCK_NETWORK_DELAY_MS);
-
-  const filteredMarkets = filterMarketsByKeyword(MOCK_NEARBY_MARKETS, keyword);
-  const sortedMarkets =
-    lat === undefined || lng === undefined
-      ? filteredMarkets
-      : sortMarketsByDistance(filteredMarkets, { lat, lng });
-
-  return resolveNearbyMarketsResponse({
-    code: MOCK_SUCCESS_CODE,
-    data: {
-      contents: sortedMarkets,
-      hasNext: false,
-      nextCursor: null,
-    },
-    message: MOCK_SUCCESS_MESSAGE,
-    success: true,
+  return getNearbyMarkets({
+    ...rawParams,
+    size: rawParams.size ?? MARKER_PAGE_SIZE,
   });
 };

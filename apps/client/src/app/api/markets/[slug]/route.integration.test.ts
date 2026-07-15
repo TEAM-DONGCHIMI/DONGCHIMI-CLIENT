@@ -14,7 +14,7 @@ vi.mock('next/headers', () => ({ cookies }));
 
 const API_BASE_URL = 'https://api.test';
 const MARKET_SLUG = 'mangwon-fresh';
-const TEST_USER_ACCESS_TOKEN = 'test-user-access-token';
+const KAKAO_LOGIN_ACCESS_TOKEN = 'kakao-login-access-token';
 
 const createRouteContext = (slug: string) => ({
   params: Promise.resolve({ slug }),
@@ -28,7 +28,7 @@ describe('GET /api/markets/[slug]', () => {
   beforeEach(() => {
     cookies.mockResolvedValue({
       get: (name: string) =>
-        name === 'access_token' ? { value: TEST_USER_ACCESS_TOKEN } : undefined,
+        name === 'access_token' ? { value: KAKAO_LOGIN_ACCESS_TOKEN } : undefined,
     });
   });
 
@@ -42,7 +42,7 @@ describe('GET /api/markets/[slug]', () => {
         `${API_BASE_URL}${API_ENDPOINTS.user.markets.detail(MARKET_SLUG)}`,
         ({ request }) => {
           expect(request.headers.get('Accept')).toBe('application/json');
-          expect(request.headers.get('Authorization')).toBe(`Bearer ${TEST_USER_ACCESS_TOKEN}`);
+          expect(request.headers.get('Authorization')).toBe(`Bearer ${KAKAO_LOGIN_ACCESS_TOKEN}`);
 
           return HttpResponse.json(MARKET_DETAIL_API_RESPONSE_FIXTURE);
         },
