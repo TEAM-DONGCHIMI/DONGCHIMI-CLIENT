@@ -1,6 +1,10 @@
 export { useFileDrop } from './use-file-drop';
 export { useProductCategoryDropdown } from './use-product-category-dropdown';
 export { useProductCategoryDropdownLayout } from './use-product-category-dropdown-layout';
+export {
+  useBulkProductDeletionMutation,
+  useProductDeletionMutation,
+} from './use-product-deletion-mutations';
 export { useProductEditProducts } from './use-product-edit-products';
 export { useProductEditTargetParam } from './use-product-edit-target-param';
 export { useProductListQuery } from './use-product-list-query';
