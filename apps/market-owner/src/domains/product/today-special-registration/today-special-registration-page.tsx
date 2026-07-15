@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router';
+import { useState } from 'react';
+import { Navigate, useNavigate } from 'react-router';
 
 import { Button } from '@dongchimi/design-system/components';
 import { IcCirclePlusSizeSmall } from '@dongchimi/design-system/icons';
@@ -6,12 +7,16 @@ import { IcCirclePlusSizeSmall } from '@dongchimi/design-system/icons';
 import { DesktopHeader } from '@/shared/components/ui/desktop-header/DesktopHeader';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
+import { useAuthStore } from '@/shared/stores/auth-store';
 import { isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
 
+import { ProductEditConfirmModal } from '../components/product-edit-modal';
+import { useProductDeletionActions, useProductUpdateFlow } from '../hooks';
 import { useCategoryDropdown } from './hooks/useCategoryDropdown';
 import { useCurrentProductField } from './hooks/useCurrentProductField';
 import { useTodaySpecialForm } from './hooks/use-today-special-form';
 import { useTodaySpecialProductRegistration } from './hooks/use-today-special-product-registration';
+import { createTodaySpecialProductUpdateValues } from './model';
 import {
   ProductInfoSection,
   ProductPeriodSection,
@@ -20,18 +25,27 @@ import {
 } from './sections';
 import * as S from './today-special-registration-page.css';
 
-export const TodaySpecialRegistrationPage = () => {
-  const navigate = useNavigate();
-  const { registerProduct } = useTodaySpecialProductRegistration();
-  const form = useTodaySpecialForm({
-    onSubmit: async (product) => {
-      const result = await registerProduct(product);
+const getSubmitButtonLabel = (isRegisteredProduct: boolean, isPending: boolean) => {
+  if (isRegisteredProduct) {
+    return isPending ? '수정 중' : '수정 완료';
+  }
 
-      if (result.success) {
-        navigate(MARKET_OWNER_ROUTES.todaySpecialEdit);
-      }
-    },
-  });
+  return isPending ? '등록 중' : '등록 완료';
+};
+
+interface TodaySpecialRegistrationPageContentProps {
+  marketId: number;
+}
+
+const TodaySpecialRegistrationPageContent = ({
+  marketId,
+}: TodaySpecialRegistrationPageContentProps) => {
+  const navigate = useNavigate();
+  const [deleteTargetProductId, setDeleteTargetProductId] = useState<number | null>(null);
+  const { registerProduct } = useTodaySpecialProductRegistration(marketId);
+  const productUpdateFlow = useProductUpdateFlow();
+  const { deleteProduct, isDeletePending } = useProductDeletionActions(marketId);
+  const form = useTodaySpecialForm();
   const { currentIndex, currentProduct, products, setValue } = form;
   const currentProductField = useCurrentProductField({
     currentIndex,
@@ -60,14 +74,64 @@ export const TodaySpecialRegistrationPage = () => {
     onPreviewChange: handleImagePreviewChange,
     previewUrls: products.map((product) => product.imagePreviewUrl),
   });
+  const handleFormSubmit = form.createCurrentProductSubmitHandler(async (product) => {
+    if (product.productId != null) {
+      const result = await productUpdateFlow.submitProductUpdate({
+        currentThumbnailUrl: product.imagePreviewUrl,
+        dealType: 'DAILY',
+        imageFile: product.imageFile,
+        marketId,
+        productId: product.productId,
+        values: createTodaySpecialProductUpdateValues(product),
+      });
+
+      if (result.success) {
+        imagePreview.revokeCurrentPreviewUrl();
+        categoryDropdown.closeCategoryDropdown();
+        form.updateRegisteredProduct({
+          product,
+          productId: product.productId,
+          thumbnailUrl: result.thumbnailUrl,
+        });
+      }
+
+      return;
+    }
+
+    const result = await registerProduct(product);
+
+    if (result.success) {
+      navigate(MARKET_OWNER_ROUTES.todaySpecialEdit);
+    }
+  });
   const handleContinueRegistration = form.createCurrentProductSubmitHandler(async (product) => {
     const result = await registerProduct(product);
 
     if (result.success) {
+      imagePreview.revokeCurrentPreviewUrl();
       categoryDropdown.closeCategoryDropdown();
-      form.resetForNextProduct();
+      form.resetForNextProduct({
+        productId: result.productId,
+        thumbnailUrl: result.thumbnailUrl,
+      });
     }
   });
+  const handleDeleteRegisteredProduct = async () => {
+    if (deleteTargetProductId == null) {
+      return;
+    }
+
+    const isDeleted = await deleteProduct(deleteTargetProductId);
+
+    if (!isDeleted) {
+      return;
+    }
+
+    imagePreview.revokeCurrentPreviewUrl();
+    categoryDropdown.closeCategoryDropdown();
+    form.deleteRegisteredProduct(deleteTargetProductId);
+    setDeleteTargetProductId(null);
+  };
   const productInfoSectionProps = {
     ...categoryDropdown.productCategoryProps,
     ...currentProductField.productInfoFieldProps,
@@ -82,23 +146,35 @@ export const TodaySpecialRegistrationPage = () => {
     ...currentProductField.productPeriodFieldProps,
     product: currentProduct,
   };
+  const isProductSubmitPending = form.isSubmitting || productUpdateFlow.isPending;
+  const isActionPending = isProductSubmitPending || isDeletePending;
+  const submitButtonLabel = getSubmitButtonLabel(form.isRegisteredProduct, isProductSubmitPending);
 
   return (
     <main className={S.pageRootClassName}>
       <DesktopHeader currentLabel='오늘의 특가 상품 등록' parentLabel='홈' showSearchBar={false} />
 
-      <form aria-busy={form.isSubmitting} onSubmit={form.handleFormSubmit}>
+      <form aria-busy={isActionPending} onSubmit={handleFormSubmit}>
         <section
           className={S.formContentClassName}
           aria-labelledby='today-special-registration-title'
         >
           <RegistrationTitleSection
             canCancelCurrentDraft={form.canCancelCurrentDraft}
+            canDeleteRegisteredProduct={
+              form.isRegisteredProduct && currentProduct.productId != null
+            }
             currentIndex={currentIndex}
+            isInteractionPending={isActionPending}
             onCancelCurrentDraft={() => {
               imagePreview.revokeCurrentPreviewUrl();
               categoryDropdown.closeCategoryDropdown();
               form.cancelCurrentDraft();
+            }}
+            onDeleteRegisteredProduct={() => {
+              if (currentProduct.productId != null) {
+                setDeleteTargetProductId(currentProduct.productId);
+              }
             }}
             onNextProduct={() => {
               categoryDropdown.closeCategoryDropdown();
@@ -111,7 +187,7 @@ export const TodaySpecialRegistrationPage = () => {
             productCount={products.length}
           />
 
-          <fieldset className={S.fieldSectionsClassName} disabled={form.isRegisteredProduct}>
+          <fieldset className={S.fieldSectionsClassName} disabled={isActionPending}>
             <ProductInfoSection {...productInfoSectionProps} />
             <ProductPriceSection {...productPriceSectionProps} />
             <ProductPeriodSection {...productPeriodSectionProps} />
@@ -121,7 +197,7 @@ export const TodaySpecialRegistrationPage = () => {
             <Button
               className={S.actionButtonClassName}
               color='assistive'
-              disabled={form.isSubmitting}
+              disabled={isActionPending}
               leftIcon={<IcCirclePlusSizeSmall />}
               onClick={
                 form.isRegisteredProduct ? form.openNextProductDraft : handleContinueRegistration
@@ -134,15 +210,34 @@ export const TodaySpecialRegistrationPage = () => {
             </Button>
             <Button
               className={S.actionButtonClassName}
-              disabled={form.isSubmitDisabled}
+              disabled={form.isSubmitDisabled || isActionPending}
               size='small'
               type='submit'
             >
-              {form.isSubmitting ? '등록 중' : '등록 완료'}
+              {submitButtonLabel}
             </Button>
           </footer>
         </section>
       </form>
+
+      <ProductEditConfirmModal
+        action='delete'
+        isPending={isDeletePending}
+        open={deleteTargetProductId != null}
+        title='정말 삭제하시겠어요?'
+        onCancel={() => setDeleteTargetProductId(null)}
+        onConfirm={() => void handleDeleteRegisteredProduct()}
+      />
     </main>
   );
+};
+
+export const TodaySpecialRegistrationPage = () => {
+  const marketId = useAuthStore((state) => state.marketId);
+
+  if (marketId == null) {
+    return <Navigate replace to={MARKET_OWNER_ROUTES.marketInformationRegistration} />;
+  }
+
+  return <TodaySpecialRegistrationPageContent marketId={marketId} />;
 };
