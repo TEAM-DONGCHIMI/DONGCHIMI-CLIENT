@@ -3,6 +3,10 @@ import { expect, test } from '@playwright/test';
 const routeShellTimeout = 30_000;
 const marketProductsPath = '/markets/mangwon-fresh';
 const productDetailPath = `${marketProductsPath}/products/101`;
+const productDetailViewports = [
+  { height: 812, width: 375 },
+  { height: 932, width: 430 },
+] as const;
 
 test('client root route redirects to login', async ({ page }) => {
   await page.goto('/');
@@ -33,10 +37,65 @@ test('client market products route shell renders', async ({ page }) => {
 });
 
 test('client product detail route shell renders', async ({ page }) => {
-  await page.goto(productDetailPath);
-  await expect(page.getByRole('heading', { name: '오늘의 특가' })).toBeVisible({
-    timeout: routeShellTimeout,
+  await page.route('**/api/markets/mangwon-fresh', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        code: 'SUCCESS',
+        data: {
+          address: '서울 마포구 월드컵로 13길 1',
+          businessHours: [],
+          isOpenNow: true,
+          marketId: 1,
+          marketPhone1: '02-123-4567',
+          marketPhone2: null,
+          name: '망원 신선마트',
+          ownerPhone: '010-1234-5678',
+          thumbnailUrl: null,
+          top3: [],
+        },
+        message: '요청에 성공했습니다.',
+        success: true,
+      },
+      status: 200,
+    });
   });
-  await expect(page.getByRole('heading', { name: '삼겹살 500g' })).toBeVisible();
-  await expect(page.getByText('4,500원')).toBeVisible();
+  await page.route('**/api/products/101?marketId=1', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: {
+        code: 'SUCCESS',
+        data: {
+          dealType: 'DAILY',
+          discountedPrice: 4500,
+          discountEndDate: '2026-07-16',
+          discountRate: 10,
+          discountStartDate: '2026-07-16',
+          marketName: '망원 신선마트',
+          name: '삼겹살 500g',
+          originalPrice: 5000,
+          productId: 101,
+          promotionalPhrase: '오늘 들어온 삼겹살입니다.',
+          thumbnailUrl: null,
+        },
+        message: '요청에 성공했습니다.',
+        success: true,
+      },
+      status: 200,
+    });
+  });
+
+  for (const viewport of productDetailViewports) {
+    await page.setViewportSize(viewport);
+    await page.goto(productDetailPath);
+
+    await expect(page.getByRole('heading', { name: '오늘의 특가' })).toBeVisible({
+      timeout: routeShellTimeout,
+    });
+    await expect(page.getByRole('heading', { name: '삼겹살 500g' })).toBeVisible();
+    await expect(page.getByText('4,500원')).toBeVisible();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+    ).toBe(true);
+  }
 });

@@ -36,6 +36,13 @@ export const imageFallbackClassName = style({
   backgroundSize: '3.7rem 3.7rem',
 });
 
+export const imageClassName = style({
+  display: 'block',
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+});
+
 export const contentSectionClassName = style({
   display: 'flex',
   flexDirection: 'column',
@@ -122,6 +129,45 @@ export const singlePriceClassName = style({
 
 export const commentCardClassName = style({
   marginTop: '0.8rem',
+});
+
+export const stateSectionClassName = style({
+  display: 'flex',
+  minHeight: '18rem',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '0.8rem',
+  padding: '4rem 2rem',
+  textAlign: 'center',
+});
+
+export const stateTitleClassName = style({
+  ...typography['body-1-semibold'],
+  margin: 0,
+  color: atomic.neutral[90],
+  letterSpacing: 0,
+});
+
+export const stateDescriptionClassName = style({
+  ...typography['body-2-medium'],
+  maxWidth: '24rem',
+  margin: 0,
+  color: atomic.neutral[60],
+  letterSpacing: 0,
+  wordBreak: 'keep-all',
+});
+
+export const retryButtonClassName = style({
+  ...typography['body-2-semibold'],
+  minHeight: '4rem',
+  marginTop: '0.8rem',
+  padding: '0 1.6rem',
+  border: `1px solid ${atomic.neutral[30]}`,
+  borderRadius: '0.8rem',
+  backgroundColor: atomic.common[0],
+  color: atomic.neutral[90],
+  letterSpacing: 0,
 });
 
 export const visuallyHiddenClassName = style({
