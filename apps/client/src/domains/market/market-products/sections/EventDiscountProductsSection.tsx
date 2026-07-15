@@ -30,6 +30,11 @@ interface EventDiscountCategoryTypes {
   label: string;
 }
 
+interface AvailableCategorySnapshotTypes {
+  marketId: number;
+  values: PeriodicProductCategoryTypes[];
+}
+
 export const EVENT_DISCOUNT_ALL_CATEGORY_ID = 'all';
 
 const EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES = 'calc((100vw - 10rem) / 3)';
@@ -147,6 +152,8 @@ export const EventDiscountProductsSection = ({
   marketSlug,
   visibleCategoryCount,
 }: EventDiscountProductsSectionProps) => {
+  const [availableCategorySnapshot, setAvailableCategorySnapshot] =
+    useState<AvailableCategorySnapshotTypes | null>(null);
   const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(EVENT_DISCOUNT_ALL_CATEGORY_ID);
   const selectedCategory = EVENT_DISCOUNT_CATEGORIES.find(
@@ -167,6 +174,27 @@ export const EventDiscountProductsSection = ({
   });
   const pageParams = data?.pageParams ?? [];
   const productPages = data?.pages ?? [];
+  const responseAvailableCategories = productPages[0]?.availableCategories;
+  const snapshotAvailableCategories =
+    availableCategorySnapshot?.marketId === marketId ? availableCategorySnapshot.values : [];
+  const availableCategorySet = new Set(responseAvailableCategories ?? snapshotAvailableCategories);
+  const availableCategories = EVENT_DISCOUNT_CATEGORIES.filter((category) => {
+    return availableCategorySet.has(category.apiCategory);
+  });
+  const handleSelectCategory = (categoryId: string) => {
+    if (categoryId === selectedCategoryId) {
+      return;
+    }
+
+    if (responseAvailableCategories != null) {
+      setAvailableCategorySnapshot({
+        marketId,
+        values: responseAvailableCategories,
+      });
+    }
+
+    setSelectedCategoryId(categoryId);
+  };
   const handleLoadNextPage = () => {
     void fetchNextPage({ cancelRefetch: false });
   };
@@ -177,12 +205,12 @@ export const EventDiscountProductsSection = ({
   });
   const { categoryListRef, categoryMeasureRowRef, firstRowCategoryCount } =
     useEventDiscountCategoryLayout({
-      categories: EVENT_DISCOUNT_CATEGORIES,
+      categories: availableCategories,
       visibleCategoryCount,
     });
 
-  const defaultVisibleCategories = EVENT_DISCOUNT_CATEGORIES.slice(0, firstRowCategoryCount);
-  const hiddenCategories = EVENT_DISCOUNT_CATEGORIES.slice(firstRowCategoryCount);
+  const defaultVisibleCategories = availableCategories.slice(0, firstRowCategoryCount);
+  const hiddenCategories = availableCategories.slice(firstRowCategoryCount);
   const hasHiddenCategories = hiddenCategories.length > 0;
   const hasExpandedCategories = isCategoryExpanded && hasHiddenCategories;
   const MoreButtonIcon = isCategoryExpanded ? IcChevronUp : IcChevronDown;
@@ -206,7 +234,7 @@ export const EventDiscountProductsSection = ({
           <PillButton platform='mobile' tabIndex={-1} variant='outlined-light'>
             전체
           </PillButton>
-          {EVENT_DISCOUNT_CATEGORIES.map((category) => (
+          {availableCategories.map((category) => (
             <PillButton
               key={category.categoryId}
               platform='mobile'
@@ -229,7 +257,7 @@ export const EventDiscountProductsSection = ({
         <div className={S.categoryPrimaryRowClassName}>
           <PillButton
             aria-pressed={selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID}
-            onClick={() => setSelectedCategoryId(EVENT_DISCOUNT_ALL_CATEGORY_ID)}
+            onClick={() => handleSelectCategory(EVENT_DISCOUNT_ALL_CATEGORY_ID)}
             platform='mobile'
             variant={
               selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID ? 'filled' : 'outlined-light'
@@ -241,7 +269,7 @@ export const EventDiscountProductsSection = ({
             <PillButton
               key={category.categoryId}
               aria-pressed={selectedCategoryId === category.categoryId}
-              onClick={() => setSelectedCategoryId(category.categoryId)}
+              onClick={() => handleSelectCategory(category.categoryId)}
               platform='mobile'
               variant={selectedCategoryId === category.categoryId ? 'filled' : 'outlined-light'}
             >
@@ -266,7 +294,7 @@ export const EventDiscountProductsSection = ({
               <PillButton
                 key={category.categoryId}
                 aria-pressed={selectedCategoryId === category.categoryId}
-                onClick={() => setSelectedCategoryId(category.categoryId)}
+                onClick={() => handleSelectCategory(category.categoryId)}
                 platform='mobile'
                 variant={selectedCategoryId === category.categoryId ? 'filled' : 'outlined-light'}
               >

@@ -27,7 +27,7 @@
 - periodic products query: required `marketId`, optional `category`, `cursor`, `size`
 - periodic products upstream: `GET /v1/users/markets/{marketId}/products/periodic`
 - periodic category: `VEGETABLE_FRUIT`, `MEAT_EGG`, `SEAFOOD`, `DAIRY`, `CONVENIENCE_FOOD`, `PROCESSED_FOOD`, `BEVERAGE_ALCOHOL`, `HOUSEHOLD_GOODS`, `ETC`
-- periodic page: `content[]`, `hasNext`, nullable numeric `nextCursor`
+- periodic page: `content[]`, `hasNext`, nullable numeric `nextCursor`, `availableCategories[]`
 - periodic item: `productId`, `name`, nullable `thumbnailUrl`, `discountedPrice`
 - browser는 same-origin BFF만 호출하며 access token을 직접 읽거나 전달하지 않습니다.
 - Route Handler는 HttpOnly access token cookie를 upstream Bearer header에 전달합니다.
@@ -46,6 +46,9 @@
 
 - `MarketProductsQueryContent`는 상세 조회 성공 후 `market.marketId`를 행사 상품 섹션에 전달합니다.
 - 기본 category는 전체이며 category query를 보내지 않습니다.
+- `availableCategories`에 포함된 카테고리만 기존 width 측정 훅의 입력으로 사용합니다.
+- 첫 줄에는 가용 카테고리 중 화면 너비에 들어가는 항목을 노출하고 나머지만 더보기에 표시합니다.
+- 카테고리 전환 요청 중에는 마지막 정상 `availableCategories`를 유지해 chip layout 이동을 방지합니다.
 - 카테고리 변경은 별도 query key를 사용해 해당 카테고리의 첫 페이지를 조회합니다.
 - 다음 페이지는 `hasNext`가 true이고 `nextCursor`가 있을 때만 요청합니다.
 - observer의 연속 intersection은 진행 중인 다음 페이지 요청을 중복 실행하지 않습니다.

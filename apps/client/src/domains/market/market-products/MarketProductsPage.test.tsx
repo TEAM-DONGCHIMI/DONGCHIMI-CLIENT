@@ -100,6 +100,8 @@ const usePeriodicProductsHandler = () => {
         return HttpResponse.json({
           code: 'SUCCESS',
           data: {
+            availableCategories:
+              PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE.data.availableCategories,
             content: categoryProducts[category],
             hasNext: false,
             nextCursor: null,
@@ -228,7 +230,7 @@ describe('MarketProductsPage', () => {
 
     const eventSection = getSectionQueries('행사 할인 상품');
 
-    await user.click(eventSection.getByRole('button', { name: '정육·달걀' }));
+    await user.click(await eventSection.findByRole('button', { name: '정육·달걀' }));
 
     expect(await eventSection.findByText('삼겹살 500G')).toBeInTheDocument();
     expect(eventSection.getAllByRole('link')).toHaveLength(1);
@@ -243,6 +245,33 @@ describe('MarketProductsPage', () => {
 
     expect(await eventSection.findByText('손질 고등어 1팩')).toBeInTheDocument();
     expect(eventSection.getAllByRole('link')).toHaveLength(1);
+  });
+
+  it('상품이 존재하는 availableCategories만 카테고리로 노출한다', async () => {
+    server.use(
+      http.get(PERIODIC_PRODUCTS_API_PATH, () => {
+        return HttpResponse.json({
+          code: 'SUCCESS',
+          data: {
+            availableCategories: ['MEAT_EGG'],
+            content: categoryProducts.MEAT_EGG,
+            hasNext: false,
+            nextCursor: null,
+          },
+          message: '요청에 성공했습니다.',
+          success: true,
+        });
+      }),
+    );
+
+    await renderMarketProductsPage();
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+
+    expect(await eventSection.findByRole('button', { name: '정육·달걀' })).toBeInTheDocument();
+    expect(eventSection.queryByRole('button', { name: '채소·과일' })).not.toBeInTheDocument();
+    expect(eventSection.queryByRole('button', { name: '수산물' })).not.toBeInTheDocument();
+    expect(eventSection.queryByRole('button', { name: '더보기' })).not.toBeInTheDocument();
   });
 
   it('sentinel이 교차하면 다음 cursor 페이지를 한 번만 추가한다', async () => {
@@ -295,7 +324,13 @@ describe('MarketProductsPage', () => {
       http.get(PERIODIC_PRODUCTS_API_PATH, () => {
         return HttpResponse.json({
           code: 'SUCCESS',
-          data: { content: [], hasNext: true, nextCursor: 10 },
+          data: {
+            availableCategories:
+              PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE.data.availableCategories,
+            content: [],
+            hasNext: true,
+            nextCursor: 10,
+          },
           message: '요청에 성공했습니다.',
           success: true,
         });
@@ -313,7 +348,7 @@ describe('MarketProductsPage', () => {
       http.get(PERIODIC_PRODUCTS_API_PATH, () => {
         return HttpResponse.json({
           code: 'SUCCESS',
-          data: { content: [], hasNext: false, nextCursor: null },
+          data: { availableCategories: [], content: [], hasNext: false, nextCursor: null },
           message: '요청에 성공했습니다.',
           success: true,
         });
