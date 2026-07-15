@@ -47,6 +47,16 @@ describe('API_ENDPOINTS', () => {
     expect(API_ENDPOINTS.common.auth.refresh).toBe('/v1/auth/token/refresh');
     expect(API_ENDPOINTS.common.uploads.presignedUrl).toBe('/v1/uploads/presigned-url');
   });
+
+  it('builds user periodic product query endpoints', () => {
+    expect(
+      API_ENDPOINTS.user.products.periodic(1, {
+        category: 'MEAT_EGG',
+        cursor: 12,
+        size: 20,
+      }),
+    ).toBe('/v1/users/markets/1/products/periodic?category=MEAT_EGG&cursor=12&size=20');
+  });
 });
 
 describe('buildApiPath', () => {
