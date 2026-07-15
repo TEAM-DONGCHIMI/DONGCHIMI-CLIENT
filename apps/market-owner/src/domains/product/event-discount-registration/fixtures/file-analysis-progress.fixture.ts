@@ -32,20 +32,3 @@ export const fileAnalysisProgressFixtures = {
     steps: createProgressSteps(['completed', 'processing', 'pending', 'pending', 'pending']),
   },
 } as const;
-
-export const fileAnalysisSimulationFrames = [
-  fileAnalysisProgressFixtures.processing,
-  {
-    progressPercentage: 44,
-    steps: createProgressSteps(['completed', 'completed', 'processing', 'pending', 'pending']),
-  },
-  {
-    progressPercentage: 64,
-    steps: createProgressSteps(['completed', 'completed', 'completed', 'processing', 'pending']),
-  },
-  {
-    progressPercentage: 84,
-    steps: createProgressSteps(['completed', 'completed', 'completed', 'completed', 'processing']),
-  },
-  fileAnalysisProgressFixtures.completed,
-] as const;

@@ -24,4 +24,16 @@ describe('getMarketOwnerEnv', () => {
 
     expect(getMarketOwnerEnv().apiBaseUrl).toBeUndefined();
   });
+
+  it('removes trailing slashes from the public S3 base URL', () => {
+    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', ' https://static.dongchimi.kr/// ');
+
+    expect(getMarketOwnerEnv().s3BaseUrl).toBe('https://static.dongchimi.kr');
+  });
+
+  it('returns undefined when the public S3 base URL is blank', () => {
+    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', '   ');
+
+    expect(getMarketOwnerEnv().s3BaseUrl).toBeUndefined();
+  });
 });

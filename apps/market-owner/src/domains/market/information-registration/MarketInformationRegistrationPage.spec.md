@@ -84,7 +84,7 @@
 - design-system icons: `IcPlus`, `IcPlusSizeSmallColor60`, `IcLineHorizontalSizeSmall`, `IcClockSizeSmallColor60`, `IcPhoneSizeSmallColor60`, `IcChevronDown`
 - app-shared components: none
 - page-local components: section-local field composition
-- not promoted to design-system: 마트 정보 등록 전용 header/logo placeholder와 field composition은 현재 단일 route 전용입니다.
+- not promoted to design-system: 마트 정보 등록 전용 header와 field composition은 현재 단일 route 전용입니다. 로고는 홈 사이드바와 동일한 app-shared `Img_pavicon.svg` asset을 사용합니다.
 
 ## States
 
@@ -119,7 +119,7 @@
 
 ## Publishing Evidence
 
-- Figma mismatch: 실제 로고 asset은 repo에 없어서 page-local `DC` text logo placeholder를 사용합니다.
+- Logo asset: 홈 사이드바와 동일한 app-shared `Img_pavicon.svg`를 92px x 32px 크기로 표시합니다.
 - browser route: TBD
 - screenshot / preview: implementation verification 단계에서 확인합니다.
 - visual notes: Figma의 development annotation 중 이미지 업로드 영역은 button placeholder로 구현합니다.
@@ -149,5 +149,4 @@
 ## Open Questions
 
 - 첫 로그인 또는 회원가입 성공 후 마트 미등록 상태를 어떤 route/guard에서 판단할지는 후속 auth onboarding flow 이슈에서 확정합니다.
-- 실제 로고 asset 위치가 확정되면 page-local placeholder를 교체합니다.
 - 주소 찾기, 이미지 업로드 API, 등록 API를 연결합니다.

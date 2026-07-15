@@ -25,7 +25,7 @@
 ## UI States
 
 - confirm: 오늘의 전단 최종 확인 화면을 렌더링합니다.
-- share: 오늘의 전단 공유 화면을 렌더링합니다.
+- share: 오늘의 전단 공유 화면을 렌더링하고 Figma `Img_background`와 동일한 전용 SVG 배경을 표시합니다.
 - copied toast: `링크 복사` 클릭 후 링크 복사 성공 toast UI를 표시합니다.
 - copy error toast: clipboard 미지원 또는 복사 실패 시 재시도 안내 toast UI를 표시합니다.
 - QR loading: QR mutation pending 동안 QR 보기 버튼을 disabled하고 `QR코드 발급 중`을 표시합니다.

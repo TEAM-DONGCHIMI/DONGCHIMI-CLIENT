@@ -1,14 +1,19 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { PRESIGNED_UPLOAD_PURPOSE } from '@/shared/constants/presigned-upload-purpose';
+
 import { resolvePresignedExcelFileUrl } from './resolve-excel-file-url';
 
 describe('resolvePresignedExcelFileUrl', () => {
   afterEach(() => {
+    vi.unstubAllEnvs();
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
-  it('requests a presigned URL, uploads the excel file, and returns objectKey', async () => {
+  it('requests a presigned URL, uploads the excel file, and returns the public S3 URL', async () => {
+    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', 'https://static.dongchimi.kr///');
+
     const file = new File(['name,price'], 'products.xlsx', {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
@@ -27,13 +32,13 @@ describe('resolvePresignedExcelFileUrl', () => {
     );
 
     await expect(resolvePresignedExcelFileUrl(requestPresignedUploadUrl)(file)).resolves.toBe(
-      'tmp/products/products.xlsx',
+      'https://static.dongchimi.kr/tmp/products/products.xlsx',
     );
 
     expect(requestPresignedUploadUrl).toHaveBeenCalledWith({
       contentLength: file.size,
       contentType: file.type,
-      purpose: 'product_import',
+      purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_IMPORT_EXCEL,
     });
     expect(fetchSpy).toHaveBeenCalledWith(
       'https://s3.ap-northeast-2.amazonaws.com/bucket/tmp/products.xlsx',
@@ -49,6 +54,8 @@ describe('resolvePresignedExcelFileUrl', () => {
   });
 
   it('throws when the presigned upload request fails', async () => {
+    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', 'https://static.dongchimi.kr');
+
     const file = new File(['name,price'], 'products.csv', { type: 'text/csv' });
     const requestPresignedUploadUrl = vi.fn().mockResolvedValue({
       expiresAt: '2026-07-14T10:00:00.000Z',
@@ -68,7 +75,26 @@ describe('resolvePresignedExcelFileUrl', () => {
     );
   });
 
+  it('throws when the public S3 base URL is missing', async () => {
+    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', '   ');
+
+    const file = new File(['name,price'], 'products.csv', { type: 'text/csv' });
+    const requestPresignedUploadUrl = vi.fn();
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
+
+    await expect(
+      resolvePresignedExcelFileUrl(requestPresignedUploadUrl)(file),
+    ).rejects.toMatchObject({
+      message: 'VITE_PUBLIC_S3_BASE_URL is not configured.',
+      type: 'configuration',
+    });
+
+    expect(requestPresignedUploadUrl).not.toHaveBeenCalled();
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it('aborts a stalled presigned upload after the timeout', async () => {
+    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', 'https://static.dongchimi.kr');
     vi.useFakeTimers();
 
     const file = new File(['name,price'], 'products.csv', { type: 'text/csv' });

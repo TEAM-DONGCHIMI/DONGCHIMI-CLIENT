@@ -8,15 +8,10 @@ export const pageRootClassName = style({
 });
 
 export const logoClassName = style({
-  display: 'inline-flex',
+  display: 'block',
   width: '9.2rem',
   height: '3.2rem',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '0.8rem',
-  backgroundColor: atomic.neutral[90],
-  color: atomic.common[0],
-  ...typography['caption-1-medium'],
+  flexShrink: 0,
 });
 
 export const mainClassName = style({
