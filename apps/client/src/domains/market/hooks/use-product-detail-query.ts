@@ -3,11 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { type ProductDetailParamsTypes } from '../api/product-detail-api';
+import { hasProductDetailParams } from '../model/product-detail-schema';
 import { productDetailQueryOptions } from '../query-options/product-detail-query-options';
-
-const hasProductDetailParams = ({ marketId, productId }: ProductDetailParamsTypes) => {
-  return marketId.length > 0 && productId.length > 0;
-};
 
 export const useProductDetailQuery = (params: ProductDetailParamsTypes) => {
   return useQuery({

@@ -3,6 +3,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from '@dongchimi/design-system/components';
 import { atomic, typography } from '@dongchimi/design-system/tokens';
 
+import sidebarBrandLogo from '@/shared/assets/images/Img_pavicon.svg';
+
 import { Sidebar, type SidebarItem } from './Sidebar';
 
 const meta = {
@@ -35,15 +37,14 @@ const PlaceholderIcon = () => (
 );
 
 const Logo = () => (
-  <span
-    aria-hidden='true'
+  <img
+    alt='동치미'
+    src={sidebarBrandLogo}
     style={{
-      display: 'inline-block',
+      display: 'block',
       flexShrink: 0,
-      width: 32,
+      width: 92,
       height: 32,
-      borderRadius: 4,
-      background: 'linear-gradient(135deg, rgba(21, 196, 126, 0.35), rgba(25, 31, 40, 0.1))',
     }}
   />
 );
@@ -94,12 +95,7 @@ const offerItems: SidebarItem[] = [
 
 export const Default: StoryTypes = {
   args: {
-    brand: (
-      <>
-        <Logo />
-        동치미
-      </>
-    ),
+    brand: <Logo />,
     footerItems: [
       {
         id: 'settings',
@@ -142,12 +138,7 @@ export const Default: StoryTypes = {
 export const LinkItems: StoryTypes = {
   args: {
     activeItemId: 'period-create',
-    brand: (
-      <>
-        <Logo />
-        동치미
-      </>
-    ),
+    brand: <Logo />,
     sections: [
       {
         items: [
@@ -173,12 +164,7 @@ export const LinkItems: StoryTypes = {
 export const DisabledItem: StoryTypes = {
   args: {
     activeItemId: 'home',
-    brand: (
-      <>
-        <Logo />
-        동치미
-      </>
-    ),
+    brand: <Logo />,
     sections: [
       {
         items: [

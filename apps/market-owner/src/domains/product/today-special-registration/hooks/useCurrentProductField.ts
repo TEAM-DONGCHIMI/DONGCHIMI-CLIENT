@@ -7,6 +7,7 @@ import {
   formatPriceInput,
   limitProductDescriptionInput,
   limitProductNameInput,
+  normalizeTodaySpecialStartDateInput,
   sanitizeProductDescription,
   sanitizeProductName,
   type TodaySpecialProductErrorMessageTypes,
@@ -69,12 +70,6 @@ export const useCurrentProductField = ({
     startDate: getCurrentProductErrorMessage('startDate'),
   };
 
-  // 일반 텍스트 필드 변경값을 저장
-  const handleFieldChange =
-    (field: TodaySpecialProductTextFieldTypes) => (event: ChangeEvent<HTMLInputElement>) => {
-      updateCurrentProductField(field, event.target.value);
-    };
-
   // 상품명은 입력 중 최대 글자 수만 제한
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     updateCurrentProductField('name', limitProductNameInput(event.target.value));
@@ -112,6 +107,20 @@ export const useCurrentProductField = ({
       updateCurrentProductField(field, formatPriceInput(event.target.value));
     };
 
+  const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
+    updateCurrentProductField('startDate', normalizeTodaySpecialStartDateInput(event.target.value));
+  };
+
+  const handleStartDateBlur = (event: FocusEvent<HTMLInputElement>) => {
+    updateCurrentProductField(
+      'startDate',
+      normalizeTodaySpecialStartDateInput(event.target.value),
+      {
+        shouldTouch: true,
+      },
+    );
+  };
+
   return {
     productInfoFieldProps: {
       onDescriptionBlur: handleDescriptionBlur,
@@ -121,8 +130,8 @@ export const useCurrentProductField = ({
       productErrorMessages,
     },
     productPeriodFieldProps: {
-      onStartDateBlur: handleFieldBlur('startDate'),
-      onStartDateChange: handleFieldChange('startDate'),
+      onStartDateBlur: handleStartDateBlur,
+      onStartDateChange: handleStartDateChange,
       productErrorMessages,
     },
     productPriceFieldProps: {

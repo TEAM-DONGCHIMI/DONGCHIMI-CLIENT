@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-12
+- Jira: DCMCL-12, DCMCL-17, DCMCL-22
 - Screen ID: `모웹_로그인`
 - Figma frame: [APPJAM node 2662:156337](https://www.figma.com/design/xIDbjqPKzG4bQL5Gaoqfvb/APPJAM?node-id=2662-156337&m=dev)
 - Route: `/login`
@@ -12,7 +12,7 @@
 ## Purpose
 
 - 모바일 웹 사용자가 카카오 로그인을 시작할 수 있는 온보딩 화면을 제공합니다.
-- 이번 작업은 로그인 화면 UI만 구현하며 실제 OAuth 연동은 포함하지 않습니다.
+- 서버 Route Handler를 통해 카카오 REST 인가 코드 방식의 OAuth 로그인을 시작합니다.
 
 ## Source Of Truth
 
@@ -31,9 +31,7 @@
 ## Out Of Scope
 
 - Figma의 iOS 상태바 및 모바일 브라우저 툴바 구현
-- 카카오 OAuth 및 로그인 API 연동
-- 로그인 성공, 실패, loading 상태
-- 로그인 이후 redirect
+- OAuth callback의 서버 토큰 교환과 이후 redirect는 `/oauth/callback` route가 담당합니다.
 - 이용약관 및 개인정보처리방침 페이지 구현
 
 ## Layout And Sections
@@ -42,7 +40,7 @@
 LoginPage
   Onboarding image
   Login section
-    KakaoLoginButton (page-local)
+    KakaoLoginLink (page-local)
     Terms notice
 ```
 
@@ -52,7 +50,7 @@ LoginPage
 - app viewport: `375px × 666px`
 - onboarding image: `375px × 433px`
 - login container: app viewport 전체 높이, 좌우 `20px`, 하단 `60px`, 하단 정렬
-- Kakao button: `335px × 50px`, radius `12px`
+- Kakao login link: `335px × 50px`, radius `12px`
 - Kakao icon: `20px`
 - icon-label gap: `4px`
 - terms margin-top: `18px`
@@ -61,20 +59,21 @@ LoginPage
 
 - default: 카카오 로그인 버튼을 활성 상태로 표시합니다.
 - focus-visible: 공통 `Button`과 동일한 primary focus outline을 표시합니다.
-- disabled: 공통 `Button`과 동일한 neutral 배경, 흰색 텍스트, disabled cursor를 적용합니다.
 - hover: 공통 `Button`과 동일하게 별도 시각 상태를 정의하지 않습니다.
-- loading / error / success: 이번 UI 작업에서는 지원하지 않습니다.
+- loading/disabled: client SDK 초기화 상태를 두지 않으므로 별도 상태가 없습니다.
+- error: 서버의 OAuth 환경변수 설정에 실패하면 callback 오류 화면에서 재시도를 안내합니다.
+- success: 카카오 인증 화면으로 이동합니다.
 
 ## Behavior
 
-- 버튼은 native `button`이며 type은 `button`입니다.
-- 실제 클릭 동작과 OAuth side effect는 후속 로그인 연동 작업에서 추가합니다.
+- 카카오 로그인 CTA는 `/api/auth/kakao/authorize`로 이동하는 링크입니다.
+- 인가 URL과 `state`는 server-only 환경변수를 읽는 Route Handler가 생성합니다.
 
 ## Accessibility
 
 - 화면 제목은 시각적으로 숨긴 `h1`으로 제공합니다.
 - 카카오 로고는 장식 요소로 접근성 트리에서 제외합니다.
-- 버튼 텍스트가 accessible name을 제공합니다.
+- 링크 텍스트가 accessible name을 제공합니다.
 - 키보드 `focus-visible` 상태를 제공합니다.
 
 ## Responsive
@@ -94,4 +93,3 @@ LoginPage
 ## Open Questions
 
 - 온보딩 이미지 최종 PNG 교체 시점과 asset 경로
-- 카카오 OAuth 연동 시 disabled/loading 정책

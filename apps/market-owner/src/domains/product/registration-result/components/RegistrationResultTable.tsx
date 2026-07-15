@@ -1,21 +1,26 @@
 import { type MouseEvent, type ReactNode } from 'react';
 
-import type { RegistrationResultProduct } from '../fixtures';
+import { getProductCategoryGroup } from '@/shared/utils/product-category.utils';
+
+import type {
+  RegistrationResultEditableProductFieldTypes,
+  RegistrationResultProduct,
+  RegistrationResultProductDraftMapTypes,
+  RegistrationResultProductDraftTypes,
+  RegistrationResultProductFieldValues,
+} from '../model';
+import { getRegistrationResultProductFieldValues } from '../model';
 import {
-  getRegistrationResultProductFieldValue,
-  type RegistrationResultEditableProductFieldTypes,
-  type RegistrationResultProductDraftMapTypes,
-} from '../hooks/useRegistrationResultProductDrafts';
-import {
-  RegistrationResultProductRow,
-  type ImagePreview,
-  type RegistrationResultProductFieldValues,
-} from './RegistrationResultProductRow';
+  validateRegistrationResultProductFields,
+  type RegistrationResultProductFieldErrorTypes,
+} from '../utils/registration-result-product-validation';
+import { RegistrationResultProductRow, type ImagePreview } from './RegistrationResultProductRow';
 import * as S from './RegistrationResult.css';
 
 interface RegistrationResultTableProps {
   allVisibleSelected: boolean;
   children: ReactNode;
+  emptyMessage?: string;
   hasVisibleSelection: boolean;
   imagePreviews: ReadonlyMap<string, ImagePreview>;
   productDrafts: RegistrationResultProductDraftMapTypes;
@@ -39,20 +44,40 @@ const RequiredMark = () => {
   return <span className={S.requiredMarkClassName}>*</span>;
 };
 
+const validatedFields = [
+  'productName',
+  'price',
+  'promotionText',
+  'discountPeriod',
+] as const satisfies readonly RegistrationResultEditableProductFieldTypes[];
+
+const getVisibleFieldErrors = (
+  fieldErrors: RegistrationResultProductFieldErrorTypes,
+  productDraft: RegistrationResultProductDraftTypes | undefined,
+) => {
+  const visibleFieldErrors: RegistrationResultProductFieldErrorTypes = {};
+
+  validatedFields.forEach((field) => {
+    const errorMessage = fieldErrors[field];
+
+    if (productDraft?.[field] !== undefined && errorMessage != null) {
+      visibleFieldErrors[field] = errorMessage;
+    }
+  });
+
+  return visibleFieldErrors;
+};
+
 const getProductFieldValues = (
   product: RegistrationResultProduct,
   productDrafts: RegistrationResultProductDraftMapTypes,
 ): RegistrationResultProductFieldValues => {
+  const fieldValues = getRegistrationResultProductFieldValues(product, productDrafts);
+
   return {
-    category: getRegistrationResultProductFieldValue(product, productDrafts, 'category'),
-    discountPeriod: getRegistrationResultProductFieldValue(
-      product,
-      productDrafts,
-      'discountPeriod',
-    ),
-    price: getRegistrationResultProductFieldValue(product, productDrafts, 'price'),
-    productName: getRegistrationResultProductFieldValue(product, productDrafts, 'productName'),
-    promotionText: getRegistrationResultProductFieldValue(product, productDrafts, 'promotionText'),
+    ...fieldValues,
+    category:
+      fieldValues.category.trim().length > 0 ? getProductCategoryGroup(fieldValues.category) : '',
   };
 };
 
@@ -138,6 +163,7 @@ const TableHeader = ({
 export const RegistrationResultTable = ({
   allVisibleSelected,
   children,
+  emptyMessage = '표시할 상품이 없습니다.',
   hasVisibleSelection,
   imagePreviews,
   productDrafts,
@@ -152,22 +178,31 @@ export const RegistrationResultTable = ({
 }: RegistrationResultTableProps) => {
   const renderProductRows = () => {
     if (products.length === 0) {
-      return <div className={S.emptyStateClassName}>표시할 상품이 없습니다.</div>;
+      return <div className={S.emptyStateClassName}>{emptyMessage}</div>;
     }
 
-    return products.map((product) => (
-      <RegistrationResultProductRow
-        checked={selectedIds.has(product.id)}
-        fieldValues={getProductFieldValues(product, productDrafts)}
-        imagePreview={imagePreviews.get(product.id)}
-        key={product.id}
-        onCategoryClick={onProductCategoryClick(product)}
-        onCheckedChange={(checked) => onRowCheckedChange(product.id, checked)}
-        onFieldChange={(field, value) => onProductFieldChange(product.id, field, value)}
-        onImageFileChange={onImageFileChange(product.id)}
-        product={product}
-      />
-    ));
+    return products.map((product) => {
+      const fieldValues = getProductFieldValues(product, productDrafts);
+      const fieldErrors = getVisibleFieldErrors(
+        validateRegistrationResultProductFields(fieldValues),
+        productDrafts.get(product.id),
+      );
+
+      return (
+        <RegistrationResultProductRow
+          checked={selectedIds.has(product.id)}
+          fieldErrors={fieldErrors}
+          fieldValues={fieldValues}
+          imagePreview={imagePreviews.get(product.id)}
+          key={product.id}
+          onCategoryClick={onProductCategoryClick(product)}
+          onCheckedChange={(checked) => onRowCheckedChange(product.id, checked)}
+          onFieldChange={(field, value) => onProductFieldChange(product.id, field, value)}
+          onImageFileChange={onImageFileChange(product.id)}
+          product={product}
+        />
+      );
+    });
   };
 
   return (

@@ -2,13 +2,13 @@ import { useMemo, useState } from 'react';
 
 import type { UploadSegmentTypes } from '@/shared/components';
 import type { ProductCategoryGroupTypes } from '@/shared/constants/product-categories';
-import { getProductMatchesCategoryFilter } from '@/shared/utils/product-category.utils';
-
-import type { RegistrationResultProduct } from '../fixtures';
 import {
-  getRegistrationResultProductFieldValue,
-  type RegistrationResultProductDraftMapTypes,
-} from './useRegistrationResultProductDrafts';
+  getProductCategoryGroup,
+  getProductMatchesCategoryFilter,
+} from '@/shared/utils/product-category.utils';
+
+import type { RegistrationResultProduct, RegistrationResultProductDraftMapTypes } from '../model';
+import { getRegistrationResultProductFieldValues } from '../model';
 
 interface UseRegistrationResultProductSearchParams {
   productDrafts: RegistrationResultProductDraftMapTypes;
@@ -16,20 +16,14 @@ interface UseRegistrationResultProductSearchParams {
   selectedSegment: UploadSegmentTypes;
 }
 
-const getProductMatchesSearch = (
-  product: RegistrationResultProduct,
-  searchValue: string,
-  category = product.category,
-) => {
+const getProductMatchesSearch = (productName: string, searchValue: string) => {
   const normalizedSearchValue = searchValue.trim().toLowerCase();
 
   if (normalizedSearchValue.length === 0) {
     return true;
   }
 
-  return [product.productName, category, product.promotionText].some((value) =>
-    value.toLowerCase().includes(normalizedSearchValue),
-  );
+  return productName.toLowerCase().includes(normalizedSearchValue);
 };
 
 const getProductMatchesSegment = (
@@ -59,23 +53,17 @@ export const useRegistrationResultProductSearch = ({
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      const category = getRegistrationResultProductFieldValue(product, productDrafts, 'category');
-      const productName = getRegistrationResultProductFieldValue(
-        product,
-        productDrafts,
-        'productName',
-      );
-      const promotionText = getRegistrationResultProductFieldValue(
-        product,
-        productDrafts,
-        'promotionText',
-      );
-      const searchableProduct = { ...product, productName, promotionText };
+      const fieldValues = getRegistrationResultProductFieldValues(product, productDrafts);
+      const category =
+        fieldValues.category.trim().length > 0 ? getProductCategoryGroup(fieldValues.category) : '';
+      const matchesCategoryFilter =
+        selectedCategories.size === 0 ||
+        (category.length > 0 && getProductMatchesCategoryFilter(category, selectedCategories));
 
       return (
         getProductMatchesSegment(product, selectedSegment) &&
-        getProductMatchesSearch(searchableProduct, searchValue, category) &&
-        getProductMatchesCategoryFilter(category, selectedCategories)
+        getProductMatchesSearch(fieldValues.productName, searchValue) &&
+        matchesCategoryFilter
       );
     });
   }, [productDrafts, products, searchValue, selectedCategories, selectedSegment]);

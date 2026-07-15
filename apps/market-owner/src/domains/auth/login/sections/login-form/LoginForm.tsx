@@ -1,4 +1,4 @@
-import { Button, TextInput, Toast } from '@dongchimi/design-system/components';
+import { Button, TextInput } from '@dongchimi/design-system/components';
 import { IcCheckboxActionSizeSmall, IcCheckboxSizeSmall } from '@dongchimi/design-system/icons';
 
 import { useLoginForm } from '../../hooks/use-login-form';
@@ -11,13 +11,19 @@ export interface LoginFormProps {
 
 export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
   const {
-    action: { handleEmailChange, handleKeepSignedInChange, handlePasswordChange, handleSubmit },
+    action: {
+      handleEmailBlur,
+      handleEmailChange,
+      handleKeepSignedInChange,
+      handlePasswordBlur,
+      handlePasswordChange,
+      handleSubmit,
+    },
     state: {
       email,
       emailStatusProps,
       isSubmitDisabled,
       keepSignedIn,
-      loginErrorMessage,
       password,
       passwordStatusProps,
     },
@@ -34,6 +40,7 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
         {...emailStatusProps}
         autoComplete='email'
         label='이메일'
+        onBlur={handleEmailBlur}
         onChange={handleEmailChange}
         placeholder='이메일을 입력해주세요.'
         type='email'
@@ -43,6 +50,7 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
         {...passwordStatusProps}
         autoComplete='current-password'
         label='비밀번호'
+        onBlur={handlePasswordBlur}
         onChange={handlePasswordChange}
         placeholder='비밀번호를 입력해주세요.'
         type='password'
@@ -71,8 +79,6 @@ export const LoginForm = ({ submitLogin }: LoginFormProps = {}) => {
       >
         로그인
       </Button>
-
-      {loginErrorMessage !== undefined && <Toast status='error'>{loginErrorMessage}</Toast>}
     </form>
   );
 };

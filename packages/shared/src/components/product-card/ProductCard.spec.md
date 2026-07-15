@@ -95,7 +95,9 @@ ProductCard(section)
 ## States
 
 - loading: 지원하지 않습니다. 상위 API UI 책임입니다.
-- empty: 상품이 없으면 `emptyMessage`를 표시하고 더보기/접기 버튼은 숨깁니다.
+- empty: 상품이 없고 `emptyMessage`가 비어 있지 않으면 안내 surface를 표시하고 더보기/접기 버튼은 숨깁니다.
+  호출부가 `emptyMessage=''`을 명시하면 빈 목록 surface를 렌더링하지 않아, 상위 UI가 자체 empty overlay를
+  제공할 수 있습니다.
 - error: 지원하지 않습니다. 상위 API UI 책임입니다.
 - selected / active: 지원하지 않습니다.
 - invalid: 지원하지 않습니다.
@@ -125,7 +127,7 @@ ProductCard(section)
 - color/token:
   - design-system token을 우선 사용합니다.
   - typography는 design-system `typography` token을 사용합니다.
-  - discount badge background는 `product-card/assets/img-chip-point.webp`를 사용합니다.
+  - discount badge는 디자인 시스템 `PointChip`을 사용합니다.
 - responsive:
   - responsive object API는 제공하지 않습니다. 호출부가 width container와 `initialVisibleCount`를 결정합니다.
   - ProductCard 자체는 고정 width 또는 max-width를 갖지 않습니다.

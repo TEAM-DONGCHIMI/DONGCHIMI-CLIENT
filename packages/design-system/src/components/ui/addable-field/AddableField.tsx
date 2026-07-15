@@ -9,6 +9,7 @@ import {
 
 import { cn } from '../../../styles/class-name';
 import type { RecipeVariantProps } from '../../../styles/recipe';
+import { RequiredMark } from '../required-mark';
 import {
   actionButton,
   errorIcon,
@@ -19,7 +20,6 @@ import {
   labelRow,
   messageRow,
   messageText,
-  requiredMark,
   root,
 } from './AddableField.css';
 
@@ -106,11 +106,7 @@ export const AddableField = forwardRef<HTMLInputElement, AddableFieldProps>(
             <label className={label} htmlFor={inputId}>
               {visibleLabel}
             </label>
-            {required && (
-              <span aria-hidden='true' className={requiredMark}>
-                *
-              </span>
-            )}
+            {required && <RequiredMark />}
           </div>
         ) : null}
 

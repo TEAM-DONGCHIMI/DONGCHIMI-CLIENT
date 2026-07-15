@@ -28,14 +28,14 @@ const meta = {
     actionLabel: {
       control: 'text',
     },
-    areaName: {
-      control: 'text',
-    },
     className: {
       control: false,
     },
     discountCount: {
       control: 'number',
+    },
+    isOpen: {
+      control: 'boolean',
     },
     martName: {
       control: 'text',
@@ -54,8 +54,8 @@ const meta = {
     },
   },
   args: {
-    areaName: '망원동',
     discountCount: 6,
+    isOpen: true,
     martName: '망원 신선마트',
     onActionClick: fn(),
     products: sampleProducts,
@@ -88,5 +88,11 @@ export const LongText: StoryTypes = {
 export const CustomActionLabel: StoryTypes = {
   args: {
     actionLabel: '진단보기',
+  },
+};
+
+export const Closed: StoryTypes = {
+  args: {
+    isOpen: false,
   },
 };

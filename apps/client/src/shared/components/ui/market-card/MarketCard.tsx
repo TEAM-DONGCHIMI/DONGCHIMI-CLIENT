@@ -34,6 +34,8 @@ export const MarketCard = forwardRef<HTMLElement, MarketCardProps>(
     },
     ref,
   ) => {
+    const shouldShowSaleChip = hasSaleChip && saleChipLabel != null && saleChipLabel.length > 0;
+
     return (
       <article ref={ref} className={cn(S.marketCard({ size }), className)} {...props}>
         <Image
@@ -48,11 +50,11 @@ export const MarketCard = forwardRef<HTMLElement, MarketCardProps>(
           <span className={S.productNameClassName}>{productName}</span>
           <strong className={S.priceClassName}>{price}</strong>
         </div>
-        {hasSaleChip && saleChipLabel ? (
+        {shouldShowSaleChip && (
           <PointChip className={S.saleChipClassName} size='mobile'>
             {saleChipLabel}
           </PointChip>
-        ) : null}
+        )}
       </article>
     );
   },

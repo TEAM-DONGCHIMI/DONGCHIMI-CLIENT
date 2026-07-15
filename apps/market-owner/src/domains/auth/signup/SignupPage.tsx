@@ -1,20 +1,19 @@
-import { useNavigate } from 'react-router';
-
-import { Button, Flex, TextInput, Toast } from '@dongchimi/design-system/components';
+import { Button, Flex, TextInput } from '@dongchimi/design-system/components';
 import { IcCircleCheckFill } from '@dongchimi/design-system/icons';
 
-import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import loginBrandImageUrl from '@/shared/assets/images/Img_login_pavicon.svg';
 
 import { useSignupForm } from './hooks/use-signup-form';
 import * as S from './SignupPage.css';
 
 export const SignupPage = () => {
-  const navigate = useNavigate();
   const {
     action: {
-      clearSubmitErrorMessage,
+      handleEmailBlur,
       handleEmailChange,
+      handlePasswordBlur,
       handlePasswordChange,
+      handlePasswordConfirmBlur,
       handlePasswordConfirmChange,
       handleSubmit,
     },
@@ -22,24 +21,19 @@ export const SignupPage = () => {
       email,
       emailStatusProps,
       isPasswordConfirmValid,
-      isValid,
+      isSubmitDisabled,
       password,
       passwordConfirm,
       passwordConfirmStatusProps,
       passwordStatusProps,
-      submitErrorMessage,
     },
   } = useSignupForm();
-  const handleSignupSubmit = handleSubmit(() => {
-    clearSubmitErrorMessage();
-    navigate(MARKET_OWNER_ROUTES.login);
-  });
 
   return (
     <main className={S.pageClassName}>
       <Flex align='center' as='header' className={S.headerClassName} direction='column'>
         <Flex align='center' className={S.titleGroupClassName} direction='column'>
-          <span aria-hidden='true' className={S.logoSlotClassName} />
+          <img alt='' aria-hidden='true' className={S.logoClassName} src={loginBrandImageUrl} />
           <h1 className={S.titleClassName}>회원가입</h1>
         </Flex>
         <p className={S.descriptionClassName}>
@@ -47,12 +41,13 @@ export const SignupPage = () => {
         </p>
       </Flex>
 
-      <form className={S.formClassName} noValidate onSubmit={handleSignupSubmit}>
+      <form className={S.formClassName} noValidate onSubmit={handleSubmit}>
         <Flex className={S.fieldGroupClassName} direction='column'>
           <TextInput
             autoComplete='email'
             label='이메일'
             name='email'
+            onBlur={handleEmailBlur}
             onChange={handleEmailChange}
             placeholder='example@email.com'
             type='email'
@@ -64,6 +59,7 @@ export const SignupPage = () => {
             autoComplete='new-password'
             label='비밀번호'
             name='password'
+            onBlur={handlePasswordBlur}
             onChange={handlePasswordChange}
             placeholder='비밀번호를 입력해주세요.'
             type='password'
@@ -75,6 +71,7 @@ export const SignupPage = () => {
             autoComplete='new-password'
             label='비밀번호 확인'
             name='passwordConfirm'
+            onBlur={handlePasswordConfirmBlur}
             onChange={handlePasswordConfirmChange}
             placeholder='비밀번호를 확인해주세요.'
             trailingIcon={isPasswordConfirmValid ? <IcCircleCheckFill /> : undefined}
@@ -84,13 +81,12 @@ export const SignupPage = () => {
           />
         </Flex>
 
-        {submitErrorMessage !== undefined && (
-          <div className={S.submitToastClassName}>
-            <Toast status='error'>{submitErrorMessage}</Toast>
-          </div>
-        )}
-
-        <Button className={S.submitButtonClassName} disabled={!isValid} size='large' type='submit'>
+        <Button
+          className={S.submitButtonClassName}
+          disabled={isSubmitDisabled}
+          size='large'
+          type='submit'
+        >
           가입 완료
         </Button>
       </form>

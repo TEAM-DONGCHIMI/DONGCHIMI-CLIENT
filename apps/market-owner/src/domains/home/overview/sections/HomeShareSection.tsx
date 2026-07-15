@@ -1,11 +1,14 @@
 import { LeafletShareCard } from '@/shared/components';
 
-import { homeShare } from '../fixtures';
+import { type HomeShareTypes } from '../model/home-dashboard-view-model';
 import * as S from '../HomePage.css';
+
+const EMPTY_FLYER_MESSAGE = '전단을 공유하려면\n상품을 먼저 등록해주세요.';
 
 export interface HomeShareSectionProps {
   onCopyLinkResult: (isCopied: boolean) => void;
-  onQrCodePreparing: () => void;
+  onOpenQrCode: (qrCode?: string | null) => void;
+  share: HomeShareTypes;
 }
 
 const copyToClipboard = async (text: string) => {
@@ -24,26 +27,46 @@ const copyToClipboard = async (text: string) => {
 
 export const HomeShareSection = ({
   onCopyLinkResult,
-  onQrCodePreparing,
+  onOpenQrCode,
+  share,
 }: HomeShareSectionProps) => {
+  const isFlyerUnavailable = share.flyer === null;
+
   const handleCopyShareUrl = async () => {
-    const isCopied = await copyToClipboard(homeShare.url);
+    if (isFlyerUnavailable) {
+      return;
+    }
+
+    const isCopied = await copyToClipboard(share.copyUrl);
 
     onCopyLinkResult(isCopied);
   };
 
   const handleOpenQrCode = () => {
-    onQrCodePreparing();
+    if (isFlyerUnavailable) {
+      return;
+    }
+
+    onOpenQrCode(share.flyer?.qrCode);
   };
 
   return (
-    <LeafletShareCard
-      className={S.shareCardClassName}
-      description={homeShare.description}
-      onCopyLink={handleCopyShareUrl}
-      onOpenQrCode={handleOpenQrCode}
-      shareUrl={homeShare.url}
-      title={homeShare.title}
-    />
+    <div className={S.dashboardCardContainerClassName}>
+      <LeafletShareCard
+        className={S.shareCardClassName}
+        description={share.description}
+        disabled={isFlyerUnavailable}
+        onCopyLink={handleCopyShareUrl}
+        onOpenQrCode={handleOpenQrCode}
+        shareUrl={isFlyerUnavailable ? '' : share.displayUrl}
+        title={share.title}
+      />
+
+      {isFlyerUnavailable && (
+        <div className={S.dashboardCardEmptyOverlayClassName}>
+          <p className={S.dashboardCardEmptyMessageClassName}>{EMPTY_FLYER_MESSAGE}</p>
+        </div>
+      )}
+    </div>
   );
 };

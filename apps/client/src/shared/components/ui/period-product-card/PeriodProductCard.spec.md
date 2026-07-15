@@ -31,6 +31,7 @@
 - `priceText: string`: 표시할 가격 숫자 문자열입니다. 컴포넌트가 `원` 단위를 붙입니다.
 - `imageSrc?: ImageProps['src']`: 상품 이미지 source입니다. 없거나 빈 문자열이면 fallback surface를 표시합니다. 원격 이미지 도메인이 확정되면 `next.config.mjs`의 `images.remotePatterns` 등록과 함께 최적화 전환을 검토합니다.
 - `imageAlt?: string`: 상품 이미지 대체 텍스트입니다. 없으면 `${productName} 상품 이미지`를 사용합니다.
+- `imageSizes?: ImageProps['sizes']`: 호출부의 반응형 카드 폭이 기본 `9.4rem`과 다를 때 Next `Image`의 `sizes` 힌트를 보정합니다. 생략하면 `9.4rem`을 사용합니다.
 - `href?: LinkProps['href']`: 상품 상세 URL입니다. 전달되면 root를 Next `Link`로 렌더링합니다.
 - `onClick?: MouseEventHandler<HTMLAnchorElement>`: analytics 같은 호출부 책임 동작이 필요할 때 링크 클릭 핸들러로 사용합니다.
 - `className?: string`: 호출부의 배치 조정을 위해 root에 추가 class를 병합합니다.
@@ -49,8 +50,8 @@
 
 ## Styling Constraints
 
-- root width는 Figma 기준 `94px`에 맞춘 `9.4rem`입니다.
-- image frame은 `9.4rem x 9.4rem`, radius `12px`, cover object fit을 사용합니다.
+- root width는 부모 폭을 채우되 기본 `max-width: 9.4rem`을 유지합니다. 호출부는 `cardMaxWidthVar`로 최대 폭을 조정할 수 있습니다.
+- image frame은 root width를 채우고 `1 / 1` 비율을 유지합니다. 기본 root 기준 `9.4rem x 9.4rem`이며, 호출부가 root width를 줄이거나 키우면 이미지도 함께 변합니다. 이때 호출부는 `imageSizes`로 실제 layout 폭과 이미지 힌트를 맞출 수 있습니다.
 - product name은 `typography['caption-1-medium']`과 `atomic.neutral[70]`을 사용합니다.
 - price는 `typography['body-3-semibold']`와 `atomic.neutral[90]`을 사용합니다.
 - root는 부모 layout을 밀지 않도록 `minWidth: 0`과 고정된 카드 폭을 유지합니다.

@@ -1,6 +1,10 @@
 import userEvent from '@testing-library/user-event';
+import { ToastProvider } from '@dongchimi/shared/toast';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
+
+import { QueryProvider } from '@/shared/query';
+import { ApiError } from '@/shared/api';
 
 import { render, screen, waitFor } from '../../../../../test';
 import { LoginForm, type LoginFormProps } from './LoginForm';
@@ -8,7 +12,11 @@ import { LoginForm, type LoginFormProps } from './LoginForm';
 const renderLoginForm = (props: LoginFormProps = {}) => {
   return render(
     <MemoryRouter>
-      <LoginForm {...props} />
+      <QueryProvider>
+        <ToastProvider offset='2.4rem' placement='top-center'>
+          <LoginForm {...props} />
+        </ToastProvider>
+      </QueryProvider>
     </MemoryRouter>,
   );
 };
@@ -47,16 +55,22 @@ describe('LoginForm', () => {
     expect(keepSignedInCheckbox).not.toBeChecked();
   });
 
-  it('validates the required email field while the user edits it', async () => {
+  it('shows the email field error after focus leaves the field', async () => {
     const user = userEvent.setup();
 
     renderLoginForm();
 
     const emailInput = screen.getByLabelText('이메일');
+    const passwordInput = screen.getByLabelText('비밀번호');
 
     await user.type(emailInput, 'invalid-email');
 
     expect(emailInput).toHaveValue('invalid-email');
+    expect(screen.queryByText('올바른 이메일 형식이 아닙니다.')).not.toBeInTheDocument();
+    expect(emailInput).not.toHaveAttribute('aria-invalid');
+
+    await user.click(passwordInput);
+
     expect(screen.getByText('올바른 이메일 형식이 아닙니다.')).toBeInTheDocument();
     expect(emailInput).toBeInvalid();
 
@@ -66,12 +80,13 @@ describe('LoginForm', () => {
     expect(emailInput).toBeInvalid();
   });
 
-  it('accepts only email-safe characters and clears the error for a valid email', async () => {
+  it('allows Korean email input and keeps the email format validation', async () => {
     const user = userEvent.setup();
 
     renderLoginForm();
 
     const emailInput = screen.getByLabelText('이메일');
+    const passwordInput = screen.getByLabelText('비밀번호');
 
     await user.type(emailInput, 'owner_01-test@example.co.kr');
 
@@ -81,14 +96,20 @@ describe('LoginForm', () => {
 
     await user.type(emailInput, '한글!');
 
-    expect(emailInput).toHaveValue('owner_01-test@example.co.kr');
+    expect(emailInput).toHaveValue('owner_01-test@example.co.kr한글!');
+
+    await user.click(passwordInput);
+
+    expect(screen.getByText('올바른 이메일 형식이 아닙니다.')).toBeInTheDocument();
+    expect(emailInput).toBeInvalid();
   });
 
-  it('masks and validates the required password field while the user edits it', async () => {
+  it('shows the password field error after focus leaves the field', async () => {
     const user = userEvent.setup();
 
     renderLoginForm();
 
+    const emailInput = screen.getByLabelText('이메일');
     const passwordInput = screen.getByLabelText('비밀번호');
 
     expect(passwordInput).toHaveAttribute('type', 'password');
@@ -100,6 +121,10 @@ describe('LoginForm', () => {
     expect(passwordInput).toBeValid();
 
     await user.clear(passwordInput);
+
+    expect(screen.queryByText('비밀번호를 입력해주세요.')).not.toBeInTheDocument();
+
+    await user.click(emailInput);
 
     expect(screen.getByText('비밀번호를 입력해주세요.')).toBeInTheDocument();
     expect(passwordInput).toBeInvalid();
@@ -174,5 +199,23 @@ describe('LoginForm', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       '네트워크 연결을 확인한 후 다시 시도해주세요.',
     );
+  });
+
+  it('shows the API error message when login fails outside auth mismatch', async () => {
+    const user = userEvent.setup();
+    const submitLogin = vi.fn().mockRejectedValue(
+      new ApiError({
+        message: '서버 오류가 발생했습니다.',
+        type: 'server',
+      }),
+    );
+
+    renderLoginForm({ submitLogin });
+
+    await user.type(screen.getByLabelText('이메일'), 'owner@example.com');
+    await user.type(screen.getByLabelText('비밀번호'), 'secret');
+    await user.click(screen.getByRole('button', { name: '로그인' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('서버 오류가 발생했습니다.');
   });
 });

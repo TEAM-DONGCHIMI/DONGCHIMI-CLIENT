@@ -1,10 +1,8 @@
 import { z } from 'zod';
 
-import {
-  parsePriceInput,
-  todaySpecialProductDescriptionMaxLength,
-  todaySpecialProductNameMaxLength,
-} from './product-form.utils';
+import { productNameMaxLength, productPromotionTextMaxLength } from '../../utils/product-input';
+
+import { isTodaySpecialStartDateSelectable, parsePriceInput } from './product-form.utils';
 
 // 필수 text 값
 const requiredTextSchema = (message: string) => z.string().trim().min(1, { message });
@@ -20,15 +18,12 @@ const createPriceInputSchema = (requiredMessage: string) =>
     });
 
 // 상품명 필수, 15자 제한
-const productNameSchema = requiredTextSchema('상품명을 입력해주세요.').max(
-  todaySpecialProductNameMaxLength,
-  {
-    message: '상품명은 공백 포함 15자 이하로 입력해주세요.',
-  },
-);
+const productNameSchema = requiredTextSchema('상품명을 입력해주세요.').max(productNameMaxLength, {
+  message: '상품명은 공백 포함 15자 이하로 입력해주세요.',
+});
 
 // 홍보문구 선택 입력, 25자 제한
-const productDescriptionSchema = z.string().trim().max(todaySpecialProductDescriptionMaxLength, {
+const productDescriptionSchema = z.string().trim().max(productPromotionTextMaxLength, {
   message: '홍보문구는 공백 포함 25자 이하로 입력해주세요.',
 });
 
@@ -40,9 +35,12 @@ export const todaySpecialProductFormSchema = z
     imageFile: z.file().nullable(),
     imagePreviewUrl: z.string().nullable(),
     name: productNameSchema,
+    productId: z.number().int().positive().optional(),
     salePrice: createPriceInputSchema('판매가를 입력해주세요.'),
     specialPrice: createPriceInputSchema('오늘의 특가를 입력해주세요.'),
-    startDate: z.iso.date('행사 시작일을 선택해주세요.'),
+    startDate: z.iso.date('행사 시작일을 선택해주세요.').refine(isTodaySpecialStartDateSelectable, {
+      message: '오늘 이후 날짜를 선택해주세요.',
+    }),
   })
   .superRefine((product, context) => {
     const salePrice = parsePriceInput(product.salePrice);

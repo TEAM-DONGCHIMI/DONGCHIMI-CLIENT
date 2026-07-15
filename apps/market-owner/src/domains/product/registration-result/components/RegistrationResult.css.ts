@@ -1,11 +1,13 @@
-import { style } from '@vanilla-extract/css';
+import { globalStyle, style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 const contentMaxWidth = '137.6rem';
-const tableColumnTemplate = '61fr 100fr 196fr 147fr 160fr 365fr 230fr 117fr';
+const tableColumnTemplate = '6.1rem 10rem 19.6rem 14.7rem 16rem 36.5rem 23rem 11.7rem';
+const statusColumnWidth = '11.7rem';
+const statusColumnHeaderInset = '3.9rem';
 
 export const sectionClassName = style({
   boxSizing: 'border-box',
@@ -66,9 +68,12 @@ export const tableScrollClassName = style({
 });
 
 export const tableClassName = style({
-  width: '100%',
-  maxWidth: contentMaxWidth,
-  minWidth: 0,
+  width: contentMaxWidth,
+  minWidth: contentMaxWidth,
+});
+
+export const singleLineFieldErrorClassName = style({
+  whiteSpace: 'nowrap',
 });
 
 export const tableHeaderClassName = style({
@@ -114,7 +119,7 @@ export const headerCellClassName = style({
       paddingLeft: '2.8rem',
     },
     '&:nth-child(8)': {
-      paddingLeft: '3.9rem',
+      paddingLeft: statusColumnHeaderInset,
       color: atomic.neutral[60],
     },
   },
@@ -204,6 +209,12 @@ export const productRowClassName = style({
   },
 });
 
+globalStyle(`${productRowClassName} > div > div:last-child`, {
+  width: statusColumnWidth,
+  marginLeft: `-${statusColumnHeaderInset}`,
+  alignItems: 'center',
+});
+
 export const emptyStateClassName = style({
   ...typography['body-2-medium'],
   display: 'flex',
@@ -215,17 +226,6 @@ export const emptyStateClassName = style({
   borderLeft: `1px solid ${atomic.neutral[30]}`,
   backgroundColor: atomic.common[0],
   color: atomic.neutral[60],
-});
-
-export const productPreviewClassName = style({
-  ...typography['caption-1-medium'],
-  display: 'inline-flex',
-  width: '100%',
-  height: '100%',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: semantic.primary.light,
-  color: semantic.primary.strong,
 });
 
 export const uploadedImageButtonClassName = style({

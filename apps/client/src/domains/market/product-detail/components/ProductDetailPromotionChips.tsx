@@ -2,7 +2,7 @@
 
 import { Chip } from '@dongchimi/design-system';
 
-import type { ProductDetailPromotionTypes } from '../../model/product-detail';
+import type { ProductDetailPromotionTypes } from '../../model/product-detail-schema';
 import * as S from '../ProductDetailPage.css';
 
 type ProductDetailPromotionChipsProps = Readonly<{
@@ -10,7 +10,11 @@ type ProductDetailPromotionChipsProps = Readonly<{
   promotion: ProductDetailPromotionTypes;
 }>;
 
-const EventPeriodChip = ({ promotion }: { promotion: ProductDetailPromotionTypes }) => {
+type EventPeriodChipProps = Readonly<{
+  promotion: ProductDetailPromotionTypes;
+}>;
+
+const EventPeriodChip = ({ promotion }: EventPeriodChipProps) => {
   if (promotion.type !== 'event-discount') {
     return null;
   }

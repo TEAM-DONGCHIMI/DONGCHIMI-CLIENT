@@ -48,7 +48,7 @@ ListCell
 
 - type: `readonly ListCellFieldProps[]`
 - required: `true`
-- description: row에 표시할 field 목록입니다. 각 field는 `id`, `value`, `defaultValue`, `placeholder`, `width`, `unit`, `type`, `inputMode`, `onChange`, `readOnly`, `status`, `trailingIcon`, `onClick`, `disabled`, `aria-label`을 받을 수 있습니다.
+- description: row에 표시할 field 목록입니다. 각 field는 `id`, `value`, `defaultValue`, `placeholder`, `width`, `unit`, `type`, `inputMode`, `maxLength`, `onChange`, `onBlur`, `readOnly`, `status`, `errorMessage`, `trailingIcon`, `onClick`, `disabled`, `aria-label`을 받을 수 있습니다.
 - note: `onClick`이 없으면 `InlineField size="small"`을 렌더링합니다. `onClick`이 있으면 category/dropdown trigger처럼 native button field를 렌더링하며, 이 경우 `disabled`를 함께 사용할 수 있습니다.
 
 ### checkboxLabel
@@ -126,6 +126,7 @@ ListCell
 - selected: selection IconButton의 `aria-checked`와 checkbox icon 상태를 표현하고 `onCheckedChange`를 호출합니다.
 - field placeholder: `value`/`defaultValue`가 없으면 `InlineField` placeholder를 표시합니다.
 - field value: `value`와 `onChange`가 함께 있으면 controlled `InlineField`로 렌더링하고, `value`만 있으면 read-only `InlineField`로 렌더링합니다.
+- field error: `status="error"`와 `errorMessage`를 전달하면 `InlineField`가 오류 문구와 `aria-invalid`, `aria-describedby` 연결을 제공합니다.
 - field action: field에 `onClick`이 있으면 native button으로 렌더링합니다. 이 경로는 닫힌 dropdown trigger처럼 `InlineField` input semantics가 맞지 않는 경우에 사용합니다.
 - media action: `onMediaAction`이 있으면 native button으로 렌더링합니다.
 - disabled: `checkboxDisabled`와 action field `disabled`를 각각 지원합니다. 일반 `InlineField`는 현재 공통 컴포넌트 API에 맞춰 `readOnly` 상태를 사용합니다.
@@ -136,12 +137,12 @@ ListCell
 1. selection IconButton을 선택하면 `checked` 제어 여부에 따라 내부 checked 상태를 갱신하고 `onCheckedChange(nextChecked)`를 호출합니다.
 2. media action button을 선택하면 `onMediaAction`을 호출합니다.
 3. field에 `onClick`이 있으면 해당 field를 button으로 렌더링하고 클릭 시 호출부 handler를 실행합니다.
-4. field에 `onClick`이 없으면 `InlineField`로 렌더링하고, 입력 변경은 field `onChange`로 호출부에 위임합니다.
+4. field에 `onClick`이 없으면 `InlineField`로 렌더링하고, 입력 변경과 blur, 길이 제한, 오류 표시는 field props로 호출부에 위임합니다.
 5. 실제 select popup, image upload, route 이동, API 요청은 실행하지 않습니다.
 
 ## Styling
 
-- layout: root는 width 100%, min-height 98px, left/right/bottom border를 갖고 row는 horizontal composition입니다.
+- layout: root는 width 100%, min-height 98px, left/right/bottom border를 갖고 row는 horizontal composition입니다. field 오류 문구가 여러 줄이면 98px 아래로 잘리지 않고 row 높이가 내용만큼 확장됩니다.
 - spacing: Figma 기준 root horizontal padding 20px, media leading gap 21px, main columns gap 42px, fields gap 30px를 사용합니다.
 - selection: Figma 기준 24px IconButton wrapper 안에 18px checkbox box를 렌더링합니다.
 - media: 64px square, 8px radius. error placeholder는 negative light dashed border를 사용합니다.
@@ -159,12 +160,13 @@ ListCell
 - accessible name: selection IconButton은 `checkboxLabel`, media action은 visible label 또는 `mediaActionAriaLabel`, inline field와 action field는 `aria-label` 또는 visible value/placeholder fallback을 사용합니다.
 - keyboard interaction: selection IconButton과 button은 native button keyboard interaction을 사용합니다.
 - focus-visible: selection IconButton, media action, action field에 outline을 표시합니다.
-- ARIA: helper icon과 trailing icon은 장식용 `aria-hidden` 영역에 렌더링합니다.
+- ARIA: helper icon과 trailing icon은 장식용 `aria-hidden` 영역에 렌더링하고, field 오류 문구는 `InlineField`의 `aria-invalid`와 `aria-describedby`로 input에 연결합니다.
 
 ## Storybook
 
 - [x] Default / success
 - [x] Error
+- [x] Field validation error
 - [x] Field action
 - [x] Long text overflow
 - [x] Disabled selection and field

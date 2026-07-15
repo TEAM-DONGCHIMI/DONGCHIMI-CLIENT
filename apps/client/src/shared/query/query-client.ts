@@ -11,11 +11,10 @@ const shouldRetryQuery = (failureCount: number, error: Error) => {
     return false;
   }
 
-  if (isApiError(error) && (error.type === 'auth' || error.type === 'validation')) {
-    return false;
-  }
-
-  if (isApiResponseValidationError(error)) {
+  if (
+    isApiResponseValidationError(error) ||
+    (isApiError(error) && (error.type === 'auth' || error.type === 'validation'))
+  ) {
     return false;
   }
 

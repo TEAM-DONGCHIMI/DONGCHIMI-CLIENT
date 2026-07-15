@@ -21,11 +21,11 @@
 - response: `ApiResponseProductDetailResponse`
   - wrapper: `success`, `code`, `message`, `data`
   - data: `productId`, `name`, `dealType`, `thumbnailUrl`, `originalPrice`, `discountedPrice`, `discountRate`, `promotionalPhrase`, `discountStartDate`, `discountEndDate`, `marketName`
-- error: app-local `httpClient`가 network/server/configuration error를 정규화하고, response contract drift는 `ApiResponseValidationError`로 노출합니다.
+- error: app-local `browserApi`가 network/server error를 정규화하고, response contract drift는 `ApiResponseValidationError`로 노출합니다.
 
 ## Query Key
 
-- factory: `productDetailQueryKeys`
+- factory: `marketQueryKeys.productDetail`
 - response-changing params: `marketId`, `productId`
 - shape: `['market', 'products', 'detail', { marketId, productId }]`
 - dependency: 외부 query key factory 라이브러리는 추가하지 않고 domain-local factory 객체를 사용합니다.
@@ -39,7 +39,7 @@
 
 ## Behavior
 
-- enabled: `marketId`, `productId`가 빈 문자열이 아닐 때만 활성화합니다.
+- enabled: `marketId`, `productId`가 모두 양의 정수로 해석될 때만 활성화합니다.
 - loading: `ProductDetailPage`가 loading state message를 렌더링합니다.
 - success: API 응답을 화면 모델로 매핑해 기존 상품 상세 UI에 전달합니다.
 - empty: `data: null`이면 상품 정보 없음 상태를 렌더링합니다.
@@ -48,10 +48,10 @@
 
 ## Verification
 
-- [x] `git diff --check`
+- [ ] `git diff --check`
 - [x] API contract checked
 - [x] query key includes response-changing params
 - [x] query options separate query identity from hook usage policy
-- [x] `pnpm --filter client test:unit`
-- [x] `pnpm --filter client typecheck`
-- [x] `pnpm --filter client build`
+- [ ] `pnpm --filter client test:unit`
+- [ ] `pnpm --filter client typecheck`
+- [ ] `pnpm --filter client build`

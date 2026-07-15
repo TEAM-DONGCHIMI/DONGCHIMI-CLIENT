@@ -1,206 +1,109 @@
-import { type ChangeEvent } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
+import { useToast } from '@dongchimi/shared/toast';
 
-import { Button, Flex, Stack } from '@dongchimi/design-system/components';
+import {
+  MarketInformationForm,
+  MarketInformationFormToastProvider,
+} from '@/domains/market/components/market-information-form';
+import type { MarketInformationRegistrationRequestTypes } from '@/domains/market/model';
+import { isApiError } from '@/shared/api';
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
-import { DesktopHeader } from '@/shared/components';
-
+import { useMarketThumbnailUploadMutation, useRegisterMarketMutation } from '../hooks';
 import { marketInformationRegistrationFixture } from './fixtures';
-import * as S from './MarketInformationRegistrationPage.css';
-import {
-  createMarketInformationRegistrationRequest,
-  formatBusinessRegistrationNumber,
-  formatBusinessTime,
-  formatMarketPhoneNumber,
-  formatMobilePhoneNumber,
-  marketInformationRegistrationSchema,
-  type MarketInformationFormTypes,
-} from './model';
-import {
-  AddressSection,
-  BasicMarketInfoSection,
-  BusinessOperationSection,
-  ContactSection,
-  MarketImageUploadSection,
-} from './sections';
+import { useMarketAddressSearch } from './hooks';
 
-export type { MarketInformationFormTypes } from './model';
+const serverErrorMessage = (
+  <>
+    서버 오류가 발생했습니다.
+    <br />
+    잠시 후 다시 시도해주세요.
+  </>
+);
+const registrationErrorMessage = (
+  <>
+    마트 정보를 등록하지 못했습니다.
+    <br />
+    잠시 후 다시 시도해주세요.
+  </>
+);
+const marketAlreadyExistsErrorMessage = '이미 존재하는 마트입니다.';
 
-type StringMarketInformationFormFieldTypes = {
-  [Field in keyof MarketInformationFormTypes]: MarketInformationFormTypes[Field] extends string
-    ? Field
-    : never;
-}[keyof MarketInformationFormTypes];
+export interface MarketInformationRegistrationPageProps {
+  onAddressSearch?: ComponentProps<typeof MarketInformationForm>['onAddressSearch'];
+  onImageSelect?: ComponentProps<typeof MarketInformationForm>['onImageSelect'];
+  onRegister?: (request: MarketInformationRegistrationRequestTypes) => Promise<void> | void;
+}
 
-const getNextFormValue = (name: string, value: string) => {
-  if (name === 'brn') {
-    return formatBusinessRegistrationNumber(value);
+const getRegistrationErrorMessage = (error: unknown): ReactNode => {
+  if (!isApiError(error)) {
+    return registrationErrorMessage;
   }
 
-  if (name === 'businessTime' || name === 'additionalBusinessTime') {
-    return formatBusinessTime(value);
+  if (error.code === 'INVALID_INPUT') {
+    return error.message;
   }
 
-  if (name === 'ownerPhone') {
-    return formatMobilePhoneNumber(value);
+  if (error.code === 'MARKET_ALREADY_EXISTS') {
+    return marketAlreadyExistsErrorMessage;
   }
 
-  if (name === 'marketPhone1') {
-    return formatMarketPhoneNumber(value);
-  }
-
-  return value;
+  return error.type === 'server' || error.type === 'network'
+    ? serverErrorMessage
+    : registrationErrorMessage;
 };
 
-export const MarketInformationRegistrationPage = () => {
-  const {
-    formState: { errors, isValid },
-    handleSubmit,
-    register,
-    setValue,
-    watch,
-  } = useForm<MarketInformationFormTypes>({
-    defaultValues: marketInformationRegistrationFixture.initialForm,
-    mode: 'onChange',
-    resolver: zodResolver(marketInformationRegistrationSchema),
-  });
-  const form = watch();
+const MarketInformationRegistrationPageContent = ({
+  onAddressSearch,
+  onImageSelect,
+  onRegister,
+}: MarketInformationRegistrationPageProps) => {
+  const navigate = useNavigate();
+  const toast = useToast();
+  const searchMarketAddress = useMarketAddressSearch();
+  const registerMarketMutation = useRegisterMarketMutation();
+  const uploadMarketThumbnailMutation = useMarketThumbnailUploadMutation();
 
-  const setFormValue = (name: StringMarketInformationFormFieldTypes, value: string) => {
-    setValue(name, value, {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true,
-    });
+  const handleImageSelect = (file: File) => {
+    return onImageSelect ? onImageSelect(file) : uploadMarketThumbnailMutation.mutateAsync(file);
   };
 
-  const handleFormattedInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.currentTarget;
-    const nextValue = getNextFormValue(name, value);
+  const handleRegister = async (request: MarketInformationRegistrationRequestTypes) => {
+    if (onRegister) {
+      await onRegister(request);
 
-    if (
-      name === 'brn' ||
-      name === 'businessTime' ||
-      name === 'additionalBusinessTime' ||
-      name === 'marketPhone1' ||
-      name === 'ownerPhone'
-    ) {
-      setFormValue(name, nextValue);
+      return;
     }
+
+    const response = await registerMarketMutation.mutateAsync(request);
+
+    toast.completed(response.message);
+    navigate(MARKET_OWNER_ROUTES.home, { replace: true });
   };
 
-  const handleBusinessDayChange = (businessDay: string) => {
-    setFormValue('businessDay', businessDay);
-  };
-
-  const handleAdditionalBusinessDayChange = (businessDay: string) => {
-    setFormValue('additionalBusinessDay', businessDay);
-  };
-
-  const handleAdditionalBusinessTimeRemove = () => {
-    setFormValue('additionalBusinessDay', '');
-    setFormValue('additionalBusinessTime', '');
-  };
-
-  const handleHolidayChange = (holiday: string) => {
-    setFormValue('holiday', holiday);
-  };
-
-  const handleAddressSearch = () => {
-    setFormValue('address', marketInformationRegistrationFixture.selectedAddress);
-  };
-
-  const handleMarketInformationSubmit = handleSubmit((form: MarketInformationFormTypes) => {
-    createMarketInformationRegistrationRequest(form);
-  });
+  const isPending = registerMarketMutation.isPending || uploadMarketThumbnailMutation.isPending;
 
   return (
-    <div className={S.pageRootClassName}>
-      <DesktopHeader logo={<span className={S.logoClassName}>DC</span>} variant='logoOnly' />
-
-      <main className={S.mainClassName}>
-        <Stack className={S.pageContainerClassName} gap='none'>
-          <Stack align='center' gap='xs'>
-            <h1 className={S.titleClassName}>마트 정보 등록</h1>
-            <p className={S.descriptionClassName}>점주님의 마트 정보를 등록해주세요.</p>
-          </Stack>
-
-          <form className={S.formClassName} onSubmit={handleMarketInformationSubmit}>
-            <Flex align='start' className={S.formContentClassName}>
-              <MarketImageUploadSection onImageSelect={() => undefined} />
-
-              <Stack className={S.fieldsClassName} gap='2xl'>
-                <BasicMarketInfoSection
-                  brn={form.brn}
-                  brnErrorMessage={errors.brn?.message}
-                  brnField={register('brn')}
-                  name={form.name}
-                  nameErrorMessage={errors.name?.message}
-                  nameField={register('name')}
-                  onBrnChange={handleFormattedInputChange}
-                />
-                <AddressSection
-                  address={form.address}
-                  addressField={register('address')}
-                  detailAddress={form.detailAddress}
-                  detailAddressErrorMessage={errors.detailAddress?.message}
-                  detailAddressField={register('detailAddress')}
-                  onAddressSearch={handleAddressSearch}
-                />
-                <div className={S.fieldPairGridClassName}>
-                  <BusinessOperationSection
-                    additionalBusinessHours={{
-                      day: form.additionalBusinessDay,
-                      errorMessage:
-                        errors.additionalBusinessTime?.message ??
-                        errors.additionalBusinessDay?.message,
-                      onDayChange: handleAdditionalBusinessDayChange,
-                      onRemove: handleAdditionalBusinessTimeRemove,
-                      onTimeChange: handleFormattedInputChange,
-                      time: form.additionalBusinessTime,
-                      timeField: register('additionalBusinessTime'),
-                    }}
-                    businessHours={{
-                      day: form.businessDay,
-                      errorMessage: errors.businessTime?.message ?? errors.businessDay?.message,
-                      onDayChange: handleBusinessDayChange,
-                      onTimeChange: handleFormattedInputChange,
-                      time: form.businessTime,
-                      timeField: register('businessTime'),
-                    }}
-                    holidaySelection={{
-                      onChange: handleHolidayChange,
-                      value: form.holiday,
-                    }}
-                  />
-                  <ContactSection
-                    marketPhone1={form.marketPhone1}
-                    marketPhone1ErrorMessage={errors.marketPhone1?.message}
-                    marketPhone1Field={register('marketPhone1')}
-                    ownerPhone={form.ownerPhone}
-                    ownerPhoneErrorMessage={errors.ownerPhone?.message}
-                    ownerPhoneField={register('ownerPhone')}
-                    onInputChange={handleFormattedInputChange}
-                  />
-                </div>
-              </Stack>
-            </Flex>
-
-            <Flex className={S.submitAreaClassName} justify='center'>
-              <Button
-                className={S.submitButtonClassName}
-                disabled={!isValid}
-                size='medium'
-                type='submit'
-              >
-                등록하기
-              </Button>
-            </Flex>
-          </form>
-        </Stack>
-      </main>
-    </div>
+    <MarketInformationForm
+      description='점주님의 마트 정보를 등록해주세요.'
+      getSubmitErrorMessage={getRegistrationErrorMessage}
+      initialForm={marketInformationRegistrationFixture.initialForm}
+      submitDisabled={isPending}
+      submitLabel={registerMarketMutation.isPending ? '등록 중...' : '등록하기'}
+      title='마트 정보 등록'
+      onAddressSearch={onAddressSearch ?? searchMarketAddress}
+      onImageSelect={handleImageSelect}
+      onSubmit={handleRegister}
+    />
   );
 };
+
+export const MarketInformationRegistrationPage = (
+  props: MarketInformationRegistrationPageProps,
+) => (
+  <MarketInformationFormToastProvider offset='2.4rem' placement='top-center'>
+    <MarketInformationRegistrationPageContent {...props} />
+  </MarketInformationFormToastProvider>
+);

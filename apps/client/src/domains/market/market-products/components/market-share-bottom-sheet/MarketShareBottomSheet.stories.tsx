@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
+import { ToastProvider } from '@dongchimi/shared/toast';
 import { fn, userEvent, within } from 'storybook/test';
 
 import { MarketShareBottomSheet } from './MarketShareBottomSheet';
@@ -7,6 +8,13 @@ import { MarketShareBottomSheet } from './MarketShareBottomSheet';
 const meta = {
   title: 'Client/Market/MarketProducts/MarketShareBottomSheet',
   component: MarketShareBottomSheet,
+  decorators: [
+    (Story) => (
+      <ToastProvider placement='bottom-center'>
+        <Story />
+      </ToastProvider>
+    ),
+  ],
   parameters: {
     layout: 'centered',
   },

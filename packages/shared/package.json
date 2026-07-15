@@ -9,7 +9,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./api": "./src/api/index.ts",
+    "./business-hours": "./src/business-hours/index.ts",
     "./components": "./src/components/index.ts",
+    "./hooks": "./src/hooks/index.ts",
     "./toast": "./src/toast/index.ts"
   },
   "types": "./src/index.ts",

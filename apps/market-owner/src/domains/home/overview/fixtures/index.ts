@@ -1,7 +1,6 @@
 export {
-  getHomeSearchProductsByQuery,
   homeHeroActions,
   homeProductSections,
-  homeSearchProducts,
+  homeProductSummary,
   homeShare,
 } from './home-page.fixture';

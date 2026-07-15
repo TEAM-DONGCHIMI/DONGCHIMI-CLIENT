@@ -1,0 +1,84 @@
+import { keyframes, style } from '@vanilla-extract/css';
+
+import { atomic, semantic, shadow, typography } from '@dongchimi/design-system/tokens';
+
+const panelSlideInKeyframes = keyframes({
+  from: {
+    transform: 'translateX(100%)',
+  },
+  to: {
+    transform: 'translateX(0)',
+  },
+});
+
+export const overlayClassName = style({
+  position: 'fixed',
+  inset: 0,
+  zIndex: 20,
+  display: 'flex',
+  justifyContent: 'flex-end',
+  backgroundColor: semantic.overlay.dimmer,
+});
+
+export const panelClassName = style({
+  boxSizing: 'border-box',
+  width: 'min(41rem, 100vw)',
+  height: '100dvh',
+  animation: `${panelSlideInKeyframes} 240ms ease-out`,
+  overflowY: 'auto',
+  backgroundColor: atomic.common[0],
+  boxShadow: shadow.normal.medium,
+  color: atomic.neutral[90],
+  '@media': {
+    '(prefers-reduced-motion: reduce)': {
+      animation: 'none',
+    },
+  },
+});
+
+export const closeButtonClassName = style({
+  appearance: 'none',
+  display: 'inline-flex',
+  width: '2.8rem',
+  height: '4rem',
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: '1.8rem 0 0',
+  marginLeft: 'calc(2.5rem - 0.555rem)',
+  border: 0,
+  borderRadius: '0.8rem',
+  backgroundColor: 'transparent',
+  color: atomic.neutral[90],
+  cursor: 'pointer',
+  fontSize: '2.4rem',
+  selectors: {
+    '&:focus-visible': {
+      outline: `0.3rem solid color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`,
+      outlineOffset: '0.2rem',
+    },
+  },
+});
+
+export const contentClassName = style({
+  display: 'flex',
+  boxSizing: 'border-box',
+  flexDirection: 'column',
+  gap: '2.2rem',
+  padding: '1.2rem 2.5rem 3rem',
+});
+
+export const titleClassName = style({
+  ...typography['heading-3-semibold'],
+  margin: 0,
+  color: atomic.neutral[90],
+  letterSpacing: 0,
+  whiteSpace: 'pre-line',
+});
+
+export const guideImageClassName = style({
+  display: 'block',
+  width: '36rem',
+  maxWidth: '100%',
+  height: 'auto',
+  alignSelf: 'center',
+});

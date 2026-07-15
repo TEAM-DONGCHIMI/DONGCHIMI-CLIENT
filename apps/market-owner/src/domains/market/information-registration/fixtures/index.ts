@@ -1,4 +1,1 @@
-export {
-  holidayOptions,
-  marketInformationRegistrationFixture,
-} from './market-information-registration.fixture';
+export { marketInformationRegistrationFixture } from './market-information-registration.fixture';

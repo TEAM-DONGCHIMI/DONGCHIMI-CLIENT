@@ -1,11 +1,13 @@
 import { cn } from '@dongchimi/design-system/styles';
 import { Button, Flex } from '@dongchimi/design-system/components';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 import { ProcessingStep, type ProcessingStepProps } from '@/shared/components';
 
 import * as S from './FileAnalysisProgressSection.css';
 
 export interface FileAnalysisProgressSectionProps {
+  isCancelPending?: boolean;
   onCancel: () => void;
   progressPercentage: number;
   steps: ProcessingStepProps['steps'];
@@ -15,6 +17,23 @@ const fileAnalysisProgressTitleId = 'file-analysis-progress-title';
 const progressLabel = 'AI 분석 진행률';
 const MIN_PROGRESS_PERCENTAGE = 0;
 const MAX_PROGRESS_PERCENTAGE = 100;
+const spinnerLottieSrc = '/lottie/spinner.lottie';
+
+const renderFileAnalysisStepIcon: NonNullable<ProcessingStepProps['iconSlot']> = (step) => {
+  if (step.status !== 'processing') {
+    return undefined;
+  }
+
+  return (
+    <DotLottieReact
+      aria-hidden='true'
+      autoplay
+      className={S.processingIconClassName}
+      loop
+      src={spinnerLottieSrc}
+    />
+  );
+};
 
 const clampProgressPercentage = (progressPercentage: number) => {
   return Math.min(
@@ -54,11 +73,13 @@ const getCardShadowVariant = ({
 };
 
 export const FileAnalysisProgressSection = ({
+  isCancelPending = false,
   onCancel,
   progressPercentage,
   steps,
 }: FileAnalysisProgressSectionProps) => {
   const normalizedProgressPercentage = clampProgressPercentage(progressPercentage);
+  const normalizedProgressRatio = normalizedProgressPercentage / MAX_PROGRESS_PERCENTAGE;
   const isAnalysisComplete = hasCompletedAnalysis({ progressPercentage, steps });
   const cardShadowVariant = getCardShadowVariant({ progressPercentage, steps });
 
@@ -79,6 +100,7 @@ export const FileAnalysisProgressSection = ({
       <ProcessingStep
         aria-label='AI 분석 진행 현황'
         className={S.progressStepListClassName}
+        iconSlot={renderFileAnalysisStepIcon}
         steps={steps}
       />
 
@@ -93,7 +115,7 @@ export const FileAnalysisProgressSection = ({
         >
           <span
             className={S.progressFillClassName}
-            style={{ width: `${normalizedProgressPercentage}%` }}
+            style={{ transform: `scaleX(${normalizedProgressRatio})` }}
           />
         </div>
         <span className={S.progressValueClassName}>{normalizedProgressPercentage}%</span>
@@ -103,12 +125,12 @@ export const FileAnalysisProgressSection = ({
         <Button
           className={S.actionButtonClassName}
           color='assistive'
-          disabled={isAnalysisComplete}
+          disabled={isAnalysisComplete || isCancelPending}
           onClick={onCancel}
           size='small'
           variant='outlined'
         >
-          취소
+          {isCancelPending ? '취소 중' : '취소'}
         </Button>
       </Flex>
     </Flex>

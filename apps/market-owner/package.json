@@ -17,9 +17,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hookform/resolvers": "catalog:",
     "@dongchimi/design-system": "workspace:*",
     "@dongchimi/shared": "workspace:*",
+    "@hookform/resolvers": "catalog:",
+    "@lottiefiles/dotlottie-react": "^0.19.9",
     "@sentry/react": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@vanilla-extract/css": "catalog:",
@@ -28,10 +29,11 @@
     "overlay-kit": "1.9.0",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-hook-form": "catalog:",
     "react-error-boundary": "^6.1.2",
+    "react-hook-form": "catalog:",
     "react-router": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "zustand": "catalog:"
   },
   "devDependencies": {
     "@dongchimi/eslint-config": "workspace:*",

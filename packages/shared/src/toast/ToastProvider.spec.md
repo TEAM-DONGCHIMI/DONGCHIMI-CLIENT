@@ -27,6 +27,7 @@
   - `offset?: string | { x?: string; y?: string }`
   - `defaultDurationMs?: number | null`
   - `maxVisibleCount?: number`
+  - `portalContainer?: Element | DocumentFragment | null`
 - `useToast`
   - `show({ message, status, icon, durationMs, id })`
   - `completed(message, options)`
@@ -52,8 +53,8 @@
 - manual dismiss: 반환된 id를 `dismiss(id)`에 전달하면 위로 이동하며 fade-out 된 뒤 제거합니다.
 - viewport offset: 문자열 offset은 x/y 안전 여백을 동일하게 적용합니다.
 - center correction: 객체 offset의 `x`는 `top-center`/`bottom-center` placement에서 중앙 기준 보정값으로도
-  사용합니다. 예를 들어 sidebar layout은 `{ x: '145px', y: '2rem' }`로 전체 viewport 중앙에서 본문 중앙으로
-  이동할 수 있습니다.
+  사용합니다. 특정 overlay surface처럼 viewport 중앙에서 의도적으로 이동해야 하는 경우에만 object offset을
+  사용합니다.
 - side effects: toast 호출은 사용자 이벤트, mutation callback, 명시적 effect 같은 렌더 외부 시점에서만 수행합니다.
 
 ## API Contract
@@ -73,7 +74,7 @@
 - cancellation: provider unmount 또는 toast dismiss 시 timer를 정리합니다.
 - accessibility impact: DS `Toast`의 `role`과 `aria-live` 기본값을 유지합니다.
 - viewport accessibility: viewport는 `role='region'`과 `aria-label`로 영역 이름을 제공합니다.
-- app wiring: 이번 구현은 `apps/market-owner`에만 연결하고 `apps/client`는 후속 작업으로 둡니다.
+- app wiring: `apps/market-owner`와 `apps/client`는 각 app provider에서 placement 정책을 지정합니다.
 
 ## Verification
 

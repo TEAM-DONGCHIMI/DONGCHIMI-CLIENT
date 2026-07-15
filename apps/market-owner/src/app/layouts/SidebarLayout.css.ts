@@ -2,14 +2,14 @@ import { style } from '@vanilla-extract/css';
 
 import { atomic, typography } from '@dongchimi/design-system/tokens';
 
-import { SIDEBAR_LAYOUT_SIDEBAR_WIDTH } from './SidebarLayout.constants';
+import { MARKET_OWNER_SIDEBAR_WIDTH_PX } from '@/shared/constants/layout';
 
 export const sidebarLayoutRootClassName = style({
   display: 'grid',
   height: '100vh',
-  gridTemplateColumns: `${SIDEBAR_LAYOUT_SIDEBAR_WIDTH} minmax(0, 1fr)`,
+  gridTemplateColumns: `${MARKET_OWNER_SIDEBAR_WIDTH_PX}px minmax(0, 1fr)`,
   overflow: 'hidden',
-  backgroundColor: atomic.neutral[10],
+  backgroundColor: atomic.neutral[5],
 });
 
 export const sidebarSlotClassName = style({
@@ -28,25 +28,11 @@ export const contentSlotClassName = style({
   overflowY: 'auto',
 });
 
-export const brandClassName = style({
-  display: 'inline-flex',
+export const brandImageClassName = style({
+  display: 'block',
   width: '9.2rem',
   height: '3.2rem',
-  alignItems: 'center',
-  gap: '0.8rem',
-  color: atomic.neutral[90],
-});
-
-export const brandLogoClassName = style({
-  display: 'inline-flex',
-  width: '3.2rem',
-  height: '3.2rem',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '0.8rem',
-  backgroundColor: atomic.neutral[90],
-  color: atomic.common[0],
-  ...typography['caption-1-medium'],
+  flexShrink: 0,
 });
 
 export const profileAvatarClassName = style({
@@ -59,6 +45,49 @@ export const profileAvatarClassName = style({
   backgroundColor: atomic.neutral[20],
   color: atomic.neutral[70],
   ...typography['caption-1-medium'],
+});
+
+export const profileAvatarImageClassName = style({
+  display: 'block',
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+});
+
+export const sidebarStateIconClassName = style({
+  position: 'relative',
+  display: 'inline-flex',
+  width: '2.4rem',
+  height: '2.4rem',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+export const sidebarStateIconDefaultClassName = style({
+  position: 'absolute',
+  inset: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  selectors: {
+    ':where(a:hover, button:hover, a[aria-current="page"], button[aria-current="page"]) &': {
+      opacity: 0,
+    },
+  },
+});
+
+export const sidebarStateIconHoverClassName = style({
+  position: 'absolute',
+  inset: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  opacity: 0,
+  selectors: {
+    ':where(a:hover, button:hover, a[aria-current="page"], button[aria-current="page"]) &': {
+      opacity: 1,
+    },
+  },
 });
 
 export const helpCardClassName = style({

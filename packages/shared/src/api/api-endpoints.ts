@@ -8,7 +8,7 @@ export type ApiSearchParamValueTypes =
 export type ApiSearchParamsTypes = Record<string, ApiSearchParamValueTypes>;
 
 export interface OwnerDraftProductsSearchParamsTypes extends ApiSearchParamsTypes {
-  category?: string;
+  categories?: readonly string[];
   page?: number;
   search?: string;
   size?: number;
@@ -20,6 +20,11 @@ export type OwnerProductSortTypes = 'CATEGORY' | 'LATEST' | 'VIEW_COUNT';
 export interface OwnerProductsSearchParamsTypes extends ApiSearchParamsTypes {
   sort?: OwnerProductSortTypes;
   type?: OwnerProductListTypeTypes;
+}
+
+export interface OwnerProductSearchParamsTypes extends ApiSearchParamsTypes {
+  keyword: string;
+  size?: number;
 }
 
 export interface UserMarketLocationSearchParamsTypes extends ApiSearchParamsTypes {
@@ -62,7 +67,7 @@ export const buildApiPath = (pathname: string, searchParams?: ApiSearchParamsTyp
 export const API_ENDPOINTS = {
   common: {
     auth: {
-      refresh: '/v1/auth/refresh',
+      refresh: '/v1/auth/token/refresh',
     },
     uploads: {
       presignedUrl: '/v1/uploads/presigned-url',
@@ -110,6 +115,11 @@ export const API_ENDPOINTS = {
         `/v1/owners/markets/${encodePathParam(marketId)}/products/import/${encodePathParam(jobId)}/cancel`,
       importProgress: (marketId: ApiPathParamTypes, jobId: ApiPathParamTypes) =>
         `/v1/owners/markets/${encodePathParam(marketId)}/products/import/${encodePathParam(jobId)}/progress`,
+      search: (marketId: ApiPathParamTypes, searchParams: OwnerProductSearchParamsTypes) =>
+        buildApiPath(
+          `/v1/owners/markets/${encodePathParam(marketId)}/products/search`,
+          searchParams,
+        ),
     },
   },
   user: {

@@ -1,13 +1,14 @@
 import { type ChangeEvent } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
+import { getVisibleFieldErrorMessage } from '@/shared/utils/form-error.utils';
+
 import { getTextInputStatusProps } from '../../hooks/get-text-input-status-props';
 import {
   LOGIN_FORM_DEFAULT_VALUES,
   loginFormResolver,
   type LoginFormTypes,
 } from '../schemas/login-schema';
-import { isAllowedEmailInputValue } from '../utils/email-validation';
 
 interface UseLoginFieldsOptions {
   onFieldChange?: () => void;
@@ -32,17 +33,27 @@ export const useLoginFields = ({ onFieldChange }: UseLoginFieldsOptions = {}) =>
     name: 'isAutoLogin',
   });
 
-  const emailStatusProps = getTextInputStatusProps(emailController.fieldState.error?.message);
-  const passwordStatusProps = getTextInputStatusProps(passwordController.fieldState.error?.message);
+  const isSubmitted = form.formState.isSubmitted;
+  const emailStatusProps = getTextInputStatusProps(
+    getVisibleFieldErrorMessage({
+      error: emailController.fieldState.error,
+      isSubmitted,
+      isTouched: emailController.fieldState.isTouched,
+    }),
+  );
+  const passwordStatusProps = getTextInputStatusProps(
+    getVisibleFieldErrorMessage({
+      error: passwordController.fieldState.error,
+      isSubmitted,
+      isTouched: passwordController.fieldState.isTouched,
+    }),
+  );
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextEmail = event.target.value;
 
     onFieldChange?.();
-
-    if (isAllowedEmailInputValue(nextEmail)) {
-      emailController.field.onChange(nextEmail);
-    }
+    emailController.field.onChange(nextEmail);
   };
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -56,8 +67,10 @@ export const useLoginFields = ({ onFieldChange }: UseLoginFieldsOptions = {}) =>
 
   return {
     action: {
+      handleEmailBlur: emailController.field.onBlur,
       handleEmailChange,
       handleKeepSignedInChange,
+      handlePasswordBlur: passwordController.field.onBlur,
       handlePasswordChange,
       handleSubmit: form.handleSubmit,
     },

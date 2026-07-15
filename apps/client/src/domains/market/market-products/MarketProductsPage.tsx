@@ -1,27 +1,25 @@
-import Link from 'next/link';
-
+import { MobileHeader } from '@/shared/components/ui/mobile-header';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
-const SAMPLE_PRODUCT_ID = 'samgyeopsal-500g';
+import * as S from './MarketProductsPage.css';
+import { MarketProductsBackButton } from './components/MarketProductsBackButton';
+import { MarketProductsQueryContent } from './components/market-products-query-content';
 
 type MarketProductsPageProps = Readonly<{
-  marketId: string;
+  marketSlug: string;
 }>;
 
-export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
+export const MarketProductsPage = ({ marketSlug }: MarketProductsPageProps) => {
   return (
-    <main>
-      <section aria-labelledby='market-products-title'>
-        <p>마트 ID: {marketId}</p>
-        <h1 id='market-products-title'>마트 전단 상품</h1>
-        <p>오늘의 특가와 기간 할인 상품을 목록으로 확인하는 화면입니다.</p>
+    <main className={S.pageClassName}>
+      <MobileHeader className={S.headerClassName}>
+        <MarketProductsBackButton fallbackHref={CLIENT_ROUTES.markets} />
+        <MobileHeader.Title>전단보기</MobileHeader.Title>
+      </MobileHeader>
 
-        <nav aria-label='상품 탐색'>
-          <Link href={CLIENT_ROUTES.marketProduct(marketId, SAMPLE_PRODUCT_ID)}>
-            삼겹살 500g 상세 보기
-          </Link>
-        </nav>
-      </section>
+      <div className={S.contentClassName}>
+        <MarketProductsQueryContent marketSlug={marketSlug} />
+      </div>
     </main>
   );
 };

@@ -5,6 +5,7 @@ import { createLazyRoute } from '@/app/create-lazy-route';
 import { AuthLayout } from '@/app/layouts/AuthLayout';
 import { NoSidebarLayout } from '@/app/layouts/NoSidebarLayout';
 import { SidebarLayout } from '@/app/layouts/SidebarLayout';
+import { GuestOnlyRoute } from '@/app/routes/GuestOnlyRoute';
 import { ProtectedRoute } from '@/app/routes/ProtectedRoute';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
@@ -13,12 +14,17 @@ export const marketOwnerRoutes = [
     Component: AuthLayout,
     children: [
       {
-        path: MARKET_OWNER_ROUTES.login,
-        ...createLazyRoute(() => import('@/domains/auth/login/LoginPage'), 'LoginPage'),
-      },
-      {
-        path: MARKET_OWNER_ROUTES.signup,
-        ...createLazyRoute(() => import('@/domains/auth/signup/SignupPage'), 'SignupPage'),
+        Component: GuestOnlyRoute,
+        children: [
+          {
+            path: MARKET_OWNER_ROUTES.login,
+            ...createLazyRoute(() => import('@/domains/auth/login/LoginPage'), 'LoginPage'),
+          },
+          {
+            path: MARKET_OWNER_ROUTES.signup,
+            ...createLazyRoute(() => import('@/domains/auth/signup/SignupPage'), 'SignupPage'),
+          },
+        ],
       },
     ],
   },
@@ -36,7 +42,7 @@ export const marketOwnerRoutes = [
             path: MARKET_OWNER_ROUTES.todaySpecialRegistration,
             ...createLazyRoute(
               () =>
-                import('@/domains/product/today-special-registration/TodaySpecialRegistrationPage'),
+                import('@/domains/product/today-special-registration/today-special-registration-page'),
               'TodaySpecialRegistrationPage',
             ),
           },
@@ -74,6 +80,14 @@ export const marketOwnerRoutes = [
       {
         Component: NoSidebarLayout,
         children: [
+          {
+            path: MARKET_OWNER_ROUTES.marketInformationManagement,
+            ...createLazyRoute(
+              () =>
+                import('@/domains/market/information-management/MarketInformationManagementPage'),
+              'MarketInformationManagementPage',
+            ),
+          },
           {
             path: MARKET_OWNER_ROUTES.marketInformationRegistration,
             ...createLazyRoute(

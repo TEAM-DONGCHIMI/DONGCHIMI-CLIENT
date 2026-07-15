@@ -1,4 +1,6 @@
-import { type ProductDetailParamsTypes } from './api/product-detail-api';
+import type { MarketDetailParamsTypes } from './api/market-detail-api';
+import type { NearbyMarketsListParamsTypes } from './api/nearby-markets-api';
+import type { ProductDetailParamsTypes } from './api/product-detail-api';
 
 const normalizeProductDetailParams = ({ marketId, productId }: ProductDetailParamsTypes) => {
   return {
@@ -7,9 +9,15 @@ const normalizeProductDetailParams = ({ marketId, productId }: ProductDetailPara
   } satisfies ProductDetailParamsTypes;
 };
 
-export const productDetailQueryKeys = {
-  all: ['market', 'products'] as const,
-  detail: (params: ProductDetailParamsTypes) =>
-    [...productDetailQueryKeys.all, 'detail', normalizeProductDetailParams(params)] as const,
-  query: (params: ProductDetailParamsTypes) => productDetailQueryKeys.detail(params),
+export const marketQueryKeys = {
+  all: ['market'] as const,
+  detail: (params: MarketDetailParamsTypes) =>
+    [...marketQueryKeys.all, 'market-detail', params] as const,
+  nearbyList: (params: NearbyMarketsListParamsTypes) =>
+    [...marketQueryKeys.all, 'nearby-markets', params] as const,
+  nearbyMarkers: (params: NearbyMarketsListParamsTypes) =>
+    [...marketQueryKeys.all, 'nearby-markets', 'markers', params] as const,
+  productDetailRoot: () => [...marketQueryKeys.all, 'products', 'detail'] as const,
+  productDetail: (params: ProductDetailParamsTypes) =>
+    [...marketQueryKeys.productDetailRoot(), normalizeProductDetailParams(params)] as const,
 };

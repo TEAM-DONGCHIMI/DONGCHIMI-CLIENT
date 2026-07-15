@@ -1,28 +1,34 @@
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 
 import {
   IcCircleQuestion,
   IcHome,
-  IcPlus,
+  IcRangeSaleEditDefault,
+  IcRangeSaleEditHover,
+  IcRangeSaleUploadDefault,
+  IcRangeSaleUploadHover,
   IcSetting,
-  IcWrite,
+  IcTodaySaleEditDefault,
+  IcTodaySaleEditHover,
+  IcTodaySaleUploadDefault,
+  IcTodaySaleUploadHover,
 } from '@dongchimi/design-system/icons';
 import { ToastProvider } from '@dongchimi/shared/toast';
 
 import { Sidebar, type SidebarItem, type SidebarSection } from '@/shared/components';
+import sidebarBrandLogo from '@/shared/assets/images/Img_pavicon.svg';
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
 
 import * as S from './SidebarLayout.css';
-import {
-  SIDEBAR_LAYOUT_TOAST_CENTER_OFFSET_X,
-  SIDEBAR_LAYOUT_TOAST_OFFSET_Y,
-} from './SidebarLayout.constants';
+import { SIDEBAR_LAYOUT_TOAST_OFFSET_Y } from './SidebarLayout.constants';
 
 const sidebarItemRoutes = {
   eventDiscountEdit: MARKET_OWNER_ROUTES.eventDiscountEdit,
   eventDiscountRegistration: MARKET_OWNER_ROUTES.eventDiscountRegistration,
   home: MARKET_OWNER_ROUTES.home,
+  marketInformationManagement: MARKET_OWNER_ROUTES.marketInformationManagement,
   todaySpecialEdit: MARKET_OWNER_ROUTES.todaySpecialEdit,
   todaySpecialRegistration: MARKET_OWNER_ROUTES.todaySpecialRegistration,
 } as const;
@@ -46,6 +52,19 @@ const createSidebarItem = ({
   };
 };
 
+const SidebarStateIcon = ({
+  defaultIcon,
+  hoverIcon,
+}: {
+  defaultIcon: ReactNode;
+  hoverIcon: ReactNode;
+}) => (
+  <span className={S.sidebarStateIconClassName}>
+    <span className={S.sidebarStateIconDefaultClassName}>{defaultIcon}</span>
+    <span className={S.sidebarStateIconHoverClassName}>{hoverIcon}</span>
+  </span>
+);
+
 const sidebarSections: SidebarSection[] = [
   {
     id: 'home',
@@ -61,36 +80,56 @@ const sidebarSections: SidebarSection[] = [
     id: 'product',
     items: [
       createSidebarItem({
-        icon: <IcPlus aria-hidden='true' />,
+        icon: (
+          <SidebarStateIcon
+            defaultIcon={<IcTodaySaleUploadDefault aria-hidden='true' />}
+            hoverIcon={<IcTodaySaleUploadHover aria-hidden='true' />}
+          />
+        ),
         id: 'todaySpecialRegistration',
         label: '오늘의 특가 상품 등록',
       }),
       createSidebarItem({
-        icon: <IcPlus aria-hidden='true' />,
+        icon: (
+          <SidebarStateIcon
+            defaultIcon={<IcRangeSaleUploadDefault aria-hidden='true' />}
+            hoverIcon={<IcRangeSaleUploadHover aria-hidden='true' />}
+          />
+        ),
         id: 'eventDiscountRegistration',
         label: '행사 할인 상품 등록',
       }),
       createSidebarItem({
-        icon: <IcWrite aria-hidden='true' />,
+        icon: (
+          <SidebarStateIcon
+            defaultIcon={<IcTodaySaleEditDefault aria-hidden='true' />}
+            hoverIcon={<IcTodaySaleEditHover aria-hidden='true' />}
+          />
+        ),
         id: 'todaySpecialEdit',
         label: '오늘의 특가 상품 수정',
       }),
       createSidebarItem({
-        icon: <IcWrite aria-hidden='true' />,
+        icon: (
+          <SidebarStateIcon
+            defaultIcon={<IcRangeSaleEditDefault aria-hidden='true' />}
+            hoverIcon={<IcRangeSaleEditHover aria-hidden='true' />}
+          />
+        ),
         id: 'eventDiscountEdit',
         label: '행사 할인 상품 수정',
       }),
     ],
-    title: '상품을 등록하고 오늘의 전단을 만들어보세요',
+    title: '우리 마트 전단을 동네 주민에게 전달하기',
   },
 ];
 
 const footerItems: SidebarItem[] = [
-  {
+  createSidebarItem({
     icon: <IcSetting aria-hidden='true' />,
-    id: 'settings',
-    label: '환경설정',
-  },
+    id: 'marketInformationManagement',
+    label: '마트 정보 관리',
+  }),
 ];
 
 const sidebarRouteEntries = Object.entries(sidebarItemRoutes) as [
@@ -103,12 +142,7 @@ const getActiveSidebarItemId = (pathname: string): SidebarItemIdTypes | undefine
 };
 
 const SidebarBrand = () => (
-  <span className={S.brandClassName}>
-    <span aria-hidden='true' className={S.brandLogoClassName}>
-      DC
-    </span>
-    <span>동치미</span>
-  </span>
+  <img alt='동치미' className={S.brandImageClassName} src={sidebarBrandLogo} />
 );
 
 const SidebarHelp = () => (
@@ -122,9 +156,12 @@ const SidebarHelp = () => (
   </div>
 );
 
+const profileAvatarImageSrc = '/images/product-replace.svg';
+
 export const SidebarLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const account = useAuthStore((state) => state.account);
   const activeItemId = getActiveSidebarItemId(location.pathname);
   const profile = useMemo(
     () => ({
@@ -137,6 +174,21 @@ export const SidebarLayout = () => {
       name: '신선마트 사장님',
     }),
     [],
+  );
+  const accountProfile = useMemo(
+    () =>
+      account
+        ? {
+            avatar: (
+              <span aria-hidden='true' className={S.profileAvatarClassName}>
+                <img alt='' className={S.profileAvatarImageClassName} src={profileAvatarImageSrc} />
+              </span>
+            ),
+            description: account.marketName ? account.email : undefined,
+            name: account.marketName ?? account.email,
+          }
+        : profile,
+    [account, profile],
   );
 
   const handleSidebarItemSelect = (item: SidebarItem) => {
@@ -155,18 +207,12 @@ export const SidebarLayout = () => {
           footerItems={footerItems}
           helpCard={<SidebarHelp />}
           onItemSelect={handleSidebarItemSelect}
-          profile={profile}
+          profile={accountProfile}
           sections={sidebarSections}
         />
       </div>
       <div className={S.contentSlotClassName}>
-        <ToastProvider
-          offset={{
-            x: SIDEBAR_LAYOUT_TOAST_CENTER_OFFSET_X,
-            y: SIDEBAR_LAYOUT_TOAST_OFFSET_Y,
-          }}
-          placement='top-center'
-        >
+        <ToastProvider offset={SIDEBAR_LAYOUT_TOAST_OFFSET_Y} placement='top-center'>
           <Outlet />
         </ToastProvider>
       </div>

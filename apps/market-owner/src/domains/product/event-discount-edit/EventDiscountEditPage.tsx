@@ -1,26 +1,52 @@
-import { Link } from 'react-router';
+import { Navigate } from 'react-router';
 
-import { TabNav } from '@dongchimi/design-system/components';
-
+import { ProductEditPageShell } from '@/domains/product/components/product-edit-page-shell';
+import { useProductDeletionActions, useProductEditTargetParam } from '@/domains/product/hooks';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
+
+import { EventDiscountEditProductSection } from './sections/EventDiscountEditProductSection';
+
+interface EventDiscountEditPageContentProps {
+  marketId: number;
+}
+
+const EventDiscountEditPageContent = ({ marketId }: EventDiscountEditPageContentProps) => {
+  const { clearTargetProductId, handleTargetProductMissing, targetProductId } =
+    useProductEditTargetParam();
+  const { deleteProduct, deleteProducts, isDeletePending, resetProducts } =
+    useProductDeletionActions(marketId);
+
+  return (
+    <ProductEditPageShell
+      activeType='eventDiscount'
+      deletePending={isDeletePending}
+      onDeleteProducts={deleteProducts}
+      onResetProducts={() => resetProducts('PERIODIC')}
+    >
+      {(selectedFilter, selectedCategory, selection) => (
+        <EventDiscountEditProductSection
+          autoOpenProductId={targetProductId}
+          deletePending={isDeletePending}
+          marketId={marketId}
+          selection={selection}
+          selectedCategory={selectedCategory}
+          selectedFilter={selectedFilter}
+          onAutoOpenProductMissing={handleTargetProductMissing}
+          onAutoOpenProductModalClose={clearTargetProductId}
+          onDeleteProduct={deleteProduct}
+        />
+      )}
+    </ProductEditPageShell>
+  );
+};
 
 export const EventDiscountEditPage = () => {
-  return (
-    <main>
-      <p>상품 수정</p>
-      <h1>행사 할인 상품 수정</h1>
-      <p>사이드바의 행사 할인 상품 수정 메뉴와 상단 탭이 같은 route 상태를 가리킵니다.</p>
-      <TabNav aria-label='상품 수정 유형'>
-        <TabNav.List>
-          <TabNav.Item as={Link} to={MARKET_OWNER_ROUTES.todaySpecialEdit}>
-            오늘의 특가
-          </TabNav.Item>
-          <TabNav.Item as={Link} selected to={MARKET_OWNER_ROUTES.eventDiscountEdit}>
-            행사 할인
-          </TabNav.Item>
-        </TabNav.List>
-      </TabNav>
-      <p>행사 할인 상품 수정 table, 기간 필터, selection, API 연동은 후속 이슈 범위입니다.</p>
-    </main>
-  );
+  const marketId = useAuthStore((state) => state.marketId);
+
+  if (marketId == null) {
+    return <Navigate replace to={MARKET_OWNER_ROUTES.marketInformationRegistration} />;
+  }
+
+  return <EventDiscountEditPageContent marketId={marketId} />;
 };

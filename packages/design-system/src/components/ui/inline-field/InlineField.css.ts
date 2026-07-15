@@ -6,7 +6,7 @@ import { atomic, semantic, typography } from '../../../tokens';
 export const fieldRoot = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '0.2rem',
+  gap: '0.4rem',
   width: '100%',
   minWidth: 0,
 });

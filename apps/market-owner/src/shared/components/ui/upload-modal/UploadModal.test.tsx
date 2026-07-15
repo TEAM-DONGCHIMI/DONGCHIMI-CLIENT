@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react';
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { render, screen, userEvent } from '../../../../test';
+import { createEvent, fireEvent, render, screen, userEvent } from '../../../../test';
 import { UploadModal } from './UploadModal';
 
 const dialogName = '파일 업로드';
@@ -20,6 +20,10 @@ const defaultProps = {
 
 const renderUploadModal = (props: Partial<ComponentProps<typeof UploadModal>> = {}) => {
   return render(<UploadModal {...defaultProps} {...props} />);
+};
+
+const getFileSelectTrigger = () => {
+  return screen.getByRole('button', { name: fileSelectLabel });
 };
 
 describe('UploadModal', () => {
@@ -41,6 +45,16 @@ describe('UploadModal', () => {
     expect(
       screen.getByTestId('file-select-icon').closest('[aria-hidden="true"]'),
     ).toBeInTheDocument();
+  });
+
+  it('renders a caller-provided file select tooltip label', () => {
+    const tooltipLabel = '지원 파일은 .xlsx, .csv예요.';
+
+    renderUploadModal({
+      fileSelectTooltipLabel: tooltipLabel,
+    });
+
+    expect(screen.getByText(tooltipLabel)).toBeInTheDocument();
   });
 
   it('renders upload state with optional description and enabled upload action', () => {
@@ -93,6 +107,39 @@ describe('UploadModal', () => {
     expect(handleUpload).toHaveBeenCalledTimes(1);
   });
 
+  it('calls file drop handler when files are dropped on the upload body', () => {
+    const handleFileDrop = vi.fn();
+    const file = new File(['name,price'], 'products.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderUploadModal({
+      onFileDrop: handleFileDrop,
+    });
+
+    const dropTarget = screen.getByText(defaultProps.label);
+    const dragOverEvent = createEvent.dragOver(dropTarget, {
+      dataTransfer: {
+        files: [file],
+      },
+    });
+    const dropEvent = createEvent.drop(dropTarget, {
+      dataTransfer: {
+        files: [file],
+      },
+    });
+    const preventDragOverDefault = vi.spyOn(dragOverEvent, 'preventDefault');
+    const preventDropDefault = vi.spyOn(dropEvent, 'preventDefault');
+
+    fireEvent(dropTarget, dragOverEvent);
+    fireEvent(dropTarget, dropEvent);
+
+    expect(preventDragOverDefault).toHaveBeenCalledTimes(1);
+    expect(preventDropDefault).toHaveBeenCalledTimes(1);
+    expect(handleFileDrop).toHaveBeenCalledTimes(1);
+    expect(handleFileDrop.mock.calls[0]?.[0][0]).toBe(file);
+  });
+
   it('resets the file input value before opening the file picker', async () => {
     const user = userEvent.setup();
     const file = new File(['name,price'], 'products.xlsx', {
@@ -106,9 +153,32 @@ describe('UploadModal', () => {
     await user.upload(fileInput, file);
     expect(fileInput.files).toHaveLength(1);
 
-    await user.click(screen.getByRole('button', { name: fileSelectLabel }));
+    await user.click(getFileSelectTrigger());
 
     expect(fileInput.value).toBe('');
+  });
+
+  it('prevents native cancel requests without closing the controlled dialog', async () => {
+    const handleOpenChange = vi.fn();
+    const handleFileChange = vi.fn();
+    const file = new File(['name,price'], 'products.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    renderUploadModal({
+      onFileChange: handleFileChange,
+      onOpenChange: handleOpenChange,
+    });
+
+    const cancelEvent = new Event('cancel', { cancelable: true });
+
+    fireEvent(screen.getByRole('dialog', { name: dialogName }), cancelEvent);
+    await userEvent.upload(screen.getByLabelText(fileSelectLabel), file);
+
+    expect(cancelEvent.defaultPrevented).toBe(true);
+    expect(handleOpenChange).not.toHaveBeenCalledWith(false);
+    expect(handleFileChange).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('dialog', { name: dialogName })).toBeInTheDocument();
   });
 
   it('closes through the cancel button', async () => {

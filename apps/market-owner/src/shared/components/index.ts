@@ -24,3 +24,11 @@ export type {
   ProductSearchPanelItemTypes,
   ProductSearchPanelProps,
 } from './ui/product-search-panel';
+export { ProductHeaderSearch } from './ui/product-header-search';
+export type {
+  ProductHeaderSearchDealTypes,
+  ProductHeaderSearchProductTypes,
+  ProductHeaderSearchProps,
+} from './ui/product-header-search';
+export { QrDownloadModal } from './ui/qr-download-modal';
+export type { QrDownloadModalProps } from './ui/qr-download-modal';
