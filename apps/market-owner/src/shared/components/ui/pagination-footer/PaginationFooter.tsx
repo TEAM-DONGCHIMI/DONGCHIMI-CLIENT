@@ -18,6 +18,7 @@ export interface PaginationFooterProps extends NativeFooterProps {
   previousLabel?: string;
   rangeEnd: number;
   rangeStart: number;
+  showNavigation?: boolean;
   totalCount: number;
 }
 
@@ -41,10 +42,11 @@ export const PaginationFooter = ({
   previousLabel = DEFAULT_PREVIOUS_LABEL,
   rangeEnd,
   rangeStart,
+  showNavigation = true,
   totalCount,
   ...props
 }: PaginationFooterProps) => {
-  const currentRange = `${rangeStart}-${rangeEnd}`;
+  const currentRange = `${rangeStart}~${rangeEnd}`;
 
   return (
     <footer aria-label={ariaLabel} className={cn(S.rootClassName, className)} {...props}>
@@ -58,17 +60,19 @@ export const PaginationFooter = ({
         </div>
       </div>
 
-      <Navigation
-        className={S.navigationClassName}
-        currentPage={currentPage}
-        getPageAriaLabel={getPageAriaLabel}
-        nextDisabled={nextDisabled}
-        nextLabel={nextLabel}
-        onPageChange={onPageChange}
-        pages={pages}
-        previousDisabled={previousDisabled}
-        previousLabel={previousLabel}
-      />
+      {showNavigation && (
+        <Navigation
+          className={S.navigationClassName}
+          currentPage={currentPage}
+          getPageAriaLabel={getPageAriaLabel}
+          nextDisabled={nextDisabled}
+          nextLabel={nextLabel}
+          onPageChange={onPageChange}
+          pages={pages}
+          previousDisabled={previousDisabled}
+          previousLabel={previousLabel}
+        />
+      )}
     </footer>
   );
 };

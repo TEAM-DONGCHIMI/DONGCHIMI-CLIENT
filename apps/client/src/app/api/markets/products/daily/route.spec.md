@@ -3,7 +3,7 @@
 ## Metadata
 
 - Jira: `DCMCL-21`
-- Route: `GET /api/markets/{marketId}/products/daily`
+- Route: `GET /api/markets/products/daily?marketId={marketId}`
 - Owner: client market domain
 - Status: Implemented
 
@@ -14,10 +14,10 @@
 
 ## Contract
 
-- browser path: `/api/markets/{marketId}/products/daily`
+- browser path: `/api/markets/products/daily?marketId={marketId}`
 - backend path: `/v1/users/markets/{marketId}/products/daily`
 - method: `GET`
-- path parameter: 양의 정수 `marketId`
+- search parameter: 양의 정수 `marketId`
 - authentication: HttpOnly `access_token` cookie가 있으면 backend `Authorization: Bearer` header로 전달합니다.
 - response: 백엔드 status와 JSON body를 유지합니다.
 

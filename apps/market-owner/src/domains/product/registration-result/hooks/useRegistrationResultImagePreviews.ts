@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 
 import { revokeImagePreviewUrl } from '@/shared/utils/image-upload.utils';
 
-interface RegistrationResultImagePreview {
+export interface RegistrationResultImagePreview {
   alt: string;
+  file: File;
   src: string;
 }
 
@@ -49,7 +50,7 @@ export const useRegistrationResultImagePreviews = ({
     const nextImagePreviews = new Map(imagePreviewsRef.current);
 
     revokeImagePreviewUrl(previousPreviewUrl);
-    nextImagePreviews.set(productId, { alt: file.name, src: previewUrl });
+    nextImagePreviews.set(productId, { alt: file.name, file, src: previewUrl });
     replaceImagePreviews(nextImagePreviews);
   };
 

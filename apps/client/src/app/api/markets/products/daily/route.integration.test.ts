@@ -34,13 +34,17 @@ const DAILY_PRODUCTS_BACKEND_RESPONSE_FIXTURE = {
   success: true,
 } as const;
 
-const callRoute = (marketId: string) => {
-  return GET(new Request(`http://localhost/api/markets/${marketId}/products/daily`), {
-    params: Promise.resolve({ marketId }),
-  });
+const callRoute = (marketId?: string) => {
+  const requestUrl = new URL('http://localhost/api/markets/products/daily');
+
+  if (marketId != null) {
+    requestUrl.searchParams.set('marketId', marketId);
+  }
+
+  return GET(new Request(requestUrl));
 };
 
-describe('GET /api/markets/[marketId]/products/daily', () => {
+describe('GET /api/markets/products/daily', () => {
   beforeAll(() => {
     vi.stubEnv('API_BASE_URL', API_BASE_URL);
   });
@@ -72,6 +76,16 @@ describe('GET /api/markets/[marketId]/products/daily', () => {
 
   it('유효하지 않은 marketId는 백엔드로 전달하지 않는다', async () => {
     const response = await callRoute('0');
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({
+      code: 'INVALID_INPUT',
+      success: false,
+    });
+  });
+
+  it('marketId가 없으면 백엔드로 전달하지 않는다', async () => {
+    const response = await callRoute();
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toMatchObject({

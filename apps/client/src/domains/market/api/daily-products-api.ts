@@ -1,3 +1,5 @@
+import { buildApiPath } from '@dongchimi/shared/api';
+
 import { browserApi } from '@/shared/api';
 
 import {
@@ -11,10 +13,11 @@ export type { DailyProductsParamsTypes } from '../model/daily-products-schema';
 
 export const getDailyProducts = async (
   rawParams: DailyProductsParamsTypes,
+  signal?: AbortSignal,
 ): Promise<DailyProductsTypes> => {
   const { marketId } = resolveDailyProductsParams(rawParams);
-  const endpoint = `markets/${marketId}/products/daily`;
-  const response = await browserApi.get<unknown>(endpoint);
+  const endpoint = buildApiPath('markets/products/daily', { marketId });
+  const response = await browserApi.get<unknown>(endpoint, { signal });
 
   return resolveDailyProductsResponse(response, endpoint);
 };

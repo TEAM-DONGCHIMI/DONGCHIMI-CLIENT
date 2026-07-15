@@ -1,14 +1,16 @@
-import { type DailyProductsParamsTypes } from './api/daily-products-api';
+import type { DailyProductsParamsTypes } from './api/daily-products-api';
+import type { MarketDetailParamsTypes } from './api/market-detail-api';
 import type { NearbyMarketsListParamsTypes } from './api/nearby-markets-api';
 
-export const nearbyMarketsQueryKeys = {
-  all: ['market', 'nearby-markets'] as const,
-  list: (params: NearbyMarketsListParamsTypes) => [...nearbyMarketsQueryKeys.all, params] as const,
-  markers: (params: NearbyMarketsListParamsTypes) =>
-    [...nearbyMarketsQueryKeys.all, 'markers', params] as const,
-};
-
-export const dailyProductsQueryKeys = {
-  all: ['market', 'daily-products'] as const,
-  query: (params: DailyProductsParamsTypes) => [...dailyProductsQueryKeys.all, params] as const,
+export const marketQueryKeys = {
+  all: ['market'] as const,
+  detail: (params: MarketDetailParamsTypes) =>
+    [...marketQueryKeys.all, 'market-detail', params] as const,
+  nearbyList: (params: NearbyMarketsListParamsTypes) =>
+    [...marketQueryKeys.all, 'nearby-markets', params] as const,
+  nearbyMarkers: (params: NearbyMarketsListParamsTypes) =>
+    [...marketQueryKeys.all, 'nearby-markets', 'markers', params] as const,
+  products: () => [...marketQueryKeys.all, 'products'] as const,
+  dailyProducts: (params: DailyProductsParamsTypes) =>
+    [...marketQueryKeys.products(), 'daily', params] as const,
 };

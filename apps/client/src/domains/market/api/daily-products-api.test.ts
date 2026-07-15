@@ -6,10 +6,10 @@ import { server } from '@/test';
 import { getDailyProducts } from './daily-products-api';
 import { DAILY_PRODUCTS_API_RESPONSE_FIXTURE } from './daily-products-api.mock';
 
-const DAILY_PRODUCTS_ENDPOINT = `${window.location.origin}/api/markets/2/products/daily`;
+const DAILY_PRODUCTS_ENDPOINT = `${window.location.origin}/api/markets/products/daily?marketId=2`;
 
 describe('getDailyProducts', () => {
-  it('marketId path parameter로 오늘의 특가 목록을 조회한다', async () => {
+  it('marketId search parameter로 오늘의 특가 목록을 조회한다', async () => {
     server.use(
       http.get(DAILY_PRODUCTS_ENDPOINT, () => {
         return HttpResponse.json(DAILY_PRODUCTS_API_RESPONSE_FIXTURE);

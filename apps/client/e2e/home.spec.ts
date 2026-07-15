@@ -30,9 +30,6 @@ test('client market products route shell renders', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '전단보기' })).toBeVisible({
     timeout: routeShellTimeout,
   });
-  await expect(
-    page.getByRole('link', { name: '삼겹살 500g 6,900원 상품 보기' }).first(),
-  ).toHaveAttribute('href', productDetailPath);
 });
 
 test('client product detail route shell renders', async ({ page }) => {

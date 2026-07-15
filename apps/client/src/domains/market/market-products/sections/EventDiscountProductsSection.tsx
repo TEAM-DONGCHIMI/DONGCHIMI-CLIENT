@@ -14,7 +14,7 @@ import { formatPrice } from '../utils/format-price';
 
 interface EventDiscountProductsSectionProps {
   eventDiscount: EventDiscountProductsFixtureTypes;
-  marketId: string;
+  marketSlug: string;
   visibleCategoryCount: number;
 }
 
@@ -83,7 +83,7 @@ const useEventDiscountInfiniteScroll = ({
 
 export const EventDiscountProductsSection = ({
   eventDiscount,
-  marketId,
+  marketSlug,
   visibleCategoryCount,
 }: EventDiscountProductsSectionProps) => {
   const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
@@ -236,7 +236,7 @@ export const EventDiscountProductsSection = ({
             <PeriodProductCard
               key={product.productId}
               className={S.eventProductCardClassName}
-              href={CLIENT_ROUTES.marketProduct(marketId, String(product.productId))}
+              href={CLIENT_ROUTES.marketProduct(marketSlug, String(product.productId))}
               imageSizes={EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES}
               imageSrc={product.thumbnailUrl ?? undefined}
               priceText={formatPrice(product.discountedPrice)}

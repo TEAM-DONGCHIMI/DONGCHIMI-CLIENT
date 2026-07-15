@@ -1,13 +1,10 @@
 import { API_ENDPOINTS } from '@dongchimi/shared/api';
 import { NextResponse } from 'next/server';
 
+import { dailyProductsParamsSchema } from '@/domains/market/model/daily-products-schema';
 import { createServerApi } from '@/shared/api/server-client';
 
 export const runtime = 'nodejs';
-
-interface DailyProductsRouteContext {
-  params: Promise<{ marketId: string }>;
-}
 
 const createErrorResponse = (status: number, code: string, message: string) => {
   return NextResponse.json(
@@ -20,22 +17,28 @@ const createErrorResponse = (status: number, code: string, message: string) => {
   );
 };
 
-export async function GET(_request: Request, { params }: DailyProductsRouteContext) {
-  const { marketId } = await params;
-  const numericMarketId = Number(marketId);
+const toOptionalNumber = (value: string | null) => {
+  return value == null ? undefined : Number(value);
+};
 
-  if (!Number.isInteger(numericMarketId) || numericMarketId <= 0) {
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url);
+  const parsedParams = dailyProductsParamsSchema.safeParse({
+    marketId: toOptionalNumber(requestUrl.searchParams.get('marketId')),
+  });
+
+  if (!parsedParams.success) {
     return createErrorResponse(400, 'INVALID_INPUT', '마트 식별자는 양의 정수여야 합니다.');
   }
 
+  const { marketId } = parsedParams.data;
+
   try {
     const serverApi = await createServerApi();
-    const upstreamResponse = await serverApi.get(
-      API_ENDPOINTS.user.products.daily(numericMarketId),
-      {
-        throwHttpErrors: false,
-      },
-    );
+    const upstreamResponse = await serverApi.get(API_ENDPOINTS.user.products.daily(marketId), {
+      signal: request.signal,
+      throwHttpErrors: false,
+    });
     const upstreamBody: unknown = await upstreamResponse.json();
 
     return NextResponse.json(upstreamBody, { status: upstreamResponse.status });

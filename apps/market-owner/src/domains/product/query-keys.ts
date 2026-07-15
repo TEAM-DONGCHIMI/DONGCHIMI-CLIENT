@@ -1,6 +1,7 @@
 import type { GetProductDetailParams } from './api/get-product-detail';
 import type { GetProductListParams } from './api/get-product-list';
 import type { GetProductSearchParams } from './api/get-product-search';
+import type { GetPreparedProductDraftsParams } from './api/get-prepared-product-drafts';
 
 export type ProductSearchQueryParamsTypes = Omit<GetProductSearchParams, 'marketId'> & {
   marketId?: GetProductSearchParams['marketId'];
@@ -20,10 +21,28 @@ export type ProductListQueryKeyParamsTypes = Omit<ProductListQueryParamsTypes, '
   sort: NonNullable<GetProductListParams['sort']>;
 };
 
+export type PreparedProductDraftsQueryParamsTypes = Omit<
+  GetPreparedProductDraftsParams,
+  'marketId'
+> & {
+  fetchAll?: boolean;
+  marketId?: GetPreparedProductDraftsParams['marketId'];
+};
+
+export type PreparedProductDraftsQueryKeyParamsTypes = Required<
+  Pick<
+    PreparedProductDraftsQueryParamsTypes,
+    'categories' | 'fetchAll' | 'page' | 'search' | 'size'
+  >
+> & {
+  marketId?: PreparedProductDraftsQueryParamsTypes['marketId'];
+};
+
 const productAllQueryKey = ['product'] as const;
 const productSearchRootQueryKey = [...productAllQueryKey, 'search'] as const;
 const productDetailRootQueryKey = [...productAllQueryKey, 'detail'] as const;
 const productListRootQueryKey = [...productAllQueryKey, 'list'] as const;
+const preparedProductDraftsRootQueryKey = [...productAllQueryKey, 'prepared-drafts'] as const;
 
 export const productQueryKeys = {
   all: productAllQueryKey,
@@ -36,4 +55,7 @@ export const productQueryKeys = {
   listRoot: productListRootQueryKey,
   listByMarket: (marketId: number) => [...productListRootQueryKey, { marketId }] as const,
   list: (params: ProductListQueryKeyParamsTypes) => [...productListRootQueryKey, params] as const,
+  preparedDraftsRoot: preparedProductDraftsRootQueryKey,
+  preparedDrafts: (params: PreparedProductDraftsQueryKeyParamsTypes) =>
+    [...preparedProductDraftsRootQueryKey, params] as const,
 } as const;
