@@ -3,21 +3,40 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useBlocker, useNavigate } from 'react-router';
 import { useToast } from '@dongchimi/shared/toast';
 
-import { Button } from '@dongchimi/design-system/components';
+import { Button, TextButton } from '@dongchimi/design-system/components';
 
 import {
   MarketInformationForm,
   MarketInformationFormToastProvider,
 } from '@/domains/market/components/market-information-form';
+import { useOwnerMarketDetailQuery } from '@/domains/market/hooks';
+import { createMarketInformationForm } from '@/domains/market/model';
+import { isApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
 
 import { confirmMarketInformationLeave } from './components';
-import { marketInformationManagementFixture } from './fixtures';
 import * as S from './MarketInformationManagementPage.css';
+
+const getMarketDetailErrorMessage = (error: unknown) => {
+  if (isApiError(error)) {
+    if (error.code === 'MARKET_ACCESS_DENIED') {
+      return '해당 마트 정보를 조회할 권한이 없습니다.';
+    }
+
+    if (error.code === 'MARKET_NOT_FOUND') {
+      return '마트 정보를 찾을 수 없습니다.';
+    }
+  }
+
+  return '마트 정보를 불러오지 못했어요.';
+};
 
 const MarketInformationManagementPageController = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const marketId = useAuthStore((state) => state.marketId);
+  const marketDetailQuery = useOwnerMarketDetailQuery({ marketId });
   const [isDirty, setIsDirty] = useState(false);
   const isLeaveConfirmationOpenRef = useRef(false);
   const blocker = useBlocker(isDirty);
@@ -45,10 +64,37 @@ const MarketInformationManagementPageController = () => {
     navigate(MARKET_OWNER_ROUTES.home);
   };
 
+  if (marketId == null) {
+    return (
+      <div className={S.queryStateClassName} role='alert'>
+        마트 정보를 확인할 수 없습니다. 다시 로그인해주세요.
+      </div>
+    );
+  }
+
+  if (marketDetailQuery.isPending) {
+    return (
+      <div className={S.queryStateClassName} role='status'>
+        마트 정보를 불러오는 중입니다.
+      </div>
+    );
+  }
+
+  if (marketDetailQuery.isError || marketDetailQuery.data === undefined) {
+    return (
+      <div className={S.queryStateClassName} role='alert'>
+        <p className={S.queryErrorMessageClassName}>
+          {getMarketDetailErrorMessage(marketDetailQuery.error)}
+        </p>
+        <TextButton onClick={() => void marketDetailQuery.refetch()}>다시 불러오기</TextButton>
+      </div>
+    );
+  }
+
   return (
     <MarketInformationForm
       description='점주님의 마트 정보를 관리하세요.'
-      initialForm={marketInformationManagementFixture.initialForm}
+      initialForm={createMarketInformationForm(marketDetailQuery.data)}
       secondaryAction={
         <Button
           className={S.actionButtonClassName}
