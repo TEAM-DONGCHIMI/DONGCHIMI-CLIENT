@@ -121,6 +121,52 @@ describe('subscribeProductImportProgress', () => {
     expect(onEvent).toHaveBeenCalledWith({ data: canceledData, type: 'canceled' });
   });
 
+  it('accepts initial progress events without optional current step metadata', async () => {
+    const onEvent = vi.fn();
+    const initialProgressData = {
+      jobId: 'job-123',
+      status: 'IN_PROGRESS',
+      progress: 0,
+      currentStep: null,
+      remainingSeconds: null,
+      steps: [
+        { step: 'FILE_UPLOAD', status: 'PENDING' },
+        { step: 'NAME_EXTRACTION', status: 'PENDING' },
+        { step: 'PRICE_EXTRACTION', status: 'PENDING' },
+        { step: 'CATEGORY_CLASSIFICATION', status: 'PENDING' },
+        { step: 'IMAGE_MATCHING', status: 'PENDING' },
+      ],
+    };
+    const completedData = {
+      jobId: 'job-123',
+      status: 'COMPLETED',
+      progress: 100,
+      totalCount: 0,
+      successCount: 0,
+      failCount: 0,
+    };
+
+    mockedHttpClientStream.mockResolvedValueOnce(
+      createChunkedResponse([
+        `event: progress\ndata: ${JSON.stringify(initialProgressData)}\n\n`,
+        `event: completed\ndata: ${JSON.stringify(completedData)}\n\n`,
+      ]),
+    );
+
+    await subscribeProductImportProgress({
+      jobId: 'job-123',
+      marketId: 12,
+      onEvent,
+      signal: new AbortController().signal,
+    });
+
+    expect(onEvent).toHaveBeenNthCalledWith(1, {
+      data: initialProgressData,
+      type: 'progress',
+    });
+    expect(onEvent).toHaveBeenNthCalledWith(2, { data: completedData, type: 'completed' });
+  });
+
   it('rejects malformed event data as an API validation error', async () => {
     mockedHttpClientStream.mockResolvedValueOnce(
       createChunkedResponse(['event: progress\ndata: {"jobId":\n\n']),

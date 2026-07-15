@@ -21,8 +21,8 @@ export const productImportProgressDataSchema = z.object({
   jobId: z.string(),
   status: z.literal('IN_PROGRESS'),
   progress: z.number().min(0).max(100),
-  remainingSeconds: z.number().nonnegative(),
-  currentStep: productImportStepSchema,
+  remainingSeconds: z.number().nonnegative().nullish(),
+  currentStep: productImportStepSchema.nullish(),
   steps: z.array(
     z.object({
       step: productImportStepSchema,
