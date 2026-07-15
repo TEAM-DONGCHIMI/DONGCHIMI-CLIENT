@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 import {
-  isUsedSignupEmail,
   SIGNUP_EMAIL_ALLOWED_CHARACTERS_PATTERN,
   SIGNUP_EMAIL_ERROR_MESSAGES,
   SIGNUP_EMAIL_PATTERN,
@@ -32,20 +31,19 @@ export const signupSchema = z
         (email) => SIGNUP_EMAIL_ALLOWED_CHARACTERS_PATTERN.test(email),
         SIGNUP_EMAIL_ERROR_MESSAGES.format,
       )
-      .refine((email) => SIGNUP_EMAIL_PATTERN.test(email), SIGNUP_EMAIL_ERROR_MESSAGES.format)
-      .refine((email) => !isUsedSignupEmail(email), SIGNUP_EMAIL_ERROR_MESSAGES.duplicated),
+      .refine((email) => SIGNUP_EMAIL_PATTERN.test(email), SIGNUP_EMAIL_ERROR_MESSAGES.format),
     password: z
       .string()
       .min(1, SIGNUP_PASSWORD_ERROR_MESSAGES.required)
-      .min(MIN_SIGNUP_PASSWORD_LENGTH, SIGNUP_PASSWORD_ERROR_MESSAGES.format)
-      .max(MAX_SIGNUP_PASSWORD_LENGTH, SIGNUP_PASSWORD_ERROR_MESSAGES.format)
+      .min(MIN_SIGNUP_PASSWORD_LENGTH, SIGNUP_PASSWORD_ERROR_MESSAGES.length)
+      .max(MAX_SIGNUP_PASSWORD_LENGTH, SIGNUP_PASSWORD_ERROR_MESSAGES.length)
       .refine(
         (password) => !WHITESPACE_PATTERN.test(password),
-        SIGNUP_PASSWORD_ERROR_MESSAGES.format,
+        SIGNUP_PASSWORD_ERROR_MESSAGES.whitespace,
       )
       .refine(
         (password) => !KOREAN_CHARACTERS_PATTERN.test(password),
-        SIGNUP_PASSWORD_ERROR_MESSAGES.format,
+        SIGNUP_PASSWORD_ERROR_MESSAGES.korean,
       ),
     passwordConfirm: z.string().min(1, SIGNUP_PASSWORD_CONFIRM_ERROR_MESSAGES.required),
   })

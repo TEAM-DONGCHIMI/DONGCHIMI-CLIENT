@@ -6,6 +6,7 @@
 - Domain: `home`
 - Page: `overview`
 - Figma: [APPJAM `button_home quick` node 2403:69244](https://www.figma.com/design/xIDbjqPKzG4bQL5Gaoqfvb/APPJAM?node-id=2403-69244&m=dev)
+- Visual: [APPJAM `Img_homecard` node 3539:151151](https://www.figma.com/design/xIDbjqPKzG4bQL5Gaoqfvb/APPJAM?node-id=3539-151151&m=dev)
 - Path: `apps/market-owner/src/domains/home/overview/components/home-quick-button/HomeQuickButton.tsx`
 - Status: Implemented
 
@@ -27,7 +28,7 @@
 
 ## States
 
-- default: 312x74 기준의 흰색 surface, label, description, 오른쪽 mint visual slot을 렌더링합니다.
+- default: 312x74 기준의 흰색 surface, label, description, 오른쪽 action별 SVG visual을 렌더링합니다.
 - hover: Figma `Status=hover` variant 기준으로 dimmer overlay를 노출합니다.
 - focus-visible: primary focus outline을 노출합니다.
 - loading: none
@@ -41,7 +42,7 @@
 - border radius: `12px`
 - padding: `14px 22px`
 - text gap: `2px`
-- visual slot: `46px`, radius `8px`
+- visual slot: `46px`; `Img_homecard`의 state 1/2/3 SVG를 action 순서대로 사용합니다.
 - label: `body-2-semibold`, neutral 90
 - description: `caption-1-medium`, neutral 70
 - sibling gap in hero list: `8px`
@@ -58,5 +59,5 @@
 - [x] state coverage checked
 - [x] `pnpm --filter market-owner lint`
 - [x] `pnpm --filter market-owner typecheck`
-- [x] `pnpm --filter market-owner test`
+- [x] 홈 view model, share, router 관련 Vitest targeted test
 - [x] `pnpm --filter market-owner build`

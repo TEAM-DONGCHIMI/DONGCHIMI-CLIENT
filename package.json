@@ -54,6 +54,7 @@
     "test:integration": "turbo run test:integration",
     "test:unit": "turbo run test:unit",
     "test:watch": "turbo run test:watch",
+    "typecheck:e2e": "tsc -p tsconfig.playwright.json",
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {

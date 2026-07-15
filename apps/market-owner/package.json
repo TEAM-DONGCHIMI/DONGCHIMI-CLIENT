@@ -32,7 +32,8 @@
     "react-error-boundary": "^6.1.2",
     "react-hook-form": "catalog:",
     "react-router": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "zustand": "catalog:"
   },
   "devDependencies": {
     "@dongchimi/eslint-config": "workspace:*",

@@ -4,6 +4,7 @@ import * as S from './QrDownloadModal.css';
 
 export interface QrDownloadModalProps {
   imageLabel: string;
+  imageSrc: string;
   open: boolean;
   onClose: () => void;
   onDownload: () => void;
@@ -11,6 +12,7 @@ export interface QrDownloadModalProps {
 
 export const QrDownloadModal = ({
   imageLabel,
+  imageSrc,
   open,
   onClose,
   onDownload,
@@ -25,7 +27,7 @@ export const QrDownloadModal = ({
       }}
     >
       <Dialog.Content aria-label='매장 고유 QR코드' className={S.modalClassName}>
-        <div aria-label={imageLabel} className={S.qrImageClassName} role='img' />
+        <img alt={imageLabel} className={S.qrImageClassName} src={imageSrc} />
         <LineButton className={S.downloadButtonClassName} onClick={onDownload}>
           매장 고유 QR코드 다운로드
         </LineButton>

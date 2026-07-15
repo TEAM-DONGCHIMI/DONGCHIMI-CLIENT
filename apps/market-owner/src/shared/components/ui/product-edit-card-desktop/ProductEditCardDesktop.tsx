@@ -3,6 +3,8 @@ import { type ComponentPropsWithoutRef, type MouseEventHandler, type ReactNode }
 import { IcTrash, IcWrite } from '@dongchimi/design-system/icons';
 import { cn } from '@dongchimi/design-system/styles';
 
+import { formatProductCategoryDisplayName } from '@/shared/utils/product-category.utils';
+
 import * as S from './ProductEditCardDesktop.css';
 
 type NativeArticleProps = Omit<ComponentPropsWithoutRef<'article'>, 'children' | 'onClick'>;
@@ -198,7 +200,9 @@ export const ProductEditCardDesktop = ({
       <div className={S.contentClassName}>
         <header className={S.headerClassName}>
           <div className={S.metaClassName}>
-            <span className={S.categoryChipClassName}>{categoryName}</span>
+            <span className={S.categoryChipClassName}>
+              {formatProductCategoryDisplayName(categoryName)}
+            </span>
             <span className={S.viewChipClassName}>
               <span>{formattedViewCount}</span>
               <span>{viewCountLabel}</span>

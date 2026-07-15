@@ -4,11 +4,16 @@ import type { LeafletSummaryFixture } from '../fixtures/leaflet-share.fixture';
 import * as S from './LeafletSummaryCard.css';
 
 export interface LeafletSummaryCardProps {
+  isPublishing?: boolean;
   leafletSummary: LeafletSummaryFixture;
   onShare: () => void;
 }
 
-export const LeafletSummaryCard = ({ leafletSummary, onShare }: LeafletSummaryCardProps) => {
+export const LeafletSummaryCard = ({
+  isPublishing = false,
+  leafletSummary,
+  onShare,
+}: LeafletSummaryCardProps) => {
   return (
     <Stack
       aria-labelledby='leaflet-summary-title'
@@ -39,8 +44,8 @@ export const LeafletSummaryCard = ({ leafletSummary, onShare }: LeafletSummaryCa
         <Button color='assistiveLight' size='medium' variant='outlined'>
           전단 수정하기
         </Button>
-        <Button onClick={onShare} size='medium'>
-          전단 공유하기
+        <Button disabled={isPublishing} onClick={onShare} size='medium'>
+          {isPublishing ? '전단 발행 중' : '전단 공유하기'}
         </Button>
       </Stack>
     </Stack>

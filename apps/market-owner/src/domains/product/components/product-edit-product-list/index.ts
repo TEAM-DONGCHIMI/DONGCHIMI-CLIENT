@@ -1,4 +1,4 @@
-export { ProductEditProductList } from './ProductEditProductList';
+export { ProductEditProductList, ProductEditProductListLoading } from './ProductEditProductList';
 export { createProductEditCardProps, createProductEditDisplayGroups } from './display-groups';
 export { ProductEditEmptyView } from './product-edit-empty-view';
 export type {

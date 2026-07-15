@@ -9,7 +9,6 @@ import {
   loginFormResolver,
   type LoginFormTypes,
 } from '../schemas/login-schema';
-import { isAllowedEmailInputValue } from '../utils/email-validation';
 
 interface UseLoginFieldsOptions {
   onFieldChange?: () => void;
@@ -54,10 +53,7 @@ export const useLoginFields = ({ onFieldChange }: UseLoginFieldsOptions = {}) =>
     const nextEmail = event.target.value;
 
     onFieldChange?.();
-
-    if (isAllowedEmailInputValue(nextEmail)) {
-      emailController.field.onChange(nextEmail);
-    }
+    emailController.field.onChange(nextEmail);
   };
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {

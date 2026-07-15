@@ -3,7 +3,6 @@ import { style } from '@vanilla-extract/css';
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 const cardShadow = '0 1.6rem 3.6rem rgba(25, 33, 46, 0.08)';
-const checkerboardColor = 'rgba(229, 232, 235, 0.68)';
 const dashboardCardHeight = '38.6rem';
 const dashboardCardMinWidth = '32rem';
 const dashboardGap = '2.6rem';
@@ -60,9 +59,10 @@ export const heroSectionClassName = style({
   width: '100%',
   minHeight: '40.8rem',
   alignSelf: 'stretch',
-  backgroundImage: `repeating-conic-gradient(from 90deg, ${checkerboardColor} 0 25%, transparent 0 50%)`,
-  backgroundPosition: 'center top',
-  backgroundSize: '9.6rem 9.6rem',
+  backgroundImage: 'url(/images/home-hero-banner.webp)',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+  backgroundSize: 'cover',
   borderRadius: '2rem',
   overflow: 'hidden',
 });
@@ -87,6 +87,23 @@ export const dashboardGridClassName = style({
   justifyContent: 'space-between',
   rowGap: dashboardGap,
   gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${dashboardCardMinWidth}), 1fr))`,
+});
+
+export const dashboardQueryStateClassName = style({
+  ...typography['body-2-medium'],
+  display: 'flex',
+  minHeight: dashboardCardHeight,
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '1.2rem',
+  borderRadius: '2rem',
+  backgroundColor: atomic.common[0],
+  color: atomic.neutral[70],
+  textAlign: 'center',
+});
+
+export const dashboardQueryErrorMessageClassName = style({
+  margin: 0,
 });
 
 export const productCardClassName = style({

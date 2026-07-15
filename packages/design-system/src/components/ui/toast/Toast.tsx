@@ -1,5 +1,6 @@
 import { type ComponentPropsWithRef, type ReactNode } from 'react';
 
+import { IcCircleCheckColor0, IcCircleCheckFill } from '../../../icons';
 import { cn } from '../../../styles/class-name';
 import * as S from './Toast.css';
 
@@ -21,6 +22,14 @@ const getDefaultAriaLive = (status: ToastStatusTypes) => {
   return status === 'error' ? 'assertive' : 'polite';
 };
 
+const getDefaultIcon = (status: ToastStatusTypes) => {
+  return status === 'error' ? (
+    <IcCircleCheckColor0 data-testid='toast-error-icon' />
+  ) : (
+    <IcCircleCheckFill data-testid='toast-completed-icon' />
+  );
+};
+
 export const Toast = ({
   'aria-live': ariaLive,
   children,
@@ -33,7 +42,7 @@ export const Toast = ({
 }: ToastProps) => {
   const resolvedRole = role ?? getDefaultRole(status);
   const resolvedAriaLive = ariaLive ?? getDefaultAriaLive(status);
-  const resolvedIcon = icon === undefined ? <span className={S.toastDefaultIconClassName} /> : icon;
+  const resolvedIcon = icon === undefined ? getDefaultIcon(status) : icon;
 
   return (
     <div

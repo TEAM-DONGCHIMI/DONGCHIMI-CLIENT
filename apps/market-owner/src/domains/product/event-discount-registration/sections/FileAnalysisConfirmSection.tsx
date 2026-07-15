@@ -5,8 +5,9 @@ import * as S from './FileAnalysisConfirmSection.css';
 export interface FileAnalysisConfirmSectionProps {
   analysisItems: readonly string[];
   fileName?: string;
+  isStartAnalysisPending?: boolean;
   onCancel: () => void;
-  onStartAnalysis: () => void;
+  onStartAnalysis: () => Promise<void> | void;
 }
 
 const fileAnalysisConfirmTitleId = 'file-analysis-confirm-title';
@@ -16,6 +17,7 @@ const emptyFileNameText = '분석할 파일이 없습니다.';
 export const FileAnalysisConfirmSection = ({
   analysisItems,
   fileName,
+  isStartAnalysisPending = false,
   onCancel,
   onStartAnalysis,
 }: FileAnalysisConfirmSectionProps) => {
@@ -79,7 +81,7 @@ export const FileAnalysisConfirmSection = ({
         </Button>
         <Button
           className={S.actionButtonClassName}
-          disabled={!isAnalysisFileAvailable}
+          disabled={!isAnalysisFileAvailable || isStartAnalysisPending}
           onClick={onStartAnalysis}
           size='small'
         >
