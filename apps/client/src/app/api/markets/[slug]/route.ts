@@ -28,7 +28,7 @@ export async function GET(_request: Request, { params }: MarketDetailRouteContex
   }
 
   try {
-    const serverApi = await createServerApi({ includeAccessToken: false });
+    const serverApi = await createServerApi();
     const upstreamResponse = await serverApi.get(API_ENDPOINTS.user.markets.detail(slug), {
       throwHttpErrors: false,
     });

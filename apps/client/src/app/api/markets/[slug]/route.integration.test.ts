@@ -1,13 +1,20 @@
 import { API_ENDPOINTS } from '@dongchimi/shared/api';
 import { HttpResponse, http } from 'msw';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MARKET_DETAIL_API_RESPONSE_FIXTURE } from '@/domains/market/api/market-detail-api.mock';
 import { server } from '@/test';
 import { GET } from './route';
 
+const { cookies } = vi.hoisted(() => ({
+  cookies: vi.fn(),
+}));
+
+vi.mock('next/headers', () => ({ cookies }));
+
 const API_BASE_URL = 'https://api.test';
 const MARKET_SLUG = 'mangwon-fresh';
+const TEST_USER_ACCESS_TOKEN = 'test-user-access-token';
 
 const createRouteContext = (slug: string) => ({
   params: Promise.resolve({ slug }),
@@ -16,6 +23,13 @@ const createRouteContext = (slug: string) => ({
 describe('GET /api/markets/[slug]', () => {
   beforeAll(() => {
     vi.stubEnv('API_BASE_URL', API_BASE_URL);
+  });
+
+  beforeEach(() => {
+    cookies.mockResolvedValue({
+      get: (name: string) =>
+        name === 'access_token' ? { value: TEST_USER_ACCESS_TOKEN } : undefined,
+    });
   });
 
   afterAll(() => {
@@ -28,7 +42,7 @@ describe('GET /api/markets/[slug]', () => {
         `${API_BASE_URL}${API_ENDPOINTS.user.markets.detail(MARKET_SLUG)}`,
         ({ request }) => {
           expect(request.headers.get('Accept')).toBe('application/json');
-          expect(request.headers.get('Authorization')).toBeNull();
+          expect(request.headers.get('Authorization')).toBe(`Bearer ${TEST_USER_ACCESS_TOKEN}`);
 
           return HttpResponse.json(MARKET_DETAIL_API_RESPONSE_FIXTURE);
         },
