@@ -51,7 +51,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `sections/registration-title-section.tsx`
   - 등록 화면 title과 등록된 상품/현재 입력 상품 사이를 이동하는 화살표, 현재 순번을 렌더링합니다.
 - `sections/product-info-section.tsx`
-  - 상품 이미지, 상품명, 상품 구분 dropdown, 상품 한줄 홍보문구를 렌더링합니다.
+  - 상품 이미지, 상품명, 상품 구분 dropdown, 상품 한줄 홍보글을 렌더링합니다.
 - `sections/product-price-section.tsx`
   - 오늘의 특가, 판매가 input을 렌더링합니다.
 - `sections/product-period-section.tsx`
@@ -115,8 +115,9 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 필수 선택입니다.
   - 기본 상태에서는 `카테고리` placeholder를 표시합니다.
   - 선택 즉시 dropdown을 닫고 선택값을 trigger에 표시합니다.
-- 상품 한줄 홍보문구
+- 상품 한줄 홍보글
   - 선택 입력입니다.
+  - label은 `상품 한줄 홍보글 (선택)`으로 표시하고 `(선택)`은 `atomic.neutral.50` 색상을 사용합니다.
   - 입력 중에는 최대 길이만 제한하고, blur 또는 submit payload 생성 시점에 앞뒤 공백을 제거합니다.
   - 공백만 입력한 경우 빈 값으로 처리합니다.
   - 공백 포함 최대 25자까지만 저장합니다.
@@ -143,7 +144,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 최대 글자 수를 초과한 경우: `상품명은 공백 포함 15자 이하로 입력해주세요.`
 - 상품 구분
   - 미선택한 경우: `카테고리를 선택해주세요.`
-- 상품 한줄 홍보문구
+- 상품 한줄 홍보글
   - 최대 글자 수를 초과한 경우: `홍보문구는 공백 포함 25자 이하로 입력해주세요.`
 - 오늘의 특가
   - 미입력한 경우: `오늘의 특가를 입력해주세요.`
@@ -215,7 +216,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - OverlayKit: category dropdown open/close controller로 사용합니다.
 - `DateField`는 native date input의 브라우저 기본 icon/text를 노출하지 않기 위해 visible field와 transparent native input overlay를 사용합니다.
 - 오늘의 특가 등록 시작일은 오늘 날짜를 기본값과 `min`으로 사용해 이전 날짜 선택을 막습니다.
-- 상품명 또는 상품 구분 error message가 표시되면 error message 아래와 `상품 한줄 홍보문구` label 사이 간격은 `0.9rem`입니다.
+- 상품명 또는 상품 구분 error message가 표시되면 error message 아래와 `상품 한줄 홍보글 (선택)` label 사이 간격은 `0.9rem`입니다.
 - 카테고리 목록은 product domain 공용 `ProductCategoryDropdown`의 기본 테두리와 item layout을 유지합니다.
 - Layout은 desktop Figma frame 기준으로 구성하고, viewport 높이가 작아 스크롤되는 경우 마지막 action button과 화면 하단 사이에 `7.2rem` 여백을 유지합니다.
 

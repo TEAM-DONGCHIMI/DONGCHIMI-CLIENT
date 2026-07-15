@@ -125,6 +125,10 @@ export const fieldLabelClassName = style({
   color: atomic.neutral[70],
 });
 
+export const optionalLabelClassName = style({
+  color: atomic.neutral[50],
+});
+
 export const twoColumnRowClassName = style({
   display: 'grid',
   gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',

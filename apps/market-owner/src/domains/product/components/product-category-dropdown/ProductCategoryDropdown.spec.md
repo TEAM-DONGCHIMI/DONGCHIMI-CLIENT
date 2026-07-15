@@ -11,7 +11,7 @@
 
 ## Styling
 
-- trigger는 `body-2-medium`, 높이 `4rem`, 가로 padding `1.6rem`을 사용합니다.
+- trigger는 다른 medium 입력 필드와 동일한 `body-3-medium`, 높이 `4rem`, 가로 padding `1.6rem`을 사용합니다.
 - trigger 폭과 dropdown 위치는 각 field layout이 결정합니다.
 - 등록 화면의 placeholder와 error border는 호출부 className으로 확장합니다.
 - 호출부가 공통 layout hook으로 전달한 최대 높이를 적용하고, option 목록이 가용 높이를 넘으면 dropdown 내부를 세로 스크롤합니다.

@@ -297,7 +297,9 @@ describe('TodaySpecialRegistrationPage', () => {
     renderTodaySpecialRegistrationPage();
 
     const productNameInput = screen.getByLabelText('상품명');
-    const promotionTextInput = screen.getByLabelText('상품 한줄 홍보문구');
+    const promotionTextInput = screen.getByLabelText<HTMLInputElement>('상품 한줄 홍보글 (선택)');
+
+    expect(promotionTextInput.labels?.[0]).toHaveTextContent('상품 한줄 홍보글 (선택)');
 
     expect(productNameInput).toHaveAttribute('maxlength', '15');
     expect(promotionTextInput).toHaveAttribute('maxlength', '25');

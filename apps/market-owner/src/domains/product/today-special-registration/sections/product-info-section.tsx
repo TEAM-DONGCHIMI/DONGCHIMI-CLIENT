@@ -144,10 +144,11 @@ export const ProductInfoSection = ({
           <FieldGroup
             errorMessage={productErrorMessages.description}
             id='today-special-product-description'
-            label='상품 한줄 홍보문구'
+            label='상품 한줄 홍보글'
             maxLength={productPromotionTextMaxLength}
             onBlur={onDescriptionBlur}
             onChange={onDescriptionChange}
+            optional
             placeholder='홍보문구를 입력하세요.'
             status={productErrorMessages.description ? 'error' : 'default'}
             value={product.description}
