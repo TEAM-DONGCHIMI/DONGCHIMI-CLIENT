@@ -10,6 +10,10 @@
 - 위치: `apps/market-owner/src/domains/product/components/product-edit-modal/product-edit-form-modal`
 - 사용처: `ProductEditProductList`
 - product edit page 전용 form이므로 design-system이나 shared component로 승격하지 않습니다.
+- `ProductEditModal.tsx`는 상세 조회, 수정 요청, modal 조립과 닫기 흐름을 담당합니다.
+- `use-product-edit-form.ts`는 입력값, 카테고리 dropdown, 이미지 미리보기, 기간 변경과 validation 상태를 담당합니다.
+- `product-edit-form.utils.ts`는 상세 응답의 초기값 변환과 수정 완료 카드 변환을 담당합니다.
+- `ProductInfoSection.tsx`와 `ProductPriceAndPeriodSection.tsx`는 form controller에서 필요한 값과 action만 받아 각 화면 section을 렌더링합니다.
 
 ## Public API
 
