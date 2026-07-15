@@ -80,6 +80,49 @@ describe('getPeriodicPreview', () => {
     );
   });
 
+  it('accepts a periodic preview response with empty daily products and prepared products', async () => {
+    const actualResponseShape = {
+      ...periodicPreviewResponse,
+      data: {
+        ...periodicPreviewResponse.data,
+        marketId: 3,
+        isOpenNow: false,
+        businessHours: [
+          {
+            days: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'],
+            isOpen: true,
+            open: '08:30',
+            close: '22:30',
+          },
+        ],
+        marketPhone2: '02-2337-1643',
+        top3: [],
+        daily: {
+          totalCount: 0,
+          products: [],
+        },
+        preparedProducts: [
+          {
+            preparedProductId: 2004,
+            name: '스프링 코튼블라썸 2.1L',
+            thumbnailUrl: 'https://static.dongchiimi.com/tmp/product.jpg',
+            discountedPrice: 7980,
+          },
+          {
+            preparedProductId: 2003,
+            name: '2080 치약',
+            thumbnailUrl: 'https://static.dongchiimi.com/tmp/toothpaste.jpg',
+            discountedPrice: 4980,
+          },
+        ],
+      },
+    };
+
+    mockedHttpClientGet.mockResolvedValueOnce(actualResponseShape);
+
+    await expect(getPeriodicPreview(3)).resolves.toEqual(actualResponseShape.data);
+  });
+
   it('rejects a success response without preview data', async () => {
     mockedHttpClientGet.mockResolvedValueOnce({
       success: true,
