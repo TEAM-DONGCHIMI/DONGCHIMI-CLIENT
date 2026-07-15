@@ -107,7 +107,9 @@ export const useProductEditForm = ({ detail, variant }: UseProductEditFormParams
     isDateRangeValid: isProductEditDateRangeValid(values.startDate, values.endDate),
     isEdited: !isSameProductEditFormValues(values, initialValues),
     isStartDateValid:
-      variant === 'todaySpecial' || isProductEditDateTodayOrFuture(values.startDate),
+      variant === 'todaySpecial' ||
+      values.startDate === initialValues.startDate ||
+      isProductEditDateTodayOrFuture(values.startDate),
     isTodayOnly: values.startDate === values.endDate,
     selectCategory,
     toggleCategoryDropdown: categoryDropdown.toggle,

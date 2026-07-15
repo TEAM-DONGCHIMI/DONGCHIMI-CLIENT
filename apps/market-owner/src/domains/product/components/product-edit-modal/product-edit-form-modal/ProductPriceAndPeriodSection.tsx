@@ -76,6 +76,7 @@ export const ProductPriceAndPeriodSection = ({
                   ariaLabel='행사 종료일'
                   className={S.dateFieldClassName}
                   min={getProductDateMinimum(values.startDate)}
+                  pickerDisabled={isTodaySpecial}
                   value={values.endDate}
                   onChange={updateValue('endDate')}
                 />

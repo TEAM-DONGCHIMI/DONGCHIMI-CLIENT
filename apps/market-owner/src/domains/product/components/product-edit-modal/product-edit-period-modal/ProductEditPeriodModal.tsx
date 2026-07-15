@@ -66,7 +66,10 @@ export const ProductEditPeriodModal = ({
   const isTodaySpecial = variant === 'todaySpecial';
   const isTodayOnly = startDate === endDate;
   const isEdited = startDate !== initialPeriod.startDate || endDate !== initialPeriod.endDate;
-  const isStartDateValid = isTodaySpecial || isProductEditDateTodayOrFuture(startDate);
+  const isStartDateValid =
+    isTodaySpecial ||
+    startDate === initialPeriod.startDate ||
+    isProductEditDateTodayOrFuture(startDate);
   const isDateRangeValid = isProductEditDateRangeValid(startDate, endDate);
 
   const updateStartDate: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -120,6 +123,7 @@ export const ProductEditPeriodModal = ({
                     ariaLabel='행사 종료일'
                     className={S.dateFieldClassName}
                     min={getProductDateMinimum(startDate)}
+                    pickerDisabled={isTodaySpecial}
                     value={endDate}
                     onChange={updateEndDate}
                   />
