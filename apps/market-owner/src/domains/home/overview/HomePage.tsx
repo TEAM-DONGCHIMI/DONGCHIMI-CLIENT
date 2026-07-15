@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useToast, type ToastStatusTypes } from '@dongchimi/shared/toast';
 import {
@@ -10,7 +11,7 @@ import {
   ProductHeaderSearch,
   type ProductHeaderSearchProductTypes,
 } from '@/shared/components';
-import { productHeaderSearchProducts } from '@/shared/fixtures/product-header-search.fixture';
+import { useProductSearchQuery } from '@/domains/product/hooks';
 import { createProductEditTargetPath } from '@/shared/utils/product-edit-target-path.utils';
 
 import * as S from './HomePage.css';
@@ -19,8 +20,8 @@ import { HomeDashboardSection, HomeHeroSection } from './sections';
 const HOME_TOAST_DISMISS_MS = 2500;
 const SHARE_COPY_SUCCESS_MESSAGE = '전단 링크가 복사되었습니다.';
 const SHARE_COPY_ERROR_MESSAGE = '링크를 복사하지 못했습니다. 다시 시도해주세요.';
-const SEARCH_PRODUCT_LOAD_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요.';
 const QR_CODE_PREPARING_MESSAGE = 'QR코드 보기 기능은 준비 중입니다.';
+const PRODUCT_SEARCH_RESULT_SIZE = 10;
 
 const getHomeToastIcon = (status: ToastStatusTypes) => {
   if (status === 'error') {
@@ -33,6 +34,15 @@ const getHomeToastIcon = (status: ToastStatusTypes) => {
 export const HomePage = () => {
   const toast = useToast();
   const navigate = useNavigate();
+  const [productSearchKeyword, setProductSearchKeyword] = useState('');
+  // TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
+  const marketId = 1;
+  const productSearchQuery = useProductSearchQuery({
+    keyword: productSearchKeyword,
+    marketId,
+    size: PRODUCT_SEARCH_RESULT_SIZE,
+  });
+  const productSearchProducts = productSearchQuery.data?.data?.products ?? [];
 
   const showHomeToast = (message: string, status: ToastStatusTypes) => {
     const options = {
@@ -56,17 +66,7 @@ export const HomePage = () => {
     );
   };
 
-  const handleProductLoadError = () => {
-    showHomeToast(SEARCH_PRODUCT_LOAD_ERROR_MESSAGE, 'error');
-  };
-
   const handleSelectProduct = (product: ProductHeaderSearchProductTypes) => {
-    if (product.isProductInfoLoadable === false) {
-      handleProductLoadError();
-
-      return;
-    }
-
     navigate(createProductEditTargetPath(product));
   };
 
@@ -82,8 +82,11 @@ export const HomePage = () => {
         homeLabel='동치미 홈'
         searchSlot={
           <ProductHeaderSearch
+            isPending={productSearchQuery.isFetching}
+            onQueryChange={setProductSearchKeyword}
             onSelectProduct={handleSelectProduct}
-            products={productHeaderSearchProducts}
+            products={productSearchProducts}
+            status={productSearchQuery.isError ? 'error' : 'default'}
           />
         }
         showSearchBar

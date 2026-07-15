@@ -8,15 +8,14 @@
 - Route: `/`
 - Path: `apps/market-owner/src/domains/home/overview/HomePage.tsx`
 - Jira: DCMSM-27
-- Related Jira: DCMSM-32 홈 상품 0건 딤드 상태 UI, DCMSM-38 헤더 상품 검색 공통화
+- Related Jira: DCMSM-32 홈 상품 0건 딤드 상태 UI, DCMSM-38 헤더 상품 검색 공통화, DCMSM-73 상품 검색 API 연동
 - Related Jira: DCMSM-15 route scaffold
 - Status: Implemented
 
 ## Purpose
 
 사장님 사이트의 protected desktop home route를 첨부된 홈 검색패널/대시보드 화면 기준으로
-퍼블리싱합니다. 이번 범위는 실제 상품/검색/공유 API가 아니라 fixture 기반 UI와 화면 구조를
-고정하는 데 집중합니다.
+퍼블리싱합니다. 상품 검색은 product domain query를 사용하고, 대시보드/공유 데이터는 별도 API 작업 범위를 따릅니다.
 
 ## Source Of Truth
 
@@ -49,6 +48,7 @@
 
 - 홈 상단 banner hero visual 영역을 구성합니다.
 - `DesktopHeader`의 상품 검색 영역에 `ProductHeaderSearch`를 배치합니다.
+- product domain의 `useProductSearchQuery` 결과를 검색 패널에 연결합니다.
 - hero banner 영역 안에 quick action 카드 3개를 배치합니다.
 - 오늘의 특가 상품 카드와 행사 할인 상품 카드를 `@dongchimi/shared` `ProductCard`와 page-local fixture
   데이터로 렌더링하고, 각 등록 건수가 0이면 홈 전용 딤드 상태를 표시합니다.
@@ -60,7 +60,6 @@
 ## Out Of Scope
 
 - 실제 상품 API, query key, cache invalidation
-- 실제 검색 결과 API
 - 상품 수정 페이지에서 `productId` search param을 소비해 특정 상품 form/modal을 여는 상세 동작
 - QR 코드 실제 생성 또는 QR modal 구현
 - 카카오/문자 실제 공유 연동
@@ -90,8 +89,8 @@ HomePage(main)
   page heading은 시각적으로 숨긴 `h1`으로 유지합니다.
 - `ProductHeaderSearch`: 한 글자 이상 입력 시 검색 dropdown을 열고, 결과 item 선택 시 선택한 상품을
   `HomePage`에 전달합니다.
-- `HomePage`: 전달받은 상품의 `dealType`에 맞는 상품 수정 route를 만들고 `productId` search param을 붙여
-  이동합니다. 상품 정보를 불러올 수 없는 선택 결과의 error feedback도 담당합니다.
+- `HomePage`: debounce 검색어로 product query를 실행하고, 전달받은 상품의 `dealType`에 맞는 상품 수정
+  route를 만들며 `productId` search param을 붙여 이동합니다.
 - `HomeHeroSection`: radius 20px banner hero surface와 quick action 카드를 담당합니다.
   - quick action의 오른쪽 mint 영역은 icon/PNG asset 확정 전 placeholder slot으로 유지합니다.
 - `HomeQuickButton`: Figma `button_home quick` node `2403:69244` 기준의 312x74 quick button입니다.
@@ -140,8 +139,8 @@ HomePage(main)
 - flyer empty: `flyer === null`이면 전단 공유 카드에 딤드 오버레이와 `전단을 공유하려면` / `상품을 먼저
 등록해주세요.` 문구를 두 줄로 표시합니다. 링크 field와 action 행은 유지하되 URL 텍스트만 비우고, 모든 공유
   action은 disabled로 렌더링합니다.
-- error: 알 수 없는 route는 router fallback에서 처리합니다. 검색 결과에서 상품을 선택했지만 상품 정보를
-  불러오지 못하면 상단 error toast로 `상품 정보를 불러오지 못했어요.`를 표시합니다.
+- error: 알 수 없는 route는 router fallback에서 처리합니다. 상품 검색 API 또는 response validation이
+  실패하면 검색 패널에 `상품 정보를 불러오지 못했어요.` error 상태를 표시합니다.
 - disabled: QR 보기 실제 API 동작은 후속 범위이며, 현재는 버튼 클릭 시 준비 중 toast를 표시합니다.
 - selected / active: sidebar `홈` item은 현재 route에 `aria-current="page"`를 적용합니다.
 - hover/focus: 검색 입력의 focus-visible 상태를 유지합니다. 검색 결과 item hover 시 해당 item button에
@@ -149,14 +148,12 @@ HomePage(main)
 
 ## Data
 
-- query: none
+- query: `useProductSearchQuery({ marketId: 1, keyword, size: 10 })`
 - mutation: none
 - fixture:
   - 오늘의 특가 상품 카드와 행사 할인 상품 카드에 들어갈 상품 목록
   - 홈 응답의 `dailyCount`, `dailyProducts`, `periodicCount`, `periodicProducts`를 카드별
     `itemVariant`, `totalCount`, edit route로 매핑
-  - 검색 dropdown에 사용할 상품명, `dealType`, `productId`, 상품 정보 load 가능 여부는
-    `shared/fixtures/product-header-search.fixture.ts`가 소유
   - hero quick action title, description, route
   - 전단 공유 링크와 공유 설명 copy, `flyer` 존재 여부
 - model: none
@@ -184,10 +181,10 @@ HomePage(main)
   깜빡이지 않게 합니다.
 - 검색 dropdown은 4개 기본 노출, 4개 초과 시 scroll 영역으로 전환하며 최대 10개까지만 렌더링합니다.
 - 검색 dropdown 외부 영역을 클릭하면 dropdown을 닫습니다.
-- 검색 결과 item을 클릭하면 상품 정보 load 가능 여부를 확인합니다.
-- 상품 정보를 불러올 수 있으면 `dealType`에 맞는 edit route로 즉시 이동하고, URL search param에
+- trim된 검색어가 비어 있으면 상품 검색 API를 호출하지 않습니다.
+- 검색 결과 item을 클릭하면 `dealType`에 맞는 edit route로 즉시 이동하고, URL search param에
   `productId`를 전달합니다. 예: `/products/today-special/edit?productId=124`
-- 상품 정보를 불러오지 못하면 route 이동 없이 `상품 정보를 불러오지 못했어요.` error toast를 표시합니다.
+- 상품 검색 API 오류는 route 이동 없이 검색 dropdown의 error 상태로 표시합니다.
 
 ## Accessibility
 
@@ -201,8 +198,8 @@ HomePage(main)
 - product empty state: 0건 안내 문구는 일반 텍스트로 노출하며, 별도 live announcement를 사용하지 않습니다.
 - share actions: 링크 복사, QR 보기 액션은 native `button`으로 렌더링하고 accessible name을 제공합니다.
   `flyer === null`이면 세 공유 action은 모두 disabled로 렌더링합니다.
-- toast: 링크 복사 성공 toast는 `role="status"`, 링크 복사 실패와 상품 정보 load 실패 toast는
-  `role="alert"`로 노출합니다.
+- toast: 링크 복사 성공 toast는 `role="status"`, 링크 복사 실패 toast는 `role="alert"`로 노출합니다.
+- search error: 상품 검색 실패는 `ProductSearchPanel` error toast의 `role="alert"`로 노출합니다.
 - keyboard: 검색 입력, 상품 row button, 공유 action button은 keyboard focus와 activation을 지원합니다.
 - focus: focus-visible 스타일을 제거하지 않습니다.
 - current state: sidebar `홈` item은 현재 route에 `aria-current="page"`를 적용합니다.
@@ -255,7 +252,8 @@ HomePage(main)
 - [x] search dropdown closes on outside click
 - [x] search result click navigates to product edit route with `productId` search param
 - [x] search result target edit page opens product edit modal
-- [x] search result product load failure shows error toast
+- [x] blank search does not request the product search API
+- [x] search API success/empty/error states are reflected in the dropdown
 - [x] `git diff --check`
 - [x] `pnpm --filter market-owner lint`
 - [x] `pnpm --filter market-owner typecheck`
@@ -264,6 +262,6 @@ HomePage(main)
 
 ## Open Questions
 
-- 실제 상품 검색 API와 상품 정보 load 실패 처리 위치
+- Swagger/OpenAPI의 `keyword` required 표기 동기화
 - QR 보기 실제 API와 modal 또는 route 연결 방식
 - Figma URL 또는 Screen ID

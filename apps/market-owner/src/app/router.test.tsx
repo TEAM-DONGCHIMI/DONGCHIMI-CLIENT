@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { loginMarketOwner, signupMarketOwner } from '@/domains/auth/api/auth-api';
+import { getProductSearch } from '@/domains/product/api/get-product-search';
 import { ApiError } from '@/shared/api';
 import { render, screen } from '@/test';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
@@ -15,9 +16,31 @@ vi.mock('@/domains/auth/api/auth-api', () => ({
   loginMarketOwner: vi.fn(),
   signupMarketOwner: vi.fn(),
 }));
+vi.mock('@/domains/product/api/get-product-search', () => ({
+  getProductSearch: vi.fn(),
+}));
 
 const mockLoginMarketOwner = vi.mocked(loginMarketOwner);
 const mockSignupMarketOwner = vi.mocked(signupMarketOwner);
+const mockGetProductSearch = vi.mocked(getProductSearch);
+
+const productSearchItems = [
+  {
+    dealType: 'DAILY',
+    name: '딸기 2팩',
+    productId: 101,
+  },
+  {
+    dealType: 'DAILY',
+    name: '풀무원 콩나물 100g',
+    productId: 124,
+  },
+  {
+    dealType: 'PERIODIC',
+    name: '햇감자 1kg',
+    productId: 201,
+  },
+] as const;
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -42,6 +65,16 @@ beforeEach(() => {
       email: 'new@example.com',
     },
   });
+  mockGetProductSearch.mockImplementation(({ keyword }) =>
+    Promise.resolve({
+      success: true,
+      code: 'SUCCESS',
+      message: '요청에 성공했습니다.',
+      data: {
+        products: productSearchItems.filter(({ name }) => name.includes(keyword)),
+      },
+    }),
+  );
 });
 
 const isPublicAuthRoute = (path: string) => {
@@ -544,14 +577,21 @@ describe('marketOwnerRoutes', () => {
     expect(await screen.findByRole('button', { name: /딸기 2팩/ })).toBeInTheDocument();
   });
 
-  it('shows an error toast when selected search product info cannot be loaded', async () => {
+  it('shows the search panel error state when the product search API fails', async () => {
     const user = userEvent.setup();
+    mockGetProductSearch.mockRejectedValueOnce(
+      new ApiError({
+        code: 'INVALID_SEARCH_KEYWORD',
+        message: '상품 정보를 불러오지 못했어요.',
+        status: 400,
+        type: 'validation',
+      }),
+    );
 
     renderRoute('/');
 
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '대란 30구');
-    await user.click(await screen.findByRole('button', { name: /행사 할인.*대란 30구/ }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('상품 정보를 불러오지 못했어요.');
     expect(screen.getByRole('heading', { name: '동치미 홈' })).toBeInTheDocument();
