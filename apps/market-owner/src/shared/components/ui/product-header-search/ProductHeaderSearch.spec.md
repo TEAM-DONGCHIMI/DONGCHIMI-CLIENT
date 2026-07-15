@@ -25,6 +25,7 @@
 
 - 한 글자 이상 입력하면 `ProductSearchPanel` dropdown을 엽니다.
 - debounce 반영 전 또는 API 요청 중에는 pending 상태를 전달합니다.
+- 이전 검색이 실패했더라도 새 검색어의 debounce 중에는 이전 error 대신 pending 상태를 표시합니다.
 - trim된 검색어가 비어 있으면 `onQueryChange`에 빈 문자열을 전달하고 결과를 표시하지 않습니다.
 - 상품명 검색과 정렬은 서버가 담당하며, `dealType`은 결과 chip과 수정 route 선택에만 사용합니다.
 - 검색 결과를 선택하면 해당 `ProductHeaderSearchProductTypes`를 `onSelectProduct`에 전달합니다.
@@ -41,3 +42,4 @@
 - [x] product edit shell call site creates the edit route with the `productId` search param
 - [x] debounced query is passed to the product search query call site
 - [x] pending/empty/error states reflect the product search query
+- [x] stale error is hidden while the next query is debouncing

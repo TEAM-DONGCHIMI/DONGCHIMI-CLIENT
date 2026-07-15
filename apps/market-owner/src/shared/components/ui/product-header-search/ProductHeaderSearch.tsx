@@ -14,7 +14,7 @@ export interface ProductHeaderSearchProductTypes {
 
 export interface ProductHeaderSearchProps {
   isPending?: boolean;
-  onQueryChange?: (query: string) => void;
+  onQueryChange: (query: string) => void;
   onSelectProduct: (product: ProductHeaderSearchProductTypes) => void;
   products: readonly ProductHeaderSearchProductTypes[];
   status?: 'default' | 'error';
@@ -45,7 +45,9 @@ export const ProductHeaderSearch = ({
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query);
   const normalizedDebouncedQuery = debouncedQuery.trim();
-  const isSearchPending = query.trim().length > 0 && (query !== debouncedQuery || isPending);
+  const isDebouncing = query !== debouncedQuery;
+  const isSearchPending = query.trim().length > 0 && (isDebouncing || isPending);
+  const searchStatus = isDebouncing ? 'default' : status;
   const searchProducts = useMemo(
     () => (normalizedDebouncedQuery.length > 0 ? products : []),
     [normalizedDebouncedQuery, products],
@@ -56,7 +58,7 @@ export const ProductHeaderSearch = ({
   );
 
   useEffect(() => {
-    onQueryChange?.(normalizedDebouncedQuery);
+    onQueryChange(normalizedDebouncedQuery);
   }, [normalizedDebouncedQuery, onQueryChange]);
 
   const handleSelectProduct = (item: ProductSearchPanelItemTypes) => {
@@ -75,7 +77,7 @@ export const ProductHeaderSearch = ({
       items={searchPanelItems}
       onQueryChange={(nextQuery) => setQuery(nextQuery)}
       onSelectProduct={handleSelectProduct}
-      status={status}
+      status={searchStatus}
     />
   );
 };
