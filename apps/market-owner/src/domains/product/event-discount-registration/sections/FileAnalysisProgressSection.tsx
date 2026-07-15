@@ -79,6 +79,7 @@ export const FileAnalysisProgressSection = ({
   steps,
 }: FileAnalysisProgressSectionProps) => {
   const normalizedProgressPercentage = clampProgressPercentage(progressPercentage);
+  const normalizedProgressRatio = normalizedProgressPercentage / MAX_PROGRESS_PERCENTAGE;
   const isAnalysisComplete = hasCompletedAnalysis({ progressPercentage, steps });
   const cardShadowVariant = getCardShadowVariant({ progressPercentage, steps });
 
@@ -114,7 +115,7 @@ export const FileAnalysisProgressSection = ({
         >
           <span
             className={S.progressFillClassName}
-            style={{ width: `${normalizedProgressPercentage}%` }}
+            style={{ transform: `scaleX(${normalizedProgressRatio})` }}
           />
         </div>
         <span className={S.progressValueClassName}>{normalizedProgressPercentage}%</span>

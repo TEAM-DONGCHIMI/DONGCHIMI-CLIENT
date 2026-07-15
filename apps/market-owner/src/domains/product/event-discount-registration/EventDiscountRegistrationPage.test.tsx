@@ -65,24 +65,13 @@ const waitForAbort = (signal: AbortSignal) => {
 };
 
 const createMockProductImportLifecycle = () => {
-  let emitEvent: SubscribeProductImportProgressParams['onEvent'] | undefined;
   const subscribeProductImportProgress = vi.fn(
     async ({ onEvent, signal }: SubscribeProductImportProgressParams) => {
-      emitEvent = onEvent;
       onEvent({ data: productImportProgressData, type: 'progress' });
       await waitForAbort(signal);
     },
   );
-  const cancelProductImport = vi.fn(async () => {
-    emitEvent?.({
-      data: {
-        jobId: 'job-123',
-        status: 'CANCELED',
-        progress: 24,
-      },
-      type: 'canceled',
-    });
-  });
+  const cancelProductImport = vi.fn(async () => undefined);
 
   return { cancelProductImport, subscribeProductImportProgress };
 };

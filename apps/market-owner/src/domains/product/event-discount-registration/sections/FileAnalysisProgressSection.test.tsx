@@ -65,11 +65,11 @@ describe('FileAnalysisProgressSection', () => {
   it('exposes the progress value through a progressbar', () => {
     renderFileAnalysisProgressSection();
 
+    const progressbar = screen.getByRole('progressbar', { name: 'AI 분석 진행률' });
+
     expect(screen.getByText('24%')).toBeInTheDocument();
-    expect(screen.getByRole('progressbar', { name: 'AI 분석 진행률' })).toHaveAttribute(
-      'aria-valuenow',
-      '24',
-    );
+    expect(progressbar).toHaveAttribute('aria-valuenow', '24');
+    expect(progressbar.firstElementChild).toHaveStyle({ transform: 'scaleX(0.24)' });
   });
 
   it('plays the decorative spinner Lottie for the processing step', () => {

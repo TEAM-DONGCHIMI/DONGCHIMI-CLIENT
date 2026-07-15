@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { IcCircleCheckFill, IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
@@ -46,6 +46,7 @@ export const ProductImportProgress = ({
   subscribeProductImportProgress,
 }: ProductImportProgressProps) => {
   const toast = useToast();
+  const hasReturnedToConfirmationRef = useRef(false);
   const [isCancelRequested, setIsCancelRequested] = useState(false);
   const cancelProductImportMutation = useCancelProductImportMutation(cancelProductImport);
   const showErrorToast = useCallback(
@@ -58,6 +59,11 @@ export const ProductImportProgress = ({
     [toast],
   );
   const handleCanceled = useCallback(() => {
+    if (hasReturnedToConfirmationRef.current) {
+      return;
+    }
+
+    hasReturnedToConfirmationRef.current = true;
     toast.completed('상품 분석을 취소했습니다.', {
       id: FILE_ANALYSIS_CANCEL_TOAST_ID,
       icon: <IcCircleCheckFill {...toastIconProps} />,
@@ -95,6 +101,7 @@ export const ProductImportProgress = ({
 
     try {
       await cancelProductImportMutation.mutateAsync({ jobId, marketId });
+      handleCanceled();
     } catch (error) {
       setIsCancelRequested(false);
       showErrorToast(getErrorMessage(error, FILE_ANALYSIS_CANCEL_ERROR_MESSAGE));

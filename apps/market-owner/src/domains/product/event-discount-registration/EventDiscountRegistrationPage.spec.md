@@ -67,10 +67,11 @@
 - modal/error: selecting or dropping a file outside `.xlsx` or `.csv` shows the upload modal error state and keeps the upload button disabled.
 - success/confirm: clicking the enabled upload button closes the modal and renders `FileAnalysisConfirmSection` with the selected file name.
 - loading/progress: `분석 시작` renders `FileAnalysisProgressSection` with pending steps, then applies each `progress` SSE event to the ordered step list and derives the progressbar value from completed steps.
+- loading/progress motion: progressbar fill changes animate smoothly between progress increments; users with `prefers-reduced-motion: reduce` receive immediate fill updates.
 - loading/icon: only the current `processing` step replaces the default progress icon with the autoplaying, looping spinner Lottie.
 - completed: a `completed` SSE event sets progress to 100%, marks the visible steps complete, and navigates to the result route once.
 - failed: a `failed` SSE event shows the server message and returns to file confirmation so analysis can be retried.
-- canceling: cancel action is disabled as `취소 중` while the POST request is pending and after the request is accepted; the view returns to file confirmation only after the SSE `canceled` event confirms cancellation.
+- canceling: cancel action is disabled as `취소 중` while the POST request is pending; after the cancel API succeeds, the view returns to file confirmation immediately.
 - toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback with the completed status icon.
 - toast/error: the page can render error toast feedback with the error status icon; `전단지 업로드` currently shows Figma error-style feedback because the actual upload API is out of scope.
 - guide line button: `POS에서 엑셀 파일 받는 방법 보기` keeps its visible action styling (`body-3-semibold`, neutral 60, underline) unchanged across default, hover, and focus-visible states.
@@ -126,7 +127,7 @@
 - If the stream ends with a network error before a terminal event, the hook reconnects at most three total attempts with a one-second delay. Auth, validation, and other non-network errors are surfaced immediately without reconnecting or silently starting a new import job.
 - Unknown SSE event names and comment heartbeat frames are ignored. Malformed known event data is treated as a validation error.
 - A `completed` terminal event navigates once to `/products/registration-result`; `failed` and `canceled` terminal events do not navigate to the result route.
-- Progress `취소` posts the current `marketId` and string `jobId` to the cancel endpoint. API acceptance only locks the cancel action; the SSE `canceled` event returns to confirmation and shows completed feedback.
+- Progress `취소` posts the current `marketId` and string `jobId` to the cancel endpoint. API success returns to confirmation and shows completed feedback immediately; a later SSE `canceled` event must not duplicate the return behavior.
 - Cancel API failure keeps the progress stream active, unlocks cancel, and shows the normalized server message when available.
 - `엑셀 양식 다운로드` shows the success toast. Actual file download/API failure mapping is out of scope.
 - `전단지 업로드` shows the Figma toast feedback. Actual leaflet image upload/API is out of scope.
@@ -173,8 +174,8 @@
 - [x] progress SSE updates progress and ordered step status from the current `jobId`
 - [x] completed SSE analysis navigates to `/products/registration-result`
 - [x] failed SSE analysis shows the server message and returns to confirmation
-- [x] cancel posts the current `marketId` and `jobId`, locks duplicate actions, and waits for `canceled`
-- [x] canceled SSE analysis returns to confirmation and closes the stream
+- [x] cancel posts the current `marketId` and `jobId`, locks duplicate actions, and returns to confirmation after API success
+- [x] canceled SSE analysis returns to confirmation without duplicating cancel completion behavior
 - [x] premature disconnect retries at most three attempts and unmount aborts the active stream
 - [x] clicking `엑셀 양식 다운로드` renders toast feedback with icon
 - [x] clicking POS guide link opens the modal panel; close button, Escape, and backdrop click close it
