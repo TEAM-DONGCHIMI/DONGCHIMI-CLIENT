@@ -47,6 +47,13 @@ export const profileAvatarClassName = style({
   ...typography['caption-1-medium'],
 });
 
+export const profileAvatarImageClassName = style({
+  display: 'block',
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+});
+
 export const sidebarStateIconClassName = style({
   position: 'relative',
   display: 'inline-flex',

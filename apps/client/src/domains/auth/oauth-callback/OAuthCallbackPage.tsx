@@ -5,65 +5,26 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useKakaoLoginMutation } from '@/domains/auth/hooks/use-kakao-login-mutation';
-import { isApiError } from '@/shared/api';
+import { getKakaoOAuthCallbackErrorMessage } from '@/domains/auth/model/kakao-login-error';
 import { CLIENT_ROUTES } from '@/shared/constants';
-
-const getLoginErrorMessage = (error: unknown) => {
-  if (!isApiError(error)) {
-    return '로그인에 실패했습니다. 다시 시도해 주세요.';
-  }
-
-  switch (error.code) {
-    case 'OAUTH_REQUIRED_INFO_MISSING':
-      return '카카오 계정의 이메일과 성별 정보 제공에 동의해 주세요.';
-    case 'DUPLICATE_SOCIAL_ACCOUNT':
-      return '이미 가입된 카카오 계정입니다.';
-    case 'INVALID_INPUT':
-    case 'OAUTH_AUTHENTICATION_FAILED':
-      return '카카오 인증이 만료되었거나 유효하지 않습니다. 다시 로그인해 주세요.';
-    default:
-      return error.message || '로그인에 실패했습니다. 다시 시도해 주세요.';
-  }
-};
-
-interface GetCallbackErrorMessageParams {
-  code: string | null;
-  isError: boolean;
-  mutationError: unknown;
-  oauthError: string | null;
-}
-
-const getCallbackErrorMessage = ({
-  code,
-  isError,
-  mutationError,
-  oauthError,
-}: GetCallbackErrorMessageParams) => {
-  if (oauthError) {
-    return '카카오 로그인이 취소되었습니다.';
-  }
-
-  if (!code) {
-    return '카카오 인증 정보를 확인할 수 없습니다.';
-  }
-
-  if (isError) {
-    return getLoginErrorMessage(mutationError);
-  }
-
-  return undefined;
-};
 
 export const OAuthCallbackPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { error, isError, mutate } = useKakaoLoginMutation();
+  const { error, mutate } = useKakaoLoginMutation();
   const hasRequestedLoginRef = useRef(false);
-  const [code] = useState(() => searchParams.get('code'));
-  const oauthError = searchParams.get('error');
+  const [{ code, oauthError, state }] = useState(() => ({
+    code: searchParams.get('code'),
+    oauthError: searchParams.get('error'),
+    state: searchParams.get('state'),
+  }));
 
   useEffect(() => {
-    if (!code || oauthError) {
+    window.history.replaceState(window.history.state, '', CLIENT_ROUTES.oauthCallback);
+  }, []);
+
+  useEffect(() => {
+    if (!code || !state || oauthError) {
       return;
     }
 
@@ -72,23 +33,22 @@ export const OAuthCallbackPage = () => {
     }
 
     hasRequestedLoginRef.current = true;
-    window.history.replaceState(window.history.state, '', CLIENT_ROUTES.oauthCallback);
 
     mutate(
-      { code },
+      { code, state },
       {
         onSuccess: () => {
           router.replace(CLIENT_ROUTES.markets);
         },
       },
     );
-  }, [code, mutate, oauthError, router]);
+  }, [code, mutate, oauthError, router, state]);
 
-  const errorMessage = getCallbackErrorMessage({
+  const errorMessage = getKakaoOAuthCallbackErrorMessage({
     code,
-    isError,
-    mutationError: error,
+    loginError: error,
     oauthError,
+    state,
   });
 
   return (

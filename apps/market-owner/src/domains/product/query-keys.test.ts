@@ -40,6 +40,7 @@ describe('productQueryKeys', () => {
       'list',
       { marketId: 1, sort: 'CATEGORY', type: 'DAILY' },
     ]);
+    expect(productQueryKeys.listByMarket(1)).toEqual(['product', 'list', { marketId: 1 }]);
     expect(
       productQueryKeys.preparedDrafts({
         categories: ['SEAFOOD'],

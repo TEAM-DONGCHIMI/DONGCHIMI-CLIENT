@@ -33,6 +33,34 @@ describe('browser API auth refresh', () => {
     expect(refreshRequestCount).toBe(1);
   });
 
+  it('body가 있는 POST도 session 갱신 후 동일한 body로 재시도한다', async () => {
+    const requestBodies: unknown[] = [];
+    let protectedRequestCount = 0;
+
+    server.use(
+      http.post(`${window.location.origin}/api/protected`, async ({ request }) => {
+        protectedRequestCount += 1;
+        requestBodies.push(await request.json());
+
+        if (protectedRequestCount === 1) {
+          return HttpResponse.json({ success: false }, { status: 401 });
+        }
+
+        return HttpResponse.json({ success: true });
+      }),
+      http.post(`${window.location.origin}/api/auth/token/refresh`, () => {
+        return HttpResponse.json({ success: true });
+      }),
+    );
+
+    const result = await createBrowserApi()
+      .post('protected', { json: { productId: 'product-1' } })
+      .json();
+
+    expect(result).toEqual({ success: true });
+    expect(requestBodies).toEqual([{ productId: 'product-1' }, { productId: 'product-1' }]);
+  });
+
   it('동시에 발생한 401 응답은 하나의 refresh 요청을 공유한다', async () => {
     const requestCounts = new Map<string, number>();
     let refreshRequestCount = 0;
