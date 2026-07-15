@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { deleteProduct, deleteProducts, resetProducts } from '../api/delete-products';
 import { productListQueryOptions } from '../query-options';
+import { productQueryKeys } from '../query-keys';
 import { useProductDeletionActions } from './use-product-deletion-actions';
 
 vi.mock('../api/delete-products', () => ({
@@ -15,6 +16,7 @@ vi.mock('../api/delete-products', () => ({
 }));
 
 const mockedResetProducts = vi.mocked(resetProducts);
+const mockedDeleteProduct = vi.mocked(deleteProduct);
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -36,9 +38,39 @@ const createWrapper = () => {
 
 describe('useProductDeletionActions', () => {
   beforeEach(() => {
-    vi.mocked(deleteProduct).mockReset();
+    mockedDeleteProduct.mockReset();
     vi.mocked(deleteProducts).mockReset();
     mockedResetProducts.mockReset();
+  });
+
+  it('deletes one product, removes its detail cache, and invalidates market lists', async () => {
+    const { queryClient, wrapper } = createWrapper();
+    const detailKey = productQueryKeys.detail({ marketId: 1, productId: 101 });
+    const listKey = productListQueryOptions({ marketId: 1, type: 'DAILY' }).queryKey;
+
+    queryClient.setQueryData(detailKey, { data: { productId: 101 } });
+    queryClient.setQueryData(listKey, {
+      success: true,
+      code: 'SUCCESS',
+      message: '요청에 성공했습니다.',
+      data: { content: [], hasNext: false, nextCursor: null },
+    });
+    mockedDeleteProduct.mockResolvedValue({
+      success: true,
+      code: 'SUCCESS',
+      message: '요청에 성공했습니다.',
+    });
+
+    const { result } = renderHook(() => useProductDeletionActions(1), { wrapper });
+
+    await expect(act(async () => result.current.deleteProduct(101))).resolves.toBe(true);
+    expect(mockedDeleteProduct).toHaveBeenCalledWith({
+      marketId: 1,
+      productId: 101,
+      request: { forceDelete: true },
+    });
+    expect(queryClient.getQueryData(detailKey)).toBeUndefined();
+    expect(queryClient.getQueryState(listKey)?.isInvalidated).toBe(true);
   });
 
   it('resets one deal type and invalidates every product list for the target market', async () => {
