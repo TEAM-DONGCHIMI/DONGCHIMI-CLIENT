@@ -22,9 +22,11 @@ const createWrapper = () => {
     defaultOptions: { mutations: { retry: false } },
   });
 
-  return function TestQueryProvider({ children }: { children: ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-  };
+  const TestQueryProvider = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+
+  return TestQueryProvider;
 };
 
 describe('useRegisterMarketMutation', () => {
