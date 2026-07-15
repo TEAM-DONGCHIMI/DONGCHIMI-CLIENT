@@ -28,20 +28,12 @@ export const titleGroupClassName = style({
   minWidth: 0,
 });
 
-export const logoSlotClassName = style({
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+export const logoClassName = style({
+  display: 'block',
   width: '15.7rem',
+  maxWidth: '100%',
   height: '6rem',
-  borderRadius: '0.6rem',
-  backgroundColor: atomic.common[0],
-  backgroundImage: `linear-gradient(45deg, ${atomic.neutral[10]} 25%, transparent 25%),
-    linear-gradient(-45deg, ${atomic.neutral[10]} 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, ${atomic.neutral[10]} 75%),
-    linear-gradient(-45deg, transparent 75%, ${atomic.neutral[10]} 75%)`,
-  backgroundPosition: '0 0, 0 0.6rem, 0.6rem -0.6rem, -0.6rem 0',
-  backgroundSize: '1.2rem 1.2rem',
+  objectFit: 'contain',
 });
 
 export const titleClassName = style({
