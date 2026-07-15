@@ -1,11 +1,11 @@
 import { Button, Flex, Stack } from '@dongchimi/design-system/components';
 
-import type { LeafletSummaryFixture } from '../fixtures/leaflet-share.fixture';
+import type { LeafletSummaryViewModel } from '../model/leaflet-preview-view-model';
 import * as S from './LeafletSummaryCard.css';
 
 export interface LeafletSummaryCardProps {
   isPublishing?: boolean;
-  leafletSummary: LeafletSummaryFixture;
+  leafletSummary: LeafletSummaryViewModel;
   onShare: () => void;
 }
 

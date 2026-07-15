@@ -7,13 +7,14 @@
 - Page: `share`
 - Route: `/leaflets/share`
 - Path: `apps/market-owner/src/domains/leaflet/share/LeafletSharePage.tsx`
-- Jira: DCMSM-29, DCMSM-67, DCMSM-71, DCMSM-86
+- Jira: DCMSM-29, DCMSM-67, DCMSM-71, DCMSM-77, DCMSM-86
 - Status: Implemented
 
 ## Purpose
 
-기존 `/leaflets/share` route에서 오늘의 전단 최종 확인과 공유 UI를 제공하고, 실제 QR 발급 API 응답을 모달에서 확인·다운로드합니다.
-공유 링크와 상품 정보는 fixture를 유지하며 QR 발급만 실제 API에 연결합니다.
+`/leaflets/share` route에서 발행 전 전단 미리보기를 조회해 최종 확인 UI를 제공하고, 발행 후 공유 링크와 QR 다운로드 흐름을 제공한다.
+
+기간 할인 전단 미리보기는 `GET /v1/owners/markets/{marketId}/flyers/preview/periodic` 응답을 사용한다. 이 응답에는 아직 발행되지 않은 임시저장 상품 중 `SUCCESS` 상태의 prepared product가 포함된다.
 
 ## Ownership
 
@@ -25,29 +26,31 @@
 
 ## UI States
 
-- confirm: 오늘의 전단 최종 확인 화면을 렌더링합니다.
-- share: 오늘의 전단 공유 화면을 렌더링하고 Figma `Img_background`와 동일한 전용 SVG 배경을 표시합니다.
-- copied toast: `링크 복사` 클릭 후 링크 복사 성공 toast UI를 표시합니다.
-- copy error toast: clipboard 미지원 또는 복사 실패 시 재시도 안내 toast UI를 표시합니다.
-- QR loading: QR mutation pending 동안 QR 보기 버튼을 disabled하고 `QR코드 발급 중`을 표시합니다.
-- QR modal: QR 발급 성공 후 실제 이미지를 포함한 dim overlay와 QR 다운로드 모달 UI를 표시합니다.
-- QR error toast: QR 발급 실패 시 서버 메시지를 우선 표시하고 공유 화면을 유지합니다.
-- download error toast: QR 다운로드 처리 실패 시 `QR 이미지 다운로드를 실패했습니다.` toast UI를 표시합니다.
-- QR modal: `매장 고유 QR코드 보기` 클릭 후 dim overlay와 QR 다운로드 모달 UI를 표시합니다.
-- download error toast: QR 다운로드 버튼 클릭 후 `QR 이미지 다운로드를 실패했습니다.` toast UI를 표시합니다.
-- loading: 전단 발행 mutation이 pending인 동안 `전단 공유하기` 버튼을 `전단 발행 중` 문구와 native disabled 상태로 표시합니다.
-- empty: fixture 기반 화면이라 다루지 않습니다.
+- confirm loading: 전단 미리보기 query가 pending이면 로딩 안내를 표시한다.
+- confirm error: 전단 미리보기 query가 실패하면 재시도 버튼을 표시한다.
+- confirm success: 전단 요약 카드와 모바일 전단 미리보기를 API 응답 기반으로 표시한다.
+- share: 발행 성공 후 공유 URL, 링크 복사, QR 보기 UI를 표시한다.
+- publish loading: 발행 mutation pending 동안 공유 버튼을 disabled 처리한다.
+- publish error: 서버 오류 메시지를 우선 표시하고 confirm UI를 유지한다.
+- QR loading: QR mutation pending 동안 QR 보기 버튼을 disabled 처리한다.
+- QR modal: QR 발급 성공 후 반환 이미지를 모달에서 확인하고 다운로드할 수 있다.
+- QR error: QR 발급 실패 시 서버 메시지를 우선 표시하고 share UI를 유지한다.
 
 ## Data
 
-- query: none
-- mutation: `POST /v1/owners/markets/{marketId}/flyers/qr` / `POST /v1/owners/markets/{marketId}/flyers`
-- model: none
+- query: `GET /v1/owners/markets/{marketId}/flyers/preview/periodic`
+- mutation: `POST /v1/owners/markets/{marketId}/flyers/qr`
+- mutation: `POST /v1/owners/markets/{marketId}/flyers`
+- model: `createLeafletPreviewViewModel`이 API 응답을 summary와 phone preview 표시 모델로 변환한다.
 
 ## Behavior
 
-- `전단 공유하기`는 auth store의 현재 `marketId`로 전단 발행 mutation을 호출합니다.
-- 발행 성공 시 응답 `slug`를 `VITE_PUBLIC_CLIENT_BASE_URL/markets/{slug}` 형태로 조합하고 share UI 상태로 전환합니다.
+- confirm view는 auth store의 현재 `marketId`로 기간 할인 전단 미리보기를 조회한다.
+- query key는 `marketId`를 포함한다.
+- 조회 성공 시 `daily.totalCount`는 오늘의 특가 요약 개수로, `preparedProducts.length`는 행사 할인 상품 요약 개수로 사용한다.
+- 모바일 미리보기는 market 정보, 영업시간, top3, daily products, prepared products를 API 응답에서 렌더링한다.
+- `전단 공유하기`는 현재 `marketId`로 전단 발행 mutation을 호출한다.
+- 발행 성공 시 응답 `slug`를 `VITE_PUBLIC_CLIENT_BASE_URL/markets/{slug}` 형태로 조합하고 share UI로 전환한다.
 - 발행 실패 시 서버 오류 메시지를 우선 표시하고 confirm UI를 유지합니다.
 - `marketId`가 없으면 요청하지 않고 재로그인 안내 toast를 표시합니다.
 - QR 이미지와 상품 개수는 fixture 값을 사용합니다.

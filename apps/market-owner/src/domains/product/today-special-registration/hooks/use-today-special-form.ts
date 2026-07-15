@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useRef, useState, type BaseSyntheticEvent } from 'react';
 import { type FieldError, useForm, useWatch } from 'react-hook-form';
 
 import {
@@ -12,10 +12,6 @@ import {
 
 const createInitialProductForm = () => createEmptyTodaySpecialProductForm();
 
-interface UseTodaySpecialFormParams {
-  onSubmit: (product: TodaySpecialProductFormTypes) => Promise<void> | void;
-}
-
 type TodaySpecialProductTouchedFieldsTypes = Partial<
   Record<keyof TodaySpecialProductFormTypes, boolean>
 >;
@@ -24,14 +20,25 @@ type TodaySpecialProductErrorsTypes = Partial<
   Record<keyof TodaySpecialProductFormTypes, FieldError>
 >;
 
-export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => {
+interface UpdateRegisteredProductParams {
+  product: TodaySpecialProductFormTypes;
+  productId: number;
+  thumbnailUrl: string | null;
+}
+
+interface ResetForNextProductParams {
+  productId: number;
+  thumbnailUrl: string;
+}
+
+export const useTodaySpecialForm = () => {
   const {
     control,
-    formState: { errors, isSubmitted, isSubmitting, touchedFields },
-    handleSubmit,
+    formState: { errors, touchedFields },
     getValues,
     reset,
     setValue,
+    trigger,
   } = useForm<TodaySpecialRegistrationFormTypes>({
     defaultValues: {
       products: [createInitialProductForm()],
@@ -43,6 +50,9 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
   const products = watchedProducts ?? [];
   const [currentIndex, setCurrentIndex] = useState(0);
   const [registeredProductCount, setRegisteredProductCount] = useState(0);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const currentProduct = products[currentIndex] ?? createInitialProductForm();
   const currentProductErrors = errors.products?.[currentIndex] as
@@ -54,25 +64,115 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
   const isCurrentProductValid = todaySpecialProductFormSchema.safeParse(currentProduct).success;
   const hasUnregisteredDraft = products.length > registeredProductCount;
   const isRegisteredProduct = currentIndex < registeredProductCount;
-  const isSubmitDisabled = isRegisteredProduct || !isCurrentProductValid || isSubmitting;
+  const isSubmitDisabled = !isCurrentProductValid || isSubmitting;
 
-  const createCurrentProductSubmitHandler = (
-    onValid: (product: TodaySpecialProductFormTypes) => Promise<void> | void,
-  ) =>
-    handleSubmit(async ({ products: submittedProducts }) => {
-      const submittedProduct = submittedProducts[currentIndex];
+  const createCurrentProductSubmitHandler =
+    (onValid: (product: TodaySpecialProductFormTypes) => Promise<void> | void) =>
+    async (event?: BaseSyntheticEvent) => {
+      event?.preventDefault();
 
-      if (submittedProduct) {
-        await onValid(submittedProduct);
+      if (isSubmittingRef.current) {
+        return;
       }
+
+      isSubmittingRef.current = true;
+      setIsSubmitting(true);
+      setIsSubmitted(true);
+
+      try {
+        const isValid = await trigger(`products.${currentIndex}`);
+
+        if (!isValid) {
+          return;
+        }
+
+        const submittedProduct = getValues(`products.${currentIndex}`);
+
+        await onValid(submittedProduct);
+      } finally {
+        isSubmittingRef.current = false;
+        setIsSubmitting(false);
+      }
+    };
+
+  const resetForNextProduct = ({ productId, thumbnailUrl }: ResetForNextProductParams) => {
+    const currentProducts = getValues('products');
+    const registeredProducts = currentProducts.map((product, productIndex) =>
+      productIndex === currentIndex
+        ? {
+            ...product,
+            imageFile: null,
+            imagePreviewUrl: thumbnailUrl,
+            productId,
+          }
+        : product,
+    );
+
+    reset({ products: [...registeredProducts, createInitialProductForm()] });
+    setIsSubmitted(false);
+    setRegisteredProductCount(registeredProducts.length);
+    setCurrentIndex(registeredProducts.length);
+  };
+
+  const updateRegisteredProduct = ({
+    product,
+    productId,
+    thumbnailUrl,
+  }: UpdateRegisteredProductParams) => {
+    const currentProducts = getValues('products');
+    const targetIndex = currentProducts.findIndex((item) => item.productId === productId);
+
+    if (targetIndex < 0 || targetIndex >= registeredProductCount) {
+      return false;
+    }
+
+    const updatedProducts = currentProducts.map((item, productIndex) =>
+      productIndex === targetIndex
+        ? {
+            ...product,
+            imageFile: null,
+            imagePreviewUrl: thumbnailUrl,
+            productId,
+          }
+        : item,
+    );
+
+    reset({ products: updatedProducts });
+    setIsSubmitted(false);
+
+    return true;
+  };
+
+  const deleteRegisteredProduct = (productId: number) => {
+    const currentProducts = getValues('products');
+    const targetIndex = currentProducts.findIndex((product) => product.productId === productId);
+
+    if (targetIndex < 0 || targetIndex >= registeredProductCount) {
+      return false;
+    }
+
+    const remainingProducts = currentProducts.filter(
+      (_, productIndex) => productIndex !== targetIndex,
+    );
+    const nextProducts =
+      remainingProducts.length > 0 ? remainingProducts : [createInitialProductForm()];
+
+    reset({ products: nextProducts });
+    setIsSubmitted(false);
+    setRegisteredProductCount((previousCount) => Math.max(previousCount - 1, 0));
+    setCurrentIndex((previousIndex) => {
+      if (previousIndex > targetIndex) {
+        return previousIndex - 1;
+      }
+
+      if (previousIndex === targetIndex) {
+        return Math.min(targetIndex, nextProducts.length - 1);
+      }
+
+      return previousIndex;
     });
 
-  const resetForNextProduct = () => {
-    const currentProducts = getValues('products');
-
-    reset({ products: [...currentProducts, createInitialProductForm()] });
-    setRegisteredProductCount(currentProducts.length);
-    setCurrentIndex(currentProducts.length);
+    return true;
   };
 
   const cancelCurrentDraft = () => {
@@ -83,6 +183,7 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
     const registeredProducts = getValues('products').slice(0, registeredProductCount);
 
     reset({ products: registeredProducts });
+    setIsSubmitted(false);
     setCurrentIndex(registeredProductCount - 1);
   };
 
@@ -104,6 +205,7 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
     const currentProducts = getValues('products');
 
     reset({ products: [...currentProducts, createInitialProductForm()] });
+    setIsSubmitted(false);
     setCurrentIndex(currentProducts.length);
   };
 
@@ -115,7 +217,7 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
     currentProduct,
     currentProductErrors,
     currentProductTouchedFields,
-    handleFormSubmit: createCurrentProductSubmitHandler(onSubmit),
+    deleteRegisteredProduct,
     isSubmitted,
     isSubmitting,
     isRegisteredProduct,
@@ -126,5 +228,6 @@ export const useTodaySpecialForm = ({ onSubmit }: UseTodaySpecialFormParams) => 
     products,
     resetForNextProduct,
     setValue,
+    updateRegisteredProduct,
   };
 };

@@ -1,7 +1,4 @@
-export interface LeafletSummaryFixture {
-  eventDiscountProductCount: number;
-  todaySpecialProductCount: number;
-}
+import type { LeafletSummaryViewModel } from '../model/leaflet-preview-view-model';
 
 export const leafletShareFixture = {
   qrImageLabel: '매장 고유 QR코드',
@@ -11,5 +8,5 @@ export const leafletShareFixture = {
   },
 } as const satisfies {
   qrImageLabel: string;
-  summary: LeafletSummaryFixture;
+  summary: LeafletSummaryViewModel;
 };

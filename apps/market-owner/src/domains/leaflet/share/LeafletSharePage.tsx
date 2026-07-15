@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { overlay } from 'overlay-kit';
 
@@ -13,8 +13,12 @@ import { useAuthStore } from '@/shared/stores/auth-store';
 import { downloadQrCodeImage, getQrCodeImageSource } from '@/shared/utils/qr-code-image.utils';
 
 import { leafletShareFixture } from './fixtures/leaflet-share.fixture';
-import { useIssueQrCodeMutation } from './hooks';
-import { usePublishLeafletMutation } from './hooks';
+import {
+  useIssueQrCodeMutation,
+  usePeriodicPreviewQuery,
+  usePublishLeafletMutation,
+} from './hooks';
+import { createLeafletPreviewViewModel } from './model/leaflet-preview-view-model';
 import { LeafletConfirmSection, LeafletShareSection } from './sections';
 import * as S from './LeafletSharePage.css';
 
@@ -39,10 +43,18 @@ export const LeafletSharePage = () => {
   const toast = useToast();
   const marketId = useAuthStore((state) => state.marketId);
   const issueQrCodeMutation = useIssueQrCodeMutation();
+  const periodicPreviewQuery = usePeriodicPreviewQuery({ marketId });
   const publishLeafletMutation = usePublishLeafletMutation();
   const [shareView, setShareView] = useState<LeafletShareViewTypes>('confirm');
   const [shareUrl, setShareUrl] = useState('');
   const isConfirmView = shareView === 'confirm';
+  const leafletPreview = useMemo(() => {
+    if (periodicPreviewQuery.data == null) {
+      return undefined;
+    }
+
+    return createLeafletPreviewViewModel(periodicPreviewQuery.data);
+  }, [periodicPreviewQuery.data]);
 
   const showPublishErrorToast = (message: string) => {
     toast.error(message, {
@@ -154,8 +166,11 @@ export const LeafletSharePage = () => {
 
       {isConfirmView ? (
         <LeafletConfirmSection
+          isPreviewError={periodicPreviewQuery.isError}
+          isPreviewPending={periodicPreviewQuery.isLoading}
           isPublishing={publishLeafletMutation.isPending}
-          leafletSummary={leafletShareFixture.summary}
+          leafletPreview={leafletPreview}
+          onPreviewRetry={() => void periodicPreviewQuery.refetch()}
           onShare={() => void publishAndShowShareView()}
         />
       ) : (

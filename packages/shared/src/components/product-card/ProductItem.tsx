@@ -1,8 +1,12 @@
-import { List } from '@dongchimi/design-system';
+import { List, PointChip } from '@dongchimi/design-system';
 import { cn } from '@dongchimi/design-system/styles';
 
 import * as S from './ProductCard.css';
-import { type ProductCardItemTypes, type ProductCardItemVariantTypes } from './ProductCard.types';
+import {
+  type ProductCardItemTypes,
+  type ProductCardItemVariantTypes,
+  type ProductCardSurfaceTypes,
+} from './ProductCard.types';
 import { getProductCardBadgeLabel } from './ProductCard.utils';
 
 interface ProductItemProps {
@@ -10,17 +14,26 @@ interface ProductItemProps {
   itemVariant: ProductCardItemVariantTypes;
   onProductClick: (item: ProductCardItemTypes, index: number) => void;
   position: number;
+  surface: ProductCardSurfaceTypes;
 }
 
-export const ProductItem = ({ item, itemVariant, onProductClick, position }: ProductItemProps) => {
+export const ProductItem = ({
+  item,
+  itemVariant,
+  onProductClick,
+  position,
+  surface,
+}: ProductItemProps) => {
   const isPeriodItem = itemVariant === 'period';
   const badgeLabel = getProductCardBadgeLabel(item);
+  const pointChipSize = surface === 'flat' ? 'mobile' : 'desktop';
   const rank = item.rank ?? position + 1;
   const rankLabel = typeof rank === 'number' ? `${rank}위` : rank;
   const imageAlt = item.imageAlt ?? `${item.name} 상품 이미지`;
+  const productDiscountLabel = badgeLabel && !isPeriodItem ? `, ${badgeLabel} 할인` : '';
   const productButtonLabel = isPeriodItem
     ? `${rankLabel} 상품 보기: ${item.name}`
-    : `상품 보기: ${item.name}`;
+    : `상품 보기: ${item.name}${productDiscountLabel}`;
 
   const productMedia = (
     <span className={S.imageFrameClassName}>
@@ -79,11 +92,7 @@ export const ProductItem = ({ item, itemVariant, onProductClick, position }: Pro
             {productMainContent}
           </span>
           {/* 오늘의 특가 상품에만 할인 칩을 노출합니다. */}
-          {badgeLabel && !isPeriodItem && (
-            <span aria-label={`${badgeLabel} 할인`} className={S.badgeClassName}>
-              {badgeLabel}
-            </span>
-          )}
+          {badgeLabel && !isPeriodItem && <PointChip size={pointChipSize}>{badgeLabel}</PointChip>}
         </span>
       </button>
     </List.Item>
