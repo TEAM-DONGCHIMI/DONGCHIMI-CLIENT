@@ -41,7 +41,7 @@ describe('HomeDashboardSection', () => {
     expect(screen.getAllByLabelText('총 1건')).toHaveLength(2);
     expect(screen.getByText('삼겹살 500g')).toBeInTheDocument();
     expect(screen.getByText('깻잎 2묶음')).toBeInTheDocument();
-    expect(screen.getByText('dongchimi.kr/mangwon-fresh')).toBeInTheDocument();
+    expect(screen.getByText('app.dongchiimi.com/markets/mangwon-fresh')).toBeInTheDocument();
   });
 
   it('renders an accessible loading state while the owner home query is pending', () => {

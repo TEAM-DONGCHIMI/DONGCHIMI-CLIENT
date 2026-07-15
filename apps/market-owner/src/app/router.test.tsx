@@ -369,7 +369,7 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('heading', { name: '행사 할인 상품' })).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: '등록한 상품 전체보기' })).toHaveLength(2);
     expect(screen.getByRole('heading', { name: '전단 공유하기' })).toBeInTheDocument();
-    expect(screen.getByText('dongchimi.kr/mangwon-fresh')).toBeInTheDocument();
+    expect(screen.getByText('app.dongchiimi.com/markets/mangwon-fresh')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '링크 복사' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '매장 고유 QR코드 보기' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '오늘의 전단 공유' })).not.toBeInTheDocument();
@@ -462,7 +462,7 @@ describe('marketOwnerRoutes', () => {
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.click(screen.getByRole('button', { name: '링크 복사' }));
 
-    expect(writeText).toHaveBeenCalledWith('https://dongchimi.kr/mangwon-fresh');
+    expect(writeText).toHaveBeenCalledWith('https://app.dongchiimi.com/markets/mangwon-fresh');
     expect(await screen.findByRole('status')).toHaveTextContent('전단 링크가 복사되었습니다.');
     expectSidebarToastViewportToUseViewportTopCenter();
   });

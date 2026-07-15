@@ -43,11 +43,11 @@ describe('HomeShareSection', () => {
 
     render(<HomeShareSection {...defaultProps} share={availableShare} />);
 
-    expect(screen.getByText('dongchimi.kr/mangwon-fresh')).toBeInTheDocument();
+    expect(screen.getByText('app.dongchiimi.com/markets/mangwon-fresh')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '링크 복사' }));
 
-    expect(writeText).toHaveBeenCalledWith('https://dongchimi.kr/mangwon-fresh');
+    expect(writeText).toHaveBeenCalledWith('https://app.dongchiimi.com/markets/mangwon-fresh');
   });
 
   it('dims the share card and removes only the URL text when a flyer does not exist', () => {

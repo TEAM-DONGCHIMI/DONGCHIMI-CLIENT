@@ -26,7 +26,7 @@ export interface HomeShareTypes {
   title: string;
 }
 
-const SHARE_URL_HOST = 'dongchimi.kr';
+const CLIENT_APP_ORIGIN = 'https://app.dongchiimi.com';
 
 const formatPrice = (price: number) => {
   return `${price.toLocaleString('ko-KR')}원`;
@@ -58,7 +58,8 @@ const createPeriodicProductItem = (
 
 export const createHomeDashboardViewModel = (data: OwnerHomeResponseTypes) => {
   const flyer = data.flyer ?? null;
-  const displayUrl = flyer ? `${SHARE_URL_HOST}/${flyer.slug}` : '';
+  const copyUrl = flyer ? `${CLIENT_APP_ORIGIN}/markets/${encodeURIComponent(flyer.slug)}` : '';
+  const displayUrl = copyUrl.replace('https://', '');
 
   return {
     sections: [
@@ -80,7 +81,7 @@ export const createHomeDashboardViewModel = (data: OwnerHomeResponseTypes) => {
       },
     ] satisfies HomeProductSectionTypes[],
     share: {
-      copyUrl: displayUrl ? `https://${displayUrl}` : '',
+      copyUrl,
       description: '카카오톡, 문자로 공유하거나 마트에 QR을 붙여보세요.',
       displayUrl,
       flyer,

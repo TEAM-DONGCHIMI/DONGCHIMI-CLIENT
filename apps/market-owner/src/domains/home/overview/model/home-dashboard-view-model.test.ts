@@ -35,8 +35,8 @@ describe('createHomeDashboardViewModel', () => {
         ],
       }),
     ]);
-    expect(viewModel.share.displayUrl).toBe('dongchimi.kr/mangwon-fresh');
-    expect(viewModel.share.copyUrl).toBe('https://dongchimi.kr/mangwon-fresh');
+    expect(viewModel.share.displayUrl).toBe('app.dongchiimi.com/markets/mangwon-fresh');
+    expect(viewModel.share.copyUrl).toBe('https://app.dongchiimi.com/markets/mangwon-fresh');
   });
 
   it('keeps the flyer empty state when the API returns no flyer', () => {
