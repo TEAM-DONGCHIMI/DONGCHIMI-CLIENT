@@ -1,4 +1,4 @@
-import { Box } from '@dongchimi/design-system/components';
+import { Box, PointChip } from '@dongchimi/design-system/components';
 import { IcCalendar, IcChevronDown, IcLocation, IcPhone } from '@dongchimi/design-system/icons';
 
 import phoneFrameUrl from '../assets/phone-frame.svg';
@@ -93,7 +93,9 @@ export const PhonePreviewFrame = () => {
                       <article key={product.name} className={S.topProductCardClassName}>
                         <ProductImageFallback className={S.topProductImageFallbackClassName} />
                         <span className={S.topProductScrimClassName} />
-                        <span className={S.discountBadgeClassName}>{product.discountRate}%</span>
+                        <PointChip className={S.discountBadgeClassName} size='mobile'>
+                          {product.discountRate}%
+                        </PointChip>
                         <span className={S.topProductContentClassName}>
                           <span className={S.topProductNameClassName}>{product.name}</span>
                           <strong className={S.topProductPriceClassName}>{product.price}원</strong>
@@ -125,9 +127,9 @@ export const PhonePreviewFrame = () => {
                             </span>
                           </span>
                         </span>
-                        <span className={S.todayDiscountChipClassName}>
+                        <PointChip className={S.todayDiscountChipClassName} size='desktop'>
                           {product.discountRate}%
-                        </span>
+                        </PointChip>
                       </article>
                     ))}
                   </div>

@@ -1,4 +1,4 @@
-import { List } from '@dongchimi/design-system';
+import { List, PointChip } from '@dongchimi/design-system';
 import { cn } from '@dongchimi/design-system/styles';
 
 import * as S from './ProductCard.css';
@@ -80,9 +80,9 @@ export const ProductItem = ({ item, itemVariant, onProductClick, position }: Pro
           </span>
           {/* 오늘의 특가 상품에만 할인 칩을 노출합니다. */}
           {badgeLabel && !isPeriodItem && (
-            <span aria-label={`${badgeLabel} 할인`} className={S.badgeClassName}>
+            <PointChip aria-label={`${badgeLabel} 할인`} size='desktop'>
               {badgeLabel}
-            </span>
+            </PointChip>
           )}
         </span>
       </button>

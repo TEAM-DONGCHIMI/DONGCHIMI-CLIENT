@@ -289,15 +289,9 @@ export const topProductScrimClassName = style({
 });
 
 export const discountBadgeClassName = style({
-  ...typography['caption-2-medium'],
   position: 'absolute',
   top: '0.4rem',
   right: '0.4rem',
-  zIndex: 1,
-  borderRadius: '0.8rem',
-  padding: '0.2rem 0.5rem',
-  backgroundColor: semantic.status.negativeLight,
-  color: atomic.common[0],
 });
 
 export const topProductContentClassName = style({
@@ -395,12 +389,7 @@ export const todayProductOriginalPriceClassName = style({
 });
 
 export const todayDiscountChipClassName = style({
-  ...typography['caption-2-medium'],
   justifySelf: 'end',
-  borderRadius: '1rem',
-  padding: '0.4rem 0.6rem',
-  backgroundColor: semantic.status.negativeLight,
-  color: atomic.common[0],
 });
 
 export const inlineToggleClassName = style({
