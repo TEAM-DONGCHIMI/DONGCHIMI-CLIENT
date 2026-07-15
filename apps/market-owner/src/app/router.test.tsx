@@ -616,7 +616,7 @@ describe('marketOwnerRoutes', () => {
     );
   });
 
-  it('shows a preparing toast when leaflet QR code action is clicked', async () => {
+  it('opens the home response QR image in the shared modal', async () => {
     const user = userEvent.setup();
 
     renderRoute('/');
@@ -624,8 +624,10 @@ describe('marketOwnerRoutes', () => {
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.click(screen.getByRole('button', { name: '매장 고유 QR코드 보기' }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent(
-      'QR코드 보기 기능은 준비 중입니다.',
+    expect(await screen.findByRole('dialog', { name: '매장 고유 QR코드' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: '매장 고유 QR코드' })).toHaveAttribute(
+      'src',
+      `data:image/png;base64,${ownerHomeFixture.flyer?.qrCode}`,
     );
   });
 
