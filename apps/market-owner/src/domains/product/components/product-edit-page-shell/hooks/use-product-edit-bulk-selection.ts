@@ -15,7 +15,7 @@ interface UseProductEditBulkSelectionParams {
   activeType: ProductEditTypeTypes;
   periodBaseProduct?: ProductEditCardProps;
   onDeleteProducts?: (productIds: number[]) => Promise<boolean>;
-  onResetProducts?: () => void;
+  onResetProducts?: () => Promise<boolean>;
   onUpdateProductPeriods?: (
     productNames: string[],
     period: { endDate: string; startDate: string },
@@ -140,9 +140,12 @@ export const useProductEditBulkSelection = ({
   const openResetConfirm = () => {
     openProductEditConfirmModal({
       action: 'reset',
-      onConfirm: () => {
-        onResetProducts?.();
-        closeBulkAction();
+      onConfirm: async () => {
+        const isReset = await onResetProducts?.();
+
+        if (isReset !== false) {
+          closeBulkAction();
+        }
       },
     });
   };

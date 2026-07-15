@@ -18,11 +18,13 @@ import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 interface TodaySpecialEditProductSectionProps {
   autoOpenProductId?: string | null;
+  deletePending: boolean;
   marketId: number;
   selection: ProductEditPageSelectionControls;
   selectedFilter: ProductEditFilterTypes;
   onAutoOpenProductMissing?: (productId: string) => void;
   onAutoOpenProductModalClose?: () => void;
+  onDeleteProduct: (productId: number) => Promise<boolean>;
 }
 
 interface TodaySpecialEditProductListProps extends TodaySpecialEditProductSectionProps {
@@ -31,16 +33,18 @@ interface TodaySpecialEditProductListProps extends TodaySpecialEditProductSectio
 
 const TodaySpecialEditProductList = ({
   autoOpenProductId,
+  deletePending,
   initialProducts,
   marketId,
   selection,
   selectedFilter,
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
+  onDeleteProduct,
 }: TodaySpecialEditProductListProps) => {
-  const { deleteProduct, isDeletePending, products, updateProduct } = useProductEditProducts(
+  const { deleteProduct, products, updateProduct } = useProductEditProducts(
     initialProducts,
-    marketId,
+    onDeleteProduct,
   );
   const productGroups = createProductEditDisplayGroups({
     createCardProps: (product) =>
@@ -57,7 +61,7 @@ const TodaySpecialEditProductList = ({
     <ProductEditProductList
       ariaLabel='오늘의 특가 상품 수정 목록'
       autoOpenProductId={autoOpenProductId}
-      deletePending={isDeletePending}
+      deletePending={deletePending}
       editModalVariant='todaySpecial'
       groups={productGroups}
       marketId={marketId}

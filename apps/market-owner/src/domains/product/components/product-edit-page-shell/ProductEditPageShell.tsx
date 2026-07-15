@@ -1,6 +1,5 @@
 import { type ReactNode } from 'react';
-import { Link, useNavigate } from 'react-router';
-import { useToast } from '@dongchimi/shared/toast';
+import { Link } from 'react-router';
 
 import { Button, PillButton, TabNav } from '@dongchimi/design-system/components';
 import {
@@ -13,14 +12,8 @@ import {
   IcTrashSizeSmallColorNegative,
 } from '@dongchimi/design-system/icons';
 
-import {
-  DesktopHeader,
-  ProductHeaderSearch,
-  type ProductHeaderSearchProductTypes,
-} from '@/shared/components';
+import { DesktopHeader } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
-import { productHeaderSearchProducts } from '@/shared/fixtures/product-header-search.fixture';
-import { createProductEditTargetPath } from '@/shared/utils/product-edit-target-path.utils';
 import { type ProductCategoryTypes } from '../../constants';
 import { type ProductEditCardProps } from '../product-edit-product-list';
 
@@ -38,8 +31,6 @@ import {
   useProductEditFilter,
 } from './hooks';
 
-const PRODUCT_LOAD_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요.';
-
 export interface ProductEditPageShellProps {
   activeType: ProductEditTypeTypes;
   children:
@@ -51,7 +42,7 @@ export interface ProductEditPageShellProps {
       ) => ReactNode);
   deletePending?: boolean;
   onDeleteProducts?: (productIds: number[]) => Promise<boolean>;
-  onResetProducts?: () => void;
+  onResetProducts?: () => Promise<boolean>;
   onUpdateProductPeriods?: (
     productNames: string[],
     period: { endDate: string; startDate: string },
@@ -70,8 +61,6 @@ export const ProductEditPageShell = ({
   periodBaseProduct,
   productCounts,
 }: ProductEditPageShellProps) => {
-  const toast = useToast();
-  const navigate = useNavigate();
   const pageCopy = editPageCopyByType[activeType];
 
   // 필터/드롭다운 상태
@@ -105,15 +94,6 @@ export const ProductEditPageShell = ({
   });
   const isDeleteButtonEmphasized = bulkAction === 'delete' && selectedProductCount > 0;
   const isPeriodButtonEmphasized = bulkAction === 'period' && selectedProductCount > 0;
-  const handleSelectHeaderProduct = (product: ProductHeaderSearchProductTypes) => {
-    if (product.isProductInfoLoadable === false) {
-      toast.error(PRODUCT_LOAD_ERROR_MESSAGE);
-
-      return;
-    }
-
-    navigate(createProductEditTargetPath(product));
-  };
   const periodButtonProps = isPeriodButtonEmphasized
     ? {
         className: S.actionButtonClassNames.primarySolid,
@@ -161,12 +141,7 @@ export const ProductEditPageShell = ({
         <DesktopHeader
           currentLabel={pageCopy.currentLabel}
           parentLabel='홈'
-          searchSlot={
-            <ProductHeaderSearch
-              onSelectProduct={handleSelectHeaderProduct}
-              products={productHeaderSearchProducts}
-            />
-          }
+          showSearchBar={false}
         />
 
         <div className={S.controlClassName}>

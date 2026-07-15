@@ -19,12 +19,14 @@ import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 interface EventDiscountEditProductSectionProps {
   autoOpenProductId?: string | null;
+  deletePending: boolean;
   marketId: number;
   selection: ProductEditPageSelectionControls;
   selectedCategory: ProductCategoryTypes | null;
   selectedFilter: ProductEditFilterTypes;
   onAutoOpenProductMissing?: (productId: string) => void;
   onAutoOpenProductModalClose?: () => void;
+  onDeleteProduct: (productId: number) => Promise<boolean>;
 }
 
 interface EventDiscountEditProductListProps extends EventDiscountEditProductSectionProps {
@@ -33,6 +35,7 @@ interface EventDiscountEditProductListProps extends EventDiscountEditProductSect
 
 const EventDiscountEditProductList = ({
   autoOpenProductId,
+  deletePending,
   initialProducts,
   marketId,
   selection,
@@ -40,10 +43,11 @@ const EventDiscountEditProductList = ({
   selectedFilter,
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
+  onDeleteProduct,
 }: EventDiscountEditProductListProps) => {
-  const { deleteProduct, isDeletePending, products, updateProduct } = useProductEditProducts(
+  const { deleteProduct, products, updateProduct } = useProductEditProducts(
     initialProducts,
-    marketId,
+    onDeleteProduct,
   );
   const productGroups = createProductEditDisplayGroups({
     createCardProps: (product) =>
@@ -61,7 +65,7 @@ const EventDiscountEditProductList = ({
     <ProductEditProductList
       ariaLabel='행사 할인 상품 수정 목록'
       autoOpenProductId={autoOpenProductId}
-      deletePending={isDeletePending}
+      deletePending={deletePending}
       editModalVariant='eventDiscount'
       groups={productGroups}
       marketId={marketId}
