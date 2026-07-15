@@ -324,6 +324,27 @@ export const todaySpecialCardClassName = style({
   backgroundColor: atomic.neutral[5],
 });
 
+export const todaySpecialQueryStateClassName = style({
+  ...typography['body-3-medium'],
+  display: 'flex',
+  minHeight: '8rem',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '1.2rem',
+  color: atomic.neutral[60],
+  textAlign: 'center',
+});
+
+export const todaySpecialEmptyClassName = style({
+  ...typography['body-3-medium'],
+  minHeight: '8rem',
+  margin: 0,
+  alignContent: 'center',
+  color: atomic.neutral[60],
+  textAlign: 'center',
+});
+
 export const todayProductListClassName = style({
   display: 'flex',
   flexDirection: 'column',
@@ -348,11 +369,16 @@ export const todayProductLinkClassName = style({
 });
 
 export const todayProductImageClassName = style({
+  position: 'relative',
   width: '5.6rem',
   height: '5.6rem',
   overflow: 'hidden',
   borderRadius: 10,
   backgroundColor: atomic.neutral[20],
+});
+
+export const todayProductImageElementClassName = style({
+  objectFit: 'cover',
 });
 
 export const todayProductContentClassName = style({
