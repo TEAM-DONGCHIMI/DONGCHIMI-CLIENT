@@ -35,6 +35,8 @@ describe('marketQueryKeys', () => {
     expect(marketQueryKeys.periodicProducts({ marketId: 1 })).not.toEqual(
       marketQueryKeys.periodicProducts({ marketId: 2 }),
     );
+  });
+
   it('상품 상세 응답을 바꾸는 marketId와 productId를 key에 포함한다', () => {
     expect(marketQueryKeys.productDetail({ marketId: 1, productId: '10' })).toEqual([
       'market',
