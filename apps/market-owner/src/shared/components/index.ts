@@ -30,3 +30,5 @@ export type {
   ProductHeaderSearchProductTypes,
   ProductHeaderSearchProps,
 } from './ui/product-header-search';
+export { QrDownloadModal } from './ui/qr-download-modal';
+export type { QrDownloadModalProps } from './ui/qr-download-modal';
