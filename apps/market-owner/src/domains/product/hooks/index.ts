@@ -6,4 +6,5 @@ export { useProductEditTargetParam } from './use-product-edit-target-param';
 export { useProductListQuery } from './use-product-list-query';
 export { useProductDetailQuery } from './use-product-detail-query';
 export { useProductOverlayDisclosure } from './use-product-overlay-disclosure';
+export { useProductSearchQuery } from './use-product-search-query';
 export { usePresignedUploadMutation } from './use-presigned-upload-mutation';

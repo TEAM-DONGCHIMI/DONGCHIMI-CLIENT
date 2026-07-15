@@ -49,10 +49,12 @@
 ## Scope Decision
 
 - API helper, query key, query options, hook만 product 도메인에 둡니다.
-- `productQueryKeys`는 정적 계층만 선언하고, 응답을 바꾸는 동적 파라미터는 query options에서 결합합니다.
+- `productQueryKeys`는 목록 root key와 params factory를 함께 제공하고, query options는 정규화한
+  response-changing params를 factory에 전달합니다.
 - 두 수정 페이지는 같은 hook을 사용하고 각각 `DAILY`, `PERIODIC`을 전달합니다.
 - 응답-to-card mapping은 `domains/product/model/product-list.ts`에서 공통으로 처리합니다.
-- 실제 `marketId` 공급 전까지 두 페이지 모두 임시 값 `1`을 사용합니다.
+- 두 수정 페이지는 로그인 세션의 `marketId`를 사용합니다.
+- `marketId`가 아직 없으면 잘못된 market path로 요청하지 않도록 query를 비활성화합니다.
 - 전달 문서의 `data.products`는 현재 OpenAPI 생성 타입의 `data.content`와 다르므로 생성 타입을 우선합니다.
 - `cusor`는 오탈자 여부가 확인되지 않았고 현재 endpoint 타입에도 없으므로 이번 1차 범위에서 제외합니다.
 

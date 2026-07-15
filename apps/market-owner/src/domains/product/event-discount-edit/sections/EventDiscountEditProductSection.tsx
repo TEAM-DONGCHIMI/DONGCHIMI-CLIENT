@@ -16,6 +16,7 @@ import {
   type ProductEditListItemTypes,
 } from '@/domains/product/model/product-list';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
 
 interface EventDiscountEditProductSectionProps {
   autoOpenProductId?: string | null;
@@ -74,15 +75,14 @@ const EventDiscountEditProductList = ({
 };
 
 export const EventDiscountEditProductSection = (props: EventDiscountEditProductSectionProps) => {
-  // TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
-  const marketId = 1;
+  const marketId = useAuthStore((state) => state.marketId);
   const productListQuery = useProductListQuery({
     marketId,
     sort: getProductListSort(props.selectedFilter),
     type: 'PERIODIC',
   });
 
-  if (productListQuery.isPending) {
+  if (marketId == null || productListQuery.isPending) {
     return <ProductEditProductListLoading />;
   }
 

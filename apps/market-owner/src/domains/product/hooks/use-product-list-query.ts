@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { type GetProductListParams } from '../api/get-product-list';
-import { productListQueryOptions } from '../query-options';
+import { productListQueryOptions, type ProductListQueryParamsTypes } from '../query-options';
 
-export const useProductListQuery = (params: GetProductListParams) => {
+export const useProductListQuery = (params: ProductListQueryParamsTypes) => {
   return useQuery(productListQueryOptions(params));
 };
