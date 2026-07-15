@@ -2,17 +2,17 @@ import { type MouseEvent, type ReactNode } from 'react';
 
 import { getProductCategoryGroup } from '@/shared/utils/product-category.utils';
 
-import type { RegistrationResultProduct } from '../fixtures';
-import {
-  getRegistrationResultProductFieldValue,
-  type RegistrationResultEditableProductFieldTypes,
-  type RegistrationResultProductDraftMapTypes,
-  type RegistrationResultProductDraftTypes,
-} from '../hooks/useRegistrationResultProductDrafts';
+import type {
+  RegistrationResultEditableProductFieldTypes,
+  RegistrationResultProduct,
+  RegistrationResultProductDraftMapTypes,
+  RegistrationResultProductDraftTypes,
+  RegistrationResultProductFieldValues,
+} from '../model';
+import { getRegistrationResultProductFieldValues } from '../model';
 import {
   validateRegistrationResultProductFields,
   type RegistrationResultProductFieldErrorTypes,
-  type RegistrationResultProductFieldValues,
 } from '../utils/registration-result-product-validation';
 import { RegistrationResultProductRow, type ImagePreview } from './RegistrationResultProductRow';
 import * as S from './RegistrationResult.css';
@@ -20,6 +20,7 @@ import * as S from './RegistrationResult.css';
 interface RegistrationResultTableProps {
   allVisibleSelected: boolean;
   children: ReactNode;
+  emptyMessage?: string;
   hasVisibleSelection: boolean;
   imagePreviews: ReadonlyMap<string, ImagePreview>;
   productDrafts: RegistrationResultProductDraftMapTypes;
@@ -71,18 +72,12 @@ const getProductFieldValues = (
   product: RegistrationResultProduct,
   productDrafts: RegistrationResultProductDraftMapTypes,
 ): RegistrationResultProductFieldValues => {
-  const category = getRegistrationResultProductFieldValue(product, productDrafts, 'category');
+  const fieldValues = getRegistrationResultProductFieldValues(product, productDrafts);
 
   return {
-    category: getProductCategoryGroup(category),
-    discountPeriod: getRegistrationResultProductFieldValue(
-      product,
-      productDrafts,
-      'discountPeriod',
-    ),
-    price: getRegistrationResultProductFieldValue(product, productDrafts, 'price'),
-    productName: getRegistrationResultProductFieldValue(product, productDrafts, 'productName'),
-    promotionText: getRegistrationResultProductFieldValue(product, productDrafts, 'promotionText'),
+    ...fieldValues,
+    category:
+      fieldValues.category.trim().length > 0 ? getProductCategoryGroup(fieldValues.category) : '',
   };
 };
 
@@ -168,6 +163,7 @@ const TableHeader = ({
 export const RegistrationResultTable = ({
   allVisibleSelected,
   children,
+  emptyMessage = '표시할 상품이 없습니다.',
   hasVisibleSelection,
   imagePreviews,
   productDrafts,
@@ -182,7 +178,7 @@ export const RegistrationResultTable = ({
 }: RegistrationResultTableProps) => {
   const renderProductRows = () => {
     if (products.length === 0) {
-      return <div className={S.emptyStateClassName}>표시할 상품이 없습니다.</div>;
+      return <div className={S.emptyStateClassName}>{emptyMessage}</div>;
     }
 
     return products.map((product) => {
