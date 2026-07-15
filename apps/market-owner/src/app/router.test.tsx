@@ -581,8 +581,8 @@ describe('marketOwnerRoutes', () => {
     const user = userEvent.setup();
     mockGetProductSearch.mockRejectedValueOnce(
       new ApiError({
-        code: 'INVALID_SEARCH_KEYWORD',
-        message: '상품 정보를 불러오지 못했어요.',
+        code: 'INVALID_INPUT',
+        message: '검색어는 필수입니다.',
         status: 400,
         type: 'validation',
       }),
@@ -662,8 +662,8 @@ describe('marketOwnerRoutes', () => {
     const user = userEvent.setup();
     mockGetProductSearch.mockRejectedValueOnce(
       new ApiError({
-        code: 'INVALID_SEARCH_KEYWORD',
-        message: '상품 정보를 불러오지 못했어요.',
+        code: 'INVALID_INPUT',
+        message: '검색어는 필수입니다.',
         status: 400,
         type: 'validation',
       }),

@@ -82,8 +82,8 @@ describe('getProductSearch', () => {
 
   it('does not swallow an API error from the HTTP client', async () => {
     const apiError = new ApiError({
-      code: 'INVALID_SEARCH_KEYWORD',
-      message: '검색 키워드를 입력해주세요.',
+      code: 'INVALID_INPUT',
+      message: '검색어는 필수입니다.',
       status: 400,
       type: 'validation',
     });
