@@ -11,7 +11,7 @@ export const previewClassName = style({
 
 export const previewContentClassName = style({
   position: 'absolute',
-  inset: '3.2rem 1.4rem 1rem',
+  inset: '5.3rem 1.4rem 1rem',
   overflow: 'hidden',
   borderRadius: '0 0 4rem 4rem',
   backgroundColor: atomic.common[0],
