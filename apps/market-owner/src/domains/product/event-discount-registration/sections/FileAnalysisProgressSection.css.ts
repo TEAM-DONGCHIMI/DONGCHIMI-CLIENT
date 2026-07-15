@@ -84,8 +84,17 @@ export const progressFillClassName = style({
   top: 0,
   bottom: 0,
   left: 0,
+  width: '100%',
   borderRadius: 'inherit',
   backgroundColor: semantic.primary.normal,
+  transformOrigin: 'left center',
+  transition: 'transform 480ms cubic-bezier(0.22, 1, 0.36, 1)',
+  willChange: 'transform',
+  '@media': {
+    '(prefers-reduced-motion: reduce)': {
+      transition: 'none',
+    },
+  },
 });
 
 export const progressValueClassName = style({

@@ -10,7 +10,10 @@ interface AuthStoreStateTypes {
   marketId?: number;
   clearAccessToken: () => void;
   clearSession: () => void;
-  setAccessToken: (accessToken: string, options?: { isAutoLogin?: boolean }) => void;
+  setAccessToken: (
+    accessToken: string,
+    options?: { isAutoLogin?: boolean; marketId?: number | null },
+  ) => void;
   setBootstrapStatus: (bootstrapStatus: AuthBootstrapStatusTypes) => void;
   setLoggedIn: (isLoggedIn: boolean) => void;
   setMarketId: (marketId?: number) => void;
@@ -96,7 +99,13 @@ export const useAuthStore = create<AuthStoreStateTypes>()(
           selectAuthStorage(true);
         }
 
-        set({ accessToken, bootstrapStatus: 'authenticated', isLoggedIn: true });
+        set((state) => ({
+          accessToken,
+          bootstrapStatus: 'authenticated',
+          isLoggedIn: true,
+          marketId:
+            options && 'marketId' in options ? (options.marketId ?? undefined) : state.marketId,
+        }));
       },
       setBootstrapStatus: (bootstrapStatus) => {
         set({ bootstrapStatus });

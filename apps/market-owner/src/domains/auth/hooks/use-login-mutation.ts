@@ -8,10 +8,10 @@ export const useLoginMutation = () => {
   return useMutation({
     mutationFn: loginMarketOwner,
     onSuccess: (response, variables) => {
-      const authStore = useAuthStore.getState();
-
-      authStore.setAccessToken(response.data.accessToken, { isAutoLogin: variables.isAutoLogin });
-      authStore.setMarketId(response.data.marketId ?? undefined);
+      useAuthStore.getState().setAccessToken(response.data.accessToken, {
+        isAutoLogin: variables.isAutoLogin,
+        marketId: response.data.marketId,
+      });
     },
   });
 };

@@ -1,6 +1,8 @@
 import { API_ENDPOINTS, isApiResponseValidationError } from '@dongchimi/shared/api';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { PRESIGNED_UPLOAD_PURPOSE } from '@/shared/constants/presigned-upload-purpose';
+
 import { httpClient } from './http-client';
 import { ApiError } from './api-error';
 import { createPresignedUploadUrl, uploadFileToPresignedUrl } from './presigned-upload';
@@ -20,7 +22,7 @@ describe('createPresignedUploadUrl', () => {
 
   it('requests a presigned URL and returns the upload contract', async () => {
     const request = {
-      purpose: 'PRODUCT_THUMBNAIL',
+      purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_THUMBNAIL,
       contentType: 'image/png',
       contentLength: 1024,
     };
@@ -65,7 +67,7 @@ describe('createPresignedUploadUrl', () => {
 
     await expect(
       createPresignedUploadUrl({
-        purpose: 'PRODUCT_THUMBNAIL',
+        purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_THUMBNAIL,
         contentType: 'image/png',
         contentLength: 1024,
       }),
@@ -84,7 +86,7 @@ describe('createPresignedUploadUrl', () => {
 
     await expect(
       createPresignedUploadUrl({
-        purpose: 'PRODUCT_THUMBNAIL',
+        purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_THUMBNAIL,
         contentType: 'image/png',
         contentLength: 1024,
       }),
@@ -103,7 +105,7 @@ describe('createPresignedUploadUrl', () => {
 
     await expect(
       createPresignedUploadUrl({
-        purpose: 'PRODUCT_THUMBNAIL',
+        purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_THUMBNAIL,
         contentType: 'image/png',
         contentLength: 11 * 1024 * 1024,
       }),
