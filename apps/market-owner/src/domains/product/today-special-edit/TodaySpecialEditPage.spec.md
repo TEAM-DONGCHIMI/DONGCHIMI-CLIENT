@@ -35,7 +35,7 @@
 ## Data
 
 - query: `useProductListQuery({ marketId: 1, type: 'DAILY', sort })`
-- mutation: none
+- mutation: 개별 삭제, 일괄 삭제
 - fixture: 목록 렌더링에 사용하지 않음
 - model: `domains/product/model/product-list.ts`
 
@@ -54,8 +54,10 @@
 - 자동으로 열린 modal이 닫히면 URL에서 `productId` search param을 제거합니다.
 - 일괄 기간 수정, 일괄 삭제, 초기화 버튼은 기존 활성 스타일을 유지합니다.
 - 개별 상품 카드의 삭제 버튼은 행사 기간이 남았으면 삭제 확인 modal 확인 후 해당 카드를 목록에서 제거하고, 기간이 지났으면 바로 제거합니다.
-- 개별 수정/삭제는 기존 UI 확인을 위해 현재 조회 결과의 로컬 상태만 변경하며 서버에는 반영하지 않습니다.
-- 실제 mutation, 상세 조회, cursor pagination은 후속 범위입니다.
+- 개별 삭제는 해당 상품의 `productId`로 삭제 API가 성공한 뒤 목록에서 제거합니다.
+- 일괄 삭제는 선택 상품의 `productId[]`로 삭제 API가 성공한 뒤 목록에서 제거합니다.
+- 삭제 API가 실패하면 기존 상품 목록과 선택 상태를 유지하고 오류를 안내합니다.
+- 수정 mutation과 cursor pagination은 후속 범위입니다.
 
 ## Accessibility
 
