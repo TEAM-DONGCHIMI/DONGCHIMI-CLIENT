@@ -35,7 +35,7 @@ describe('useProductThumbnailUpload', () => {
   });
 
   it('uploads a product image and returns its public S3 URL', async () => {
-    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', 'https://static.dongchimi.kr/');
+    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', 'https://static.dongchimi.kr///');
     const imageFile = new File(['image'], 'product.png', { type: 'image/png' });
     mockedCreatePresignedUploadUrl.mockResolvedValue({
       uploadUrl: 'https://upload.example.com/product.png',

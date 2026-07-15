@@ -17,6 +17,11 @@ const mockedUseProductThumbnailUpload = vi.mocked(useProductThumbnailUpload);
 const mockedUseProductUpdateMutation = vi.mocked(useProductUpdateMutation);
 const uploadProductThumbnail = vi.fn();
 const mutateProductUpdate = vi.fn();
+const toastError = vi.fn();
+
+vi.mock('@dongchimi/shared/toast', () => ({
+  useToast: () => ({ error: toastError }),
+}));
 
 const commonParams = {
   currentThumbnailUrl: 'https://cdn.dongchimi.kr/products/101.png',
@@ -40,6 +45,7 @@ describe('useProductUpdateFlow', () => {
     vi.unstubAllEnvs();
     uploadProductThumbnail.mockReset();
     mutateProductUpdate.mockReset();
+    toastError.mockReset();
     mockedUseProductThumbnailUpload.mockReturnValue({ uploadProductThumbnail });
     mockedUseProductUpdateMutation.mockReturnValue({
       mutateAsync: mutateProductUpdate,
@@ -99,7 +105,7 @@ describe('useProductUpdateFlow', () => {
   });
 
   it('reports failure when the update request fails', async () => {
-    mutateProductUpdate.mockRejectedValue(new Error('update failed'));
+    mutateProductUpdate.mockRejectedValue(new TypeError('Failed to fetch'));
     const { result } = renderHook(() => useProductUpdateFlow());
     let didUpdate = true;
 
@@ -108,5 +114,6 @@ describe('useProductUpdateFlow', () => {
     });
 
     expect(didUpdate).toBe(false);
+    expect(toastError).toHaveBeenCalledWith('인터넷 연결을 확인한 후 다시 시도해주세요.');
   });
 });

@@ -5,7 +5,7 @@ import { PRESIGNED_UPLOAD_PURPOSE } from '@/shared/constants/presigned-upload-pu
 import { usePresignedUploadMutation } from './use-presigned-upload-mutation';
 
 const createPublicProductThumbnailUrl = (s3BaseUrl: string, objectKey: string) => {
-  return `${s3BaseUrl}/${objectKey.replace(/^\/+/, '')}`;
+  return `${s3BaseUrl.replace(/\/+$/, '')}/${objectKey.replace(/^\/+/, '')}`;
 };
 
 export const useProductThumbnailUpload = () => {

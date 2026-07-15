@@ -12,6 +12,11 @@ const mockedUseProductDiscountPeriodUpdateMutation = vi.mocked(
   useProductDiscountPeriodUpdateMutation,
 );
 const mutateProductDiscountPeriodUpdate = vi.fn();
+const toastError = vi.fn();
+
+vi.mock('@dongchimi/shared/toast', () => ({
+  useToast: () => ({ error: toastError }),
+}));
 const params = {
   endDate: '2026-07-02',
   marketId: 1,
@@ -22,6 +27,7 @@ const params = {
 describe('useProductDiscountPeriodUpdateFlow', () => {
   beforeEach(() => {
     mutateProductDiscountPeriodUpdate.mockReset();
+    toastError.mockReset();
     mockedUseProductDiscountPeriodUpdateMutation.mockReturnValue({
       mutateAsync: mutateProductDiscountPeriodUpdate,
     } as unknown as ReturnType<typeof useProductDiscountPeriodUpdateMutation>);
@@ -76,5 +82,6 @@ describe('useProductDiscountPeriodUpdateFlow', () => {
     });
 
     expect(didUpdate).toBe(false);
+    expect(toastError).toHaveBeenCalledWith('행사 기간을 수정하지 못했습니다. 다시 시도해주세요.');
   });
 });

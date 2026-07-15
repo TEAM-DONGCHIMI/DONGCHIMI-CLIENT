@@ -32,6 +32,16 @@ interface ProductEditProductListProps {
 const hasProducts = (groups: ProductEditProductGroup[]) =>
   groups.some(({ products }) => products.length > 0);
 
+const parseProductId = (value: ProductEditCardProps['productId']) => {
+  if (value == null || (typeof value === 'string' && value.trim() === '')) {
+    return null;
+  }
+
+  const productId = Number(value);
+
+  return Number.isSafeInteger(productId) && productId > 0 ? productId : null;
+};
+
 export const ProductEditProductList = ({
   ariaLabel,
   deletePending = false,
@@ -73,9 +83,9 @@ export const ProductEditProductList = ({
       return;
     }
 
-    const targetProductId = Number(targetProduct.productId);
+    const targetProductId = parseProductId(targetProduct.productId);
 
-    if (!Number.isSafeInteger(targetProductId)) {
+    if (targetProductId == null) {
       onAutoOpenProductMissing?.(autoOpenProductId);
 
       return;
@@ -111,9 +121,9 @@ export const ProductEditProductList = ({
     });
   };
   const editProduct = (product: ProductEditCardProps) => {
-    const productId = Number(product.productId);
+    const productId = parseProductId(product.productId);
 
-    if (!Number.isSafeInteger(productId)) {
+    if (productId == null) {
       return;
     }
 

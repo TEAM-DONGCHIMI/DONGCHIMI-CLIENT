@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useToast } from '@dongchimi/shared/toast';
 
+import { normalizeApiError } from '@/shared/api';
 import { useProductDiscountPeriodUpdateMutation } from './use-product-discount-period-update-mutation';
 
 interface SubmitProductDiscountPeriodUpdateParams {
@@ -9,8 +11,28 @@ interface SubmitProductDiscountPeriodUpdateParams {
   startDate: string;
 }
 
+const discountPeriodUpdateErrorMessages = {
+  failed: '행사 기간을 수정하지 못했습니다. 다시 시도해주세요.',
+  network: '인터넷 연결을 확인한 후 다시 시도해주세요.',
+} as const;
+
+const getDiscountPeriodUpdateErrorMessage = (error: unknown) => {
+  const normalizedError = normalizeApiError(error);
+
+  if (normalizedError.type === 'network') {
+    return discountPeriodUpdateErrorMessages.network;
+  }
+
+  if (['auth', 'client', 'server', 'validation'].includes(normalizedError.type)) {
+    return normalizedError.message || discountPeriodUpdateErrorMessages.failed;
+  }
+
+  return discountPeriodUpdateErrorMessages.failed;
+};
+
 export const useProductDiscountPeriodUpdateFlow = () => {
   const [isPending, setIsPending] = useState(false);
+  const toast = useToast();
   const updateMutation = useProductDiscountPeriodUpdateMutation();
 
   const submitProductDiscountPeriodUpdate = async ({
@@ -36,7 +58,9 @@ export const useProductDiscountPeriodUpdateFlow = () => {
       });
 
       return true;
-    } catch {
+    } catch (error) {
+      toast.error(getDiscountPeriodUpdateErrorMessage(error));
+
       return false;
     } finally {
       setIsPending(false);

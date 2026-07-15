@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useToast } from '@dongchimi/shared/toast';
 
+import { normalizeApiError } from '@/shared/api';
 import type { UpdateProductRequestTypes } from '../api/update-product';
 import {
   createProductUpdateRequest,
@@ -17,8 +19,28 @@ interface SubmitProductUpdateParams {
   values: ProductUpdateFormValuesTypes;
 }
 
+const productUpdateErrorMessages = {
+  failed: '상품 정보를 수정하지 못했습니다. 다시 시도해주세요.',
+  network: '인터넷 연결을 확인한 후 다시 시도해주세요.',
+} as const;
+
+const getProductUpdateErrorMessage = (error: unknown) => {
+  const normalizedError = normalizeApiError(error);
+
+  if (normalizedError.type === 'network') {
+    return productUpdateErrorMessages.network;
+  }
+
+  if (['auth', 'client', 'server', 'validation'].includes(normalizedError.type)) {
+    return normalizedError.message || productUpdateErrorMessages.failed;
+  }
+
+  return productUpdateErrorMessages.failed;
+};
+
 export const useProductUpdateFlow = () => {
   const [isPending, setIsPending] = useState(false);
+  const toast = useToast();
   const { uploadProductThumbnail } = useProductThumbnailUpload();
   const productUpdateMutation = useProductUpdateMutation();
 
@@ -48,7 +70,9 @@ export const useProductUpdateFlow = () => {
       });
 
       return true;
-    } catch {
+    } catch (error) {
+      toast.error(getProductUpdateErrorMessage(error));
+
       return false;
     } finally {
       setIsPending(false);

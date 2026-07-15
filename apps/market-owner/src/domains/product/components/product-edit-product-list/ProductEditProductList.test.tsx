@@ -233,6 +233,48 @@ describe('ProductEditProductList', () => {
     expect(screen.getByRole('button', { name: '변경하기' })).toBeDisabled();
   });
 
+  it('does not open edit modal when the product id is empty', async () => {
+    const user = userEvent.setup();
+    const handleAutoOpenProductMissing = vi.fn();
+
+    render(
+      <MemoryRouter>
+        <OverlayProvider>
+          <ProductEditProductList
+            ariaLabel='오늘의 특가 상품 수정 목록'
+            autoOpenProductId=''
+            editModalVariant='todaySpecial'
+            groups={[
+              {
+                title: '2026년 8월 15일',
+                products: [
+                  {
+                    categoryName: '채소/과일',
+                    productId: '',
+                    productName: '딸기 2팩',
+                    salePrice: '4,500',
+                  },
+                ],
+              },
+            ]}
+            marketId={1}
+            registrationHref='/products/today-special/new'
+            onAutoOpenProductMissing={handleAutoOpenProductMissing}
+          />
+        </OverlayProvider>
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(handleAutoOpenProductMissing).toHaveBeenCalledWith('');
+    });
+
+    await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 수정' }));
+
+    expect(mockUseProductDetailQuery).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   it('updates category from edit modal category dropdown', async () => {
     const user = userEvent.setup();
     const handleUpdateProduct = vi.fn();
