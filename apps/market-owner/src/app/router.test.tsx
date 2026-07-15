@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { loginMarketOwner, signupMarketOwner } from '@/domains/auth/api/auth-api';
+import { ownerHomeFixture } from '@/domains/home/fixtures/owner-home-api.fixture';
+import { useOwnerHomeQuery } from '@/domains/home/hooks/use-owner-home-query';
 import { ApiError } from '@/shared/api';
 import { render, screen } from '@/test';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
@@ -14,6 +16,10 @@ import { marketOwnerRoutes } from './router';
 vi.mock('@/domains/auth/api/auth-api', () => ({
   loginMarketOwner: vi.fn(),
   signupMarketOwner: vi.fn(),
+}));
+
+vi.mock('@/domains/home/hooks/use-owner-home-query', () => ({
+  useOwnerHomeQuery: vi.fn(),
 }));
 
 vi.mock('@/domains/product/hooks/use-product-list-query', () => ({
@@ -90,6 +96,7 @@ vi.mock('@/domains/product/hooks/use-product-detail-query', () => ({
 
 const mockLoginMarketOwner = vi.mocked(loginMarketOwner);
 const mockSignupMarketOwner = vi.mocked(signupMarketOwner);
+const mockedUseOwnerHomeQuery = vi.mocked(useOwnerHomeQuery);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -118,6 +125,12 @@ beforeEach(() => {
       marketThumbnailUrl: null,
     },
   });
+  mockedUseOwnerHomeQuery.mockReturnValue({
+    data: ownerHomeFixture,
+    isError: false,
+    isPending: false,
+    refetch: vi.fn(),
+  } as unknown as ReturnType<typeof useOwnerHomeQuery>);
 });
 
 const isPublicAuthRoute = (path: string) => {
@@ -436,14 +449,20 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('complementary')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '홈' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('search', { name: '상품 검색' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /오늘의 특가 상품 등록하기/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /행사 할인 상품 등록하기/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /상품 수정하러 가기/ })).toBeInTheDocument();
+    const quickActionButtons = [
+      screen.getByRole('button', { name: /오늘의 특가 상품 등록하기/ }),
+      screen.getByRole('button', { name: /행사 할인 상품 등록하기/ }),
+      screen.getByRole('button', { name: /상품 수정하러 가기/ }),
+    ];
+
+    quickActionButtons.forEach((button) => {
+      expect(button.querySelector('img')).toBeInTheDocument();
+    });
     expect(screen.getByRole('heading', { name: '오늘의 특가 상품' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '행사 할인 상품' })).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: '등록한 상품 전체보기' })).toHaveLength(2);
     expect(screen.getByRole('heading', { name: '전단 공유하기' })).toBeInTheDocument();
-    expect(screen.getByText('dongchimi.kr/mangwon-fresh')).toBeInTheDocument();
+    expect(screen.getByText('app.dongchiimi.com/markets/mangwon-fresh')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '링크 복사' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '매장 고유 QR코드 보기' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '오늘의 전단 공유' })).not.toBeInTheDocument();
@@ -541,7 +560,7 @@ describe('marketOwnerRoutes', () => {
     renderRoute('/');
 
     await screen.findByRole('heading', { name: '동치미 홈' });
-    await user.click(screen.getAllByRole('button', { name: '상품 보기: 풀무원 콩나물 500g' })[0]);
+    await user.click(screen.getByRole('button', { name: '상품 보기: 삼겹살 500g' }));
 
     expect(await findRouteHeading('오늘의 특가 상품을 수정하세요')).toBeInTheDocument();
   });
@@ -563,7 +582,7 @@ describe('marketOwnerRoutes', () => {
     renderRoute('/');
 
     await screen.findByRole('heading', { name: '동치미 홈' });
-    await user.click(screen.getByRole('button', { name: '1위 상품 보기: 풀무원 콩나물 500g' }));
+    await user.click(screen.getByRole('button', { name: '1위 상품 보기: 깻잎 2묶음' }));
 
     expect(await findRouteHeading('행사 할인 상품을 수정하세요')).toBeInTheDocument();
   });
@@ -578,7 +597,7 @@ describe('marketOwnerRoutes', () => {
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.click(screen.getByRole('button', { name: '링크 복사' }));
 
-    expect(writeText).toHaveBeenCalledWith('dongchimi.kr/mangwon-fresh');
+    expect(writeText).toHaveBeenCalledWith('https://app.dongchiimi.com/markets/mangwon-fresh');
     expect(await screen.findByRole('status')).toHaveTextContent('전단 링크가 복사되었습니다.');
     expectSidebarToastViewportToUseViewportTopCenter();
   });
