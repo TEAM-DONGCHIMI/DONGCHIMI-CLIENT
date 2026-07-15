@@ -21,12 +21,12 @@ export type BusinessHourTypes =
       open?: null;
     };
 
-export type BusinessHourInputTypes = {
+export interface BusinessHourInputTypes {
   close?: string | null;
   days: readonly string[];
   isOpen: boolean;
   open?: string | null;
-};
+}
 
 type OpenBusinessHourTypes = Extract<BusinessHourTypes, { isOpen: true }>;
 
