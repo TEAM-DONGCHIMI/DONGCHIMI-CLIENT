@@ -6,9 +6,9 @@ import { formatBusinessDays } from '@dongchimi/shared/business-hours';
 import { act, renderWithProviders, screen, server, userEvent, waitFor, within } from '@/test';
 
 import { MarketProductsPage } from './MarketProductsPage';
+import { DAILY_PRODUCTS_API_RESPONSE_FIXTURE } from '../api/daily-products-api.mock';
 import { MARKET_DETAIL_API_RESPONSE_FIXTURE } from '../api/market-detail-api.mock';
 import type { BusinessHourTypes } from '../model/market-detail-schema';
-import { marketProductsFixture } from './fixtures/market-products.fixture';
 import { calculateFirstRowCategoryCount } from './hooks/useEventDiscountCategoryLayout';
 import { formatPrice } from './utils/format-price';
 import { getCurrentBusinessCloseTime } from './utils/market-actions';
@@ -20,6 +20,7 @@ const router = {
 
 const MARKET_SLUG = 'mangwon-fresh';
 const MARKET_DETAIL_API_PATH = `${window.location.origin}/api/markets/:slug`;
+const DAILY_PRODUCTS_API_PATH = `${window.location.origin}/api/markets/products/daily`;
 
 let intersectionObserverCallback: IntersectionObserverCallback | undefined;
 let intersectionObserverOptions: IntersectionObserverInit | undefined;
@@ -82,6 +83,18 @@ describe('MarketProductsPage', () => {
         }
 
         return HttpResponse.json(MARKET_DETAIL_API_RESPONSE_FIXTURE);
+      }),
+      http.get(DAILY_PRODUCTS_API_PATH, ({ request }) => {
+        const requestUrl = new URL(request.url);
+
+        if (
+          requestUrl.searchParams.get('marketId') !==
+          String(MARKET_DETAIL_API_RESPONSE_FIXTURE.data.marketId)
+        ) {
+          return HttpResponse.json({ message: '잘못된 마트 식별자입니다.' }, { status: 400 });
+        }
+
+        return HttpResponse.json(DAILY_PRODUCTS_API_RESPONSE_FIXTURE);
       }),
     );
   });
@@ -193,26 +206,120 @@ describe('MarketProductsPage', () => {
 
   it('toggles today special products', async () => {
     const user = userEvent.setup();
+    const expandedProducts = [
+      ...DAILY_PRODUCTS_API_RESPONSE_FIXTURE.data.products,
+      ...DAILY_PRODUCTS_API_RESPONSE_FIXTURE.data.products.map((product, index) => ({
+        ...product,
+        name: `${product.name} 추가`,
+        productId: product.productId + index + 100,
+      })),
+    ];
+
+    server.use(
+      http.get(DAILY_PRODUCTS_API_PATH, () => {
+        return HttpResponse.json({
+          ...DAILY_PRODUCTS_API_RESPONSE_FIXTURE,
+          data: {
+            products: expandedProducts,
+            totalCount: expandedProducts.length,
+          },
+        });
+      }),
+    );
 
     await renderMarketProductsPage();
 
+    const toggleButton = await screen.findByRole('button', { name: '등록한 상품 전체보기' });
     const todaySection = getSectionQueries('오늘의 특가 상품');
-    const toggleButton = screen.getByRole('button', { name: '등록한 상품 전체보기' });
 
-    expect(
-      todaySection.getByText(`${marketProductsFixture.todaySpecial.products.length}건`),
-    ).toBeInTheDocument();
+    expect(todaySection.getByText(`${expandedProducts.length}건`)).toBeInTheDocument();
     expect(todaySection.getAllByRole('link')).toHaveLength(2);
     expect(toggleButton).toHaveAttribute('aria-controls', 'today-special-products-list');
     expect(document.getElementById('today-special-products-list')).toBeInTheDocument();
 
     await user.click(toggleButton);
 
-    expect(todaySection.getAllByRole('link')).toHaveLength(9);
+    expect(todaySection.getAllByRole('link')).toHaveLength(expandedProducts.length);
 
     await user.click(screen.getByRole('button', { name: '접기' }));
 
     expect(todaySection.getAllByRole('link')).toHaveLength(2);
+  });
+
+  it('오늘의 특가 조회 중 loading 상태를 표시한다', async () => {
+    server.use(
+      http.get(DAILY_PRODUCTS_API_PATH, async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        return HttpResponse.json(DAILY_PRODUCTS_API_RESPONSE_FIXTURE);
+      }),
+    );
+
+    renderWithProviders(<MarketProductsPage marketSlug={MARKET_SLUG} />);
+
+    await screen.findByRole('heading', { name: MARKET_DETAIL_API_RESPONSE_FIXTURE.data.name });
+    expect(screen.getByRole('status')).toHaveTextContent('오늘의 특가 상품을 불러오는 중이에요.');
+    await screen.findByText('2건');
+    expect(getSectionQueries('오늘의 특가 상품').getByText('2건')).toBeInTheDocument();
+  });
+
+  it('오늘의 특가 API가 빈 목록을 반환하면 0건 empty 상태를 표시한다', async () => {
+    server.use(
+      http.get(DAILY_PRODUCTS_API_PATH, () => {
+        return HttpResponse.json({
+          ...DAILY_PRODUCTS_API_RESPONSE_FIXTURE,
+          data: {
+            products: [],
+            totalCount: 0,
+          },
+        });
+      }),
+    );
+
+    await renderMarketProductsPage();
+
+    await screen.findByText('등록된 오늘의 특가 상품이 없어요.');
+    const todaySection = getSectionQueries('오늘의 특가 상품');
+
+    expect(todaySection.getByText('0건')).toBeInTheDocument();
+    expect(todaySection.getByText('등록된 오늘의 특가 상품이 없어요.')).toBeInTheDocument();
+    expect(todaySection.queryByRole('link')).not.toBeInTheDocument();
+    expect(
+      todaySection.queryByRole('button', { name: '등록한 상품 전체보기' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('오늘의 특가 조회 실패 시 오류와 재시도 action을 표시한다', async () => {
+    const user = userEvent.setup();
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+
+    server.use(
+      http.get(DAILY_PRODUCTS_API_PATH, () => {
+        return HttpResponse.json({ message: '조회에 실패했습니다.' }, { status: 500 });
+      }),
+    );
+
+    renderWithProviders(<MarketProductsPage marketSlug={MARKET_SLUG} />, { queryClient });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '오늘의 특가 상품을 불러오지 못했어요.',
+    );
+
+    server.use(
+      http.get(DAILY_PRODUCTS_API_PATH, () => {
+        return HttpResponse.json(DAILY_PRODUCTS_API_RESPONSE_FIXTURE);
+      }),
+    );
+
+    await user.click(screen.getByRole('button', { name: '오늘의 특가 다시 시도' }));
+
+    expect(await getSectionQueries('오늘의 특가 상품').findByText('2건')).toBeInTheDocument();
   });
 
   it('shows a bottom-center toast when leaflet link copy succeeds', async () => {
