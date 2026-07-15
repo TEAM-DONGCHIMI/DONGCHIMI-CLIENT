@@ -3,6 +3,10 @@ import { expect, test } from '@playwright/test';
 const routeShellTimeout = 30_000;
 const marketProductsPath = '/markets/mangwon-fresh';
 const productDetailPath = `${marketProductsPath}/products/101`;
+const productDetailViewports = [
+  { height: 812, width: 375 },
+  { height: 932, width: 430 },
+] as const;
 
 test('client root route redirects to login', async ({ page }) => {
   await page.goto('/');
@@ -81,10 +85,17 @@ test('client product detail route shell renders', async ({ page }) => {
     });
   });
 
-  await page.goto(productDetailPath);
-  await expect(page.getByRole('heading', { name: '오늘의 특가' })).toBeVisible({
-    timeout: routeShellTimeout,
-  });
-  await expect(page.getByRole('heading', { name: '삼겹살 500g' })).toBeVisible();
-  await expect(page.getByText('4,500원')).toBeVisible();
+  for (const viewport of productDetailViewports) {
+    await page.setViewportSize(viewport);
+    await page.goto(productDetailPath);
+
+    await expect(page.getByRole('heading', { name: '오늘의 특가' })).toBeVisible({
+      timeout: routeShellTimeout,
+    });
+    await expect(page.getByRole('heading', { name: '삼겹살 500g' })).toBeVisible();
+    await expect(page.getByText('4,500원')).toBeVisible();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+    ).toBe(true);
+  }
 });

@@ -80,14 +80,14 @@
 
 ## Verification
 
-- [ ] `git diff --check`
-- [ ] `pnpm format:check`
-- [ ] `pnpm --filter client lint`
-- [ ] `pnpm --filter client typecheck`
-- [ ] `pnpm --filter client test:unit`
-- [ ] `pnpm --filter client test:integration`
-- [ ] `pnpm --filter client build`
-- [ ] browser route at 375px and 430px
+- [x] `git diff --check`
+- [x] `pnpm format:check`
+- [x] `pnpm --filter client lint`
+- [x] `pnpm --filter client typecheck`
+- [x] `pnpm --filter client test:unit`
+- [x] `pnpm --filter client test:integration`
+- [x] `pnpm --filter client build`
+- [x] browser route at 375px and 430px
 
 ## Open Questions
 

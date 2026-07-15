@@ -48,10 +48,10 @@
 
 ## Verification
 
-- [ ] `git diff --check`
+- [x] `git diff --check`
 - [x] API contract checked
 - [x] query key includes response-changing params
 - [x] query options separate query identity from hook usage policy
-- [ ] `pnpm --filter client test:unit`
-- [ ] `pnpm --filter client typecheck`
-- [ ] `pnpm --filter client build`
+- [x] `pnpm --filter client test:unit`
+- [x] `pnpm --filter client typecheck`
+- [x] `pnpm --filter client build`
