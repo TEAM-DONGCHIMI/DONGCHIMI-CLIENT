@@ -16,8 +16,8 @@
 ## Public API
 
 - `products`: 검색 대상 상품 목록입니다. API 연동 전 fixture 또는 adapter 결과를 전달합니다.
-- 현재 홈과 상품 수정 shell은 같은 app-shared fixture를 전달합니다. 실제 검색 API가 확정되면 각 호출부는
-  같은 응답 adapter를 전달합니다.
+- 현재 홈 호출부는 app-shared fixture를 전달합니다. 상품 수정 shell은 실데이터 source가 연결되기 전까지
+  검색 영역을 숨깁니다.
 - `getProductsByQuery`: 검색 소스를 교체할 수 있는 선택적 filter/adapter입니다. 기본값은 상품명에 대한 부분 검색입니다.
 - `onSelectProduct`: 검색 결과에서 선택한 상품을 호출부에 전달합니다. 호출부는 route 이동, modal open, error feedback 같은 후속 정책을 결정합니다.
 
@@ -37,5 +37,4 @@
 
 - [x] selected search result is forwarded through `onSelectProduct`
 - [x] home call site creates the edit route with the `productId` search param
-- [x] product edit shell call site creates the edit route with the `productId` search param
 - [x] home call site keeps the current page and shows error feedback when product info cannot be loaded
