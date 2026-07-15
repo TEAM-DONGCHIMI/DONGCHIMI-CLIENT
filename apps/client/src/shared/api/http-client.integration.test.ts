@@ -26,4 +26,42 @@ describe('httpClient', () => {
 
     expect(result).toEqual({ name: '동치미' });
   });
+
+  it('로컬 테스트 토큰이 있으면 Bearer 헤더를 추가한다', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_TEST_TOKEN', 'test-token');
+
+    server.use(
+      http.get(`${API_BASE_URL}/authorized-resource`, ({ request }) => {
+        expect(request.headers.get('Authorization')).toBe('Bearer test-token');
+
+        return HttpResponse.json({ success: true });
+      }),
+    );
+
+    await expect(httpClient.get<{ success: boolean }>('authorized-resource')).resolves.toEqual({
+      success: true,
+    });
+
+    vi.stubEnv('NEXT_PUBLIC_API_TEST_TOKEN', '');
+  });
+
+  it('요청에 명시한 Authorization 헤더를 로컬 테스트 토큰으로 덮어쓰지 않는다', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_TEST_TOKEN', 'test-token');
+
+    server.use(
+      http.get(`${API_BASE_URL}/authorized-resource`, ({ request }) => {
+        expect(request.headers.get('Authorization')).toBe('Bearer session-token');
+
+        return HttpResponse.json({ success: true });
+      }),
+    );
+
+    await expect(
+      httpClient.get<{ success: boolean }>('authorized-resource', {
+        headers: { Authorization: 'Bearer session-token' },
+      }),
+    ).resolves.toEqual({ success: true });
+
+    vi.stubEnv('NEXT_PUBLIC_API_TEST_TOKEN', '');
+  });
 });
