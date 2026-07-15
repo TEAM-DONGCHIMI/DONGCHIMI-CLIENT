@@ -9,8 +9,17 @@ import { marketQueryKeys } from '../query-keys';
 
 type PeriodicProductsQueryKeyTypes = ReturnType<typeof marketQueryKeys.periodicProducts>;
 
-export const getPeriodicProductsNextPageParam = (lastPage: PeriodicProductsPageTypes) => {
+export const getPeriodicProductsNextPageParam = (
+  lastPage: PeriodicProductsPageTypes,
+  _allPages: PeriodicProductsPageTypes[],
+  _lastPageParam: number | undefined,
+  allPageParams: (number | undefined)[],
+) => {
   if (!lastPage.hasNext || lastPage.nextCursor == null) {
+    return undefined;
+  }
+
+  if (allPageParams.includes(lastPage.nextCursor)) {
     return undefined;
   }
 

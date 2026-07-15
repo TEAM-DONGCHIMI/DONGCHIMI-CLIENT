@@ -2,10 +2,24 @@ import { describe, expect, it } from 'vitest';
 
 import { getPeriodicProductsNextPageParam } from './periodic-products-infinite-query-options';
 
+type NextPageTypes = Parameters<typeof getPeriodicProductsNextPageParam>[0];
+
+const resolveNextPageParam = (
+  lastPage: NextPageTypes,
+  allPageParams: (number | undefined)[] = [undefined],
+) => {
+  return getPeriodicProductsNextPageParam(
+    lastPage,
+    [lastPage],
+    allPageParams.at(-1),
+    allPageParams,
+  );
+};
+
 describe('getPeriodicProductsNextPageParam', () => {
   it('다음 페이지가 있으면 nextCursor를 반환한다', () => {
     expect(
-      getPeriodicProductsNextPageParam({
+      resolveNextPageParam({
         availableCategories: [],
         content: [],
         hasNext: true,
@@ -16,7 +30,7 @@ describe('getPeriodicProductsNextPageParam', () => {
 
   it('hasNext가 false이면 cursor가 있어도 요청을 종료한다', () => {
     expect(
-      getPeriodicProductsNextPageParam({
+      resolveNextPageParam({
         availableCategories: [],
         content: [],
         hasNext: false,
@@ -27,12 +41,26 @@ describe('getPeriodicProductsNextPageParam', () => {
 
   it('nextCursor가 null이면 요청을 종료한다', () => {
     expect(
-      getPeriodicProductsNextPageParam({
+      resolveNextPageParam({
         availableCategories: [],
         content: [],
         hasNext: true,
         nextCursor: null,
       }),
+    ).toBeUndefined();
+  });
+
+  it('이미 사용한 nextCursor를 다시 받으면 요청을 종료한다', () => {
+    expect(
+      resolveNextPageParam(
+        {
+          availableCategories: [],
+          content: [],
+          hasNext: true,
+          nextCursor: 301,
+        },
+        [undefined, 301],
+      ),
     ).toBeUndefined();
   });
 });

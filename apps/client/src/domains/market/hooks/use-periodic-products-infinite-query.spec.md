@@ -33,6 +33,7 @@
 
 - `hasNext === true`이고 `nextCursor`가 숫자일 때만 다음 pageParam을 반환한다.
 - `hasNext === false` 또는 `nextCursor === null`이면 조회를 종료한다.
+- 서버가 이미 사용한 `nextCursor`를 다시 반환하면 반복 요청을 막고 조회를 종료한다.
 
 ## Verification
 
