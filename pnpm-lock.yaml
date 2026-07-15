@@ -305,6 +305,9 @@ importers:
       '@lottiefiles/dotlottie-react':
         specifier: ^0.19.9
         version: 0.19.9(react@19.2.7)
+      '@lottiefiles/dotlottie-web':
+        specifier: 0.77.1
+        version: 0.77.1
       '@sentry/react':
         specifier: 'catalog:'
         version: 10.60.0(react@19.2.7)
