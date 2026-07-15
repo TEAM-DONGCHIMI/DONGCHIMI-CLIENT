@@ -12,12 +12,11 @@ const registrationErrorMessages = {
   network: '인터넷 연결을 확인한 후 다시 시도해주세요.',
 } as const;
 
-// TODO: 마트 등록 api 구현 후 교체
-const TEMPORARY_MARKET_ID = 1;
+type RegistrationResultTypes =
+  | { productId: number; success: true; thumbnailUrl: string }
+  | { success: false };
 
-type RegistrationResultTypes = { success: true } | { success: false };
-
-export const useTodaySpecialProductRegistration = () => {
+export const useTodaySpecialProductRegistration = (marketId: number) => {
   const toast = useToast();
   const { uploadProductImage } = useTodaySpecialImageUpload();
   const dailyProductRegistrationMutation = useDailyProductRegistrationMutation();
@@ -34,12 +33,23 @@ export const useTodaySpecialProductRegistration = () => {
 
       const uploadedImageObjectKey = await uploadProductImage(product);
 
-      await dailyProductRegistrationMutation.mutateAsync({
-        marketId: TEMPORARY_MARKET_ID,
-        request: createDailyProductRequest({ product, s3BaseUrl, uploadedImageObjectKey }),
+      const request = createDailyProductRequest({ product, s3BaseUrl, uploadedImageObjectKey });
+      const thumbnailUrl = request.thumbnailUrl;
+
+      if (thumbnailUrl == null) {
+        throw new Error('Product thumbnail URL is required.');
+      }
+
+      const response = await dailyProductRegistrationMutation.mutateAsync({
+        marketId,
+        request,
       });
 
-      return { success: true };
+      return {
+        productId: response.data.productId,
+        success: true,
+        thumbnailUrl,
+      };
     } catch (error) {
       const normalizedError = await normalizeApiError(error);
       const message =

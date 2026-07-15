@@ -434,7 +434,7 @@ export const ProductEditModal = ({
   const detail = productDetailQuery.data.data;
 
   const submitProductUpdate = async (values: ProductEditFormValues) => {
-    const didUpdate = await productUpdateFlow.submitProductUpdate({
+    const result = await productUpdateFlow.submitProductUpdate({
       currentThumbnailUrl: detail.thumbnailUrl ?? null,
       dealType: detail.dealType,
       imageFile: values.imageFile,
@@ -443,11 +443,11 @@ export const ProductEditModal = ({
       values,
     });
 
-    if (didUpdate) {
+    if (result.success) {
       onSubmit?.(createUpdatedProductCard({ product, values, variant }));
     }
 
-    return didUpdate;
+    return result.success;
   };
 
   return (

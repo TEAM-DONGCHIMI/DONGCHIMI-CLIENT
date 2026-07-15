@@ -9,8 +9,11 @@ import * as S from '../today-special-registration-page.css';
 
 interface RegistrationTitleSectionProps {
   canCancelCurrentDraft: boolean;
+  canDeleteRegisteredProduct: boolean;
   currentIndex: number;
+  isInteractionPending: boolean;
   onCancelCurrentDraft: () => void;
+  onDeleteRegisteredProduct: () => void;
   onNextProduct: () => void;
   onPreviousProduct: () => void;
   productCount: number;
@@ -18,13 +21,17 @@ interface RegistrationTitleSectionProps {
 
 export const RegistrationTitleSection = ({
   canCancelCurrentDraft,
+  canDeleteRegisteredProduct,
   currentIndex,
+  isInteractionPending,
   onCancelCurrentDraft,
+  onDeleteRegisteredProduct,
   onNextProduct,
   onPreviousProduct,
   productCount,
 }: RegistrationTitleSectionProps) => {
   const shouldShowProductControls = productCount > 1;
+  const shouldShowRemoveButton = canCancelCurrentDraft || canDeleteRegisteredProduct;
 
   return (
     <header className={S.titleSectionClassName}>
@@ -46,7 +53,7 @@ export const RegistrationTitleSection = ({
                 aria-label='이전 상품'
                 className={S.titleNavigationButtonClassName}
                 color='assistive'
-                disabled={currentIndex === 0}
+                disabled={isInteractionPending || currentIndex === 0}
                 icon={<IcChevronLeft />}
                 onClick={onPreviousProduct}
                 type='button'
@@ -56,7 +63,7 @@ export const RegistrationTitleSection = ({
                 aria-label='다음 상품'
                 className={S.titleNavigationButtonClassName}
                 color='assistive'
-                disabled={currentIndex === productCount - 1}
+                disabled={isInteractionPending || currentIndex === productCount - 1}
                 icon={<IcChevronRight />}
                 onClick={onNextProduct}
                 type='button'
@@ -66,13 +73,14 @@ export const RegistrationTitleSection = ({
           )}
         </div>
 
-        {canCancelCurrentDraft && (
+        {shouldShowRemoveButton && (
           <IconButton
-            aria-label='현재 상품 등록 취소'
+            aria-label={canDeleteRegisteredProduct ? '등록 상품 삭제' : '현재 상품 등록 취소'}
             className={S.titleRemoveButtonClassName}
             color='assistive'
+            disabled={isInteractionPending}
             icon={<IcLineHorizontalSizeSmall />}
-            onClick={onCancelCurrentDraft}
+            onClick={canDeleteRegisteredProduct ? onDeleteRegisteredProduct : onCancelCurrentDraft}
             type='button'
             variant='outlined'
           />
