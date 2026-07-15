@@ -92,10 +92,10 @@ export const EventDiscountRegistrationPage = ({
     handleExcelFileDrop,
     handleExcelUploadModalOpenChange,
     isUploading,
+    isUploadedExcelFileReady,
     openExcelUpload,
     registrationView,
     startFileAnalysis,
-    uploadExcelFile,
     uploadedExcelFileUrl,
     uploadedExcelFileName,
   } = useExcelUploadFlow({
@@ -213,11 +213,16 @@ export const EventDiscountRegistrationPage = ({
         onFileChange={handleExcelFileChange}
         onFileDrop={handleExcelFileDrop}
         onOpenChange={handleExcelUploadModalOpenChange}
-        onUpload={uploadExcelFile}
+        onUpload={handleStartFileAnalysis}
         open={excelUploadModal.open}
         selectedFileText={excelUploadModal.selectedFileName ?? '선택된 파일이 없습니다.'}
         state={excelUploadModal.state}
-        uploadButtonDisabled={excelUploadModal.state !== 'upload' || isUploading}
+        uploadButtonDisabled={
+          excelUploadModal.state !== 'upload' ||
+          isUploading ||
+          !isUploadedExcelFileReady ||
+          startProductImportMutation.isPending
+        }
       />
 
       <PosExcelGuidePanel onClose={() => setIsPosGuideOpen(false)} open={isPosGuideOpen} />

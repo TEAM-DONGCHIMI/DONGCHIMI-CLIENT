@@ -40,11 +40,12 @@ export const signupMarketOwner = async (
       skipAuthorization: true,
       skipRefresh: true,
     },
+    credentials: 'include',
     json: body,
   });
 
   return validateApiResponse(ownerSignupResponseSchema, response, {
     endpoint,
-    schemaDescription: 'ApiResponseOwnerSignupResponse',
+    schemaDescription: 'ApiResponseOwnerLoginResponse',
   });
 };

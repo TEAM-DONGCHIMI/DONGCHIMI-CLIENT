@@ -69,6 +69,10 @@ export const actionItemClassName = style({
   cursor: 'pointer',
   textAlign: 'left',
   selectors: {
+    '&:disabled': {
+      cursor: 'wait',
+      opacity: 0.6,
+    },
     '&:focus-visible': {
       outline: `0.3rem solid color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`,
       outlineOffset: '0.2rem',

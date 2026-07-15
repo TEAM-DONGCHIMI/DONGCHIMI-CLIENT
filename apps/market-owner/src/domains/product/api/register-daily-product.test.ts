@@ -24,7 +24,7 @@ describe('registerDailyProduct', () => {
 
   it('posts the daily product request to the market endpoint', async () => {
     const request: RegisterDailyProductRequestTypes = {
-      thumbnailUrl: 'tmp/PRODUCT_THUMBNAIL/product.png',
+      thumbnailUrl: 'https://static.example.com/tmp/PRODUCT_THUMBNAIL/product.png',
       name: '토마토',
       category: 'VEGETABLE_FRUIT',
       promotionalPhrase: '멋쟁이 토마토',
