@@ -5,6 +5,8 @@ import { httpClient, type OwnerApiTypes } from '@/shared/api';
 export type DeleteProductResponseTypes = OwnerApiTypes.DeleteData;
 export type DeleteProductRequestTypes = OwnerApiTypes.ProductDeleteRequest;
 export type DeleteProductsRequestTypes = OwnerApiTypes.ProductBulkDeleteRequest;
+export type ResetProductsRequestTypes = OwnerApiTypes.ProductResetRequest;
+export type ResetProductDealTypes = ResetProductsRequestTypes['dealType'];
 
 export interface DeleteProductParams {
   marketId: number;
@@ -15,6 +17,11 @@ export interface DeleteProductParams {
 export interface DeleteProductsParams {
   marketId: number;
   request: DeleteProductsRequestTypes;
+}
+
+export interface ResetProductsParams {
+  marketId: number;
+  request: ResetProductsRequestTypes;
 }
 
 const deleteProductResponseSchema = z.object({
@@ -48,6 +55,18 @@ export const deleteProducts = async ({
   request,
 }: DeleteProductsParams): Promise<DeleteProductResponseTypes> => {
   const endpoint = API_ENDPOINTS.owner.products.collection(marketId);
+  const response = await httpClient.delete<unknown>(endpoint, {
+    json: request,
+  });
+
+  return validateDeleteProductResponse(endpoint, response);
+};
+
+export const resetProducts = async ({
+  marketId,
+  request,
+}: ResetProductsParams): Promise<DeleteProductResponseTypes> => {
+  const endpoint = API_ENDPOINTS.owner.products.all(marketId);
   const response = await httpClient.delete<unknown>(endpoint, {
     json: request,
   });

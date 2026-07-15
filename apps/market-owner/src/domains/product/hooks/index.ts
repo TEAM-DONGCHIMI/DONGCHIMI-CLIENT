@@ -4,6 +4,7 @@ export { useProductCategoryDropdownLayout } from './use-product-category-dropdow
 export {
   useBulkProductDeletionMutation,
   useProductDeletionMutation,
+  useProductResetMutation,
 } from './use-product-deletion-mutations';
 export { useProductDeletionActions } from './use-product-deletion-actions';
 export { useProductEditProducts } from './use-product-edit-products';

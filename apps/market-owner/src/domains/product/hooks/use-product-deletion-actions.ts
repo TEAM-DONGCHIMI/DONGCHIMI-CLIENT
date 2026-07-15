@@ -2,11 +2,13 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@dongchimi/shared/toast';
 
 import { normalizeApiError } from '@/shared/api';
+import { type ResetProductDealTypes } from '../api/delete-products';
 import { productQueryKeys } from '../query-keys';
 
 import {
   useBulkProductDeletionMutation,
   useProductDeletionMutation,
+  useProductResetMutation,
 } from './use-product-deletion-mutations';
 
 const deletionErrorMessages = {
@@ -25,6 +27,7 @@ export const useProductDeletionActions = (marketId: number) => {
   const queryClient = useQueryClient();
   const productDeletionMutation = useProductDeletionMutation();
   const bulkProductDeletionMutation = useBulkProductDeletionMutation();
+  const productResetMutation = useProductResetMutation();
 
   const showDeletionError = async (error: unknown) => {
     const normalizedError = await normalizeApiError(error);
@@ -85,9 +88,29 @@ export const useProductDeletionActions = (marketId: number) => {
     }
   };
 
+  const resetProducts = async (dealType: ResetProductDealTypes) => {
+    try {
+      await productResetMutation.mutateAsync({
+        marketId,
+        request: { dealType, forceDelete: true },
+      });
+      await invalidateProductLists();
+
+      return true;
+    } catch (error) {
+      await showDeletionError(error);
+
+      return false;
+    }
+  };
+
   return {
     deleteProduct,
     deleteProducts,
-    isDeletePending: productDeletionMutation.isPending || bulkProductDeletionMutation.isPending,
+    isDeletePending:
+      productDeletionMutation.isPending ||
+      bulkProductDeletionMutation.isPending ||
+      productResetMutation.isPending,
+    resetProducts,
   };
 };

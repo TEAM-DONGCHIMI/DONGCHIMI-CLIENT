@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { httpClient } from '@/shared/api';
 import { ApiError } from '@/shared/api/api-error';
 
-import { deleteProduct, deleteProducts } from './delete-products';
+import { deleteProduct, deleteProducts, resetProducts } from './delete-products';
 
 vi.mock('@/shared/api', () => ({
   httpClient: {
@@ -50,6 +50,22 @@ describe('product deletion API', () => {
 
     await expect(deleteProducts({ marketId: 12, request })).resolves.toEqual(response);
     expect(mockedDelete).toHaveBeenCalledWith(API_ENDPOINTS.owner.products.collection(12), {
+      json: request,
+    });
+  });
+
+  it('resets products for one deal type with force deletion', async () => {
+    const request = { dealType: 'DAILY' as const, forceDelete: true };
+    const response = {
+      success: true,
+      code: 'SUCCESS',
+      message: '요청에 성공했습니다.',
+    };
+
+    mockedDelete.mockResolvedValue(response);
+
+    await expect(resetProducts({ marketId: 12, request })).resolves.toEqual(response);
+    expect(mockedDelete).toHaveBeenCalledWith(API_ENDPOINTS.owner.products.all(12), {
       json: request,
     });
   });
