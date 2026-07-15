@@ -4,7 +4,8 @@ import { Button, Dialog, InlineField } from '@dongchimi/design-system/components
 import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
-import { useProductDetailQuery } from '@/domains/product/hooks';
+import { useProductDetailQuery, useProductUpdateFlow } from '@/domains/product/hooks';
+import { type ProductUpdateFormValuesTypes } from '@/domains/product/model/create-product-update-request';
 import { type OwnerApiTypes } from '@/shared/api';
 import { PRODUCT_CATEGORY_NAME_BY_CODE } from '@/shared/constants/product-categories';
 import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
@@ -26,6 +27,7 @@ import {
   formatProductPriceInput,
   limitProductNameInput,
   limitProductPromotionTextInput,
+  sanitizeProductName,
 } from '../../../utils/product-input';
 import {
   type ProductEditCardProps,
@@ -57,23 +59,22 @@ interface OpenProductEditModalParams {
   variant: ProductEditCardVariantTypes;
 }
 
-interface ProductEditFormValues {
-  categoryName: ProductSelectableCategoryTypes;
+interface ProductEditFormValues extends ProductUpdateFormValuesTypes {
   endDate: string;
   imageFile: File | null;
   imagePreviewUrl: string | null;
-  originalPrice: string;
-  productName: string;
-  promotionText: string;
-  salePrice: string;
-  startDate: string;
 }
 
 const PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID = 'product-edit-modal-category-dropdown';
 const PRODUCT_DETAIL_LOAD_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요. 다시 시도해주세요.';
 
-interface ProductEditModalFormProps extends Omit<ProductEditModalProps, 'marketId' | 'productId'> {
+interface ProductEditModalFormProps extends Omit<
+  ProductEditModalProps,
+  'marketId' | 'onSubmit' | 'product' | 'productId'
+> {
   detail: OwnerApiTypes.OwnerProductDetailResponse;
+  isSubmitting: boolean;
+  onSubmit: (values: ProductEditFormValues) => Promise<boolean>;
 }
 
 const createInitialValues = (
@@ -100,10 +101,53 @@ const isSameFormValues = (values: ProductEditFormValues, initialValues: ProductE
   );
 };
 
+const parseProductPrice = (value: string | undefined) => {
+  if (value == null) {
+    return undefined;
+  }
+
+  return Number(value.replaceAll(',', ''));
+};
+
+const calculateProductDiscountRate = (originalPrice: number, salePrice: number) => {
+  if (originalPrice <= 0) {
+    return undefined;
+  }
+
+  return String(Math.max(0, Math.round(((originalPrice - salePrice) / originalPrice) * 100)));
+};
+
+const createUpdatedProductCard = ({
+  product,
+  values,
+  variant,
+}: {
+  product: ProductEditCardProps;
+  values: ProductEditFormValues;
+  variant: ProductEditCardVariantTypes;
+}): ProductEditCardProps => {
+  const originalPrice = parseProductPrice(values.originalPrice);
+  const salePrice = parseProductPrice(values.salePrice) ?? 0;
+
+  return {
+    ...product,
+    categoryName: values.categoryName,
+    endDate: values.endDate,
+    originalPrice: variant === 'todaySpecial' ? values.originalPrice : undefined,
+    productName: sanitizeProductName(values.productName),
+    salePercent:
+      variant === 'todaySpecial' && originalPrice != null
+        ? calculateProductDiscountRate(originalPrice, salePrice)
+        : undefined,
+    salePrice: values.salePrice,
+    startDate: values.startDate,
+  };
+};
+
 const ProductEditModalForm = ({
   detail,
+  isSubmitting,
   open,
-  product,
   variant,
   onClose,
   onSubmit,
@@ -184,24 +228,18 @@ const ProductEditModalForm = ({
     }));
   };
 
-  const submitModal = () => {
-    onSubmit?.({
-      ...product,
-      categoryName: values.categoryName,
-      endDate: values.endDate,
-      originalPrice: values.originalPrice === '' ? undefined : values.originalPrice,
-      productName: values.productName,
-      promotionText: values.promotionText,
-      salePrice: values.salePrice,
-      startDate: values.startDate,
-    });
-    closeModal();
+  const submitModal = async () => {
+    const didUpdate = await onSubmit(values);
+
+    if (didUpdate) {
+      closeModal();
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
       <Dialog.Content ref={contentRef} className={S.contentClassName}>
-        <div className={S.containerClassName}>
+        <div aria-busy={isSubmitting} className={S.containerClassName}>
           <Dialog.Title className={S.titleClassName}>판매 정보를 수정해주세요</Dialog.Title>
 
           <div className={S.bodyClassName}>
@@ -344,6 +382,7 @@ const ProductEditModalForm = ({
             <Button
               className={S.footerButtonClassName}
               color='assistive'
+              disabled={isSubmitting}
               size='small'
               variant='outlined'
               onClick={closeModal}
@@ -352,7 +391,7 @@ const ProductEditModalForm = ({
             </Button>
             <Button
               className={S.footerButtonClassName}
-              disabled={!isEdited || !isStartDateValid || !isDateRangeValid}
+              disabled={isSubmitting || !isEdited || !isStartDateValid || !isDateRangeValid}
               size='small'
               variant='solid'
               onClick={submitModal}
@@ -377,6 +416,7 @@ export const ProductEditModal = ({
 }: ProductEditModalProps) => {
   const toast = useToast();
   const productDetailQuery = useProductDetailQuery({ marketId, productId });
+  const productUpdateFlow = useProductUpdateFlow();
 
   useEffect(() => {
     if (!productDetailQuery.isError) {
@@ -391,14 +431,33 @@ export const ProductEditModal = ({
     return null;
   }
 
+  const detail = productDetailQuery.data.data;
+
+  const submitProductUpdate = async (values: ProductEditFormValues) => {
+    const didUpdate = await productUpdateFlow.submitProductUpdate({
+      currentThumbnailUrl: detail.thumbnailUrl ?? null,
+      dealType: detail.dealType,
+      imageFile: values.imageFile,
+      marketId,
+      productId,
+      values,
+    });
+
+    if (didUpdate) {
+      onSubmit?.(createUpdatedProductCard({ product, values, variant }));
+    }
+
+    return didUpdate;
+  };
+
   return (
     <ProductEditModalForm
-      detail={productDetailQuery.data.data}
+      detail={detail}
+      isSubmitting={productUpdateFlow.isPending}
       open={open}
-      product={product}
       variant={variant}
       onClose={onClose}
-      onSubmit={onSubmit}
+      onSubmit={submitProductUpdate}
     />
   );
 };

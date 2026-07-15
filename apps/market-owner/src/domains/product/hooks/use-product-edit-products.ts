@@ -4,6 +4,7 @@ interface ProductEditMutableProduct {
   categoryName?: string;
   endDate?: string;
   originalPrice?: string;
+  productId: number;
   productName: string;
   promotionText?: string;
   salePrice?: string;
@@ -15,33 +16,29 @@ interface ProductEditPeriodUpdate {
   startDate: string;
 }
 
+type ProductEditUpdateTypes = Omit<ProductEditMutableProduct, 'productId'>;
+
 export const useProductEditProducts = <ProductTypes extends ProductEditMutableProduct>(
   initialProducts: readonly ProductTypes[],
+  onDeleteProduct: (productId: number) => Promise<boolean>,
 ) => {
   const [products, setProducts] = useState<ProductTypes[]>(() => [...initialProducts]);
 
-  const deleteProduct = (productName: string) => {
-    setProducts((currentProducts) =>
-      currentProducts.filter((product) => product.productName !== productName),
-    );
-  };
+  const deleteProduct = async (productId: number) => {
+    const isDeleted = await onDeleteProduct(productId);
 
-  const deleteProducts = (productNames: string[]) => {
-    const productNameSet = new Set(productNames);
+    if (!isDeleted) {
+      return false;
+    }
 
     setProducts((currentProducts) =>
-      currentProducts.filter((product) => !productNameSet.has(product.productName)),
+      currentProducts.filter((product) => product.productId !== productId),
     );
+
+    return true;
   };
 
-  const resetProducts = () => {
-    setProducts([]);
-  };
-
-  const updateProduct = (
-    productName: string,
-    productUpdate: Partial<ProductEditMutableProduct>,
-  ) => {
+  const updateProduct = (productName: string, productUpdate: Partial<ProductEditUpdateTypes>) => {
     setProducts((currentProducts) =>
       currentProducts.map((product) =>
         product.productName === productName
@@ -71,9 +68,7 @@ export const useProductEditProducts = <ProductTypes extends ProductEditMutablePr
 
   return {
     deleteProduct,
-    deleteProducts,
     products,
-    resetProducts,
     updateProduct,
     updateProductPeriods,
   };

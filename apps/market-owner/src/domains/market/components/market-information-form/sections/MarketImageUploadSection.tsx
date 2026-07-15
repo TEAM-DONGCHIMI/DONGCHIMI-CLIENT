@@ -6,6 +6,7 @@ import { IcCamera, IcPlus } from '@dongchimi/design-system/icons';
 import * as S from './MarketImageUploadSection.css';
 
 export interface MarketImageUploadSectionProps {
+  initialImageUrl?: string | null;
   onImageError: (error: MarketImageUploadErrorTypes) => void;
   onImageSelect: (file: File) => Promise<string | void> | string | void;
 }
@@ -16,20 +17,24 @@ const allowedImageTypes = new Set(['image/jpeg', 'image/png']);
 const maxImageFileSizeBytes = 10 * 1024 * 1024;
 
 export const MarketImageUploadSection = ({
+  initialImageUrl,
   onImageError,
   onImageSelect,
 }: MarketImageUploadSectionProps) => {
   const imageInputId = useId();
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const [previewImageUrl, setPreviewImageUrl] = useState<string>();
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | undefined>(
+    initialImageUrl ?? undefined,
+  );
+  const objectUrlRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     return () => {
-      if (previewImageUrl) {
-        URL.revokeObjectURL(previewImageUrl);
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
       }
     };
-  }, [previewImageUrl]);
+  }, []);
 
   const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.currentTarget.files?.[0];
@@ -56,6 +61,10 @@ export const MarketImageUploadSection = ({
       await onImageSelect(selectedFile);
 
       const nextPreviewImageUrl = URL.createObjectURL(selectedFile);
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+      objectUrlRef.current = nextPreviewImageUrl;
       setPreviewImageUrl(nextPreviewImageUrl);
     } catch {
       onImageError(navigator.onLine ? 'upload' : 'network');
@@ -74,7 +83,12 @@ export const MarketImageUploadSection = ({
       />
       {previewImageUrl ? (
         <div className={S.imageUploadButtonClassName}>
-          <img alt='선택한 마트 이미지' className={S.imagePreviewClassName} src={previewImageUrl} />
+          <img
+            alt='선택한 마트 이미지'
+            className={S.imagePreviewClassName}
+            src={previewImageUrl}
+            onError={() => setPreviewImageUrl(undefined)}
+          />
           <Button
             aria-label='마트 이미지 변경'
             className={S.imageUploadCameraButtonClassName}

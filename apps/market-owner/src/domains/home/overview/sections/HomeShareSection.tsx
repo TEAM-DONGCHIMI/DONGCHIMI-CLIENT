@@ -7,7 +7,7 @@ const EMPTY_FLYER_MESSAGE = '전단을 공유하려면\n상품을 먼저 등록�
 
 export interface HomeShareSectionProps {
   onCopyLinkResult: (isCopied: boolean) => void;
-  onQrCodePreparing: () => void;
+  onOpenQrCode: (qrCode?: string | null) => void;
   share: HomeShareTypes;
 }
 
@@ -27,7 +27,7 @@ const copyToClipboard = async (text: string) => {
 
 export const HomeShareSection = ({
   onCopyLinkResult,
-  onQrCodePreparing,
+  onOpenQrCode,
   share,
 }: HomeShareSectionProps) => {
   const isFlyerUnavailable = share.flyer === null;
@@ -47,7 +47,7 @@ export const HomeShareSection = ({
       return;
     }
 
-    onQrCodePreparing();
+    onOpenQrCode(share.flyer?.qrCode);
   };
 
   return (

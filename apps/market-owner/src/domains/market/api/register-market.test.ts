@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from '@dongchimi/shared/api';
+import { API_ENDPOINTS, isApiResponseValidationError } from '@dongchimi/shared/api';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { httpClient } from '@/shared/api';
@@ -40,6 +40,7 @@ describe('registerMarket', () => {
   it('posts the market registration request and returns the validated response', async () => {
     const response = {
       code: 'SUCCESS',
+      data: { marketId: 10 },
       message: '요청에 성공했습니다.',
       success: true as const,
     };
@@ -48,6 +49,16 @@ describe('registerMarket', () => {
 
     await expect(registerMarket(request)).resolves.toEqual(response);
     expect(mockedPost).toHaveBeenCalledWith(API_ENDPOINTS.owner.markets.root, { json: request });
+  });
+
+  it('rejects a success response without the registered market id', async () => {
+    mockedPost.mockResolvedValue({
+      code: 'SUCCESS',
+      message: '등록되었습니다.',
+      success: true,
+    });
+
+    await expect(registerMarket(request)).rejects.toSatisfy(isApiResponseValidationError);
   });
 
   it('does not swallow an error from the HTTP client', async () => {

@@ -12,28 +12,31 @@ import { type ProductCategoryTypes } from '@/domains/product/constants';
 import { useProductEditProducts, useProductListQuery } from '@/domains/product/hooks';
 import {
   createProductEditListItem,
+  createProductEditListStateKey,
   getProductListSort,
   type ProductEditListItemTypes,
 } from '@/domains/product/model/product-list';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
-import { useAuthStore } from '@/shared/stores/auth-store';
 
 interface EventDiscountEditProductSectionProps {
   autoOpenProductId?: string | null;
+  deletePending: boolean;
+  marketId: number;
   selection: ProductEditPageSelectionControls;
   selectedCategory: ProductCategoryTypes | null;
   selectedFilter: ProductEditFilterTypes;
   onAutoOpenProductMissing?: (productId: string) => void;
   onAutoOpenProductModalClose?: () => void;
+  onDeleteProduct: (productId: number) => Promise<boolean>;
 }
 
 interface EventDiscountEditProductListProps extends EventDiscountEditProductSectionProps {
   initialProducts: ProductEditListItemTypes[];
-  marketId: number;
 }
 
 const EventDiscountEditProductList = ({
   autoOpenProductId,
+  deletePending,
   initialProducts,
   marketId,
   selection,
@@ -41,8 +44,12 @@ const EventDiscountEditProductList = ({
   selectedFilter,
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
+  onDeleteProduct,
 }: EventDiscountEditProductListProps) => {
-  const { deleteProduct, products, updateProduct } = useProductEditProducts(initialProducts);
+  const { deleteProduct, products, updateProduct } = useProductEditProducts(
+    initialProducts,
+    onDeleteProduct,
+  );
   const productGroups = createProductEditDisplayGroups({
     createCardProps: (product) =>
       createProductEditCardProps({
@@ -59,15 +66,16 @@ const EventDiscountEditProductList = ({
     <ProductEditProductList
       ariaLabel='행사 할인 상품 수정 목록'
       autoOpenProductId={autoOpenProductId}
+      deletePending={deletePending}
       editModalVariant='eventDiscount'
       groups={productGroups}
       marketId={marketId}
       registrationHref={MARKET_OWNER_ROUTES.eventDiscountRegistration}
-      selectedProductNames={selection.selectedProductNames}
+      selectedProductIds={selection.selectedProductIds}
       selectionMode={selection.selectionMode}
       onAutoOpenProductMissing={onAutoOpenProductMissing}
       onAutoOpenProductModalClose={onAutoOpenProductModalClose}
-      onDeleteProduct={(product) => deleteProduct(product.productName)}
+      onDeleteProduct={(product) => void deleteProduct(Number(product.productId))}
       onToggleProductSelection={selection.onToggleProductSelection}
       onUpdateProduct={updateProduct}
     />
@@ -75,14 +83,13 @@ const EventDiscountEditProductList = ({
 };
 
 export const EventDiscountEditProductSection = (props: EventDiscountEditProductSectionProps) => {
-  const marketId = useAuthStore((state) => state.marketId);
   const productListQuery = useProductListQuery({
-    marketId,
+    marketId: props.marketId,
     sort: getProductListSort(props.selectedFilter),
     type: 'PERIODIC',
   });
 
-  if (marketId == null || productListQuery.isPending) {
+  if (productListQuery.isPending) {
     return <ProductEditProductListLoading />;
   }
 
@@ -91,14 +98,14 @@ export const EventDiscountEditProductSection = (props: EventDiscountEditProductS
   }
 
   const products = (productListQuery.data?.data?.content ?? []).map(createProductEditListItem);
-  const productIdsKey = products.map(({ productId }) => productId).join('-');
+  const productListStateKey = createProductEditListStateKey(products);
 
   return (
     <EventDiscountEditProductList
-      key={`${props.selectedFilter}-${productIdsKey}`}
+      key={`${props.selectedFilter}-${productListStateKey}`}
       {...props}
       initialProducts={products}
-      marketId={marketId}
+      marketId={props.marketId}
     />
   );
 };

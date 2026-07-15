@@ -11,35 +11,42 @@ import {
 import { useProductEditProducts, useProductListQuery } from '@/domains/product/hooks';
 import {
   createProductEditListItem,
+  createProductEditListStateKey,
   getProductListSort,
   type ProductEditListItemTypes,
 } from '@/domains/product/model/product-list';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
-import { useAuthStore } from '@/shared/stores/auth-store';
 
 interface TodaySpecialEditProductSectionProps {
   autoOpenProductId?: string | null;
+  deletePending: boolean;
+  marketId: number;
   selection: ProductEditPageSelectionControls;
   selectedFilter: ProductEditFilterTypes;
   onAutoOpenProductMissing?: (productId: string) => void;
   onAutoOpenProductModalClose?: () => void;
+  onDeleteProduct: (productId: number) => Promise<boolean>;
 }
 
 interface TodaySpecialEditProductListProps extends TodaySpecialEditProductSectionProps {
   initialProducts: ProductEditListItemTypes[];
-  marketId: number;
 }
 
 const TodaySpecialEditProductList = ({
   autoOpenProductId,
+  deletePending,
   initialProducts,
   marketId,
   selection,
   selectedFilter,
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
+  onDeleteProduct,
 }: TodaySpecialEditProductListProps) => {
-  const { deleteProduct, products, updateProduct } = useProductEditProducts(initialProducts);
+  const { deleteProduct, products, updateProduct } = useProductEditProducts(
+    initialProducts,
+    onDeleteProduct,
+  );
   const productGroups = createProductEditDisplayGroups({
     createCardProps: (product) =>
       createProductEditCardProps({
@@ -55,15 +62,16 @@ const TodaySpecialEditProductList = ({
     <ProductEditProductList
       ariaLabel='오늘의 특가 상품 수정 목록'
       autoOpenProductId={autoOpenProductId}
+      deletePending={deletePending}
       editModalVariant='todaySpecial'
       groups={productGroups}
       marketId={marketId}
       registrationHref={MARKET_OWNER_ROUTES.todaySpecialRegistration}
-      selectedProductNames={selection.selectedProductNames}
+      selectedProductIds={selection.selectedProductIds}
       selectionMode={selection.selectionMode}
       onAutoOpenProductMissing={onAutoOpenProductMissing}
       onAutoOpenProductModalClose={onAutoOpenProductModalClose}
-      onDeleteProduct={(product) => deleteProduct(product.productName)}
+      onDeleteProduct={(product) => void deleteProduct(Number(product.productId))}
       onToggleProductSelection={selection.onToggleProductSelection}
       onUpdateProduct={updateProduct}
     />
@@ -71,14 +79,13 @@ const TodaySpecialEditProductList = ({
 };
 
 export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSectionProps) => {
-  const marketId = useAuthStore((state) => state.marketId);
   const productListQuery = useProductListQuery({
-    marketId,
+    marketId: props.marketId,
     sort: getProductListSort(props.selectedFilter),
     type: 'DAILY',
   });
 
-  if (marketId == null || productListQuery.isPending) {
+  if (productListQuery.isPending) {
     return <ProductEditProductListLoading />;
   }
 
@@ -87,14 +94,14 @@ export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSec
   }
 
   const products = (productListQuery.data?.data?.content ?? []).map(createProductEditListItem);
-  const productIdsKey = products.map(({ productId }) => productId).join('-');
+  const productListStateKey = createProductEditListStateKey(products);
 
   return (
     <TodaySpecialEditProductList
-      key={`${props.selectedFilter}-${productIdsKey}`}
+      key={`${props.selectedFilter}-${productListStateKey}`}
       {...props}
       initialProducts={products}
-      marketId={marketId}
+      marketId={props.marketId}
     />
   );
 };

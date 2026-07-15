@@ -9,11 +9,13 @@
 ## Contract
 
 - Input: generated `MarketRegisterRequest`
-- Output: generated `ApiResponseUnit`, validated at the API boundary
+- Output: `{ success, code, message, data: { marketId } }`, validated at the API boundary
 - Cache: 최초 등록 mutation이므로 기존 query cache를 갱신하거나 invalidate하지 않습니다.
 - Retry: app QueryClient의 mutation 기본값에 따라 재시도하지 않습니다.
 
 ## States And Side Effects
+
+- success response: `data.marketId`를 auth store에 저장해 재로그인 없이 마켓 상세 조회가 가능해야 합니다.
 
 - pending: 등록 버튼을 비활성화하고 `등록 중...`을 표시합니다.
 - success: 서버 message로 완료 Toast를 표시한 뒤 홈 route로 replace 이동합니다.

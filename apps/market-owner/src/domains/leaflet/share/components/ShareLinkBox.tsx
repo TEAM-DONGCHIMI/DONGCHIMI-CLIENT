@@ -1,4 +1,4 @@
-import { Button, Flex, Stack } from '@dongchimi/design-system/components';
+import { Button, Flex, IconButton, Stack } from '@dongchimi/design-system/components';
 import { IcCopy, IcCopyColor50, IcLogin } from '@dongchimi/design-system/icons';
 
 import * as S from './ShareLinkBox.css';
@@ -47,7 +47,14 @@ export const ShareLinkBox = ({
 
       <Flex align='center' className={S.linkFieldClassName} justify='between'>
         <span className={S.linkTextClassName}>{shareUrl}</span>
-        <IcCopyColor50 aria-hidden='true' className={S.linkCopyIconClassName} />
+        <IconButton
+          aria-label='전단 공유 링크 복사'
+          className={S.linkCopyButtonClassName}
+          color='assistive'
+          icon={<IcCopyColor50 />}
+          onClick={handleCopyLink}
+          variant='ghost'
+        />
       </Flex>
 
       <Stack className={S.actionListClassName}>

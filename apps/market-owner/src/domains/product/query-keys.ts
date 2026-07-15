@@ -34,5 +34,6 @@ export const productQueryKeys = {
   detail: (params: ProductDetailQueryParamsTypes) =>
     [...productDetailRootQueryKey, params] as const,
   listRoot: productListRootQueryKey,
+  listByMarket: (marketId: number) => [...productListRootQueryKey, { marketId }] as const,
   list: (params: ProductListQueryKeyParamsTypes) => [...productListRootQueryKey, params] as const,
 } as const;

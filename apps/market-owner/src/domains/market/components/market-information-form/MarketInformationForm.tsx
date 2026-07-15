@@ -314,6 +314,7 @@ export const MarketInformationForm = ({
           <form noValidate className={S.formClassName} onSubmit={handleMarketInformationSubmit}>
             <Flex align='start' className={S.formContentClassName}>
               <MarketImageUploadSection
+                initialImageUrl={form.thumbnailUrl}
                 onImageError={handleImageError}
                 onImageSelect={handleImageSelect}
               />
