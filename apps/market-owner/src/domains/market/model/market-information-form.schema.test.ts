@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { marketInformationRegistrationFixture } from '../fixtures';
+import { emptyMarketInformationForm } from './market-information-form.fixture';
 import { marketInformationRegistrationSchema } from './market-information-form.schema';
 
 const validForm = {
-  ...marketInformationRegistrationFixture.initialForm,
+  ...emptyMarketInformationForm,
   address: '서울특별시 마포구 월드컵로 123',
   businessDay: '월요일',
   businessTime: '09:00 - 18:00',
