@@ -14,6 +14,8 @@ import {
   IcPlus,
 } from '@dongchimi/design-system/icons';
 
+import { formatProductCategoryDisplayName } from '@/shared/utils/product-category.utils';
+
 import type { RegistrationResultProduct } from '../fixtures';
 import type { RegistrationResultEditableProductFieldTypes } from '../hooks/useRegistrationResultProductDrafts';
 import {
@@ -210,7 +212,7 @@ const getProductFields = ({
       id: `${productId}-category`,
       onClick: onCategoryClick,
       trailingIcon: <IcChevronDownSizeSmall />,
-      value: fieldValues.category,
+      value: formatProductCategoryDisplayName(fieldValues.category),
       width: '12.8rem',
     },
     {

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { ProductEditCardDesktop } from '@/shared/components';
+import { formatProductCategoryDisplayName } from '@/shared/utils/product-category.utils';
 
 import * as S from './ProductEditProductList.css';
 import { openProductEditConfirmModal, openProductEditModal } from '../product-edit-modal';
@@ -118,7 +119,7 @@ export const ProductEditProductList = ({
     <section aria-label={ariaLabel} className={S.sectionListClassName}>
       {groups.map(({ products, title }) => (
         <section key={title} className={S.categorySectionClassName}>
-          <h2 className={S.categoryTitleClassName}>{title}</h2>
+          <h2 className={S.categoryTitleClassName}>{formatProductCategoryDisplayName(title)}</h2>
 
           <div className={S.productGridClassName}>
             {products.map((product) => {

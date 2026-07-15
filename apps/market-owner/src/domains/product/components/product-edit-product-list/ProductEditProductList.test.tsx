@@ -257,7 +257,7 @@ describe('ProductEditProductList', () => {
     expect(screen.getByLabelText('행사 시작일')).toHaveValue('2026-08-12');
     expect(screen.getByLabelText('행사 종료일')).toHaveValue('2026-08-16');
 
-    await user.click(screen.getByRole('button', { name: '채소/과일' }));
+    await user.click(screen.getByRole('button', { name: '채소･과일' }));
 
     const categoryDropdown = await screen.findByRole('group', { name: '상품 구분 선택' });
 
@@ -269,9 +269,9 @@ describe('ProductEditProductList', () => {
     fireEvent.scroll(document);
     expect(categoryDropdown).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: '정육/달걀' }));
+    await user.click(screen.getByRole('button', { name: '정육･달걀' }));
 
-    expect(screen.getByRole('button', { name: '정육/달걀' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '정육･달걀' })).toBeInTheDocument();
     expect(screen.queryByRole('group', { name: '상품 구분 선택' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '변경하기' })).toBeEnabled();
 

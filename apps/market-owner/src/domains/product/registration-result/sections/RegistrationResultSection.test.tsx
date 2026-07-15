@@ -161,9 +161,9 @@ describe('RegistrationResultSection', () => {
       'true',
     );
 
-    await user.click(within(dropdown).getByRole('checkbox', { name: '정육/달걀' }));
+    await user.click(within(dropdown).getByRole('checkbox', { name: '정육･달걀' }));
 
-    expect(within(dropdown).getByRole('checkbox', { name: '정육/달걀' })).toHaveAttribute(
+    expect(within(dropdown).getByRole('checkbox', { name: '정육･달걀' })).toHaveAttribute(
       'aria-checked',
       'true',
     );
