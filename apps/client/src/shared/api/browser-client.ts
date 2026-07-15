@@ -13,14 +13,11 @@ type BrowserApiTypes = Record<HttpMethodTypes, HttpRequestTypes> & {
   request: HttpRequestTypes;
 };
 
-type HttpClientTypes = Pick<BrowserApiTypes, 'get'>;
-
 const REQUEST_TIMEOUT_MS = 10_000;
 const AUTH_API_PATH_PREFIX = '/api/auth/';
 const AUTH_REFRESH_PATH = '/api/auth/token/refresh';
 
 let cachedBrowserApi: KyInstance | undefined;
-let cachedHttpClient: KyInstance | undefined;
 let refreshSessionPromise: Promise<boolean> | undefined;
 
 const refreshSession = () => {
@@ -84,26 +81,6 @@ export const getBrowserApi = () => {
   return cachedBrowserApi;
 };
 
-export const createHttpClient = () => {
-  return ky.create({
-    prefix: process.env.NEXT_PUBLIC_API_BASE_URL?.trim().replace(/\/+$/, ''),
-    timeout: REQUEST_TIMEOUT_MS,
-    hooks: {
-      beforeRequest: [
-        ({ request }) => {
-          request.headers.set('Accept', 'application/json');
-        },
-      ],
-    },
-  });
-};
-
-export const getHttpClient = () => {
-  cachedHttpClient ??= createHttpClient();
-
-  return cachedHttpClient;
-};
-
 const request = async <ResponseDataTypes>(path: string, options?: Options) => {
   try {
     return await getBrowserApi()<ResponseDataTypes>(path, options).json();
@@ -125,14 +102,4 @@ export const browserApi: BrowserApiTypes = {
   post: withMethod('post'),
   put: withMethod('put'),
   request,
-};
-
-export const httpClient: HttpClientTypes = {
-  get: async <ResponseDataTypes>(path: string, options?: Options) => {
-    try {
-      return await getHttpClient().get(path, options).json<ResponseDataTypes>();
-    } catch (error) {
-      throw await normalizeApiError(error);
-    }
-  },
 };

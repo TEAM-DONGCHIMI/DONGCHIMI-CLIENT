@@ -1,6 +1,6 @@
-import { API_ENDPOINTS, validateApiResponse } from '@dongchimi/shared/api';
+import { buildApiPath, validateApiResponse } from '@dongchimi/shared/api';
 
-import { httpClient } from '@/shared/api';
+import { browserApi } from '@/shared/api';
 
 import {
   nearbyMarketsSuccessResponseSchema,
@@ -16,6 +16,7 @@ export type { NearbyMarketsListParamsTypes, NearbyMarketsLocationParamsTypes };
 const DEFAULT_PAGE_SIZE = 5;
 const DEFAULT_RADIUS_METERS = 1000;
 const MARKER_PAGE_SIZE = 50;
+const NEARBY_MARKETS_API_ROUTE = 'markets/location';
 
 const toNearbyMarketsSearchParams = ({
   cursor,
@@ -35,8 +36,8 @@ export const getNearbyMarkets = async (
   rawParams: NearbyMarketsLocationParamsTypes,
 ): Promise<NearbyMarketsResponseDataTypes> => {
   const params = resolveNearbyMarketsLocationParams(rawParams);
-  const endpoint = API_ENDPOINTS.user.markets.location(toNearbyMarketsSearchParams(params));
-  const response = await httpClient.get<unknown>(endpoint);
+  const endpoint = buildApiPath(NEARBY_MARKETS_API_ROUTE, toNearbyMarketsSearchParams(params));
+  const response = await browserApi.get<unknown>(endpoint);
   const nearbyMarketsResponse = validateApiResponse(nearbyMarketsSuccessResponseSchema, response, {
     endpoint,
     schemaDescription: 'ApiResponseCursorSliceResponseNearbyMarketResponse',

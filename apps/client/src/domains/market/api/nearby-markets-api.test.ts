@@ -1,23 +1,26 @@
 import { API_ENDPOINTS, ApiResponseValidationError } from '@dongchimi/shared/api';
 import { HttpResponse, http } from 'msw';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { server } from '@/test';
 import { getNearbyMarketMarkers, getNearbyMarkets } from './nearby-markets-api';
 
-const API_BASE_URL = 'https://api.test';
-const NEARBY_MARKETS_ENDPOINT = API_ENDPOINTS.user.markets.location({
-  lat: 37.5651,
-  lng: 126.9895,
-  radius: 1000,
-  size: 5,
-});
-const NEARBY_MARKET_MARKERS_ENDPOINT = API_ENDPOINTS.user.markets.location({
-  lat: 37.5651,
-  lng: 126.9895,
-  radius: 1000,
-  size: 50,
-});
+const NEARBY_MARKETS_ENDPOINT = API_ENDPOINTS.user.markets
+  .location({
+    lat: 37.5651,
+    lng: 126.9895,
+    radius: 1000,
+    size: 5,
+  })
+  .replace('/v1/users', '/api');
+const NEARBY_MARKET_MARKERS_ENDPOINT = API_ENDPOINTS.user.markets
+  .location({
+    lat: 37.5651,
+    lng: 126.9895,
+    radius: 1000,
+    size: 50,
+  })
+  .replace('/v1/users', '/api');
 
 const nearbyMarket = {
   marketId: 1,
@@ -43,17 +46,9 @@ const nearbyMarket = {
 };
 
 describe('getNearbyMarkets', () => {
-  beforeAll(() => {
-    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', API_BASE_URL);
-  });
-
-  afterAll(() => {
-    vi.unstubAllEnvs();
-  });
-
   it('주변 마트 API 응답을 화면 목록 데이터로 반환한다', async () => {
     server.use(
-      http.get(`${API_BASE_URL}${NEARBY_MARKETS_ENDPOINT}`, () => {
+      http.get(`${window.location.origin}${NEARBY_MARKETS_ENDPOINT}`, () => {
         return HttpResponse.json({
           success: true,
           code: 'SUCCESS',
@@ -78,7 +73,7 @@ describe('getNearbyMarkets', () => {
 
   it('Swagger generated contract의 content 필드도 contents로 정규화한다', async () => {
     server.use(
-      http.get(`${API_BASE_URL}${NEARBY_MARKETS_ENDPOINT}`, () => {
+      http.get(`${window.location.origin}${NEARBY_MARKETS_ENDPOINT}`, () => {
         return HttpResponse.json({
           success: true,
           code: 'SUCCESS',
@@ -101,7 +96,7 @@ describe('getNearbyMarkets', () => {
 
   it('응답 계약이 다르면 validation error를 던진다', async () => {
     server.use(
-      http.get(`${API_BASE_URL}${NEARBY_MARKETS_ENDPOINT}`, () => {
+      http.get(`${window.location.origin}${NEARBY_MARKETS_ENDPOINT}`, () => {
         return HttpResponse.json({
           success: true,
           code: 'SUCCESS',
@@ -122,7 +117,7 @@ describe('getNearbyMarkets', () => {
 
   it('requests marker list with default size 50', async () => {
     server.use(
-      http.get(`${API_BASE_URL}${NEARBY_MARKET_MARKERS_ENDPOINT}`, () => {
+      http.get(`${window.location.origin}${NEARBY_MARKET_MARKERS_ENDPOINT}`, () => {
         return HttpResponse.json({
           success: true,
           code: 'SUCCESS',
