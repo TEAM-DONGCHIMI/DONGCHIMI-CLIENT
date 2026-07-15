@@ -40,7 +40,7 @@
 - `useStartProductImportMutation` stays page-local because it wraps the analysis-start mutation without introducing cross-page cache behavior.
 - `cancelProductImport` and `useCancelProductImportMutation` stay page-local because canceling an active import is specific to this flow and does not invalidate a cached query.
 - `subscribeProductImportProgress` stays page-local because SSE is a long-lived transport connection rather than query cache state; it uses the app HTTP client's authenticated raw response path instead of a query key.
-- `resolvePresignedExcelFileUrl` stays page-local because it orchestrates the flow-specific `PRODUCT_IMPORT_EXCEL` presigned upload purpose, S3 PUT, and import-start handoff value.
+- `resolvePresignedExcelFileUrl` stays page-local because it orchestrates the flow-specific `PRODUCT_IMPORT_EXCEL` presigned upload purpose, S3 PUT, and S3 public URL handoff value.
 - The page uses the optional `marketId` prop for isolated tests and otherwise reads the non-sensitive market id persisted from the owner login response; the access token remains memory-only.
 - `useFileDrop` is reused from product domain hooks for file drop event handling; accepted extension validation stays in `useExcelUploadFlow` because `.xlsx/.csv` is specific to this flow.
 - App-shared `UploadModal` is reused for the excel upload modal default/upload states.
@@ -99,6 +99,7 @@
 - registration method card assets are page-local `assets/img-excel-upload.svg` and `assets/img-leaflet-upload.svg`; both are pure-vector SVGs and render as decorative 80×80 images because the adjacent heading and description provide the card meaning.
 - the POS guide asset is `/images/pos-excel-guide.webp` and renders at the Figma size of 360×722; it is informative and uses one alt text that preserves the three-step instructions.
 - accepted excel extensions shown to users: `.xlsx`, `.csv`
+- public S3 base URL: `VITE_PUBLIC_S3_BASE_URL`
 - model: none
 
 ## Behavior
@@ -114,9 +115,9 @@
 - The page performs lightweight client-side extension checking for local selection and drag & drop. Files outside `.xlsx` and `.csv` move the modal to error state.
 - Upload action requests a presigned URL with purpose `PRODUCT_IMPORT_EXCEL`, the selected file content type, and file byte size.
 - Upload action PUTs the selected file to the returned `uploadUrl` with `requiredHeaders`.
-- Upload success stores the selected file name and the returned `objectKey` as the import handoff value, then switches to confirmation.
+- Upload success stores the selected file name and a public S3 URL built from `VITE_PUBLIC_S3_BASE_URL` plus the returned `objectKey`, then switches to confirmation.
 - Confirmation `취소` clears the uploaded file state and returns to the method view.
-- `분석 시작` calls `POST /v1/owners/markets/{marketId}/products/import` with `excelFileUrl` set to the uploaded file handoff value. The current presigned contract provides this as `objectKey`.
+- `분석 시작` calls `POST /v1/owners/markets/{marketId}/products/import` with `excelFileUrl` set to the uploaded file's public S3 URL.
 - If `marketId` or `excelFileUrl` is missing, the page keeps the confirmation view and shows the same file-analysis start failure toast instead of sending a guessed request.
 - Import start success stores the returned `jobId`, switches to progress view, and subscribes to the matching progress endpoint.
 - Import start failure keeps the confirmation view and shows the normalized server message for `ApiError`; non-API failures use `파일 분석을 시작하지 못했습니다. 다시 시도해주세요.` as fallback toast feedback.

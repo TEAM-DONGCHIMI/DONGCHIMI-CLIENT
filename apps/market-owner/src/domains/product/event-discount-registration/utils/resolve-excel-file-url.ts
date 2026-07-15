@@ -1,8 +1,10 @@
 import {
+  createApiConfigurationError,
   createPresignedUploadUrl,
   type PresignedUploadRequestTypes,
   type PresignedUploadResponseTypes,
 } from '@/shared/api';
+import { getMarketOwnerEnv } from '@/shared/config';
 import { PRESIGNED_UPLOAD_PURPOSE } from '@/shared/constants/presigned-upload-purpose';
 
 const DEFAULT_EXCEL_CONTENT_TYPE = 'application/octet-stream';
@@ -22,6 +24,20 @@ interface UploadFileToPresignedUrlParams {
 
 const getExcelUploadContentType = (file: File) => {
   return file.type || DEFAULT_EXCEL_CONTENT_TYPE;
+};
+
+const getRequiredPublicS3BaseUrl = () => {
+  const { s3BaseUrl } = getMarketOwnerEnv();
+
+  if (!s3BaseUrl) {
+    throw createApiConfigurationError('VITE_PUBLIC_S3_BASE_URL is not configured.');
+  }
+
+  return s3BaseUrl;
+};
+
+const createPublicS3FileUrl = (objectKey: string, s3BaseUrl: string) => {
+  return `${s3BaseUrl}/${objectKey.replace(/^\/+/, '')}`;
 };
 
 const uploadFileToPresignedUrl = async ({
@@ -52,13 +68,15 @@ export const resolvePresignedExcelFileUrl =
     requestPresignedUploadUrl: RequestPresignedUploadUrlTypes = createPresignedUploadUrl,
   ): ResolveExcelFileUrlTypes =>
   async (file) => {
+    const s3BaseUrl = getRequiredPublicS3BaseUrl();
     const presignedUpload = await requestPresignedUploadUrl({
       contentLength: file.size,
       contentType: getExcelUploadContentType(file),
       purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_IMPORT_EXCEL,
     });
+    const excelFileUrl = createPublicS3FileUrl(presignedUpload.objectKey, s3BaseUrl);
 
     await uploadFileToPresignedUrl({ file, presignedUpload });
 
-    return presignedUpload.objectKey;
+    return excelFileUrl;
   };
