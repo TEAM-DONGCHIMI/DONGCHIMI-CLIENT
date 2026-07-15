@@ -76,6 +76,7 @@ export const ProductCard = ({
                   key={item.id}
                   onProductClick={onProductClick}
                   position={index}
+                  surface={surface}
                 />
               ))}
             </List>

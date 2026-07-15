@@ -1,125 +1,17 @@
 import Image from 'next/image';
 
 import { IcCalendar, IcLocation, IcPhone } from '@dongchimi/design-system/icons';
+import { formatBusinessHour } from '@dongchimi/shared/business-hours';
 
 import { MarketOverviewActions } from '../components/MarketOverviewActions';
 import { MarketStatusChip } from '../components/MarketStatusChip';
 import * as S from '../MarketProductsPage.css';
-import type {
-  BusinessDayTypes,
-  BusinessHourTypes,
-  MarketDetailTypes,
-} from '../../model/market-detail-schema';
-
-const DAY_LABELS: Record<BusinessDayTypes, string> = {
-  FRIDAY: '금',
-  MONDAY: '월',
-  SATURDAY: '토',
-  SUNDAY: '일',
-  THURSDAY: '목',
-  TUESDAY: '화',
-  WEDNESDAY: '수',
-};
-
-const BUSINESS_DAY_ORDER = [
-  'MONDAY',
-  'TUESDAY',
-  'WEDNESDAY',
-  'THURSDAY',
-  'FRIDAY',
-  'SATURDAY',
-  'SUNDAY',
-] satisfies BusinessDayTypes[];
-
-const BUSINESS_DAY_INDEX = new Map(
-  BUSINESS_DAY_ORDER.map((businessDay, index) => [businessDay, index]),
-);
-
-const getBusinessDaySortIndex = (businessDay: BusinessDayTypes) => {
-  return BUSINESS_DAY_INDEX.get(businessDay) ?? Number.MAX_SAFE_INTEGER;
-};
-
-const getBusinessDayLabel = (businessDay: BusinessDayTypes) => {
-  return DAY_LABELS[businessDay];
-};
+import type { MarketDetailTypes } from '../../model/market-detail-schema';
 
 interface MarketOverviewSectionProps {
   market: MarketDetailTypes;
   shareUrl: string;
 }
-
-const sortBusinessDays = (days: readonly BusinessDayTypes[]) => {
-  return Array.from(new Set(days)).sort((previousDay, nextDay) => {
-    const previousDayIndex = getBusinessDaySortIndex(previousDay);
-    const nextDayIndex = getBusinessDaySortIndex(nextDay);
-
-    return previousDayIndex === nextDayIndex
-      ? previousDay.localeCompare(nextDay)
-      : previousDayIndex - nextDayIndex;
-  });
-};
-
-const groupContinuousBusinessDays = (days: readonly BusinessDayTypes[]) => {
-  const sortedDays = sortBusinessDays(days);
-
-  return sortedDays.reduce<BusinessDayTypes[][]>((groups, day) => {
-    const previousGroup = groups[groups.length - 1];
-    const previousDay = previousGroup?.[previousGroup.length - 1];
-    const previousDayIndex = previousDay == null ? undefined : BUSINESS_DAY_INDEX.get(previousDay);
-    const currentDayIndex = BUSINESS_DAY_INDEX.get(day);
-    const isContinuous =
-      previousDayIndex != null &&
-      currentDayIndex != null &&
-      currentDayIndex === previousDayIndex + 1;
-
-    if (previousGroup != null && isContinuous) {
-      previousGroup.push(day);
-      return groups;
-    }
-
-    return [...groups, [day]];
-  }, []);
-};
-
-const formatBusinessDayGroup = (days: readonly BusinessDayTypes[]) => {
-  const firstDay = days[0];
-  const lastDay = days[days.length - 1];
-
-  if (firstDay == null || lastDay == null) {
-    return '';
-  }
-
-  if (days.length === 1) {
-    return `${getBusinessDayLabel(firstDay)}요일`;
-  }
-
-  return `${getBusinessDayLabel(firstDay)}-${getBusinessDayLabel(lastDay)}`;
-};
-
-export const formatBusinessDays = (days: readonly BusinessDayTypes[]) => {
-  if (days.length === 0) {
-    return '';
-  }
-
-  return groupContinuousBusinessDays(days).map(formatBusinessDayGroup).join(', ');
-};
-
-const formatBusinessHour = (businessHour: BusinessHourTypes) => {
-  const dayText = formatBusinessDays(businessHour.days);
-
-  if (!businessHour.isOpen) {
-    return {
-      dayText,
-      isClosed: true,
-    };
-  }
-
-  return {
-    dayText,
-    isClosed: false,
-    timeText: `${businessHour.open} - ${businessHour.close}`,
-  };
-};
 
 export const MarketOverviewSection = ({ market, shareUrl }: MarketOverviewSectionProps) => {
   const businessHourTexts = market.businessHours.map(formatBusinessHour);

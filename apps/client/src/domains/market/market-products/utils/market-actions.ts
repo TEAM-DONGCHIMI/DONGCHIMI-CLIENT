@@ -1,40 +1,11 @@
-import type { BusinessDayTypes, BusinessHourTypes } from '../../model/market-detail-schema';
-
-type OpenBusinessHourTypes = Extract<BusinessHourTypes, { isOpen: true }>;
+import { getCurrentBusinessCloseTime } from '@dongchimi/shared/business-hours';
 
 type CallModalDescriptionParamsTypes = Readonly<{
   closeTime: string | undefined;
   isOpenNow: boolean;
 }>;
 
-const BUSINESS_DAY_BY_DATE_DAY_INDEX = [
-  'SUNDAY',
-  'MONDAY',
-  'TUESDAY',
-  'WEDNESDAY',
-  'THURSDAY',
-  'FRIDAY',
-  'SATURDAY',
-] satisfies BusinessDayTypes[];
-
-export const getCurrentBusinessCloseTime = (
-  businessHours: readonly BusinessHourTypes[],
-  date = new Date(),
-) => {
-  const currentBusinessDay = BUSINESS_DAY_BY_DATE_DAY_INDEX[date.getDay()];
-
-  if (currentBusinessDay == null) {
-    return undefined;
-  }
-
-  const currentBusinessHour = businessHours.find(
-    (businessHour): businessHour is OpenBusinessHourTypes => {
-      return businessHour.isOpen && businessHour.days.includes(currentBusinessDay);
-    },
-  );
-
-  return currentBusinessHour?.close;
-};
+export { getCurrentBusinessCloseTime };
 
 export const getCallModalDescription = ({
   closeTime,

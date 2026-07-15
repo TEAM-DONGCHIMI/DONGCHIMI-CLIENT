@@ -128,7 +128,7 @@ export const EventDiscountProductsSection = ({
     nextCursor,
     onLoadNextPage: handleLoadNextPage,
   });
-  const { categoryListRef, categoryMeasureRowRef, firstRowCategoryCount } =
+  const { categoryMeasureRowRef, categoryPrimaryRowRef, firstRowCategoryCount } =
     useEventDiscountCategoryLayout({
       categories,
       visibleCategoryCount,
@@ -146,11 +146,7 @@ export const EventDiscountProductsSection = ({
         행사 할인 상품
       </h2>
 
-      <div
-        ref={categoryListRef}
-        aria-label='행사 할인 상품 카테고리'
-        className={S.categoryListClassName}
-      >
+      <div aria-label='행사 할인 상품 카테고리' className={S.categoryListClassName}>
         <div
           ref={categoryMeasureRowRef}
           aria-hidden='true'
@@ -179,7 +175,7 @@ export const EventDiscountProductsSection = ({
           </PillButton>
         </div>
 
-        <div className={S.categoryPrimaryRowClassName}>
+        <div ref={categoryPrimaryRowRef} className={S.categoryPrimaryRowClassName}>
           <PillButton
             aria-pressed={selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID}
             onClick={() => handleSelectCategory(EVENT_DISCOUNT_ALL_CATEGORY_ID)}

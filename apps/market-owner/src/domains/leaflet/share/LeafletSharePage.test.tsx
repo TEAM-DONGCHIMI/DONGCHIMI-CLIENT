@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { type ReactNode } from 'react';
 import { MemoryRouter } from 'react-router';
@@ -10,26 +10,76 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from '@/shared/api';
 import { useAuthStore } from '@/shared/stores/auth-store';
 
-import { issueQrCode, publishLeaflet } from './api';
+import { getPeriodicPreview, issueQrCode, publishLeaflet } from './api';
 import { LeafletSharePage } from './LeafletSharePage';
+import { leafletShareQueryKeys } from './query-keys';
 
 vi.mock('./api', () => ({
+  getPeriodicPreview: vi.fn(),
   issueQrCode: vi.fn(),
   publishLeaflet: vi.fn(),
 }));
 
+const mockedGetPeriodicPreview = vi.mocked(getPeriodicPreview);
 const mockedIssueQrCode = vi.mocked(issueQrCode);
 const mockedPublishLeaflet = vi.mocked(publishLeaflet);
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
+const periodicPreviewFixture = {
+  marketId: 12,
+  name: '망원 신선마트',
+  thumbnailUrl: 'https://cdn.example.com/market.png',
+  address: '서울 마포구 망원동',
+  isOpenNow: true,
+  businessHours: [{ days: ['MONDAY', 'TUESDAY'], isOpen: true, open: '10:00', close: '20:00' }],
+  marketPhone1: '02-123-4567',
+  marketPhone2: null,
+  ownerPhone: '010-0000-0000',
+  top3: [
+    {
+      productId: 101,
+      name: '사과 500g',
+      thumbnailUrl: 'https://cdn.example.com/apple.png',
+      discountedPrice: 6900,
+      discountRate: 10,
+    },
+  ],
+  daily: {
+    totalCount: 1,
+    products: [
+      {
+        productId: 201,
+        name: '콩나물 500g',
+        thumbnailUrl: 'https://cdn.example.com/bean.png',
+        originalPrice: 5000,
+        discountedPrice: 4500,
+        discountRate: 10,
+      },
+    ],
+  },
+  preparedProducts: [
+    {
+      preparedProductId: 301,
+      name: '행사 상품',
+      thumbnailUrl: 'https://cdn.example.com/periodic.png',
+      discountedPrice: 3900,
+    },
+  ],
+};
+
+const createTestQueryClient = () => {
+  return new QueryClient({
     defaultOptions: {
       mutations: {
         retry: false,
       },
+      queries: {
+        retry: false,
+      },
     },
   });
+};
 
+const createWrapper = (queryClient = createTestQueryClient()) => {
   const LeafletSharePageTestWrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
@@ -48,8 +98,10 @@ const createWrapper = () => {
 describe('LeafletSharePage', () => {
   beforeEach(() => {
     vi.stubEnv('VITE_PUBLIC_CLIENT_BASE_URL', 'https://app.dongchiimi.com');
+    mockedGetPeriodicPreview.mockReset();
     mockedIssueQrCode.mockReset();
     mockedPublishLeaflet.mockReset();
+    mockedGetPeriodicPreview.mockResolvedValue(periodicPreviewFixture);
     useAuthStore.getState().clearSession();
     useAuthStore.getState().setMarketId(12);
   });
@@ -67,7 +119,10 @@ describe('LeafletSharePage', () => {
 
     expect(mockedPublishLeaflet).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+    const shareButton = await screen.findByRole('button', { name: '전단 공유하기' });
+    expect(mockedGetPeriodicPreview).toHaveBeenCalledWith(12);
+
+    await user.click(shareButton);
 
     expect(mockedPublishLeaflet).toHaveBeenCalledOnce();
     expect(mockedPublishLeaflet.mock.calls[0]?.[0]).toBe(12);
@@ -82,7 +137,7 @@ describe('LeafletSharePage', () => {
     mockedPublishLeaflet.mockImplementation(() => new Promise(() => undefined));
     render(<LeafletSharePage />, { wrapper: createWrapper() });
 
-    await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
 
     expect(screen.getByRole('button', { name: '전단 발행 중' })).toBeDisabled();
     expect(mockedPublishLeaflet).toHaveBeenCalledOnce();
@@ -101,12 +156,32 @@ describe('LeafletSharePage', () => {
     );
     render(<LeafletSharePage />, { wrapper: createWrapper() });
 
-    await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       '해당 마트에 대한 접근 권한이 없습니다.',
     );
     expect(screen.getByRole('heading', { name: '오늘의 전단 최종 확인' })).toBeInTheDocument();
+  });
+
+  it('keeps the loaded preview visible when refetch fails', async () => {
+    const queryClient = createTestQueryClient();
+
+    mockedGetPeriodicPreview.mockResolvedValueOnce(periodicPreviewFixture);
+    mockedGetPeriodicPreview.mockRejectedValueOnce(new Error('Periodic preview refetch failed.'));
+    render(<LeafletSharePage />, { wrapper: createWrapper(queryClient) });
+
+    expect(await screen.findByRole('button', { name: '전단 공유하기' })).toBeInTheDocument();
+
+    await queryClient.invalidateQueries({
+      queryKey: leafletShareQueryKeys.periodicPreview(12),
+    });
+
+    await waitFor(() => {
+      expect(mockedGetPeriodicPreview).toHaveBeenCalledTimes(2);
+    });
+    expect(screen.getByRole('button', { name: '다시 불러오기' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '전단 공유하기' })).toBeInTheDocument();
   });
 
   it('keeps the QR issue flow connected to the shared QR modal', async () => {
@@ -116,7 +191,7 @@ describe('LeafletSharePage', () => {
     mockedIssueQrCode.mockResolvedValueOnce({ qrCode: 'base64-qr-code' });
     render(<LeafletSharePage />, { wrapper: createWrapper() });
 
-    await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
     await user.click(await screen.findByRole('button', { name: '매장 고유 QR코드 보기' }));
 
     expect(mockedIssueQrCode.mock.calls[0]?.[0]).toBe(12);
@@ -140,7 +215,7 @@ describe('LeafletSharePage', () => {
       mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
       render(<LeafletSharePage />, { wrapper: createWrapper() });
 
-      await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+      await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
       await user.click(await screen.findByRole('button', { name: copyButtonName }));
 
       expect(writeText).toHaveBeenCalledWith(
@@ -160,7 +235,7 @@ describe('LeafletSharePage', () => {
     mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
     render(<LeafletSharePage />, { wrapper: createWrapper() });
 
-    await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
     await user.click(await screen.findByRole('button', { name: '전단 공유 링크 복사' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
