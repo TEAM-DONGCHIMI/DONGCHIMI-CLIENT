@@ -52,7 +52,7 @@ const getErrorType = (status: number): ApiErrorCategoryTypes => {
     return 'auth';
   }
 
-  if (status === 400 || status === 422) {
+  if (status >= 400 && status < 500) {
     return 'validation';
   }
 

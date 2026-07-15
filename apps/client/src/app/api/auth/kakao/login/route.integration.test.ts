@@ -120,6 +120,7 @@ describe('POST /api/auth/kakao/login', () => {
   it.each([
     [400, 'UNSUPPORTED_OAUTH_PROVIDER', '지원하지 않는 소셜 로그인 제공자입니다.'],
     [401, 'OAUTH_AUTHENTICATION_FAILED', '소셜 로그인 인증에 실패했습니다.'],
+    [503, 'SERVICE_UNAVAILABLE', '현재 로그인 서비스를 사용할 수 없습니다.'],
   ])('백엔드 %i %s 오류를 그대로 전달한다', async (status, code, message) => {
     server.use(
       http.post(`${API_BASE_URL}/v1/users/login/oauth2/kakao`, () => {
@@ -131,6 +132,57 @@ describe('POST /api/auth/kakao/login', () => {
 
     expect(response.status).toBe(status);
     await expect(response.json()).resolves.toEqual({ code, message, success: false });
+    expectOAuthStateCookieToBeDeleted(response);
+  });
+
+  it('API_BASE_URL 설정 오류를 upstream 연결 실패로 오인하지 않는다', async () => {
+    vi.stubEnv('API_BASE_URL', '');
+
+    try {
+      const response = await POST(createLoginRequest());
+
+      expect(response.status).toBe(500);
+      await expect(response.json()).resolves.toEqual({
+        code: 'OAUTH_CONFIGURATION_ERROR',
+        message: '로그인 서버 설정을 확인할 수 없습니다.',
+        success: false,
+      });
+      expectOAuthStateCookieToBeDeleted(response);
+    } finally {
+      vi.stubEnv('API_BASE_URL', API_BASE_URL);
+    }
+  });
+
+  it('백엔드 네트워크 실패만 502 OAUTH_UPSTREAM_FAILED로 응답한다', async () => {
+    server.use(
+      http.post(`${API_BASE_URL}/v1/users/login/oauth2/kakao`, () => HttpResponse.error()),
+    );
+
+    const response = await POST(createLoginRequest());
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toEqual({
+      code: 'OAUTH_UPSTREAM_FAILED',
+      message: '로그인 서버 연결에 실패했습니다.',
+      success: false,
+    });
+    expectOAuthStateCookieToBeDeleted(response);
+  });
+
+  it.each([
+    ['JSON이 아닌 응답', () => new HttpResponse('Bad Gateway', { status: 502 })],
+    ['계약과 다른 JSON 응답', () => HttpResponse.json({ success: false }, { status: 502 })],
+  ])('%s은 502 OAUTH_UPSTREAM_INVALID_RESPONSE로 응답한다', async (_, createResponse) => {
+    server.use(http.post(`${API_BASE_URL}/v1/users/login/oauth2/kakao`, () => createResponse()));
+
+    const response = await POST(createLoginRequest());
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toEqual({
+      code: 'OAUTH_UPSTREAM_INVALID_RESPONSE',
+      message: '로그인 서버 응답을 확인할 수 없습니다.',
+      success: false,
+    });
     expectOAuthStateCookieToBeDeleted(response);
   });
 

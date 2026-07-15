@@ -12,7 +12,7 @@ import {
   getRequestCookie,
   setAccessTokenCookie,
 } from '@/shared/auth';
-import { type UserApiTypes } from '@/shared/api';
+import { normalizeApiError, type ApiErrorCategoryTypes } from '@/shared/api';
 import { createServerApi } from '@/shared/api/server-client';
 
 export const runtime = 'nodejs';
@@ -28,10 +28,62 @@ const createErrorResponse = (status: number, code: string, message: string) => {
   );
 };
 
+interface ErrorResponseDefinition {
+  code: string;
+  message: string;
+  status: number;
+}
+
+const DEFAULT_ERROR_RESPONSE: ErrorResponseDefinition = {
+  code: 'OAUTH_INTERNAL_ERROR',
+  message: '로그인 처리 중 오류가 발생했습니다.',
+  status: 500,
+};
+
+const ERROR_RESPONSE_BY_TYPE: Partial<Record<ApiErrorCategoryTypes, ErrorResponseDefinition>> = {
+  configuration: {
+    code: 'OAUTH_CONFIGURATION_ERROR',
+    message: '로그인 서버 설정을 확인할 수 없습니다.',
+    status: 500,
+  },
+  network: {
+    code: 'OAUTH_UPSTREAM_FAILED',
+    message: '로그인 서버 연결에 실패했습니다.',
+    status: 502,
+  },
+};
+
 const loginRequestSchema = z.object({
   code: z.string().trim().min(1).max(4096),
   state: z.string().trim().min(1).max(128),
 });
+
+const upstreamResponseSchema = z.object({
+  code: z.string(),
+  data: z
+    .object({
+      accessToken: z.string().optional(),
+    })
+    .nullable()
+    .optional(),
+  message: z.string(),
+  success: z.boolean(),
+});
+
+const readUpstreamResponse = async (response: Response) => {
+  try {
+    return upstreamResponseSchema.safeParse(await response.json());
+  } catch {
+    return undefined;
+  }
+};
+
+const createCaughtErrorResponse = async (error: unknown) => {
+  const normalizedError = await normalizeApiError(error);
+  const definition = ERROR_RESPONSE_BY_TYPE[normalizedError.type] ?? DEFAULT_ERROR_RESPONSE;
+
+  return createErrorResponse(definition.status, definition.code, definition.message);
+};
 
 const isMatchingOAuthState = (cookieState: string | undefined, callbackState: string) => {
   if (!cookieState) {
@@ -85,8 +137,19 @@ export async function POST(request: Request) {
       json: { code },
       throwHttpErrors: false,
     });
-    const upstreamBody =
-      (await upstreamResponse.json()) as UserApiTypes.ApiResponseOAuthLoginResponse;
+    const parsedUpstreamBody = await readUpstreamResponse(upstreamResponse);
+
+    if (!parsedUpstreamBody?.success) {
+      return clearKakaoOAuthStateCookie(
+        createErrorResponse(
+          502,
+          'OAUTH_UPSTREAM_INVALID_RESPONSE',
+          '로그인 서버 응답을 확인할 수 없습니다.',
+        ),
+      );
+    }
+
+    const upstreamBody = parsedUpstreamBody.data;
 
     if (!upstreamResponse.ok) {
       return clearKakaoOAuthStateCookie(
@@ -118,9 +181,7 @@ export async function POST(request: Request) {
     appendRefreshTokenCookies(response, refreshCookies);
 
     return response;
-  } catch {
-    return clearKakaoOAuthStateCookie(
-      createErrorResponse(502, 'OAUTH_UPSTREAM_FAILED', '로그인 서버 연결에 실패했습니다.'),
-    );
+  } catch (error) {
+    return clearKakaoOAuthStateCookie(await createCaughtErrorResponse(error));
   }
 }

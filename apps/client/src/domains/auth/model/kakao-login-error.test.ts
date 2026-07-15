@@ -1,44 +1,36 @@
 import { describe, expect, it } from 'vitest';
 
 import { ApiError } from '@/shared/api';
-import {
-  getKakaoOAuthCallbackErrorMessage,
-  KakaoLoginError,
-  normalizeKakaoLoginError,
-} from './kakao-login-error';
+import { getKakaoLoginErrorMessage, getKakaoOAuthCallbackErrorMessage } from './kakao-login-error';
 
 describe('Kakao login error model', () => {
   it.each([
-    ['OAUTH_REQUIRED_INFO_MISSING', '카카오 계정의 이메일과 성별 정보 제공에 동의해 주세요.'],
-    ['DUPLICATE_SOCIAL_ACCOUNT', '이미 가입된 카카오 계정입니다.'],
-    [
-      'OAUTH_AUTHENTICATION_FAILED',
-      '카카오 인증이 만료되었거나 유효하지 않습니다. 다시 로그인해 주세요.',
-    ],
-    ['UNSUPPORTED_OAUTH_PROVIDER', '현재 카카오 로그인을 사용할 수 없습니다.'],
-  ])('%s API 오류를 한 곳에서 사용자 메시지로 변환한다', (code, message) => {
+    ['auth', 401],
+    ['validation', 400],
+  ] as const)('%s API 오류는 개별 code 분기 없이 서버 메시지를 사용한다', (type, status) => {
     const error = new ApiError({
-      code,
-      message: 'backend message',
-      status: 400,
-      type: 'validation',
+      code: 'NEW_OAUTH_ERROR_CODE',
+      message: '서버가 제공한 사용자 메시지',
+      status,
+      type,
     });
 
-    expect(normalizeKakaoLoginError(error)).toMatchObject({ message });
+    expect(getKakaoLoginErrorMessage(error)).toBe('서버가 제공한 사용자 메시지');
   });
 
-  it('알 수 없는 API 오류는 backend message를 노출하지 않는다', () => {
-    const error = new ApiError({
-      code: 'UNKNOWN_BACKEND_ERROR',
-      message: 'internal backend detail',
-      status: 500,
-      type: 'server',
-    });
+  it.each(['configuration', 'network', 'server', 'unknown'] as const)(
+    '%s 오류는 내부 메시지를 노출하지 않는다',
+    (type) => {
+      const error = new ApiError({
+        code: 'INTERNAL_ERROR',
+        message: 'internal backend detail',
+        status: 500,
+        type,
+      });
 
-    expect(normalizeKakaoLoginError(error)).toMatchObject({
-      message: '로그인에 실패했습니다. 다시 시도해 주세요.',
-    });
-  });
+      expect(getKakaoLoginErrorMessage(error)).toBe('로그인에 실패했습니다. 다시 시도해 주세요.');
+    },
+  );
 
   it.each([
     [
@@ -52,11 +44,16 @@ describe('Kakao login error model', () => {
     [
       {
         code: 'authorization-code',
-        loginError: new KakaoLoginError('정규화된 로그인 오류'),
+        loginError: new ApiError({
+          code: 'OAUTH_AUTHENTICATION_FAILED',
+          message: '소셜 로그인 인증에 실패했습니다.',
+          status: 401,
+          type: 'auth',
+        }),
         oauthError: null,
         state: 'oauth-state',
       },
-      '정규화된 로그인 오류',
+      '소셜 로그인 인증에 실패했습니다.',
     ],
   ])('callback 오류 상태도 auth model에서 결정한다', (params, message) => {
     expect(getKakaoOAuthCallbackErrorMessage(params)).toBe(message);

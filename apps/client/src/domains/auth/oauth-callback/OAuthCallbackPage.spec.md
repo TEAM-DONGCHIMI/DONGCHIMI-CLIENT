@@ -47,7 +47,8 @@
 ## Error Boundary
 
 - callback page는 백엔드/BFF error code를 직접 분기하지 않습니다.
-- 인증 API helper가 `KakaoLoginError`로 정규화한 사용자 메시지만 렌더링합니다.
+- 인증 API helper는 공통 HTTP client의 `ApiError`를 그대로 전달합니다.
+- auth/validation 오류는 서버 메시지를 사용하고, network/server/unknown 오류는 auth domain의 안전한 fallback 메시지를 렌더링합니다.
 - provider callback 오류와 callback parameter 누락 메시지는 auth domain model에서 결정합니다.
 
 ## Verification

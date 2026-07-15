@@ -39,7 +39,10 @@
 
 - 잘못된 JSON 또는 빈 code/state는 `400 INVALID_INPUT`으로 응답합니다.
 - state가 없거나 일치하지 않으면 `400 OAUTH_STATE_INVALID`로 응답합니다.
-- 백엔드 오류 status와 error body는 client에 전달합니다.
+- 백엔드가 정상적인 API 오류 body를 반환하면 status와 body를 client에 전달합니다.
+- `API_BASE_URL` 설정 누락은 `500 OAUTH_CONFIGURATION_ERROR`로 응답합니다.
+- 백엔드 연결/timeout 실패는 `502 OAUTH_UPSTREAM_FAILED`로 응답합니다.
+- 백엔드 body가 JSON이 아니거나 응답 계약과 다르면 `502 OAUTH_UPSTREAM_INVALID_RESPONSE`로 응답합니다.
 - 성공 응답에 access token 또는 refresh cookie가 없으면 `502 OAUTH_TOKEN_MISSING`으로 응답합니다.
 
 ## Verification
