@@ -1,9 +1,13 @@
+import { QueryClient } from '@tanstack/react-query';
+import { HttpResponse, http } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { act, renderWithProviders, screen, userEvent, waitFor, within } from '@/test';
+import { act, renderWithProviders, screen, server, userEvent, waitFor, within } from '@/test';
 
 import { MarketProductsPage } from './MarketProductsPage';
-import { marketProductsFixture, type BusinessHourTypes } from './fixtures/market-products.fixture';
+import { MARKET_DETAIL_API_RESPONSE_FIXTURE } from '../api/market-detail-api.mock';
+import type { BusinessHourTypes } from '../model/market-detail-schema';
+import { marketProductsFixture } from './fixtures/market-products.fixture';
 import { calculateFirstRowCategoryCount } from './hooks/useEventDiscountCategoryLayout';
 import { formatBusinessDays } from './sections/MarketOverviewSection';
 import { formatPrice } from './utils/format-price';
@@ -13,6 +17,9 @@ const router = {
   back: vi.fn(),
   push: vi.fn(),
 };
+
+const MARKET_SLUG = 'mangwon-fresh';
+const MARKET_DETAIL_API_PATH = `${window.location.origin}/api/markets/:slug`;
 
 let intersectionObserverCallback: IntersectionObserverCallback | undefined;
 let intersectionObserverOptions: IntersectionObserverInit | undefined;
@@ -38,8 +45,10 @@ vi.mock('next/navigation', () => ({
   useRouter: () => router,
 }));
 
-const renderMarketProductsPage = () => {
-  return renderWithProviders(<MarketProductsPage marketId='mangwon-fresh' />);
+const renderMarketProductsPage = async () => {
+  renderWithProviders(<MarketProductsPage marketSlug={MARKET_SLUG} />);
+
+  await screen.findByRole('heading', { name: MARKET_DETAIL_API_RESPONSE_FIXTURE.data.name });
 };
 
 const mockClipboardWriteText = (writeText: (text: string) => Promise<void>) => {
@@ -66,14 +75,23 @@ describe('MarketProductsPage', () => {
     intersectionObserverCallback = undefined;
     intersectionObserverOptions = undefined;
     vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
+    server.use(
+      http.get(MARKET_DETAIL_API_PATH, ({ params }) => {
+        if (params.slug !== MARKET_SLUG) {
+          return HttpResponse.json({ message: '마트를 찾을 수 없어요.' }, { status: 404 });
+        }
+
+        return HttpResponse.json(MARKET_DETAIL_API_RESPONSE_FIXTURE);
+      }),
+    );
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
-  it('renders market leaflet sections', () => {
-    renderMarketProductsPage();
+  it('API로 조회한 마트 정보와 전단 섹션을 렌더링한다', async () => {
+    await renderMarketProductsPage();
 
     expect(screen.getByRole('heading', { name: '전단보기' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '망원 신선마트' })).toBeInTheDocument();
@@ -82,12 +100,88 @@ describe('MarketProductsPage', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '오늘의 특가 상품' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '행사 할인 상품' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '삼겹살 500g 6,900원 상품 보기' })).toHaveAttribute(
+      'href',
+      '/markets/mangwon-fresh/products/101',
+    );
+  });
+
+  it('마트 상세 조회 중 loading 상태를 표시한다', async () => {
+    server.use(
+      http.get(MARKET_DETAIL_API_PATH, async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        return HttpResponse.json(MARKET_DETAIL_API_RESPONSE_FIXTURE);
+      }),
+    );
+
+    renderWithProviders(<MarketProductsPage marketSlug={MARKET_SLUG} />);
+
+    expect(screen.getByRole('status')).toHaveTextContent('마트 정보를 불러오는 중이에요.');
+    expect(
+      await screen.findByRole('heading', { name: MARKET_DETAIL_API_RESPONSE_FIXTURE.data.name }),
+    ).toBeInTheDocument();
+  });
+
+  it('마트 상세 조회 실패 시 오류와 재시도 action을 표시한다', async () => {
+    const user = userEvent.setup();
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+
+    server.use(
+      http.get(MARKET_DETAIL_API_PATH, () => {
+        return HttpResponse.json({ message: '마트를 찾을 수 없어요.' }, { status: 404 });
+      }),
+    );
+
+    renderWithProviders(<MarketProductsPage marketSlug={MARKET_SLUG} />, { queryClient });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('마트 정보를 불러오지 못했어요.');
+
+    server.use(
+      http.get(MARKET_DETAIL_API_PATH, () => {
+        return HttpResponse.json(MARKET_DETAIL_API_RESPONSE_FIXTURE);
+      }),
+    );
+
+    await user.click(screen.getByRole('button', { name: '다시 시도' }));
+
+    expect(
+      await screen.findByRole('heading', { name: MARKET_DETAIL_API_RESPONSE_FIXTURE.data.name }),
+    ).toBeInTheDocument();
+  });
+
+  it('검증되지 않은 마트 상세 응답은 재시도하지 않고 오류를 표시한다', async () => {
+    let requestCount = 0;
+
+    server.use(
+      http.get(MARKET_DETAIL_API_PATH, () => {
+        requestCount += 1;
+
+        return HttpResponse.json({
+          code: 'SUCCESS',
+          data: {},
+          message: '요청에 성공했습니다.',
+          success: true,
+        });
+      }),
+    );
+
+    renderWithProviders(<MarketProductsPage marketSlug={MARKET_SLUG} />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('마트 정보를 불러오지 못했어요.');
+    expect(requestCount).toBe(1);
   });
 
   it('opens the call confirmation modal', async () => {
     const user = userEvent.setup();
 
-    renderMarketProductsPage();
+    await renderMarketProductsPage();
 
     await user.click(screen.getByRole('button', { name: '전화걸기' }));
 
@@ -100,7 +194,7 @@ describe('MarketProductsPage', () => {
   it('toggles today special products', async () => {
     const user = userEvent.setup();
 
-    renderMarketProductsPage();
+    await renderMarketProductsPage();
 
     const todaySection = getSectionQueries('오늘의 특가 상품');
     const toggleButton = screen.getByRole('button', { name: '등록한 상품 전체보기' });
@@ -126,7 +220,7 @@ describe('MarketProductsPage', () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
 
     mockClipboardWriteText(writeText);
-    renderMarketProductsPage();
+    await renderMarketProductsPage();
 
     await user.click(screen.getByRole('button', { name: '공유하기' }));
 
@@ -144,7 +238,7 @@ describe('MarketProductsPage', () => {
   it('shows a pending toast when kakao share is selected', async () => {
     const user = userEvent.setup();
 
-    renderMarketProductsPage();
+    await renderMarketProductsPage();
 
     await user.click(screen.getByRole('button', { name: '공유하기' }));
 
@@ -159,7 +253,7 @@ describe('MarketProductsPage', () => {
   it('filters event discount products by category', async () => {
     const user = userEvent.setup();
 
-    renderMarketProductsPage();
+    await renderMarketProductsPage();
 
     const eventSection = getSectionQueries('행사 할인 상품');
 
@@ -184,7 +278,7 @@ describe('MarketProductsPage', () => {
   });
 
   it('appends the next event discount page when the load-more sentinel intersects', async () => {
-    renderMarketProductsPage();
+    await renderMarketProductsPage();
 
     const eventSection = getSectionQueries('행사 할인 상품');
 
@@ -220,7 +314,7 @@ describe('MarketProductsPage', () => {
   it('resets event discount pagination when the category changes', async () => {
     const user = userEvent.setup();
 
-    renderMarketProductsPage();
+    await renderMarketProductsPage();
 
     const eventSection = getSectionQueries('행사 할인 상품');
 

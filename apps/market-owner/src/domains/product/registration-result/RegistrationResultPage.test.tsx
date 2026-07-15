@@ -1,9 +1,68 @@
 import { RouterProvider, createMemoryRouter } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppProviders } from '@/app/AppProviders';
+import {
+  usePreparedProductDraftsQuery,
+  usePresignedUploadMutation,
+  useSavePreparedProductDraftsMutation,
+} from '@/domains/product/hooks';
+import { useAuthStore } from '@/shared/stores/auth-store';
 import { render, screen, userEvent, within } from '@/test';
 import { RegistrationResultPage } from './RegistrationResultPage';
+
+vi.mock('@/domains/product/hooks', () => ({
+  usePreparedProductDraftsQuery: vi.fn(),
+  usePresignedUploadMutation: vi.fn(),
+  useSavePreparedProductDraftsMutation: vi.fn(),
+}));
+
+const mockedUsePreparedProductDraftsQuery = vi.mocked(usePreparedProductDraftsQuery);
+const mockedUsePresignedUploadMutation = vi.mocked(usePresignedUploadMutation);
+const mockedUseSavePreparedProductDraftsMutation = vi.mocked(useSavePreparedProductDraftsMutation);
+const mockedSavePreparedProductDrafts = vi.fn();
+
+const preparedDraftsQueryData = {
+  success: true,
+  code: 'SUCCESS',
+  message: '요청에 성공했습니다.',
+  data: {
+    totalCount: 1,
+    successCount: 0,
+    failCount: 1,
+    preparedProducts: [
+      {
+        preparedProductId: 12,
+        name: '고등어',
+        thumbnailUrl: null,
+        discountedPrice: 4000,
+        category: 'SEAFOOD',
+        promotionalPhrase: '맛이 미쳤어요',
+        discountStartDate: '2026-07-15',
+        discountEndDate: '2026-07-21',
+        draftStatus: 'FAIL',
+        failReason: '이미지 누락',
+      },
+    ],
+  },
+} as const;
+
+const completedPreparedDraftsQueryData = {
+  ...preparedDraftsQueryData,
+  data: {
+    ...preparedDraftsQueryData.data,
+    successCount: 1,
+    failCount: 0,
+    preparedProducts: [
+      {
+        ...preparedDraftsQueryData.data.preparedProducts[0],
+        thumbnailUrl: 'https://static.dongchimi.kr/product.png',
+        draftStatus: 'SUCCESS',
+        failReason: null,
+      },
+    ],
+  },
+} as const;
 
 const renderPage = () => {
   const router = createMemoryRouter(
@@ -15,6 +74,10 @@ const renderPage = () => {
       {
         path: '/products/registration-result',
         element: <RegistrationResultPage />,
+      },
+      {
+        path: '/leaflets/share',
+        element: <h1>오늘의 전단 최종 확인</h1>,
       },
     ],
     {
@@ -30,6 +93,24 @@ const renderPage = () => {
 };
 
 describe('RegistrationResultPage', () => {
+  beforeEach(() => {
+    mockedSavePreparedProductDrafts.mockReset().mockResolvedValue(undefined);
+    useAuthStore.getState().clearSession();
+    useAuthStore.getState().setMarketId(12);
+    mockedUsePreparedProductDraftsQuery.mockReturnValue({
+      data: preparedDraftsQueryData,
+      isError: false,
+      isPending: false,
+    } as unknown as ReturnType<typeof usePreparedProductDraftsQuery>);
+    mockedUseSavePreparedProductDraftsMutation.mockReturnValue({
+      isPending: false,
+      mutateAsync: mockedSavePreparedProductDrafts,
+    } as unknown as ReturnType<typeof useSavePreparedProductDraftsMutation>);
+    mockedUsePresignedUploadMutation.mockReturnValue({
+      mutateAsync: vi.fn(),
+    } as unknown as ReturnType<typeof usePresignedUploadMutation>);
+  });
+
   it('renders no-sidebar upload header and registration result section', () => {
     renderPage();
 
@@ -42,6 +123,17 @@ describe('RegistrationResultPage', () => {
       'page',
     );
     expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
+    expect(screen.getByLabelText('고등어 등록 결과')).toBeInTheDocument();
+    expect(screen.getByText('이미지 누락')).toBeInTheDocument();
+    expect(screen.queryByText('이미지 미등록')).not.toBeInTheDocument();
+    expect(mockedUsePreparedProductDraftsQuery).toHaveBeenCalledWith({
+      categories: [],
+      fetchAll: true,
+      marketId: 12,
+      page: 0,
+      search: '',
+      size: 100,
+    });
   });
 
   it('routes to file analysis page when previous action is clicked', async () => {
@@ -52,5 +144,41 @@ describe('RegistrationResultPage', () => {
     await user.click(screen.getByRole('button', { name: '이전' }));
 
     expect(await screen.findByRole('heading', { name: '등록 파일 분석' })).toBeInTheDocument();
+  });
+
+  it('saves the final drafts and routes to the leaflet confirmation page', async () => {
+    const user = userEvent.setup();
+
+    mockedUsePreparedProductDraftsQuery.mockReturnValue({
+      data: completedPreparedDraftsQueryData,
+      isError: false,
+      isPending: false,
+    } as unknown as ReturnType<typeof usePreparedProductDraftsQuery>);
+
+    renderPage();
+
+    await user.click(screen.getByRole('button', { name: /^등록 완료$/ }));
+
+    expect(mockedSavePreparedProductDrafts).toHaveBeenCalledWith({
+      marketId: 12,
+      request: {
+        preparedProducts: [
+          {
+            preparedProductId: 12,
+            name: '고등어',
+            thumbnailUrl: 'https://static.dongchimi.kr/product.png',
+            discountedPrice: 4000,
+            category: 'SEAFOOD',
+            promotionalPhrase: '맛이 미쳤어요',
+            discountStartDate: '2026-07-15',
+            discountEndDate: '2026-07-21',
+            dealType: 'PERIODIC',
+          },
+        ],
+      },
+    });
+    expect(
+      await screen.findByRole('heading', { name: '오늘의 전단 최종 확인' }),
+    ).toBeInTheDocument();
   });
 });

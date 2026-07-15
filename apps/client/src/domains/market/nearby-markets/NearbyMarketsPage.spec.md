@@ -1,4 +1,4 @@
-# Nearby Markets Page Spec
+﻿# Nearby Markets Page Spec
 
 ## Metadata
 
@@ -10,82 +10,82 @@
 
 ## Purpose
 
-- 로그인 후 첫 탐색 화면으로, 현재 위치 기반 주변 마트를 지도와 목록으로 탐색합니다.
+- 濡쒓렇????泥??먯깋 ?붾㈃?쇰줈, ?꾩옱 ?꾩튂 湲곕컲 二쇰? 留덊듃瑜?吏?꾩? 紐⑸줉?쇰줈 ?먯깋?⑸땲??
 
 ## Source Of Truth
 
-- Figma: APPJAM 주변 마트 화면
+- Figma: APPJAM 二쇰? 留덊듃 ?붾㈃
 - Related Jira: DCMCL-2
 
 ## Scope
 
-- `/markets` route entry와 `NearbyMarketsPage` domain page shell을 제공합니다.
-- 상단에 공통 `MobileHeader`를 사용합니다.
-- `NearbyMarketsPage`는 서버 컴포넌트로 유지하고, 위치 조회, 검색어 상태, query, 지도/목록 interaction은 `NearbyMarketsClientProvider` 하위 클라이언트 boundary에서 처리합니다.
-- 화면 섹션은 `sections` 폴더의 page-local 컴포넌트로 분리합니다.
-- 현재 위치 기준 안내 타이틀과 위치/마트 검색 input을 표시합니다.
-- 카카오맵 SDK로 지도를 렌더링하고, `navigator.geolocation`으로 조회한 현재 위치를 지도 중심으로 사용합니다. SDK 로딩 전/실패 시에는 Figma 높이 기준의 placeholder 영역을 표시합니다.
-- 지도 위에 현재 위치 마커와 주변 마트 마커(둘 다 `MapMarker`)를 표시하고, 마트 마커를 터치하면 마트명을 보여주는 정보창을 노출합니다.
-- `useGetNearbyMarketsInfiniteQuery`로 주변 마트 목록을 무한스크롤 방식으로 조회하여 `MartSummaryCard` 목록으로 표시합니다.
-- 위치/마트 검색 input의 입력값은 `NearbyMarketsClientProvider`가 상태로 관리하지만, 현재 위치 기반 마트 목록 API에는 `keyword`를 전달하지 않습니다. 마트 이름/주소 기준 keyword 필터링은 location API가 지원되면 이후 작업에서 연결합니다.
-- 검색 input의 노출 텍스트는 위치 권한 상태에 따라 전환됩니다: 현재 위치 조회 성공 시 위치 안내 텍스트를 input의 기본 값(사용자가 입력한 것처럼 실제 value)으로 채우고, 실패/미허용 시에는 값을 비운 채 "현재 위치를 검색해주세요" placeholder를 노출합니다.
-- 마트 카드 클릭 시 해당 마트의 `/markets/[marketId]` 상세 전단 route로 이동합니다.
+- `/markets` route entry? `NearbyMarketsPage` domain page shell???쒓났?⑸땲??
+- ?곷떒??怨듯넻 `MobileHeader`瑜??ъ슜?⑸땲??
+- `NearbyMarketsPage`???쒕쾭 而댄룷?뚰듃濡??좎??섍퀬, ?꾩튂 議고쉶, 寃?됱뼱 ?곹깭, query, 吏??紐⑸줉 interaction? `NearbyMarketsClientProvider` ?섏쐞 ?대씪?댁뼵??boundary?먯꽌 泥섎━?⑸땲??
+- ?붾㈃ ?뱀뀡? `sections` ?대뜑??page-local 而댄룷?뚰듃濡?遺꾨━?⑸땲??
+- ?꾩옱 ?꾩튂 湲곗? ?덈궡 ??댄?怨??꾩튂/留덊듃 寃??input???쒖떆?⑸땲??
+- 移댁뭅?ㅻ㏊ SDK濡?吏?꾨? ?뚮뜑留곹븯怨? `navigator.geolocation`?쇰줈 議고쉶???꾩옱 ?꾩튂瑜?吏??以묒떖?쇰줈 ?ъ슜?⑸땲?? SDK 濡쒕뵫 ???ㅽ뙣 ?쒖뿉??Figma ?믪씠 湲곗???placeholder ?곸뿭???쒖떆?⑸땲??
+- 吏???꾩뿉 ?꾩옱 ?꾩튂 留덉빱? 二쇰? 留덊듃 留덉빱(????`MapMarker`)瑜??쒖떆?섍퀬, 留덊듃 留덉빱瑜??곗튂?섎㈃ 留덊듃紐낆쓣 蹂댁뿬二쇰뒗 ?뺣낫李쎌쓣 ?몄텧?⑸땲??
+- `useGetNearbyMarketsInfiniteQuery`濡?二쇰? 留덊듃 紐⑸줉??臾댄븳?ㅽ겕濡?諛⑹떇?쇰줈 議고쉶?섏뿬 `MartSummaryCard` 紐⑸줉?쇰줈 ?쒖떆?⑸땲??
+- ?꾩튂/留덊듃 寃??input???낅젰媛믪? `NearbyMarketsClientProvider`媛 ?곹깭濡?愿由ы븯吏留? ?꾩옱 ?꾩튂 湲곕컲 留덊듃 紐⑸줉 API?먮뒗 `keyword`瑜??꾨떖?섏? ?딆뒿?덈떎. 留덊듃 ?대쫫/二쇱냼 湲곗? keyword ?꾪꽣留곸? location API媛 吏?먮릺硫??댄썑 ?묒뾽?먯꽌 ?곌껐?⑸땲??
+- 寃??input???몄텧 ?띿뒪?몃뒗 ?꾩튂 沅뚰븳 ?곹깭???곕씪 ?꾪솚?⑸땲?? ?꾩옱 ?꾩튂 議고쉶 ?깃났 ???꾩튂 ?덈궡 ?띿뒪?몃? input??湲곕낯 媛??ъ슜?먭? ?낅젰??寃껋쿂???ㅼ젣 value)?쇰줈 梨꾩슦怨? ?ㅽ뙣/誘명뿀???쒖뿉??媛믪쓣 鍮꾩슫 梨?"?꾩옱 ?꾩튂瑜?寃?됲빐二쇱꽭?? placeholder瑜??몄텧?⑸땲??
+- 留덊듃 移대뱶 ?대┃ ???대떦 留덊듃??`/markets/[slug]` ?곸꽭 ?꾨떒 route濡??대룞?⑸땲??
 
 ## Out Of Scope
 
-- 위치 기반 마트 목록 조회는 `nearby-markets-api`에서 `httpClient.get`으로 `GET /v1/users/markets/location` endpoint를 호출합니다.
-- `lat`, `lng`, `radius`, `cursor`, `size`를 query parameter로 전달하고, 응답은 zod schema로 검증한 뒤 화면 모델의 `contents` 형태로 정규화합니다.
-- bottom sheet (마커 터치 시에는 간단한 정보창만 노출하며, 별도 bottom sheet UI는 이후 작업에서 연결합니다)
-- 권한 허용 시 검색 input에 실제 현재 위치의 행정동 주소(reverse geocoding)를 표시하는 것: 현재는 "서울시 마포구 망원동" 고정 텍스트를 기본 값으로 채우며, 실제 주소 조회는 외부 reverse geocoding 소스 확정 후 이후 작업에서 연결합니다.
-- 권한 미허용 시 Container 클릭 → 우편번호 찾기 모달을 통한 행정동 검색 플로우: 현재는 빈 값 + placeholder만 노출하며, 모달을 통한 행정동 검색은 외부 주소 검색 서비스 선정 후 이후 작업에서 연결합니다.
+- ?꾩튂 湲곕컲 留덊듃 紐⑸줉 議고쉶??`nearby-markets-api`?먯꽌 `httpClient.get`?쇰줈 `GET /v1/users/markets/location` endpoint瑜??몄텧?⑸땲??
+- `lat`, `lng`, `radius`, `cursor`, `size`瑜?query parameter濡??꾨떖?섍퀬, ?묐떟? zod schema濡?寃利앺븳 ???붾㈃ 紐⑤뜽??`contents` ?뺥깭濡??뺢퇋?뷀빀?덈떎.
+- bottom sheet (留덉빱 ?곗튂 ?쒖뿉??媛꾨떒???뺣낫李쎈쭔 ?몄텧?섎ŉ, 蹂꾨룄 bottom sheet UI???댄썑 ?묒뾽?먯꽌 ?곌껐?⑸땲??
+- 沅뚰븳 ?덉슜 ??寃??input???ㅼ젣 ?꾩옱 ?꾩튂???됱젙??二쇱냼(reverse geocoding)瑜??쒖떆?섎뒗 寃? ?꾩옱??"?쒖슱??留덊룷援?留앹썝?? 怨좎젙 ?띿뒪?몃? 湲곕낯 媛믪쑝濡?梨꾩슦硫? ?ㅼ젣 二쇱냼 議고쉶???몃? reverse geocoding ?뚯뒪 ?뺤젙 ???댄썑 ?묒뾽?먯꽌 ?곌껐?⑸땲??
+- 沅뚰븳 誘명뿀????Container ?대┃ ???고렪踰덊샇 李얘린 紐⑤떖???듯븳 ?됱젙??寃???뚮줈?? ?꾩옱??鍮?媛?+ placeholder留??몄텧?섎ŉ, 紐⑤떖???듯븳 ?됱젙??寃?됱? ?몃? 二쇱냼 寃???쒕퉬???좎젙 ???댄썑 ?묒뾽?먯꽌 ?곌껐?⑸땲??
 
 ## Layout And Sections
 
-- 앱 헤더
-- `NearbyMarketsSearchSection`: 현재 위치 기준 타이틀, 위치/마트 검색 input
-- `NearbyMarketsMapSection`: 지도 영역 (현재 위치 마커, 주변 마트 마커, 상태 안내 문구)
-- `NearbyMarketsMarketListSection`: 무한스크롤 주변 마트 목록 (`MartSummaryCard`), 마트 상세 전단 진입
+- ???ㅻ뜑
+- `NearbyMarketsSearchSection`: ?꾩옱 ?꾩튂 湲곗? ??댄?, ?꾩튂/留덊듃 寃??input
+- `NearbyMarketsMapSection`: 吏???곸뿭 (?꾩옱 ?꾩튂 留덉빱, 二쇰? 留덊듃 留덉빱, ?곹깭 ?덈궡 臾멸뎄)
+- `NearbyMarketsMarketListSection`: 臾댄븳?ㅽ겕濡?二쇰? 留덊듃 紐⑸줉 (`MartSummaryCard`), 留덊듃 ?곸꽭 ?꾨떒 吏꾩엯
 
 ## States
 
-- loading: 목록 최초 조회 중에는 "주변 마트를 불러오는 중이에요." 상태 메시지를 `role="status"`로 노출합니다.
-- empty: 조회 결과가 없으면 "주변에 등록된 마트가 없어요." 메시지를 노출하며, 검색어가 입력된 상태에서 결과가 없으면 "'{검색어}'에 대한 검색 결과가 없어요." 메시지를 노출합니다.
-- error: 조회 실패 시 에러 메시지를 `role="alert"`로 노출합니다.
-- disabled: 현재 없음
-- selected / active: 마트 마커를 터치하면 해당 마커에 마트명을 보여주는 정보창이 열리고, 같은 마커를 다시 터치하거나 지도의 다른 영역을 터치하면 닫힙니다.
-- fetching next page: sentinel이 뷰포트에 들어오면 다음 페이지를 불러오고, 로딩 중에는 "마트를 더 불러오는 중이에요." 상태 메시지를 노출합니다.
-- map loading: 카카오맵 SDK 로딩 중에는 지도 영역에 placeholder만 표시합니다(`role="img"`, 접근 가능한 이름: "지도를 불러오는 중이에요").
-- map error: SDK 로딩 실패 또는 앱 키 누락 시 placeholder와 함께 "마트를 불러올 수 없어요" 상태 메시지를 `role="status"`로 노출합니다. 주변 마트 목록 조회(`useGetNearbyMarketsInfiniteQuery`) 자체가 실패한 경우도 동일한 문구를 노출합니다.
-- geolocation permission denied: 위치 권한이 거부되면 지도는 기본 위치(서울시청)를 중심으로 표시하고, 현재 위치 마커 없이 "위치 검색 결과를 기준으로 마트를 보여드릴게요" 상태 메시지를 `role="status"`로 노출합니다.
-- geolocation error (그 외): 조회 실패/미지원 시에도 지도는 기본 위치를 중심으로 표시하고, "마트를 불러올 수 없어요" 상태 메시지를 노출합니다.
+- loading: 紐⑸줉 理쒖큹 議고쉶 以묒뿉??"二쇰? 留덊듃瑜?遺덈윭?ㅻ뒗 以묒씠?먯슂." ?곹깭 硫붿떆吏瑜?`role="status"`濡??몄텧?⑸땲??
+- empty: 議고쉶 寃곌낵媛 ?놁쑝硫?"二쇰????깅줉??留덊듃媛 ?놁뼱??" 硫붿떆吏瑜??몄텧?섎ŉ, 寃?됱뼱媛 ?낅젰???곹깭?먯꽌 寃곌낵媛 ?놁쑝硫?"'{寃?됱뼱}'?????寃??寃곌낵媛 ?놁뼱??" 硫붿떆吏瑜??몄텧?⑸땲??
+- error: 議고쉶 ?ㅽ뙣 ???먮윭 硫붿떆吏瑜?`role="alert"`濡??몄텧?⑸땲??
+- disabled: ?꾩옱 ?놁쓬
+- selected / active: 留덊듃 留덉빱瑜??곗튂?섎㈃ ?대떦 留덉빱??留덊듃紐낆쓣 蹂댁뿬二쇰뒗 ?뺣낫李쎌씠 ?대━怨? 媛숈? 留덉빱瑜??ㅼ떆 ?곗튂?섍굅??吏?꾩쓽 ?ㅻⅨ ?곸뿭???곗튂?섎㈃ ?ロ옓?덈떎.
+- fetching next page: sentinel??酉고룷?몄뿉 ?ㅼ뼱?ㅻ㈃ ?ㅼ쓬 ?섏씠吏瑜?遺덈윭?ㅺ퀬, 濡쒕뵫 以묒뿉??"留덊듃瑜???遺덈윭?ㅻ뒗 以묒씠?먯슂." ?곹깭 硫붿떆吏瑜??몄텧?⑸땲??
+- map loading: 移댁뭅?ㅻ㏊ SDK 濡쒕뵫 以묒뿉??吏???곸뿭??placeholder留??쒖떆?⑸땲??`role="img"`, ?묎렐 媛?ν븳 ?대쫫: "吏?꾨? 遺덈윭?ㅻ뒗 以묒씠?먯슂").
+- map error: SDK 濡쒕뵫 ?ㅽ뙣 ?먮뒗 ?????꾨씫 ??placeholder? ?④퍡 "留덊듃瑜?遺덈윭?????놁뼱?? ?곹깭 硫붿떆吏瑜?`role="status"`濡??몄텧?⑸땲?? 二쇰? 留덊듃 紐⑸줉 議고쉶(`useGetNearbyMarketsInfiniteQuery`) ?먯껜媛 ?ㅽ뙣??寃쎌슦???숈씪??臾멸뎄瑜??몄텧?⑸땲??
+- geolocation permission denied: ?꾩튂 沅뚰븳??嫄곕??섎㈃ 吏?꾨뒗 湲곕낯 ?꾩튂(?쒖슱?쒖껌)瑜?以묒떖?쇰줈 ?쒖떆?섍퀬, ?꾩옱 ?꾩튂 留덉빱 ?놁씠 "?꾩튂 寃??寃곌낵瑜?湲곗??쇰줈 留덊듃瑜?蹂댁뿬?쒕┫寃뚯슂" ?곹깭 硫붿떆吏瑜?`role="status"`濡??몄텧?⑸땲??
+- geolocation error (洹???: 議고쉶 ?ㅽ뙣/誘몄????쒖뿉??吏?꾨뒗 湲곕낯 ?꾩튂瑜?以묒떖?쇰줈 ?쒖떆?섍퀬, "留덊듃瑜?遺덈윭?????놁뼱?? ?곹깭 硫붿떆吏瑜??몄텧?⑸땲??
 
 ## Behavior
 
-- search input: 위치/마트 검색 영역은 `input type="search"`로 노출하며, `NearbyMarketsClientProvider`가 입력값을 상태로 관리하는 controlled input입니다. 현재 일반 keyword 입력값은 위치 기반 마트 목록 API 요청 파라미터로 전달되지 않으며, query key나 서버 조회 결과를 변경하지 않습니다. 마트 이름/주소 기준 keyword 필터링은 location API 지원 후 연결할 future work입니다. 위치 권한 거부 시 우편번호 찾기 모달을 열고, 선택된 주소가 좌표로 변환되면 해당 좌표 기준으로 목록과 지도 마커를 다시 조회합니다.
-- search input default text: `NearbyMarketsClientProvider`가 `useGeolocation`의 `coordinates` 유무와 사용자가 검색어를 직접 입력했는지(`hasEditedKeyword`) 여부로 입력값을 계산해 `NearbyMarketsSearchSection` → `NearbyMarketsLocationSearchInput`에 전달합니다. 사용자가 아직 입력하지 않았고 `coordinates`가 있으면 "서울시 마포구 망원동"(실제 행정동 주소는 이후 reverse geocoding 연동 시 교체)을 input의 실제 값으로 채워서 노출합니다. 사용자가 입력했거나 `coordinates`가 없으면(권한 거부/조회 실패/로딩 중) 값은 사용자가 입력한 `keyword`를 그대로 노출하며, 비어 있으면 "현재 위치를 검색해주세요" placeholder를 노출합니다. 이 기본 주소 텍스트는 사용자가 직접 검색어를 입력하기 전까지는 실제 `keyword` state나 debounced 입력값에 영향을 주지 않습니다 — `keyword` state 자체는 사용자가 입력한 값만 담고 있으며, 화면에 노출되는 기본 주소 텍스트는 렌더링 시 파생되는 값일 뿐입니다.
-- map center: `NearbyMarketsClientProvider`에서 `useGeolocation`(`navigator.geolocation.getCurrentPosition`)을 한 번 호출해 `coordinates`/`errorCode`를 `NearbyMarketsMapSection`에 props로 전달합니다(중복 조회 방지). 지도 중심은 조회된 현재 위치를 사용하며, 조회 전/실패 시에는 기본 위치(서울시청, `{ lat: 37.5665, lng: 126.978 }`)를 사용합니다.
-- market query ownership: `NearbyMarketsClientProvider`는 `useGetNearbyMarketsInfiniteQuery({ lat, lng })`로 목록 데이터를 조회해 `NearbyMarketsMarketListSection`에 전달하고, `useGetNearbyMarketMarkersQuery({ lat, lng })`로 지도 마커 데이터를 별도로 조회해 `NearbyMarketsMapSection`에 전달합니다. 목록에서 무한스크롤로 다음 페이지를 불러와도 지도 핀은 추가되지 않으며, 지도 마커는 marker query 결과만 반영합니다.
-- map marker: 현재 위치가 있으면 커스텀 SVG 이미지의 `MapMarker`로 현재 위치 마커를 표시합니다(`CustomOverlayMap`은 지도에 attach된 후에야 portal이 붙는 렌더링 지연 버그가 있어 사용하지 않습니다 — 최초 진입 시 마커가 몇 초간 보이지 않는 문제가 있었습니다). `NearbyMarketsClientProvider`로부터 전달받은 마트마다 `MapMarker`를 표시하며, 마커를 터치하면 `MapInfoWindow`로 마트명을 보여주고, 같은 마커를 다시 터치하거나 지도의 다른 영역을 터치하면 닫힙니다. 카카오맵 SDK가 지도 좌측 하단에 저작권 표기("kakao")를 자동으로 표시합니다.
-- market list: `useIntersectionObserver`로 목록 하단 sentinel을 감지해 `NearbyMarketsClientProvider`로부터 전달받은 `fetchNextPage`를 호출하여 다음 페이지를 자동으로 불러옵니다(무한스크롤).
-- navigation: 마트 카드 클릭 시 `router.push`로 `/markets/[marketId]`로 이동합니다.
-- form / validation: 위치 기반 마트 목록 API 요청 파라미터(`cursor`/`lat`/`lng`/`radius`/`size`)와 API 응답 모두 zod 스키마(`nearby-markets-schema`)로 검증합니다. 실제 endpoint 호출 시 shared `UserMarketLocationSearchParamsTypes`가 지원하는 `lat`/`lng`/`radius`/`cursor`/`size`만 query parameter로 전달합니다. 응답은 검증 후 view model로 매핑합니다.
-- API: `useGetNearbyMarketsInfiniteQuery` → `getNearbyMarkets`로 주변 마트 목록을 조회합니다. `lat`/`lng`가 준비된 뒤 query를 활성화하고, `hasNext`/`nextCursor`로 다음 페이지를 조회합니다.
+- search input: ?꾩튂/留덊듃 寃???곸뿭? `input type="search"`濡??몄텧?섎ŉ, `NearbyMarketsClientProvider`媛 ?낅젰媛믪쓣 ?곹깭濡?愿由ы븯??controlled input?낅땲?? ?꾩옱 ?쇰컲 keyword ?낅젰媛믪? ?꾩튂 湲곕컲 留덊듃 紐⑸줉 API ?붿껌 ?뚮씪誘명꽣濡??꾨떖?섏? ?딆쑝硫? query key???쒕쾭 議고쉶 寃곌낵瑜?蹂寃쏀븯吏 ?딆뒿?덈떎. 留덊듃 ?대쫫/二쇱냼 湲곗? keyword ?꾪꽣留곸? location API 吏?????곌껐??future work?낅땲?? ?꾩튂 沅뚰븳 嫄곕? ???고렪踰덊샇 李얘린 紐⑤떖???닿퀬, ?좏깮??二쇱냼媛 醫뚰몴濡?蹂?섎릺硫??대떦 醫뚰몴 湲곗??쇰줈 紐⑸줉怨?吏??留덉빱瑜??ㅼ떆 議고쉶?⑸땲??
+- search input default text: `NearbyMarketsClientProvider`媛 `useGeolocation`??`coordinates` ?좊Т? ?ъ슜?먭? 寃?됱뼱瑜?吏곸젒 ?낅젰?덈뒗吏(`hasEditedKeyword`) ?щ?濡??낅젰媛믪쓣 怨꾩궛??`NearbyMarketsSearchSection` ??`NearbyMarketsLocationSearchInput`???꾨떖?⑸땲?? ?ъ슜?먭? ?꾩쭅 ?낅젰?섏? ?딆븯怨?`coordinates`媛 ?덉쑝硫?"?쒖슱??留덊룷援?留앹썝??(?ㅼ젣 ?됱젙??二쇱냼???댄썑 reverse geocoding ?곕룞 ??援먯껜)??input???ㅼ젣 媛믪쑝濡?梨꾩썙???몄텧?⑸땲?? ?ъ슜?먭? ?낅젰?덇굅??`coordinates`媛 ?놁쑝硫?沅뚰븳 嫄곕?/議고쉶 ?ㅽ뙣/濡쒕뵫 以? 媛믪? ?ъ슜?먭? ?낅젰??`keyword`瑜?洹몃?濡??몄텧?섎ŉ, 鍮꾩뼱 ?덉쑝硫?"?꾩옱 ?꾩튂瑜?寃?됲빐二쇱꽭?? placeholder瑜??몄텧?⑸땲?? ??湲곕낯 二쇱냼 ?띿뒪?몃뒗 ?ъ슜?먭? 吏곸젒 寃?됱뼱瑜??낅젰?섍린 ?꾧퉴吏???ㅼ젣 `keyword` state??debounced ?낅젰媛믪뿉 ?곹뼢??二쇱? ?딆뒿?덈떎 ??`keyword` state ?먯껜???ъ슜?먭? ?낅젰??媛믩쭔 ?닿퀬 ?덉쑝硫? ?붾㈃???몄텧?섎뒗 湲곕낯 二쇱냼 ?띿뒪?몃뒗 ?뚮뜑留????뚯깮?섎뒗 媛믪씪 肉먯엯?덈떎.
+- map center: `NearbyMarketsClientProvider`?먯꽌 `useGeolocation`(`navigator.geolocation.getCurrentPosition`)????踰??몄텧??`coordinates`/`errorCode`瑜?`NearbyMarketsMapSection`??props濡??꾨떖?⑸땲??以묐났 議고쉶 諛⑹?). 吏??以묒떖? 議고쉶???꾩옱 ?꾩튂瑜??ъ슜?섎ŉ, 議고쉶 ???ㅽ뙣 ?쒖뿉??湲곕낯 ?꾩튂(?쒖슱?쒖껌, `{ lat: 37.5665, lng: 126.978 }`)瑜??ъ슜?⑸땲??
+- market query ownership: `NearbyMarketsClientProvider`??`useGetNearbyMarketsInfiniteQuery({ lat, lng })`濡?紐⑸줉 ?곗씠?곕? 議고쉶??`NearbyMarketsMarketListSection`???꾨떖?섍퀬, `useGetNearbyMarketMarkersQuery({ lat, lng })`濡?吏??留덉빱 ?곗씠?곕? 蹂꾨룄濡?議고쉶??`NearbyMarketsMapSection`???꾨떖?⑸땲?? 紐⑸줉?먯꽌 臾댄븳?ㅽ겕濡ㅻ줈 ?ㅼ쓬 ?섏씠吏瑜?遺덈윭???吏???? 異붽??섏? ?딆쑝硫? 吏??留덉빱??marker query 寃곌낵留?諛섏쁺?⑸땲??
+- map marker: ?꾩옱 ?꾩튂媛 ?덉쑝硫?而ㅼ뒪? SVG ?대?吏??`MapMarker`濡??꾩옱 ?꾩튂 留덉빱瑜??쒖떆?⑸땲??`CustomOverlayMap`? 吏?꾩뿉 attach???꾩뿉??portal??遺숇뒗 ?뚮뜑留?吏??踰꾧렇媛 ?덉뼱 ?ъ슜?섏? ?딆뒿?덈떎 ??理쒖큹 吏꾩엯 ??留덉빱媛 紐?珥덇컙 蹂댁씠吏 ?딅뒗 臾몄젣媛 ?덉뿀?듬땲??. `NearbyMarketsClientProvider`濡쒕????꾨떖諛쏆? 留덊듃留덈떎 `MapMarker`瑜??쒖떆?섎ŉ, 留덉빱瑜??곗튂?섎㈃ `MapInfoWindow`濡?留덊듃紐낆쓣 蹂댁뿬二쇨퀬, 媛숈? 留덉빱瑜??ㅼ떆 ?곗튂?섍굅??吏?꾩쓽 ?ㅻⅨ ?곸뿭???곗튂?섎㈃ ?ロ옓?덈떎. 移댁뭅?ㅻ㏊ SDK媛 吏??醫뚯륫 ?섎떒????묎텒 ?쒓린("kakao")瑜??먮룞?쇰줈 ?쒖떆?⑸땲??
+- market list: `useIntersectionObserver`濡?紐⑸줉 ?섎떒 sentinel??媛먯???`NearbyMarketsClientProvider`濡쒕????꾨떖諛쏆? `fetchNextPage`瑜??몄텧?섏뿬 ?ㅼ쓬 ?섏씠吏瑜??먮룞?쇰줈 遺덈윭?듬땲??臾댄븳?ㅽ겕濡?.
+- navigation: 留덊듃 移대뱶 ?대┃ ??`router.push`濡?`/markets/[slug]`濡??대룞?⑸땲??
+- form / validation: ?꾩튂 湲곕컲 留덊듃 紐⑸줉 API ?붿껌 ?뚮씪誘명꽣(`cursor`/`lat`/`lng`/`radius`/`size`)? API ?묐떟 紐⑤몢 zod ?ㅽ궎留?`nearby-markets-schema`)濡?寃利앺빀?덈떎. ?ㅼ젣 endpoint ?몄텧 ??shared `UserMarketLocationSearchParamsTypes`媛 吏?먰븯??`lat`/`lng`/`radius`/`cursor`/`size`留?query parameter濡??꾨떖?⑸땲?? ?묐떟? 寃利???view model濡?留ㅽ븨?⑸땲??
+- API: `useGetNearbyMarketsInfiniteQuery` ??`getNearbyMarkets`濡?二쇰? 留덊듃 紐⑸줉??議고쉶?⑸땲?? `lat`/`lng`媛 以鍮꾨맂 ??query瑜??쒖꽦?뷀븯怨? `hasNext`/`nextCursor`濡??ㅼ쓬 ?섏씠吏瑜?議고쉶?⑸땲??
 
 ## Accessibility
 
-- 페이지 타이틀은 `h1`으로 제공합니다.
-- 검색 영역은 keyboard focus 가능한 `input type="search"`로 제공합니다.
-- 지도 placeholder는 `role="img"`와 접근 가능한 이름을 제공합니다.
-- geolocation 실패/권한 거부 상태 메시지는 `role="status"`로 노출합니다.
-- 마트 목록의 loading/empty/error 상태 메시지는 `role="status"` 또는 `role="alert"`로 노출합니다.
-- 마트 카드 액션은 keyboard focus 가능합니다.
-- 지도 마커(현재 위치, 주변 마트 모두)는 카카오맵 SDK가 그리는 `img` 엘리먼트로, `title` 속성 외 별도의 접근 가능한 이름/키보드 포커스는 제공하지 않는 SDK 자체의 한계가 있습니다.
+- ?섏씠吏 ??댄?? `h1`?쇰줈 ?쒓났?⑸땲??
+- 寃???곸뿭? keyboard focus 媛?ν븳 `input type="search"`濡??쒓났?⑸땲??
+- 吏??placeholder??`role="img"`? ?묎렐 媛?ν븳 ?대쫫???쒓났?⑸땲??
+- geolocation ?ㅽ뙣/沅뚰븳 嫄곕? ?곹깭 硫붿떆吏??`role="status"`濡??몄텧?⑸땲??
+- 留덊듃 紐⑸줉??loading/empty/error ?곹깭 硫붿떆吏??`role="status"` ?먮뒗 `role="alert"`濡??몄텧?⑸땲??
+- 留덊듃 移대뱶 ?≪뀡? keyboard focus 媛?ν빀?덈떎.
+- 吏??留덉빱(?꾩옱 ?꾩튂, 二쇰? 留덊듃 紐⑤몢)??移댁뭅?ㅻ㏊ SDK媛 洹몃━??`img` ?섎━癒쇳듃濡? `title` ?띿꽦 ??蹂꾨룄???묎렐 媛?ν븳 ?대쫫/?ㅻ낫???ъ빱?ㅻ뒗 ?쒓났?섏? ?딅뒗 SDK ?먯껜???쒓퀎媛 ?덉뒿?덈떎.
 
 ## Responsive
 
-- mobile: Figma 모바일 화면 기준입니다.
-- tablet: 추후 layout 기준 확정이 필요합니다.
-- desktop: 추후 layout 기준 확정이 필요합니다.
+- mobile: Figma 紐⑤컮???붾㈃ 湲곗??낅땲??
+- tablet: 異뷀썑 layout 湲곗? ?뺤젙???꾩슂?⑸땲??
+- desktop: 異뷀썑 layout 湲곗? ?뺤젙???꾩슂?⑸땲??
 
 ## Verification
 
@@ -93,8 +93,8 @@
 - [x] `pnpm --filter client lint`
 - [x] `pnpm --filter client typecheck`
 - [x] `pnpm --filter client build`
-- [x] browser route: `/markets` (Playwright로 지도 마커/정보창/위치 권한 거부 상태 확인)
+- [x] browser route: `/markets` (Playwright濡?吏??留덉빱/?뺣낫李??꾩튂 沅뚰븳 嫄곕? ?곹깭 ?뺤씤)
 
 ## Open Questions
 
-- 1차로 권한 상태별 검색 input 기본 값(고정 텍스트)/placeholder 전환과 위치 기반 주변 마트 조회를 연결했습니다. 실제 행정동 주소 표시(reverse geocoding)와 우편번호 찾기 모달을 통한 행정동 검색 플로우는 외부 주소 검색 서비스 선정 및 현재 위치 reverse geocoding 소스 확정이 필요합니다.
+- 1李⑤줈 沅뚰븳 ?곹깭蹂?寃??input 湲곕낯 媛?怨좎젙 ?띿뒪??/placeholder ?꾪솚怨??꾩튂 湲곕컲 二쇰? 留덊듃 議고쉶瑜??곌껐?덉뒿?덈떎. ?ㅼ젣 ?됱젙??二쇱냼 ?쒖떆(reverse geocoding)? ?고렪踰덊샇 李얘린 紐⑤떖???듯븳 ?됱젙??寃???뚮줈?곕뒗 ?몃? 二쇱냼 寃???쒕퉬???좎젙 諛??꾩옱 ?꾩튂 reverse geocoding ?뚯뒪 ?뺤젙???꾩슂?⑸땲??

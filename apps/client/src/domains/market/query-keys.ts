@@ -1,21 +1,33 @@
 import type { NearbyMarketsListParamsTypes } from './api/nearby-markets-api';
+import type { MarketDetailParamsTypes } from './api/market-detail-api';
 
 const normalizeNearbyMarketsListParams = ({
   lat,
   lng,
   radius,
   size,
-}: NearbyMarketsListParamsTypes) => ({
-  lat,
-  lng,
-  radius,
-  size,
-});
+}: NearbyMarketsListParamsTypes) => {
+  return Object.fromEntries(
+    Object.entries({
+      lat,
+      lng,
+      radius,
+      size,
+    }).filter(([, value]) => value !== undefined),
+  );
+};
 
-export const nearbyMarketsQueryKeys = {
-  all: ['market', 'nearby-markets'] as const,
-  list: (params: NearbyMarketsListParamsTypes) =>
-    [...nearbyMarketsQueryKeys.all, normalizeNearbyMarketsListParams(params)] as const,
-  markers: (params: NearbyMarketsListParamsTypes) =>
-    [...nearbyMarketsQueryKeys.all, 'markers', normalizeNearbyMarketsListParams(params)] as const,
+export const marketQueryKeys = {
+  all: ['market'] as const,
+  detail: (params: MarketDetailParamsTypes) =>
+    [...marketQueryKeys.all, 'market-detail', params] as const,
+  nearbyList: (params: NearbyMarketsListParamsTypes) =>
+    [...marketQueryKeys.all, 'nearby-markets', normalizeNearbyMarketsListParams(params)] as const,
+  nearbyMarkers: (params: NearbyMarketsListParamsTypes) =>
+    [
+      ...marketQueryKeys.all,
+      'nearby-markets',
+      'markers',
+      normalizeNearbyMarketsListParams(params),
+    ] as const,
 };

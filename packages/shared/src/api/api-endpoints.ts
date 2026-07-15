@@ -8,7 +8,7 @@ export type ApiSearchParamValueTypes =
 export type ApiSearchParamsTypes = Record<string, ApiSearchParamValueTypes>;
 
 export interface OwnerDraftProductsSearchParamsTypes extends ApiSearchParamsTypes {
-  category?: string;
+  categories?: readonly string[];
   page?: number;
   search?: string;
   size?: number;

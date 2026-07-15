@@ -4,8 +4,12 @@ import { IcCalendar, IcLocation, IcPhone } from '@dongchimi/design-system/icons'
 
 import { MarketOverviewActions } from '../components/MarketOverviewActions';
 import { MarketStatusChip } from '../components/MarketStatusChip';
-import type { BusinessDayTypes, BusinessHourTypes } from '../fixtures/market-products.fixture';
 import * as S from '../MarketProductsPage.css';
+import type {
+  BusinessDayTypes,
+  BusinessHourTypes,
+  MarketDetailTypes,
+} from '../../model/market-detail-schema';
 
 const DAY_LABELS: Record<BusinessDayTypes, string> = {
   FRIDAY: '금',
@@ -31,21 +35,27 @@ const BUSINESS_DAY_INDEX = new Map(
   BUSINESS_DAY_ORDER.map((businessDay, index) => [businessDay, index]),
 );
 
+const getBusinessDaySortIndex = (businessDay: BusinessDayTypes) => {
+  return BUSINESS_DAY_INDEX.get(businessDay) ?? Number.MAX_SAFE_INTEGER;
+};
+
+const getBusinessDayLabel = (businessDay: BusinessDayTypes) => {
+  return DAY_LABELS[businessDay];
+};
+
 interface MarketOverviewSectionProps {
-  market: {
-    address: string;
-    businessHours: BusinessHourTypes[];
-    isOpenNow: boolean;
-    marketPhone1: string;
-    name: string;
-    thumbnailUrl: string | null;
-  };
+  market: MarketDetailTypes;
   shareUrl: string;
 }
 
 const sortBusinessDays = (days: readonly BusinessDayTypes[]) => {
   return Array.from(new Set(days)).sort((previousDay, nextDay) => {
-    return (BUSINESS_DAY_INDEX.get(previousDay) ?? 0) - (BUSINESS_DAY_INDEX.get(nextDay) ?? 0);
+    const previousDayIndex = getBusinessDaySortIndex(previousDay);
+    const nextDayIndex = getBusinessDaySortIndex(nextDay);
+
+    return previousDayIndex === nextDayIndex
+      ? previousDay.localeCompare(nextDay)
+      : previousDayIndex - nextDayIndex;
   });
 };
 
@@ -80,10 +90,10 @@ const formatBusinessDayGroup = (days: readonly BusinessDayTypes[]) => {
   }
 
   if (days.length === 1) {
-    return `${DAY_LABELS[firstDay]}요일`;
+    return `${getBusinessDayLabel(firstDay)}요일`;
   }
 
-  return `${DAY_LABELS[firstDay]}-${DAY_LABELS[lastDay]}`;
+  return `${getBusinessDayLabel(firstDay)}-${getBusinessDayLabel(lastDay)}`;
 };
 
 export const formatBusinessDays = (days: readonly BusinessDayTypes[]) => {

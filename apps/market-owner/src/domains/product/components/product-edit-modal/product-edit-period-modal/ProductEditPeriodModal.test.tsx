@@ -97,7 +97,7 @@ describe('ProductEditPeriodModal', () => {
 
   it('submits changed period when confirm button is pressed', async () => {
     const user = userEvent.setup();
-    const handleSubmit = vi.fn();
+    const handleSubmit = vi.fn().mockResolvedValue(true);
     const handleClose = vi.fn();
 
     render(
@@ -123,5 +123,50 @@ describe('ProductEditPeriodModal', () => {
       startDate: '2026-08-12',
     });
     expect(handleClose).toHaveBeenCalledOnce();
+  });
+
+  it('keeps the modal open with entered dates when the request fails', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn().mockResolvedValue(false);
+    const handleClose = vi.fn();
+
+    render(
+      <ProductEditPeriodModal
+        initialPeriod={{
+          endDate: '2026. 8. 16',
+          startDate: '2026. 8. 12',
+        }}
+        open
+        variant='eventDiscount'
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('행사 종료일'), {
+      target: { value: '2026-08-17' },
+    });
+    await user.click(screen.getByRole('button', { name: '변경하기' }));
+
+    expect(handleClose).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('행사 종료일')).toHaveValue('2026-08-17');
+  });
+
+  it('disables modal actions while submitting', () => {
+    render(
+      <ProductEditPeriodModal
+        initialPeriod={{
+          endDate: '2026. 8. 16',
+          startDate: '2026. 8. 12',
+        }}
+        isSubmitting
+        open
+        variant='eventDiscount'
+        onClose={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: '취소' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '변경하기' })).toBeDisabled();
   });
 });

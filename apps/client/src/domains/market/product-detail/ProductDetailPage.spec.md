@@ -4,7 +4,7 @@
 
 - Jira: DCMCL-10
 - Screen ID: APPJAM `1972:129194` `상품 상세_[오늘의 특가 상품]`, APPJAM `1972:129231` `상품 상세_[행사 할인 상품]`
-- Route: `/markets/[marketId]/products/[productId]`
+- Route: `/markets/[slug]/products/[productId]`
 - Owner: apps/client
 - Status: Implemented
 
@@ -24,7 +24,7 @@
 
 ## Scope
 
-- 기존 `/markets/[marketId]/products/[productId]` route entry는 Server Component로 유지합니다.
+- 기존 `/markets/[slug]/products/[productId]` route entry는 Server Component로 유지합니다.
 - `ProductDetailPage`는 fixture 기반으로 오늘의 특가와 행사 할인 상품 variant를 렌더링합니다.
 - `ProductDetailPage`, `ProductDetailHeader`는 Server Component로 유지하고, 뒤로가기 interaction만 page-local Client Component로 분리합니다.
 - 디자인시스템 root barrel은 client-only 모듈도 함께 노출하므로 `Chip` 사용 영역은 작은 client island로 유지합니다.
@@ -52,12 +52,12 @@
 
 ## Routing And Access
 
-- route path: `/markets/[marketId]/products/[productId]`
-- route params: `marketId`, `productId`
+- route path: `/markets/[slug]/products/[productId]`
+- route params: `slug`, `productId`
 - search params: 없음
 - layout shell: root `client-app-shell`, page-local mobile header
 - access rule: 공개 모바일 웹 fixture 화면
-- after action navigation: back button은 history back을 우선하고, history가 없으면 `/markets/[marketId]`로 이동합니다.
+- after action navigation: back button은 history back을 우선하고, history가 없으면 `/markets/[slug]`로 이동합니다.
 
 ## Design System And Component Boundary
 
@@ -78,10 +78,10 @@
 
 ## Behavior
 
-- navigation: 뒤로가기 button은 `router.back()`을 우선하고 fallback으로 `/markets/[marketId]`로 이동합니다.
+- navigation: 뒤로가기 button은 `router.back()`을 우선하고 fallback으로 `/markets/[slug]`로 이동합니다.
 - interaction: 상세 action은 후속 이슈에서 구현합니다.
 - form / validation: 없음
-- API: 없음. `productId` fixture로 variant를 선택하고, 미등록 fixture는 `notFound()`로 처리합니다.
+- API: 없음. `productId` fixture로 variant를 선택하고, 미등록 fixture는 `notFound()`로 처리합니다. 후속 상품 상세 API는 `marketId`를 요구하므로, public route의 `slug`를 직접 전달하지 않고 마트 상세 응답의 `marketId`로 해소한 뒤 호출합니다.
 
 ## Accessibility
 

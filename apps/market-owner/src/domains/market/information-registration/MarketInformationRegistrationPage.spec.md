@@ -126,6 +126,8 @@
 
 ## DCMSM-61 API Integration
 
+- registration context: 성공 응답의 `data.marketId`를 auth store에 저장한 뒤 완료 Toast와 홈 이동을 수행합니다.
+
 - endpoint: `POST /v1/owners/markets`
 - pending: 등록 버튼을 비활성화하고 `등록 중...`을 표시합니다.
 - success: 완료 Toast를 표시한 뒤 홈 route로 replace 이동합니다.
