@@ -18,6 +18,7 @@ import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 interface TodaySpecialEditProductSectionProps {
   autoOpenProductId?: string | null;
+  marketId: number;
   selection: ProductEditPageSelectionControls;
   selectedFilter: ProductEditFilterTypes;
   onAutoOpenProductMissing?: (productId: string) => void;
@@ -26,7 +27,6 @@ interface TodaySpecialEditProductSectionProps {
 
 interface TodaySpecialEditProductListProps extends TodaySpecialEditProductSectionProps {
   initialProducts: ProductEditListItemTypes[];
-  marketId: number;
 }
 
 const TodaySpecialEditProductList = ({
@@ -38,7 +38,10 @@ const TodaySpecialEditProductList = ({
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
 }: TodaySpecialEditProductListProps) => {
-  const { deleteProduct, products, updateProduct } = useProductEditProducts(initialProducts);
+  const { deleteProduct, isDeletePending, products, updateProduct } = useProductEditProducts(
+    initialProducts,
+    marketId,
+  );
   const productGroups = createProductEditDisplayGroups({
     createCardProps: (product) =>
       createProductEditCardProps({
@@ -54,6 +57,7 @@ const TodaySpecialEditProductList = ({
     <ProductEditProductList
       ariaLabel='오늘의 특가 상품 수정 목록'
       autoOpenProductId={autoOpenProductId}
+      deletePending={isDeletePending}
       editModalVariant='todaySpecial'
       groups={productGroups}
       marketId={marketId}
@@ -62,7 +66,7 @@ const TodaySpecialEditProductList = ({
       selectionMode={selection.selectionMode}
       onAutoOpenProductMissing={onAutoOpenProductMissing}
       onAutoOpenProductModalClose={onAutoOpenProductModalClose}
-      onDeleteProduct={(product) => deleteProduct(product.productName)}
+      onDeleteProduct={(product) => void deleteProduct(Number(product.productId))}
       onToggleProductSelection={selection.onToggleProductSelection}
       onUpdateProduct={updateProduct}
     />
@@ -70,10 +74,8 @@ const TodaySpecialEditProductList = ({
 };
 
 export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSectionProps) => {
-  // TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
-  const marketId = 1;
   const productListQuery = useProductListQuery({
-    marketId,
+    marketId: props.marketId,
     sort: getProductListSort(props.selectedFilter),
     type: 'DAILY',
   });
@@ -94,7 +96,7 @@ export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSec
       key={`${props.selectedFilter}-${productIdsKey}`}
       {...props}
       initialProducts={products}
-      marketId={marketId}
+      marketId={props.marketId}
     />
   );
 };

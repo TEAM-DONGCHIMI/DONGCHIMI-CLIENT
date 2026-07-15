@@ -49,7 +49,8 @@ export interface ProductEditPageShellProps {
         selectedCategory: ProductCategoryTypes | null,
         selection: ProductEditPageSelectionControls,
       ) => ReactNode);
-  onDeleteProducts?: (productNames: string[]) => void;
+  deletePending?: boolean;
+  onDeleteProducts?: (productIds: number[]) => Promise<boolean>;
   onResetProducts?: () => void;
   onUpdateProductPeriods?: (
     productNames: string[],
@@ -62,6 +63,7 @@ export interface ProductEditPageShellProps {
 export const ProductEditPageShell = ({
   activeType,
   children,
+  deletePending = false,
   onDeleteProducts,
   onResetProducts,
   onUpdateProductPeriods,
@@ -199,7 +201,12 @@ export const ProductEditPageShell = ({
                   <span className={S.selectedProductNumberClassName}>{selectedProductCount}</span>)
                 </span>
               )}
-              <Button {...periodButtonProps} size='xsmall' onClick={openPeriodBulkAction}>
+              <Button
+                {...periodButtonProps}
+                disabled={deletePending}
+                size='xsmall'
+                onClick={openPeriodBulkAction}
+              >
                 기간 일괄 수정
               </Button>
               <Button
@@ -209,6 +216,7 @@ export const ProductEditPageShell = ({
                     : S.actionButtonClassNames.negative
                 }
                 color='negative'
+                disabled={deletePending}
                 leftIcon={
                   isDeleteButtonEmphasized ? (
                     <IcTrashSizeSmallColorNegativeStrong aria-hidden='true' />
@@ -225,6 +233,7 @@ export const ProductEditPageShell = ({
               <Button
                 className={S.actionButtonClassNames.reset}
                 color='negative'
+                disabled={deletePending}
                 leftIcon={<IcResetSizeSmallColorNegative aria-hidden='true' />}
                 size='xsmall'
                 variant='outlined'

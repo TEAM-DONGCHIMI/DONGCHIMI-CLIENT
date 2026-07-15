@@ -19,6 +19,7 @@ import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 interface EventDiscountEditProductSectionProps {
   autoOpenProductId?: string | null;
+  marketId: number;
   selection: ProductEditPageSelectionControls;
   selectedCategory: ProductCategoryTypes | null;
   selectedFilter: ProductEditFilterTypes;
@@ -28,7 +29,6 @@ interface EventDiscountEditProductSectionProps {
 
 interface EventDiscountEditProductListProps extends EventDiscountEditProductSectionProps {
   initialProducts: ProductEditListItemTypes[];
-  marketId: number;
 }
 
 const EventDiscountEditProductList = ({
@@ -41,7 +41,10 @@ const EventDiscountEditProductList = ({
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
 }: EventDiscountEditProductListProps) => {
-  const { deleteProduct, products, updateProduct } = useProductEditProducts(initialProducts);
+  const { deleteProduct, isDeletePending, products, updateProduct } = useProductEditProducts(
+    initialProducts,
+    marketId,
+  );
   const productGroups = createProductEditDisplayGroups({
     createCardProps: (product) =>
       createProductEditCardProps({
@@ -58,6 +61,7 @@ const EventDiscountEditProductList = ({
     <ProductEditProductList
       ariaLabel='행사 할인 상품 수정 목록'
       autoOpenProductId={autoOpenProductId}
+      deletePending={isDeletePending}
       editModalVariant='eventDiscount'
       groups={productGroups}
       marketId={marketId}
@@ -66,7 +70,7 @@ const EventDiscountEditProductList = ({
       selectionMode={selection.selectionMode}
       onAutoOpenProductMissing={onAutoOpenProductMissing}
       onAutoOpenProductModalClose={onAutoOpenProductModalClose}
-      onDeleteProduct={(product) => deleteProduct(product.productName)}
+      onDeleteProduct={(product) => void deleteProduct(Number(product.productId))}
       onToggleProductSelection={selection.onToggleProductSelection}
       onUpdateProduct={updateProduct}
     />
@@ -74,10 +78,8 @@ const EventDiscountEditProductList = ({
 };
 
 export const EventDiscountEditProductSection = (props: EventDiscountEditProductSectionProps) => {
-  // TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
-  const marketId = 1;
   const productListQuery = useProductListQuery({
-    marketId,
+    marketId: props.marketId,
     sort: getProductListSort(props.selectedFilter),
     type: 'PERIODIC',
   });
@@ -98,7 +100,7 @@ export const EventDiscountEditProductSection = (props: EventDiscountEditProductS
       key={`${props.selectedFilter}-${productIdsKey}`}
       {...props}
       initialProducts={products}
-      marketId={marketId}
+      marketId={props.marketId}
     />
   );
 };

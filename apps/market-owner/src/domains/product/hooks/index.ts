@@ -5,6 +5,7 @@ export {
   useBulkProductDeletionMutation,
   useProductDeletionMutation,
 } from './use-product-deletion-mutations';
+export { useProductDeletionActions } from './use-product-deletion-actions';
 export { useProductEditProducts } from './use-product-edit-products';
 export { useProductEditTargetParam } from './use-product-edit-target-param';
 export { useProductListQuery } from './use-product-list-query';

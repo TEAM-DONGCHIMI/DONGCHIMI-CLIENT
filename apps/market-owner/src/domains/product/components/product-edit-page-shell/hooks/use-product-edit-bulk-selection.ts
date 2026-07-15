@@ -14,7 +14,7 @@ interface ProductEditBulkSelectionState {
 interface UseProductEditBulkSelectionParams {
   activeType: ProductEditTypeTypes;
   periodBaseProduct?: ProductEditCardProps;
-  onDeleteProducts?: (productNames: string[]) => void;
+  onDeleteProducts?: (productIds: number[]) => Promise<boolean>;
   onResetProducts?: () => void;
   onUpdateProductPeriods?: (
     productNames: string[],
@@ -47,6 +47,7 @@ export const useProductEditBulkSelection = ({
   const selectionMode = bulkAction != null;
   const selectedProductCount = selectedProducts.length;
   const selectedProductNames = selectedProducts.map((product) => product.productName); // 선택 상품 이름만
+  const selectedProductIds = selectedProducts.map((product) => Number(product.productId));
 
   // 일괄 작업 닫기
   const closeBulkAction = () => {
@@ -126,9 +127,12 @@ export const useProductEditBulkSelection = ({
 
     openProductEditConfirmModal({
       action: 'delete',
-      onConfirm: () => {
-        onDeleteProducts?.(selectedProductNames);
-        closeBulkAction();
+      onConfirm: async () => {
+        const isDeleted = await onDeleteProducts?.(selectedProductIds);
+
+        if (isDeleted !== false) {
+          closeBulkAction();
+        }
       },
     });
   };
