@@ -27,3 +27,11 @@ export const productGridClassName = style({
   gridTemplateColumns: `repeat(auto-fit, minmax(${productEditCardWidth}, ${productEditCardWidth}))`,
   gap: '1.6rem 2rem',
 });
+
+export const loadingClassName = style({
+  margin: 0,
+  padding: '4rem 0',
+  color: atomic.neutral[60],
+  textAlign: 'center',
+  ...typography['body-3-medium'],
+});

@@ -35,15 +35,15 @@ export const signupSchema = z
     password: z
       .string()
       .min(1, SIGNUP_PASSWORD_ERROR_MESSAGES.required)
-      .min(MIN_SIGNUP_PASSWORD_LENGTH, SIGNUP_PASSWORD_ERROR_MESSAGES.format)
-      .max(MAX_SIGNUP_PASSWORD_LENGTH, SIGNUP_PASSWORD_ERROR_MESSAGES.format)
+      .min(MIN_SIGNUP_PASSWORD_LENGTH, SIGNUP_PASSWORD_ERROR_MESSAGES.length)
+      .max(MAX_SIGNUP_PASSWORD_LENGTH, SIGNUP_PASSWORD_ERROR_MESSAGES.length)
       .refine(
         (password) => !WHITESPACE_PATTERN.test(password),
-        SIGNUP_PASSWORD_ERROR_MESSAGES.format,
+        SIGNUP_PASSWORD_ERROR_MESSAGES.whitespace,
       )
       .refine(
         (password) => !KOREAN_CHARACTERS_PATTERN.test(password),
-        SIGNUP_PASSWORD_ERROR_MESSAGES.format,
+        SIGNUP_PASSWORD_ERROR_MESSAGES.korean,
       ),
     passwordConfirm: z.string().min(1, SIGNUP_PASSWORD_CONFIRM_ERROR_MESSAGES.required),
   })

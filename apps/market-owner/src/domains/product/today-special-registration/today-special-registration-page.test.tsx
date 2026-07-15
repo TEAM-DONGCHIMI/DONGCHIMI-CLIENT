@@ -41,6 +41,7 @@ const renderTodaySpecialRegistrationPage = () => {
 
 describe('TodaySpecialRegistrationPage', () => {
   beforeEach(() => {
+    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', 'https://static.example.com/');
     registerDailyProduct.mockReset();
     registerDailyProduct.mockResolvedValue({
       success: true,
@@ -53,6 +54,7 @@ describe('TodaySpecialRegistrationPage', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllEnvs();
   });
 
   it('keeps continue registration enabled and completion disabled while fields are empty', () => {
@@ -101,7 +103,7 @@ describe('TodaySpecialRegistrationPage', () => {
         discountedPrice: 4500,
         name: '딸기',
         originalPrice: 5000,
-        thumbnailUrl: '/images/product-empty.png',
+        thumbnailUrl: '/images/product-replace.svg',
       }),
     });
   });
@@ -127,10 +129,32 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(registerDailyProduct).toHaveBeenCalledWith({
       marketId: 1,
       request: expect.objectContaining({
-        thumbnailUrl: uploadedImageObjectKey,
+        thumbnailUrl: 'https://static.example.com/tmp/PRODUCT_THUMBNAIL/product.png',
       }),
     });
     expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
+  });
+
+  it('does not upload an image when the S3 base URL is missing', async () => {
+    const user = userEvent.setup();
+    const imageFile = new File(['image'], 'product.png', { type: 'image/png' });
+
+    vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', '');
+    renderTodaySpecialRegistrationPage();
+
+    await user.upload(screen.getByLabelText('상품 이미지'), imageFile);
+    await user.type(screen.getByLabelText('상품명'), '딸기');
+    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    await user.click(await screen.findByText('채소･과일'));
+    await user.type(screen.getByLabelText('오늘의 특가'), '4500');
+    await user.type(screen.getByLabelText('판매가'), '5000');
+    await user.click(screen.getByRole('button', { name: '등록 완료' }));
+
+    expect(uploadProductImage).not.toHaveBeenCalled();
+    expect(registerDailyProduct).not.toHaveBeenCalled();
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '상품을 등록하지 못했습니다. 다시 시도해주세요.',
+    );
   });
 
   it('keeps the page open and shows an error toast when image upload fails', async () => {

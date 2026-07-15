@@ -43,7 +43,7 @@ const completedProducts: RegistrationResultProduct[] = [
     status: 'completed',
   },
   {
-    category: '정육･달걀',
+    category: '정육/달걀',
     discountPeriod: '2026-07-06 ~ 2026-07-10',
     id: 'completed-002',
     price: '8,900',
@@ -52,7 +52,7 @@ const completedProducts: RegistrationResultProduct[] = [
     status: 'completed',
   },
   {
-    category: '채소･과일',
+    category: '채소/과일',
     discountPeriod: '2026-07-07 ~ 2026-07-12',
     id: 'completed-003',
     price: '2,980',
@@ -61,7 +61,7 @@ const completedProducts: RegistrationResultProduct[] = [
     status: 'completed',
   },
   {
-    category: '수산',
+    category: '수산물',
     discountPeriod: '2026-07-08 ~ 2026-07-14',
     id: 'completed-004',
     price: '6,500',
