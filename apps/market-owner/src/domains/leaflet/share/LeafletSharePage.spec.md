@@ -20,7 +20,8 @@
 - React Router route object는 기존 `MARKET_OWNER_ROUTES.leafletShare`와 `LeafletSharePage` import를 유지합니다.
 - Sidebar/protected layout 책임은 `src/app/layouts/SidebarLayout.tsx`와 `src/app/routes/ProtectedRoute.tsx`에 둡니다.
 - 화면 전용 section, component, fixture는 `src/domains/leaflet/share` 아래 page-local로 둡니다.
-- 재사용이 확인되지 않은 모바일 프레임, 공유 카드, QR 모달은 app shared나 design-system으로 승격하지 않습니다.
+- 홈에서도 동일한 UI와 다운로드 동작을 사용하므로 QR 모달과 이미지 유틸은 `src/shared`에서 재사용합니다.
+- 모바일 프레임과 공유 화면 전용 카드는 page-local로 유지합니다.
 
 ## UI States
 
@@ -55,6 +56,7 @@
 - 로그인 응답에서 auth store에 저장된 현재 `marketId`를 QR 요청에 사용합니다.
 - QR 응답이 순수 Base64이면 PNG data URL로 정규화하고, image data URL이면 그대로 사용합니다.
 - QR 다운로드 버튼은 실제 QR 이미지를 `market-leaflet-qr.png`로 다운로드합니다.
+- QR modal UI와 이미지 정규화·다운로드 유틸은 홈과 동일한 app-shared 구현을 사용합니다.
 - `홈으로 돌아가기`는 `MARKET_OWNER_ROUTES.home`으로 이동합니다.
 - `전단 수정하기`는 이번 UI-only 범위에서 실제 라우팅을 수행하지 않습니다.
 
