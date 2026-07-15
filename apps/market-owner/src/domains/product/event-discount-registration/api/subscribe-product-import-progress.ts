@@ -57,6 +57,7 @@ const getInferredEventType = (
       return 'completed';
     case 'FAILED':
       return 'failed';
+    case 'PENDING':
     case 'IN_PROGRESS':
       return 'progress';
     default:
