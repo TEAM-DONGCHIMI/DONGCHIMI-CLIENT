@@ -92,3 +92,15 @@ export const mapProductImportSteps = (
     title: productImportStepLabels[step],
   }));
 };
+
+export const calculateProductImportProgressPercentage = (
+  steps: ProductImportProgressDataTypes['steps'],
+) => {
+  if (steps.length === 0) {
+    return 0;
+  }
+
+  const completedStepCount = steps.filter(({ status }) => status === 'COMPLETED').length;
+
+  return Math.round((completedStepCount / steps.length) * 100);
+};

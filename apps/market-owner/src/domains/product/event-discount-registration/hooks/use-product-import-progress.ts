@@ -6,6 +6,7 @@ import type { ProcessingStepProps } from '@/shared/components';
 import { subscribeProductImportProgress, type SubscribeProductImportProgressTypes } from '../api';
 import { fileAnalysisProgressFixtures } from '../fixtures';
 import {
+  calculateProductImportProgressPercentage,
   mapProductImportSteps,
   type ProductImportCanceledDataTypes,
   type ProductImportCompletedDataTypes,
@@ -84,7 +85,7 @@ export const useProductImportProgress = ({
               switch (event.type) {
                 case 'progress':
                   setState({
-                    progressPercentage: event.data.progress,
+                    progressPercentage: calculateProductImportProgressPercentage(event.data.steps),
                     steps: mapProductImportSteps(event.data.steps),
                   });
                   return;

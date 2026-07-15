@@ -39,6 +39,9 @@ describe('useProductImportProgress', () => {
             steps: [
               { step: 'FILE_UPLOAD', status: 'COMPLETED' },
               { step: 'NAME_EXTRACTION', status: 'IN_PROGRESS' },
+              { step: 'PRICE_EXTRACTION', status: 'PENDING' },
+              { step: 'CATEGORY_CLASSIFICATION', status: 'PENDING' },
+              { step: 'IMAGE_MATCHING', status: 'PENDING' },
             ],
           },
           type: 'progress',
@@ -63,7 +66,7 @@ describe('useProductImportProgress', () => {
     });
 
     expect(subscribe).toHaveBeenCalledTimes(3);
-    expect(result.current.progressPercentage).toBe(72);
+    expect(result.current.progressPercentage).toBe(20);
     expect(result.current.steps[1]).toMatchObject({
       id: 'NAME_EXTRACTION',
       status: 'processing',

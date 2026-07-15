@@ -66,7 +66,7 @@
 - modal/upload: selecting or dropping a `.xlsx` or `.csv` file shows the selected file name and enables the upload button.
 - modal/error: selecting or dropping a file outside `.xlsx` or `.csv` shows the upload modal error state and keeps the upload button disabled.
 - success/confirm: clicking the enabled upload button closes the modal and renders `FileAnalysisConfirmSection` with the selected file name.
-- loading/progress: `분석 시작` renders `FileAnalysisProgressSection` with pending steps, then applies each `progress` SSE event to the progressbar and ordered step list.
+- loading/progress: `분석 시작` renders `FileAnalysisProgressSection` with pending steps, then applies each `progress` SSE event to the ordered step list and derives the progressbar value from completed steps.
 - loading/icon: only the current `processing` step replaces the default progress icon with the autoplaying, looping spinner Lottie.
 - completed: a `completed` SSE event sets progress to 100%, marks the visible steps complete, and navigates to the result route once.
 - failed: a `failed` SSE event shows the server message and returns to file confirmation so analysis can be retried.
@@ -121,7 +121,7 @@
 - If `marketId` or `excelFileUrl` is missing, the page keeps the confirmation view and shows the same file-analysis start failure toast instead of sending a guessed request.
 - Import start success stores the returned `jobId`, switches to progress view, and subscribes to the matching progress endpoint.
 - Import start failure keeps the confirmation view and shows the normalized server message for `ApiError`; non-API failures use `파일 분석을 시작하지 못했습니다. 다시 시도해주세요.` as fallback toast feedback.
-- Progress events map backend step codes and statuses to the existing `ProcessingStep` labels and UI statuses.
+- Progress events map backend step codes and statuses to the existing `ProcessingStep` labels and UI statuses. The visible progress value is derived from completed step count in 20% increments across the five analysis steps instead of trusting the backend `progress` number.
 - The SSE request uses `Accept: text/event-stream`, keeps the app's Authorization/401 refresh policy, disables the normal request timeout, and aborts on unmount.
 - If the stream ends with a network error before a terminal event, the hook reconnects at most three total attempts with a one-second delay. Auth, validation, and other non-network errors are surfaced immediately without reconnecting or silently starting a new import job.
 - Unknown SSE event names and comment heartbeat frames are ignored. Malformed known event data is treated as a validation error.
@@ -137,7 +137,7 @@
 - The registration method cards render the Figma vector-frame SVG assets at 80×80 without changing card spacing, actions, or support copy.
 - The POS guide panel renders the supplied WebP as one responsive 360×722 image. It keeps the original aspect ratio, uses at most the 36rem panel content width, and exposes the complete three-step guidance through one accessible image description.
 - Analysis items are read-only static labels until repeated reuse or API mapping is confirmed.
-- Analysis progress value is clamped and rounded for display while completion checks use original progress or step status.
+- Analysis progress value is derived from completed analysis steps, then clamped and rounded for display while completion checks use terminal events or completed step status.
 
 ## Accessibility
 

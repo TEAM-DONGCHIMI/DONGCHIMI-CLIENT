@@ -121,6 +121,124 @@ describe('subscribeProductImportProgress', () => {
     expect(onEvent).toHaveBeenCalledWith({ data: canceledData, type: 'canceled' });
   });
 
+  it('infers event types from default SSE message data status', async () => {
+    const onEvent = vi.fn();
+    const progressData = {
+      jobId: 'job-123',
+      status: 'IN_PROGRESS',
+      progress: 30,
+      remainingSeconds: 18,
+      currentStep: 'PRICE_EXTRACTION',
+      steps: [
+        { step: 'FILE_UPLOAD', status: 'COMPLETED' },
+        { step: 'NAME_EXTRACTION', status: 'COMPLETED' },
+        { step: 'PRICE_EXTRACTION', status: 'IN_PROGRESS' },
+        { step: 'CATEGORY_CLASSIFICATION', status: 'PENDING' },
+        { step: 'IMAGE_MATCHING', status: 'PENDING' },
+      ],
+    };
+    const completedData = {
+      jobId: 'job-123',
+      status: 'COMPLETED',
+      progress: 100,
+      totalCount: 12,
+      successCount: 10,
+      failCount: 2,
+    };
+
+    mockedHttpClientStream.mockResolvedValueOnce(
+      createChunkedResponse([
+        `data: ${JSON.stringify(progressData)}\n\n`,
+        `event: message\ndata: ${JSON.stringify(completedData)}\n\n`,
+      ]),
+    );
+
+    await subscribeProductImportProgress({
+      jobId: 'job-123',
+      marketId: 12,
+      onEvent,
+      signal: new AbortController().signal,
+    });
+
+    expect(onEvent).toHaveBeenNthCalledWith(1, { data: progressData, type: 'progress' });
+    expect(onEvent).toHaveBeenNthCalledWith(2, { data: completedData, type: 'completed' });
+  });
+
+  it('ignores default SSE message timeout payloads', async () => {
+    const onEvent = vi.fn();
+    const progressData = {
+      jobId: 'job-123',
+      status: 'IN_PROGRESS',
+      progress: 0,
+      currentStep: null,
+      remainingSeconds: null,
+      steps: [
+        { step: 'FILE_UPLOAD', status: 'PENDING' },
+        { step: 'NAME_EXTRACTION', status: 'PENDING' },
+        { step: 'PRICE_EXTRACTION', status: 'PENDING' },
+        { step: 'CATEGORY_CLASSIFICATION', status: 'PENDING' },
+        { step: 'IMAGE_MATCHING', status: 'PENDING' },
+      ],
+    };
+    const completedData = {
+      jobId: 'job-123',
+      status: 'COMPLETED',
+      progress: 100,
+      totalCount: 0,
+      successCount: 0,
+      failCount: 0,
+    };
+
+    mockedHttpClientStream.mockResolvedValueOnce(
+      createChunkedResponse([
+        'data: {"timeout":0}\n\n',
+        'event: message\ndata: {"timeout":0}\n\n',
+        `data: ${JSON.stringify(progressData)}\n\n`,
+        `data: ${JSON.stringify(completedData)}\n\n`,
+      ]),
+    );
+
+    await subscribeProductImportProgress({
+      jobId: 'job-123',
+      marketId: 12,
+      onEvent,
+      signal: new AbortController().signal,
+    });
+
+    expect(onEvent).toHaveBeenNthCalledWith(1, { data: progressData, type: 'progress' });
+    expect(onEvent).toHaveBeenNthCalledWith(2, { data: completedData, type: 'completed' });
+    expect(onEvent).toHaveBeenCalledTimes(2);
+  });
+
+  it('ignores timeout payloads even when they are sent with a known event name', async () => {
+    const onEvent = vi.fn();
+    const completedData = {
+      jobId: 'job-123',
+      status: 'COMPLETED',
+      progress: 100,
+      totalCount: 0,
+      successCount: 0,
+      failCount: 0,
+    };
+
+    mockedHttpClientStream.mockResolvedValueOnce(
+      createChunkedResponse([
+        'event: progress\ndata: {"timeout":0}\n\n',
+        `event: completed\ndata: ${JSON.stringify(completedData)}\n\n`,
+      ]),
+    );
+
+    await subscribeProductImportProgress({
+      jobId: 'job-123',
+      marketId: 12,
+      onEvent,
+      signal: new AbortController().signal,
+    });
+
+    expect(onEvent).toHaveBeenCalledOnce();
+    expect(onEvent).toHaveBeenCalledWith({ data: completedData, type: 'completed' });
+  });
+
   it('accepts initial progress events without optional current step metadata', async () => {
     const onEvent = vi.fn();
     const initialProgressData = {

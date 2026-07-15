@@ -195,7 +195,7 @@ describe('EventDiscountRegistrationPage', () => {
     await waitFor(() => {
       expect(screen.getByRole('progressbar', { name: 'AI 분석 진행률' })).toHaveAttribute(
         'aria-valuenow',
-        '24',
+        '20',
       );
     });
     expect(subscribeProductImportProgress).toHaveBeenCalledWith(

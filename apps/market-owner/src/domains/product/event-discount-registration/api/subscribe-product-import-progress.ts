@@ -12,12 +12,11 @@ import {
 import { createSseEventParser, type ParsedSseEventTypes } from '../utils/sse-event-parser';
 
 const TERMINAL_EVENT_TYPES = new Set(['canceled', 'completed', 'failed']);
+const DEFAULT_MESSAGE_EVENT_TYPE = 'message';
 
-const parseEventData = <DataTypes>(schema: z.ZodType<DataTypes>, event: ParsedSseEventTypes) => {
-  let data: unknown;
-
+const parseJsonEventData = (event: ParsedSseEventTypes) => {
   try {
-    data = JSON.parse(event.data) as unknown;
+    return JSON.parse(event.data) as unknown;
   } catch (error) {
     throw new ApiError({
       cause: error,
@@ -26,7 +25,9 @@ const parseEventData = <DataTypes>(schema: z.ZodType<DataTypes>, event: ParsedSs
       type: 'validation',
     });
   }
+};
 
+const parseEventData = <DataTypes>(schema: z.ZodType<DataTypes>, data: unknown) => {
   const result = schema.safeParse(data);
 
   if (!result.success) {
@@ -40,32 +41,111 @@ const parseEventData = <DataTypes>(schema: z.ZodType<DataTypes>, event: ParsedSs
   return result.data;
 };
 
+const getInferredEventType = (
+  data: unknown,
+): ProductImportProgressEventTypes['type'] | undefined => {
+  if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+    return undefined;
+  }
+
+  const status = (data as Record<string, unknown>).status;
+
+  switch (status) {
+    case 'CANCELED':
+      return 'canceled';
+    case 'COMPLETED':
+      return 'completed';
+    case 'FAILED':
+      return 'failed';
+    case 'IN_PROGRESS':
+      return 'progress';
+    default:
+      return undefined;
+  }
+};
+
+const isTimeoutPayload = (data: unknown) => {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    !Array.isArray(data) &&
+    typeof (data as Record<string, unknown>).timeout === 'number' &&
+    (data as Record<string, unknown>).status === undefined
+  );
+};
+
+const createProductImportProgressEvent = (
+  type: ProductImportProgressEventTypes['type'],
+  data: unknown,
+): ProductImportProgressEventTypes => {
+  switch (type) {
+    case 'progress':
+      return {
+        data: parseEventData(productImportProgressDataSchema, data),
+        type,
+      };
+    case 'completed':
+      return {
+        data: parseEventData(productImportCompletedDataSchema, data),
+        type,
+      };
+    case 'failed':
+      return {
+        data: parseEventData(productImportFailedDataSchema, data),
+        type,
+      };
+    case 'canceled':
+      return {
+        data: parseEventData(productImportCanceledDataSchema, data),
+        type,
+      };
+  }
+};
+
+const parseKnownProductImportProgressEvent = (
+  type: ProductImportProgressEventTypes['type'],
+  event: ParsedSseEventTypes,
+) => {
+  const data = parseJsonEventData(event);
+
+  if (isTimeoutPayload(data)) {
+    return undefined;
+  }
+
+  return createProductImportProgressEvent(type, data);
+};
+
 export const parseProductImportProgressEvent = (
   event: ParsedSseEventTypes,
 ): ProductImportProgressEventTypes | undefined => {
   switch (event.event) {
     case 'progress':
-      return {
-        data: parseEventData(productImportProgressDataSchema, event),
-        type: 'progress',
-      };
+      return parseKnownProductImportProgressEvent('progress', event);
     case 'completed':
-      return {
-        data: parseEventData(productImportCompletedDataSchema, event),
-        type: 'completed',
-      };
+      return parseKnownProductImportProgressEvent('completed', event);
     case 'failed':
-      return {
-        data: parseEventData(productImportFailedDataSchema, event),
-        type: 'failed',
-      };
+      return parseKnownProductImportProgressEvent('failed', event);
     case 'canceled':
-      return {
-        data: parseEventData(productImportCanceledDataSchema, event),
-        type: 'canceled',
-      };
-    default:
-      return undefined;
+      return parseKnownProductImportProgressEvent('canceled', event);
+    default: {
+      if (event.event !== undefined && event.event !== DEFAULT_MESSAGE_EVENT_TYPE) {
+        return undefined;
+      }
+
+      const data = parseJsonEventData(event);
+
+      if (isTimeoutPayload(data)) {
+        return undefined;
+      }
+
+      const inferredEventType = getInferredEventType(data);
+
+      if (!inferredEventType) {
+        return undefined;
+      }
+
+      return createProductImportProgressEvent(inferredEventType, data);
+    }
   }
 };
 

@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { mapProductImportSteps } from './product-import-progress';
+import {
+  calculateProductImportProgressPercentage,
+  mapProductImportSteps,
+} from './product-import-progress';
 
 describe('mapProductImportSteps', () => {
   it('maps API step names and statuses to processing step UI values', () => {
@@ -39,5 +42,31 @@ describe('mapProductImportSteps', () => {
         title: '상품 이미지 연결',
       },
     ]);
+  });
+});
+
+describe('calculateProductImportProgressPercentage', () => {
+  it('calculates progress in 20 percent increments from completed analysis steps', () => {
+    expect(
+      calculateProductImportProgressPercentage([
+        { step: 'FILE_UPLOAD', status: 'COMPLETED' },
+        { step: 'NAME_EXTRACTION', status: 'COMPLETED' },
+        { step: 'PRICE_EXTRACTION', status: 'COMPLETED' },
+        { step: 'CATEGORY_CLASSIFICATION', status: 'COMPLETED' },
+        { step: 'IMAGE_MATCHING', status: 'IN_PROGRESS' },
+      ]),
+    ).toBe(80);
+  });
+
+  it('does not count pending, processing, or failed steps as progress increments', () => {
+    expect(
+      calculateProductImportProgressPercentage([
+        { step: 'FILE_UPLOAD', status: 'COMPLETED' },
+        { step: 'NAME_EXTRACTION', status: 'IN_PROGRESS' },
+        { step: 'PRICE_EXTRACTION', status: 'PENDING' },
+        { step: 'CATEGORY_CLASSIFICATION', status: 'FAILED' },
+        { step: 'IMAGE_MATCHING', status: 'PENDING' },
+      ]),
+    ).toBe(20);
   });
 });

@@ -1,4 +1,5 @@
 export {
+  calculateProductImportProgressPercentage,
   mapProductImportSteps,
   productImportCanceledDataSchema,
   productImportCompletedDataSchema,
