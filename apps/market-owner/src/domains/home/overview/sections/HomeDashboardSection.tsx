@@ -9,12 +9,12 @@ import * as S from '../HomePage.css';
 
 interface HomeDashboardSectionProps {
   onCopyLinkResult: HomeShareSectionProps['onCopyLinkResult'];
-  onQrCodePreparing: HomeShareSectionProps['onQrCodePreparing'];
+  onOpenQrCode: HomeShareSectionProps['onOpenQrCode'];
 }
 
 export const HomeDashboardSection = ({
   onCopyLinkResult,
-  onQrCodePreparing,
+  onOpenQrCode,
 }: HomeDashboardSectionProps) => {
   const { data, isError, isPending, refetch } = useOwnerHomeQuery();
 
@@ -42,7 +42,7 @@ export const HomeDashboardSection = ({
       <HomeProductSummarySection sections={sections} />
       <HomeShareSection
         onCopyLinkResult={onCopyLinkResult}
-        onQrCodePreparing={onQrCodePreparing}
+        onOpenQrCode={onOpenQrCode}
         share={share}
       />
     </div>
