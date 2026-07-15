@@ -20,9 +20,9 @@
 
 ## Purpose
 
-행사 할인 상품 등록 flow의 첫 진입 화면에서 등록 방식을 선택하고, 엑셀 파일 업로드 UI 상태를 거쳐 등록 파일 확인과 AI 분석 진행 화면으로 이어집니다.
+행사 할인 상품 등록 flow의 첫 진입 화면에서 등록 방식을 선택하고, 엑셀 파일 업로드 UI 상태를 거쳐 AI 분석 진행 화면으로 이어집니다.
 사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, 다운로드 API, SSE transport, 분석 결과 확인 API는 후속 이슈에서 연결합니다.
-엑셀 파일 업로드 후 파일 분석 시작 API를 호출하고, 실제 분석 진행 SSE를 연결하기 전까지 page-local fixture simulation으로 진행 상태를 순차 표시한 뒤 상품 결과 등록 확인 route로 이동합니다.
+엑셀 파일 선택 또는 드롭 시 presigned URL 발급과 storage PUT을 완료하고, 모달의 `파일 업로드` CTA에서 파일 분석 시작 API를 호출합니다. 실제 분석 진행 SSE를 연결하기 전까지 page-local fixture simulation으로 진행 상태를 순차 표시한 뒤 상품 결과 등록 확인 route로 이동합니다.
 
 ## Ownership
 
@@ -61,10 +61,11 @@
 
 - initial/method: `/products/event-discount/new` first renders the registration method home with excel and leaflet upload cards.
 - modal/default: clicking `엑셀 업로드` opens `UploadModal` with two-line guidance copy, a file format tooltip, and a disabled upload button.
-- modal/upload: selecting or dropping a `.xlsx` or `.csv` file shows the selected file name and enables the upload button.
+- modal/upload: selecting or dropping a `.xlsx` or `.csv` file starts the presigned upload, shows the selected file name, and keeps the upload button disabled until the upload handoff value is ready.
 - modal/error: selecting or dropping a file outside `.xlsx` or `.csv` shows the upload modal error state and keeps the upload button disabled.
-- success/confirm: clicking the enabled upload button closes the modal and renders `FileAnalysisConfirmSection` with the selected file name.
-- loading/progress: `분석 시작` renders `FileAnalysisProgressSection` at 24%, then advances the processing step and progress fixture once per second.
+- success/progress: clicking the enabled upload button calls the product import start API, closes the modal, and renders `FileAnalysisProgressSection` at 24%.
+- cancel/confirm: canceling analysis progress renders `FileAnalysisConfirmSection` with the uploaded file name so the owner can restart analysis or return to the method view.
+- loading/progress: `파일 업로드` or confirmation `분석 시작` renders `FileAnalysisProgressSection` at 24%, then advances the processing step and progress fixture once per second.
 - loading/icon: only the current `processing` step replaces the default progress icon with the autoplaying, looping spinner Lottie.
 - completed: all steps reach `completed` and progress reaches 100%, disabling cancel for one interval before automatic navigation.
 - toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback with the completed status icon.
@@ -104,14 +105,16 @@
 - Drag over / drag leave / drop visual effects are intentionally out of scope for DCMSM-34.
 - The modal file format tooltip is hidden after the modal moves to upload state.
 - The page performs lightweight client-side extension checking for local selection and drag & drop. Files outside `.xlsx` and `.csv` move the modal to error state.
-- Upload action requests a presigned URL with purpose `product_import`, the selected file content type, and file byte size.
-- Upload action PUTs the selected file to the returned `uploadUrl` with `requiredHeaders`.
-- Upload success stores the selected file name and the returned `objectKey` as the import handoff value, then switches to confirmation.
+- Selecting or dropping an accepted file requests a presigned URL with purpose `product_import`, the selected file content type, and file byte size.
+- Selecting or dropping an accepted file PUTs the selected file to the returned `uploadUrl` with `requiredHeaders`.
+- Presigned upload success stores the selected file name and the returned `objectKey` as the import handoff value while keeping the modal open.
+- The modal `파일 업로드` action stays disabled until the presigned upload handoff value is ready.
 - Confirmation `취소` clears the uploaded file state and returns to the method view.
-- `분석 시작` calls `POST /v1/owners/markets/{marketId}/products/import` with `excelFileUrl` set to the uploaded file handoff value. The current presigned contract provides this as `objectKey`.
-- If `marketId` or `excelFileUrl` is missing, the page keeps the confirmation view and shows the same file-analysis start failure toast instead of sending a guessed request.
+- The modal `파일 업로드` action calls `POST /v1/owners/markets/{marketId}/products/import` with `excelFileUrl` set to the uploaded file handoff value. The current presigned contract provides this as `objectKey`.
+- Confirmation `분석 시작` uses the same product import start API when the owner returns from canceled progress.
+- If `marketId` or `excelFileUrl` is missing, the page keeps the current modal or confirmation view and shows the same file-analysis start failure toast instead of sending a guessed request.
 - Import start success switches to progress view. The returned `jobId` will be consumed when the real progress API or SSE transport is connected.
-- Import start failure keeps the confirmation view and shows the normalized server message for `ApiError`; non-API failures use `파일 분석을 시작하지 못했습니다. 다시 시도해주세요.` as fallback toast feedback.
+- Import start failure keeps the current modal or confirmation view and shows the normalized server message for `ApiError`; non-API failures use `파일 분석을 시작하지 못했습니다. 다시 시도해주세요.` as fallback toast feedback.
 - Progress simulation starts at 24% with `상품명 등록` processing, then advances through 44%, 64%, 84%, and 100% at one-second intervals.
 - The 100% frame remains visible for one interval before navigating to `/products/registration-result`.
 - Progress `취소` returns to confirmation view, unmounts the simulation hook, and clears the pending timeout so delayed progress or navigation cannot occur.
@@ -147,13 +150,12 @@
 - [x] route renders excel and leaflet upload cards
 - [x] excel and leaflet cards render the Figma 80×80 SVG assets as decorative images
 - [x] clicking `엑셀 업로드` opens the upload modal in default state
-- [x] `.xlsx` or `.csv` file selection enables upload action
-- [x] dropping a file on the upload modal enables upload action
+- [x] `.xlsx` or `.csv` file selection starts presigned upload and enables upload action after upload completion
+- [x] dropping a file on the upload modal starts presigned upload and enables upload action after upload completion
 - [x] unsupported file selection or drop renders upload modal error state
-- [x] clicking enabled upload action resolves an excel file URL and switches to file confirmation
-- [x] file confirmation renders selected file name and analysis items
-- [x] `분석 시작` posts the resolved excel file URL to the product import endpoint
-- [x] product import success switches to the AI analysis progress section
+- [x] clicking enabled upload action posts the resolved excel file URL to the product import endpoint
+- [x] product import success closes the upload modal and switches to the AI analysis progress section
+- [x] canceling analysis progress renders file confirmation with selected file name and analysis items
 - [x] AI analysis progress section renders step status labels and progressbar value
 - [x] the current processing step renders the supplied spinner Lottie with autoplay and loop enabled
 - [x] completed AI analysis progress disables cancel action

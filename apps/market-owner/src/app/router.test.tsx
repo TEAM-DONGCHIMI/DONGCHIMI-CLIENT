@@ -22,6 +22,78 @@ vi.mock('@/domains/home/hooks/use-owner-home-query', () => ({
   useOwnerHomeQuery: vi.fn(),
 }));
 
+vi.mock('@/domains/product/hooks/use-product-list-query', () => ({
+  useProductListQuery: ({ type }: { type: 'DAILY' | 'PERIODIC' }) => ({
+    data: {
+      data: {
+        content:
+          type === 'DAILY'
+            ? [
+                {
+                  category: 'VEGETABLE_FRUIT',
+                  categoryName: '채소/과일',
+                  createdAt: '2026-08-15T10:00:00',
+                  discountedPrice: 4500,
+                  discountEndDate: '2026-08-16',
+                  discountStartDate: '2026-08-15',
+                  name: '풀무원 콩나물 100g',
+                  originalPrice: 5000,
+                  productId: 124,
+                  promotionalPhrase: null,
+                  thumbnailUrl: null,
+                  viewCount: 91,
+                },
+              ]
+            : [
+                {
+                  category: 'VEGETABLE_FRUIT',
+                  categoryName: '채소/과일',
+                  createdAt: '2026-08-15T10:00:00',
+                  discountedPrice: 3900,
+                  discountEndDate: '2026-08-16',
+                  discountStartDate: '2026-08-12',
+                  name: '햇감자 1kg',
+                  originalPrice: 4500,
+                  productId: 201,
+                  promotionalPhrase: null,
+                  thumbnailUrl: null,
+                  viewCount: 241,
+                },
+              ],
+        hasNext: false,
+      },
+    },
+    isPending: false,
+  }),
+}));
+
+vi.mock('@/domains/product/hooks/use-product-detail-query', () => ({
+  useProductDetailQuery: ({ productId }: { productId: number }) => {
+    const isDaily = productId === 124;
+
+    return {
+      data: {
+        data: {
+          productId,
+          name: isDaily ? '풀무원 콩나물 100g' : '햇감자 1kg',
+          dealType: isDaily ? 'DAILY' : 'PERIODIC',
+          thumbnailUrl: null,
+          originalPrice: isDaily ? 5000 : 4500,
+          discountedPrice: isDaily ? 4500 : 3900,
+          category: 'VEGETABLE_FRUIT',
+          categoryName: '채소/과일',
+          promotionalPhrase: null,
+          discountStartDate: isDaily ? '2026-08-15' : '2026-08-12',
+          discountEndDate: '2026-08-16',
+        },
+      },
+      isError: false,
+      isPending: false,
+      refetch: vi.fn(),
+    };
+  },
+}));
+
 const mockLoginMarketOwner = vi.mocked(loginMarketOwner);
 const mockSignupMarketOwner = vi.mocked(signupMarketOwner);
 const mockedUseOwnerHomeQuery = vi.mocked(useOwnerHomeQuery);
@@ -45,8 +117,12 @@ beforeEach(() => {
     code: 'SUCCESS',
     message: 'ok',
     data: {
+      accessToken: 'signup-access-token',
       ownerId: 1,
       email: 'new@example.com',
+      marketId: null,
+      marketName: null,
+      marketThumbnailUrl: null,
     },
   });
   mockedUseOwnerHomeQuery.mockReturnValue({
@@ -245,24 +321,34 @@ describe('marketOwnerRoutes', () => {
     const passwordInput = await screen.findByLabelText('비밀번호');
 
     await user.type(passwordInput, 'abc');
-    expect(screen.queryByText('6-20자로 입력해주세요.')).not.toBeInTheDocument();
+    expect(screen.queryByText('6~20자로 입력해주세요.')).not.toBeInTheDocument();
 
     await user.click(emailInput);
-    expect(screen.getByText('6-20자로 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('6~20자로 입력해주세요.')).toBeInTheDocument();
 
     await user.clear(passwordInput);
     expect(screen.getByText('비밀번호를 입력해주세요.')).toBeInTheDocument();
 
+    await user.type(passwordInput, 'abc 1');
+    expect(screen.getByText('6~20자로 입력해주세요.')).toBeInTheDocument();
+
+    await user.clear(passwordInput);
     await user.type(passwordInput, 'abc 123');
-    expect(screen.getByText('6-20자로 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('공백은 사용할 수 없습니다.')).toBeInTheDocument();
+
+    await user.clear(passwordInput);
+    await user.type(passwordInput, '한글1');
+    expect(screen.getByText('6~20자로 입력해주세요.')).toBeInTheDocument();
 
     await user.clear(passwordInput);
     await user.type(passwordInput, '한글1234');
-    expect(screen.getByText('6-20자로 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('한글은 사용할 수 없습니다.')).toBeInTheDocument();
 
     await user.clear(passwordInput);
     await user.type(passwordInput, 'abc123');
-    expect(screen.queryByText('6-20자로 입력해주세요.')).not.toBeInTheDocument();
+    expect(screen.queryByText('6~20자로 입력해주세요.')).not.toBeInTheDocument();
+    expect(screen.queryByText('공백은 사용할 수 없습니다.')).not.toBeInTheDocument();
+    expect(screen.queryByText('한글은 사용할 수 없습니다.')).not.toBeInTheDocument();
     expect(screen.queryByText('비밀번호를 입력해주세요.')).not.toBeInTheDocument();
   });
 
@@ -352,6 +438,7 @@ describe('marketOwnerRoutes', () => {
     await user.click(await screen.findByRole('button', { name: '가입 완료' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('이미 가입된 이메일입니다.');
+    expectAuthToastViewportToUseViewportTopCenter();
     expect(screen.getByRole('heading', { name: '회원가입' })).toBeInTheDocument();
   });
 
@@ -612,6 +699,18 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('link', { name: '행사 할인' })).toHaveAttribute('aria-current', 'page');
   });
 
+  it('does not render the category filter on the today-special edit page', async () => {
+    renderRoute('/products/today-special/edit');
+
+    await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' });
+
+    expect(screen.queryByRole('button', { name: '카테고리별' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '상품 등록 순' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
   it('navigates between product edit pages from the shared header product search', async () => {
     const user = userEvent.setup();
 
@@ -654,66 +753,22 @@ describe('marketOwnerRoutes', () => {
     expect(router.state.location.search).toBe('');
   });
 
-  it('opens period bulk edit modal after selecting products on the edit page', async () => {
-    const user = userEvent.setup();
-
+  it('keeps the period bulk edit action enabled on the edit page', async () => {
     renderRoute('/products/today-special/edit');
 
     expect(
       await screen.findByRole('heading', { name: '오늘의 특가 상품을 수정하세요' }),
     ).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: '기간 일괄 수정' }));
-
-    expect(screen.getByLabelText('선택된 상품 (0)')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '딸기 2팩 상품 수정' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: '딸기 2팩 상품 삭제' })).toBeDisabled();
-
-    await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 선택' }));
-
-    expect(screen.getByLabelText('선택된 상품 (1)')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: '기간 일괄 수정' }));
-
-    expect(
-      await screen.findByRole('dialog', { name: '선택된 상품들의 판매 기간을 수정해주세요' }),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText('행사 종료일')).toHaveValue('2026-08-16');
-
-    await user.click(screen.getByRole('button', { name: '취소' }));
-
-    expect(screen.queryByLabelText('선택된 상품 (1)')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '기간 일괄 수정' })).toBeEnabled();
   });
 
-  it('deletes selected products from the edit page bulk delete flow', async () => {
-    const user = userEvent.setup();
-
+  it('keeps the bulk delete action enabled on the edit page', async () => {
     renderRoute('/products/event-discount/edit');
 
     expect(
       await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' }),
     ).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: '일괄 삭제' }));
-
-    expect(screen.getByLabelText('선택된 상품 (0)')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: '햇감자 1kg 상품 선택' }));
-
-    expect(screen.getByLabelText('선택된 상품 (1)')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: '일괄 삭제' }));
-
-    expect(
-      await screen.findByRole('dialog', {
-        name: /행사 기간이 아직 남았어요\.\s*정말 삭제하시겠어요\?/,
-      }),
-    ).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: '삭제하기' }));
-
-    expect(screen.queryByText('햇감자 1kg')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('선택된 상품 (1)')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '일괄 삭제' })).toBeEnabled();
   });
 
   it('renders the not found page for unknown routes', async () => {

@@ -80,13 +80,13 @@ const renderEventDiscountRegistrationPage = (
 };
 
 describe('EventDiscountRegistrationPage', () => {
-  it('switches from registration method to file confirmation and analysis progress', async () => {
+  it('uploads the selected file before starting analysis from the upload modal', async () => {
     const user = userEvent.setup();
     const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    const { startProductImport } = renderEventDiscountRegistrationPage();
+    const { resolveExcelFileUrl, startProductImport } = renderEventDiscountRegistrationPage();
 
     expect(screen.getByRole('heading', { name: '상품 등록' })).toBeInTheDocument();
 
@@ -104,14 +104,16 @@ describe('EventDiscountRegistrationPage', () => {
     expect(screen.getByText('선택한 파일')).toBeInTheDocument();
     expect(screen.getByText('상품목록_202607.xlsx')).toBeInTheDocument();
     expect(screen.queryByText('지원 파일은 .xlsx, .csv예요.')).toBeNull();
-    expect(screen.getByRole('button', { name: '파일 업로드' })).toBeEnabled();
+    expect(resolveExcelFileUrl).toHaveBeenCalledWith(excelFile);
+    expect(startProductImport).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+    const uploadButton = screen.getByRole('button', { name: '파일 업로드' });
 
-    expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
-    expect(screen.getByText('상품목록_202607.xlsx')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(uploadButton).toBeEnabled();
+    });
 
-    await user.click(screen.getByRole('button', { name: '분석 시작' }));
+    await user.click(uploadButton);
 
     expect(startProductImport).toHaveBeenCalledWith({
       marketId: 12,
@@ -130,6 +132,7 @@ describe('EventDiscountRegistrationPage', () => {
     await user.click(screen.getByRole('button', { name: '취소' }));
 
     expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
+    expect(screen.getByText('상품목록_202607.xlsx')).toBeInTheDocument();
   });
 
   it('navigates to the registration result page after fixture analysis completes', async () => {
@@ -142,8 +145,14 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
     await user.upload(screen.getByLabelText('파일 선택'), excelFile);
-    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
-    await user.click(screen.getByRole('button', { name: '분석 시작' }));
+
+    const uploadButton = screen.getByRole('button', { name: '파일 업로드' });
+
+    await waitFor(() => {
+      expect(uploadButton).toBeEnabled();
+    });
+
+    await user.click(uploadButton);
 
     expect(screen.getByRole('progressbar', { name: 'AI 분석 진행률' })).toHaveAttribute(
       'aria-valuenow',
@@ -193,9 +202,8 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
     await user.upload(screen.getByLabelText('파일 선택'), excelFile);
-    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
 
-    expect(screen.getByRole('alert')).toHaveTextContent('엑셀 파일 크기가 너무 큽니다.');
+    expect(await screen.findByRole('alert')).toHaveTextContent('엑셀 파일 크기가 너무 큽니다.');
     expect(screen.getAllByText('엑셀 파일 크기가 너무 큽니다.')).toHaveLength(2);
     expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
     expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -220,9 +228,8 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
     await user.upload(screen.getByLabelText('파일 선택'), excelFile);
-    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
 
-    expect(screen.getByRole('alert')).toHaveTextContent(
+    expect(await screen.findByRole('alert')).toHaveTextContent(
       '파일 업로드에 실패했습니다. 다시 시도해주세요.',
     );
     expect(screen.getAllByText('파일 업로드에 실패했습니다. 다시 시도해주세요.')).toHaveLength(2);
@@ -248,11 +255,17 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
     await user.upload(screen.getByLabelText('파일 선택'), excelFile);
-    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
-    await user.click(screen.getByRole('button', { name: '분석 시작' }));
+
+    const uploadButton = screen.getByRole('button', { name: '파일 업로드' });
+
+    await waitFor(() => {
+      expect(uploadButton).toBeEnabled();
+    });
+
+    await user.click(uploadButton);
 
     expect(screen.getByRole('alert')).toHaveTextContent('인증이 필요합니다.');
-    expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       '[EventDiscountRegistration] Failed to start product import',
       analysisError,
@@ -276,16 +289,12 @@ describe('EventDiscountRegistrationPage', () => {
 
     const uploadButton = screen.getByRole('button', { name: '파일 업로드' });
 
-    await user.click(uploadButton);
-
     expect(uploadButton).toBeDisabled();
 
     deferredUpload.resolve('https://static.dongchimi.kr/test/products.xlsx');
 
     await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' }),
-      ).toBeInTheDocument();
+      expect(uploadButton).toBeEnabled();
     });
   });
 
@@ -307,7 +316,10 @@ describe('EventDiscountRegistrationPage', () => {
     expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
     expect(screen.getByText('선택한 파일')).toBeInTheDocument();
     expect(screen.getByText('상품목록_드롭.xlsx')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '파일 업로드' })).toBeEnabled();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: '파일 업로드' })).toBeEnabled();
+    });
   });
 
   it('shows an error state when an unsupported file is dropped', async () => {
@@ -338,7 +350,22 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
     await user.upload(screen.getByLabelText('파일 선택'), excelFile);
-    await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+    const uploadButton = screen.getByRole('button', { name: '파일 업로드' });
+
+    await waitFor(() => {
+      expect(uploadButton).toBeEnabled();
+    });
+
+    await user.click(uploadButton);
+
+    expect(
+      await screen.findByRole('heading', { name: 'AI가 상품 정보를 분석하고 있어요' }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
+
     await user.click(screen.getByRole('button', { name: '취소' }));
 
     expect(screen.getByRole('heading', { name: '상품 등록' })).toBeInTheDocument();
