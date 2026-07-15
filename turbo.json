@@ -1,5 +1,6 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
+  "globalPassThroughEnv": ["KAKAO_REST_API_KEY", "KAKAO_REDIRECT_URI"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
