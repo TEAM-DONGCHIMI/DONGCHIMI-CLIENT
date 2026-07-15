@@ -16,16 +16,17 @@ import {
 
 import { formatProductCategoryDisplayName } from '@/shared/utils/product-category.utils';
 
-import type { RegistrationResultProduct } from '../fixtures';
-import type { RegistrationResultEditableProductFieldTypes } from '../hooks/useRegistrationResultProductDrafts';
+import type {
+  RegistrationResultEditableProductFieldTypes,
+  RegistrationResultProduct,
+  RegistrationResultProductFieldValues,
+} from '../model';
 import {
   getRegistrationResultFieldBlurValue,
   getRegistrationResultFieldInputValue,
   type RegistrationResultProductFieldErrorTypes,
-  type RegistrationResultProductFieldValues,
 } from '../utils/registration-result-product-validation';
 import * as S from './RegistrationResult.css';
-import ProductReplaceImage from './ProductReplaceImage';
 
 export interface ImagePreview {
   alt: string;
@@ -52,18 +53,6 @@ interface ProductFieldParams {
   onCategoryClick: (event: MouseEvent<HTMLButtonElement>) => void;
   onFieldChange: (field: RegistrationResultEditableProductFieldTypes, value: string) => void;
 }
-
-const ProductPreview = ({ productName }: { productName: string }) => {
-  return (
-    <span className={S.productPreviewClassName}>
-      <ProductReplaceImage
-        aria-label={`${productName} 기본 상품 이미지`}
-        className={S.productReplaceImageClassName}
-        role='img'
-      />
-    </span>
-  );
-};
 
 const getProductStatusViewModel = (product: RegistrationResultProduct) => {
   if (product.status !== 'needsEdit') {
@@ -193,7 +182,7 @@ const getProductFields = ({
       id: `${productId}-name`,
       onBlur: getFieldBlurHandler('productName', onFieldChange),
       onChange: getFieldChangeHandler('productName', onFieldChange),
-      placeholder: '제품명을 입력하세요.',
+      placeholder: '제품명을 입력하세요',
       value: fieldValues.productName,
       width: '16rem',
     },
@@ -202,17 +191,22 @@ const getProductFields = ({
       id: `${productId}-price`,
       inputMode: 'numeric',
       onChange: getFieldChangeHandler('price', onFieldChange),
-      placeholder: '가격을 입력하세요.',
+      placeholder: '가격을 입력하세요',
       unit: getPriceUnit(fieldValues.price),
       value: fieldValues.price,
       width: '11.2rem',
     },
     {
+      ...getFieldValidationProps(fieldErrors.category, { singleLine: true }),
       'aria-label': `${productLabel} 카테고리 선택`,
       id: `${productId}-category`,
       onClick: onCategoryClick,
+      placeholder: '카테고리',
       trailingIcon: <IcChevronDownSizeSmall />,
-      value: formatProductCategoryDisplayName(fieldValues.category),
+      value:
+        fieldValues.category.length > 0
+          ? formatProductCategoryDisplayName(fieldValues.category)
+          : undefined,
       width: '12.8rem',
     },
     {
@@ -220,7 +214,7 @@ const getProductFields = ({
       id: `${productId}-promotion`,
       onBlur: getFieldBlurHandler('promotionText', onFieldChange),
       onChange: getFieldChangeHandler('promotionText', onFieldChange),
-      placeholder: '홍보문구를 입력하세요.',
+      placeholder: '홍보문구를 입력하세요',
       value: fieldValues.promotionText,
       width: '31.9rem',
     },
@@ -230,7 +224,7 @@ const getProductFields = ({
       id: `${productId}-discount-period`,
       inputMode: 'numeric',
       onChange: getFieldChangeHandler('discountPeriod', onFieldChange),
-      placeholder: 'YYYY-MM-DD ~  YYYY-MM-DD',
+      placeholder: 'YYYY-MM-DD ~ YYYY-MM-DD',
       value: fieldValues.discountPeriod,
       width: '19.8rem',
     },
@@ -267,10 +261,6 @@ export const RegistrationResultProductRow = ({
     fileInputRef.current?.click();
   };
   let media: ReactNode = undefined;
-
-  if (!hasProductImage && !needsEdit) {
-    media = <ProductPreview productName={fieldValues.productName || product.productName} />;
-  }
 
   if (hasProductImage) {
     const imageSrc = getProductImageSrc(productImage);
@@ -320,7 +310,7 @@ export const RegistrationResultProductRow = ({
       />
       <input
         ref={fileInputRef}
-        accept='image/*'
+        accept='image/jpeg,image/png'
         aria-label={`${productLabel} 이미지 파일 선택`}
         className={S.hiddenFileInputClassName}
         onChange={handleImageInputChange}

@@ -3,11 +3,11 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { getNearbyMarkets, type NearbyMarketsListParamsTypes } from '../api/nearby-markets-api';
-import { nearbyMarketsQueryKeys } from '../query-keys';
+import { marketQueryKeys } from '../query-keys';
 
 export const useGetNearbyMarketsInfiniteQuery = (params: NearbyMarketsListParamsTypes = {}) => {
   return useInfiniteQuery({
-    queryKey: nearbyMarketsQueryKeys.list(params),
+    queryKey: marketQueryKeys.nearbyList(params),
     queryFn: async ({ pageParam }) => {
       const response = await getNearbyMarkets({ ...params, cursor: pageParam });
 

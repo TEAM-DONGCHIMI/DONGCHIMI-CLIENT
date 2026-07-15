@@ -3,11 +3,80 @@ import { expect, test, type Page } from '@playwright/test';
 import { signInMarketOwner } from './auth';
 
 const FIXED_HEADER_LABELS = ['상품 이미지', '상품명', '판매가격', '카테고리', '할인 기간'];
+const PREPARED_PRODUCT_DRAFT_ENDPOINT_PATTERN = '**/v1/owners/markets/*/products/draft**';
+
+const PREPARED_PRODUCT_DRAFTS_RESPONSE = {
+  code: 'SUCCESS',
+  data: {
+    failCount: 1,
+    preparedProducts: [
+      {
+        category: null,
+        discountedPrice: null,
+        discountEndDate: null,
+        discountStartDate: null,
+        draftStatus: 'FAIL',
+        failReason: '필수 정보 미입력',
+        name: null,
+        preparedProductId: 1,
+        promotionalPhrase: null,
+        thumbnailUrl: null,
+      },
+    ],
+    successCount: 0,
+    totalCount: 1,
+  },
+  message: 'ok',
+  success: true,
+};
+
+const mockPreparedProductDrafts = async (page: Page) => {
+  await page.route(PREPARED_PRODUCT_DRAFT_ENDPOINT_PATTERN, async (route) => {
+    const requestMethod = route.request().method();
+
+    if (requestMethod === 'GET') {
+      await route.fulfill({
+        contentType: 'application/json',
+        json: PREPARED_PRODUCT_DRAFTS_RESPONSE,
+        status: 200,
+      });
+      return;
+    }
+
+    if (requestMethod === 'PUT') {
+      await route.fulfill({
+        contentType: 'application/json',
+        json: {
+          code: 'SUCCESS',
+          message: 'ok',
+          success: true,
+        },
+        status: 200,
+      });
+      return;
+    }
+
+    await route.fallback();
+  });
+};
+
+test.beforeEach(async ({ page }) => {
+  await mockPreparedProductDrafts(page);
+});
+
+const getTableHeader = (page: Page) => {
+  return page
+    .getByRole('checkbox', { name: '현재 페이지 상품 전체 선택' })
+    .locator('..')
+    .locator('..');
+};
 
 const getHeaderCellWidths = async (page: Page) => {
+  const tableHeader = getTableHeader(page);
+
   return Promise.all(
     FIXED_HEADER_LABELS.map((label) =>
-      page
+      tableHeader
         .getByText(label, { exact: true })
         .locator('..')
         .evaluate((element) => element.getBoundingClientRect().width),
@@ -25,8 +94,7 @@ test('registration result table keeps fixed columns while the viewport resizes',
   await expect(page.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeVisible();
 
   const desktopHeaderCellWidths = await getHeaderCellWidths(page);
-  const productNameHeaderCell = page.getByText('상품명', { exact: true }).locator('..');
-  const tableHeader = productNameHeaderCell.locator('..');
+  const tableHeader = getTableHeader(page);
   const table = tableHeader.locator('..');
   const tableScroll = table.locator('..');
 
@@ -52,9 +120,9 @@ test('registration result fields normalize input and expose validation messages'
   await signInMarketOwner(page);
   await page.goto('/products/registration-result');
 
-  const productNameInput = page.getByPlaceholder('제품명을 입력하세요.').first();
-  const priceInput = page.getByPlaceholder('가격을 입력하세요.').first();
-  const promotionTextInput = page.getByPlaceholder('홍보문구를 입력하세요.').first();
+  const productNameInput = page.getByPlaceholder('제품명을 입력하세요').first();
+  const priceInput = page.getByPlaceholder('가격을 입력하세요').first();
+  const promotionTextInput = page.getByPlaceholder('홍보문구를 입력하세요').first();
   const discountPeriodInput = page.getByRole('textbox', { name: '상품 할인 기간 입력' }).first();
 
   await expect(productNameInput).not.toHaveAttribute('aria-invalid');
@@ -83,14 +151,14 @@ test('registration result fields normalize input and expose validation messages'
   await priceInput.fill('12a,900원');
   await expect(priceInput).toHaveValue('12900');
 
-  await priceInput.fill('100000001');
+  await priceInput.fill('10000000');
 
-  const priceMaximumError = page.getByText('1억원 이하로 입력하세요.');
+  const priceMaximumError = page.getByText('9,999,999원 이하로 입력해 주세요.');
 
   await expect(priceMaximumError).toBeVisible();
   await expect(priceMaximumError).toHaveCSS('white-space', 'nowrap');
 
-  await priceInput.fill('100000000');
+  await priceInput.fill('9999999');
   await expect(priceInput).not.toHaveAttribute('aria-invalid');
 
   await promotionTextInput.fill('1234567890123456789012345678901');

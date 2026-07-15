@@ -2,15 +2,15 @@ import { ProductDetailPage } from '@/domains/market/product-detail/ProductDetail
 
 type PageProps = Readonly<{
   params: Promise<{
-    marketId: string;
+    slug: string;
     productId: string;
   }>;
 }>;
 
 const Page = async ({ params }: PageProps) => {
-  const { marketId, productId } = await params;
+  const { slug, productId } = await params;
 
-  return <ProductDetailPage marketId={marketId} productId={productId} />;
+  return <ProductDetailPage marketSlug={slug} productId={productId} />;
 };
 
 export default Page;
