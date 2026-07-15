@@ -13,10 +13,10 @@ import {
   IcPlusSizeSmallColor60,
 } from '@dongchimi/design-system/icons';
 
-import { holidayOptions, marketInformationRegistrationFixture } from '../fixtures';
+import { holidayOptions, marketInformationFormFixture } from '../fixtures';
 import * as S from './BusinessOperationSection.css';
 
-const businessDayOptions = marketInformationRegistrationFixture.businessDays;
+const businessDayOptions = marketInformationFormFixture.businessDays;
 
 const getBusinessDayDisplayLabel = (businessDay: string) => {
   return businessDay.replace('요일', '');
