@@ -26,6 +26,14 @@ const ProductImage = ({
   return <img alt={alt} className={className ?? S.imageClassName} src={src} />;
 };
 
+const MarketImage = ({ alt, src }: { alt: string; src?: string | null }) => {
+  if (src != null) {
+    return <img alt={alt} className={S.imageClassName} src={src} />;
+  }
+
+  return <span aria-hidden='true' className={S.imageFallbackClassName} />;
+};
+
 export const PhonePreviewFrame = ({ preview }: PhonePreviewFrameProps) => {
   const marketStatusLabel = preview.isOpenNow ? '영업중' : '영업종료';
 
@@ -48,7 +56,7 @@ export const PhonePreviewFrame = ({ preview }: PhonePreviewFrameProps) => {
 
                 <div className={S.marketInfoClassName}>
                   <div className={S.marketImageFrameClassName}>
-                    <ProductImage
+                    <MarketImage
                       alt={`${preview.marketName} 마트 이미지`}
                       src={preview.marketThumbnailUrl}
                     />
