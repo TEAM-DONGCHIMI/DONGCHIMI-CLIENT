@@ -11,11 +11,11 @@ import {
 
 vi.mock('@/shared/api', () => ({
   httpClient: {
-    post: vi.fn(),
+    put: vi.fn(),
   },
 }));
 
-const mockedPost = vi.mocked(httpClient.post);
+const mockedPut = vi.mocked(httpClient.put);
 
 const saveRequest: SavePreparedProductDraftsRequestTypes = {
   preparedProducts: [
@@ -41,22 +41,22 @@ const saveResponse = {
 
 describe('savePreparedProductDrafts', () => {
   beforeEach(() => {
-    mockedPost.mockReset();
+    mockedPut.mockReset();
   });
 
   it('saves prepared product drafts', async () => {
-    mockedPost.mockResolvedValue(saveResponse);
+    mockedPut.mockResolvedValue(saveResponse);
 
     await expect(
       savePreparedProductDrafts({ marketId: 12, request: saveRequest }),
     ).resolves.toEqual(saveResponse);
-    expect(mockedPost).toHaveBeenCalledWith(API_ENDPOINTS.owner.products.draft(12), {
+    expect(mockedPut).toHaveBeenCalledWith(API_ENDPOINTS.owner.products.draft(12), {
       json: saveRequest,
     });
   });
 
   it('rejects a response that does not match the success contract', async () => {
-    mockedPost.mockResolvedValue({ ...saveResponse, success: false });
+    mockedPut.mockResolvedValue({ ...saveResponse, success: false });
 
     await expect(
       savePreparedProductDrafts({ marketId: 12, request: saveRequest }),
@@ -71,7 +71,7 @@ describe('savePreparedProductDrafts', () => {
       type: 'auth',
     });
 
-    mockedPost.mockRejectedValue(apiError);
+    mockedPut.mockRejectedValue(apiError);
 
     await expect(savePreparedProductDrafts({ marketId: 12, request: saveRequest })).rejects.toBe(
       apiError,

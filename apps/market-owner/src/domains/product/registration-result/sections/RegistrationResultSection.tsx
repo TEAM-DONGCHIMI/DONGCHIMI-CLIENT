@@ -87,47 +87,20 @@ const isSupportedProductImageFile = (file: File) => {
   return file.type.length === 0 && SUPPORTED_PRODUCT_IMAGE_EXTENSION_PATTERN.test(file.name);
 };
 
-const getMissingRequiredFieldReasons = ({
-  hasProductImage,
-  product,
-}: {
-  hasProductImage: boolean;
-  product: RegistrationResultProduct;
-}) => {
-  const reasons: string[] = [];
-
-  if (!hasProductImage) {
-    reasons.push('이미지 미등록');
-  }
-
-  if (product.productName.trim().length === 0) {
-    reasons.push('상품명 미입력');
-  }
-
-  if (product.price.trim().length === 0) {
-    reasons.push('판매가격 미입력');
-  }
-
-  if (product.category.trim().length === 0) {
-    reasons.push('카테고리 미입력');
-  }
-
-  if (product.discountPeriod.trim().length === 0) {
-    reasons.push('할인 기간 미입력');
-  }
-
-  return reasons;
-};
-
 const createProductWithCurrentStatus = ({
   hasProductImage,
+  hasLocalChanges,
   product,
 }: {
   hasProductImage: boolean;
+  hasLocalChanges: boolean;
   product: RegistrationResultProduct;
 }): RegistrationResultProduct => {
+  if (!hasLocalChanges) {
+    return product;
+  }
+
   const fieldErrors = validateRegistrationResultProductFields(product);
-  const missingRequiredFieldReasons = getMissingRequiredFieldReasons({ hasProductImage, product });
   const hasError = Object.keys(fieldErrors).length > 0;
 
   if (hasProductImage && !hasError) {
@@ -141,10 +114,6 @@ const createProductWithCurrentStatus = ({
   return {
     ...product,
     status: 'needsEdit',
-    statusReason:
-      missingRequiredFieldReasons.length > 0
-        ? missingRequiredFieldReasons.join(', ')
-        : (Object.values(fieldErrors)[0] ?? product.statusReason),
   };
 };
 
@@ -184,10 +153,12 @@ export const RegistrationResultSection = ({
       .map((product) => {
         const fieldValues = getRegistrationResultProductFieldValues(product, productDrafts);
         const productWithDrafts = { ...product, ...fieldValues };
-        const hasProductImage = imagePreviews.has(product.id) || product.imageUrl != null;
+        const hasImagePreview = imagePreviews.has(product.id);
+        const hasProductImage = hasImagePreview || product.imageUrl != null;
 
         return createProductWithCurrentStatus({
           hasProductImage,
+          hasLocalChanges: hasImagePreview || productDrafts.has(product.id),
           product: productWithDrafts,
         });
       });
@@ -393,20 +364,26 @@ export const RegistrationResultSection = ({
     resolveChangedProductImageUrls,
     toast,
   ]);
+  const saveCurrentDraftsRef = useRef(saveCurrentDrafts);
+  const canAutoSave = onSaveDrafts != null;
 
   useEffect(() => {
-    if (!hasPendingChanges || onSaveDrafts == null) {
+    saveCurrentDraftsRef.current = saveCurrentDrafts;
+  }, [saveCurrentDrafts]);
+
+  useEffect(() => {
+    if (!hasPendingChanges || !canAutoSave) {
       return undefined;
     }
 
     const intervalId = window.setInterval(() => {
-      void saveCurrentDrafts();
+      void saveCurrentDraftsRef.current();
     }, saveIntervalMs);
 
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [hasPendingChanges, onSaveDrafts, saveCurrentDrafts, saveIntervalMs]);
+  }, [canAutoSave, hasPendingChanges, saveIntervalMs]);
 
   const handleRegister = async () => {
     const isSaved = await saveCurrentDrafts();

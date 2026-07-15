@@ -26,7 +26,7 @@ export const savePreparedProductDrafts = async ({
   request,
 }: SavePreparedProductDraftsParams): Promise<SavePreparedProductDraftsResponseTypes> => {
   const endpoint = API_ENDPOINTS.owner.products.draft(marketId);
-  const response = await httpClient.post<unknown>(endpoint, {
+  const response = await httpClient.put<unknown>(endpoint, {
     json: request,
   });
 

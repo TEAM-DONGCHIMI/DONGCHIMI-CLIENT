@@ -101,6 +101,8 @@ describe('RegistrationResultPage', () => {
     );
     expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
     expect(screen.getByLabelText('고등어 등록 결과')).toBeInTheDocument();
+    expect(screen.getByText('이미지 누락')).toBeInTheDocument();
+    expect(screen.queryByText('이미지 미등록')).not.toBeInTheDocument();
     expect(mockedUsePreparedProductDraftsQuery).toHaveBeenCalledWith({
       categories: [],
       fetchAll: true,

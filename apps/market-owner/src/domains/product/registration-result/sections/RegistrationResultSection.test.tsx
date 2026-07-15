@@ -390,6 +390,32 @@ describe('RegistrationResultSection', () => {
     expect(discountPeriodInput).not.toHaveAttribute('aria-invalid');
   });
 
+  it('keeps the server fail reason unchanged while editing an invalid row', async () => {
+    const user = userEvent.setup();
+    const product: RegistrationResultProduct = {
+      category: '',
+      discountPeriod: '',
+      id: 'server-fail-reason',
+      price: '',
+      productName: '',
+      promotionText: '',
+      status: 'needsEdit',
+      statusReason: '서버 failReason 원문',
+    };
+
+    renderSection({
+      products: [product],
+      summary: { completedCount: 0, needsEditCount: 1, totalCount: 1 },
+    });
+
+    expect(screen.getByText('서버 failReason 원문')).toBeInTheDocument();
+
+    await user.type(screen.getByPlaceholderText('제품명을 입력하세요'), '고등어');
+
+    expect(screen.getByText('서버 failReason 원문')).toBeInTheDocument();
+    expect(screen.queryByText('이미지 미등록')).not.toBeInTheDocument();
+  });
+
   it('updates product status and segment counts when required fields become valid', async () => {
     const user = userEvent.setup();
     const imageFile = new File(['preview'], 'preview.png', { type: 'image/png' });
@@ -606,7 +632,7 @@ describe('RegistrationResultSection', () => {
     expect(handleRegister).toHaveBeenCalledTimes(1);
   });
 
-  it('auto-saves changed drafts on the configured interval', async () => {
+  it('auto-saves the latest changed drafts without resetting the configured interval', async () => {
     vi.useFakeTimers();
     const handleSaveDrafts = vi.fn().mockResolvedValue(undefined);
     const product: RegistrationResultProduct = {
@@ -632,13 +658,35 @@ describe('RegistrationResultSection', () => {
       target: { value: '5000' },
     });
 
-    await vi.advanceTimersByTimeAsync(1_000);
+    await vi.advanceTimersByTimeAsync(500);
+    fireEvent.change(screen.getByPlaceholderText('가격을 입력하세요'), {
+      target: { value: '5500' },
+    });
+    await vi.advanceTimersByTimeAsync(500);
 
     expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
     expect(handleSaveDrafts).toHaveBeenCalledWith({
       preparedProducts: [
         expect.objectContaining({
-          discountedPrice: 5000,
+          discountedPrice: 5500,
+          preparedProductId: 12,
+        }),
+      ],
+    });
+
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
+
+    fireEvent.change(screen.getByPlaceholderText('가격을 입력하세요'), {
+      target: { value: '6000' },
+    });
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    expect(handleSaveDrafts).toHaveBeenCalledTimes(2);
+    expect(handleSaveDrafts).toHaveBeenLastCalledWith({
+      preparedProducts: [
+        expect.objectContaining({
+          discountedPrice: 6000,
           preparedProductId: 12,
         }),
       ],
