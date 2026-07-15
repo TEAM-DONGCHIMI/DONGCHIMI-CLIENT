@@ -156,6 +156,8 @@ const SidebarHelp = () => (
   </div>
 );
 
+const profileAvatarImageSrc = '/images/product-replace.svg';
+
 export const SidebarLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -179,15 +181,7 @@ export const SidebarLayout = () => {
         ? {
             avatar: (
               <span aria-hidden='true' className={S.profileAvatarClassName}>
-                {account.marketThumbnailUrl ? (
-                  <img
-                    alt=''
-                    className={S.profileAvatarImageClassName}
-                    src={account.marketThumbnailUrl}
-                  />
-                ) : (
-                  (account.marketName ?? account.email).slice(0, 1).toUpperCase()
-                )}
+                <img alt='' className={S.profileAvatarImageClassName} src={profileAvatarImageSrc} />
               </span>
             ),
             description: account.marketName ? account.email : undefined,
