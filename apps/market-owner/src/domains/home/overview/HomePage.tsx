@@ -12,6 +12,7 @@ import {
   type ProductHeaderSearchProductTypes,
 } from '@/shared/components';
 import { useProductSearchQuery } from '@/domains/product/hooks';
+import { useAuthStore } from '@/shared/stores/auth-store';
 import { createProductEditTargetPath } from '@/shared/utils/product-edit-target-path.utils';
 
 import * as S from './HomePage.css';
@@ -35,8 +36,7 @@ export const HomePage = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [productSearchKeyword, setProductSearchKeyword] = useState('');
-  // TODO: 로그인 세션에서 담당 마트 ID를 제공하면 해당 값으로 교체합니다.
-  const marketId = 1;
+  const marketId = useAuthStore((state) => state.marketId);
   const productSearchQuery = useProductSearchQuery({
     keyword: productSearchKeyword,
     marketId,

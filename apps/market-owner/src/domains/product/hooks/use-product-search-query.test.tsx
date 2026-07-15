@@ -60,6 +60,18 @@ describe('useProductSearchQuery', () => {
     expect(mockedGetProductSearch).not.toHaveBeenCalled();
   });
 
+  it('does not request products without a market id', () => {
+    const { TestQueryProvider } = createWrapper();
+
+    const { result } = renderHook(
+      () => useProductSearchQuery({ keyword: '풀무원', marketId: undefined, size: 10 }),
+      { wrapper: TestQueryProvider },
+    );
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mockedGetProductSearch).not.toHaveBeenCalled();
+  });
+
   it('uses the product search query key and exposes validated data', async () => {
     const { queryClient, TestQueryProvider } = createWrapper();
     mockedGetProductSearch.mockResolvedValue(productSearchResponse);

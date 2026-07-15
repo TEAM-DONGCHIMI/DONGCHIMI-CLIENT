@@ -126,6 +126,7 @@ beforeEach(() => {
       accessToken: 'access-token',
       ownerId: 1,
       email: 'owner@example.com',
+      marketId: 12,
     },
   });
   mockSignupMarketOwner.mockResolvedValue({
@@ -160,6 +161,7 @@ const isPublicAuthRoute = (path: string) => {
 const renderRoute = (path: string, { authenticated = !isPublicAuthRoute(path) } = {}) => {
   if (authenticated) {
     useAuthStore.getState().setAccessToken('access-token');
+    useAuthStore.getState().setMarketId(12);
   } else {
     useAuthStore.getState().clearSession();
   }
@@ -608,7 +610,17 @@ describe('marketOwnerRoutes', () => {
 
     await screen.findByRole('heading', { name: '동치미 홈' });
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '콩나물 100g');
-    await user.click(await screen.findByRole('button', { name: /풀무원 콩나물 100g/ }));
+    const searchResultButton = await screen.findByRole('button', {
+      name: /풀무원 콩나물 100g/,
+    });
+
+    expect(mockGetProductSearch).toHaveBeenCalledWith({
+      keyword: '콩나물 100g',
+      marketId: 12,
+      size: 10,
+    });
+
+    await user.click(searchResultButton);
 
     expect(await findRouteHeading('오늘의 특가 상품을 수정하세요')).toBeInTheDocument();
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.todaySpecialEdit);
