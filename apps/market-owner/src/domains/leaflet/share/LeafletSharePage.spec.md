@@ -56,7 +56,7 @@
 - 상품 최종 저장 실패 시 서버 오류 메시지를 우선 표시하고 전단 발행 mutation을 호출하지 않는다.
 - 상품 최종 저장 성공 후 전단 발행만 실패하면 같은 화면에서 재시도할 때 상품 저장을 중복 호출하지 않고 발행 mutation만 다시 호출한다.
 - 상품 최종 저장 이후 페이지를 새로고침한 경우의 중복 호출 안전성은 서버의 멱등성 계약을 따른다.
-- 발행 성공 시 응답 `slug`를 `VITE_PUBLIC_CLIENT_BASE_URL/markets/{slug}` 형태로 조합하고 share UI로 전환한다.
+- 발행 성공 시 응답 `slug`를 `VITE_PUBLIC_CLIENT_BASE_URL/markets/{slug}` 형태로 조합하고 share UI로 전환한다. `VITE_PUBLIC_CLIENT_BASE_URL`이 비어 있는 로컬 환경에서는 현재 `window.location.origin`을 사용해 API 호출 자체가 막히지 않게 한다.
 - 발행 실패 시 서버 오류 메시지를 우선 표시하고 confirm UI를 유지합니다.
 - `marketId`가 없으면 요청하지 않고 재로그인 안내 toast를 표시합니다.
 - QR 이미지와 상품 개수는 fixture 값을 사용합니다.

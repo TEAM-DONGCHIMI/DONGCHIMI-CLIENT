@@ -40,6 +40,12 @@ const toastIconProps = {
   width: TOAST_ICON_SIZE,
 } as const;
 
+const getLeafletShareBaseUrl = () => {
+  const { clientBaseUrl } = getMarketOwnerEnv();
+
+  return clientBaseUrl ?? window.location.origin;
+};
+
 export const LeafletSharePage = () => {
   const navigate = useNavigate();
   const toast = useToast();
@@ -78,13 +84,6 @@ export const LeafletSharePage = () => {
       return;
     }
 
-    const { clientBaseUrl } = getMarketOwnerEnv();
-
-    if (clientBaseUrl == null) {
-      showShareFlowErrorToast(LEAFLET_PUBLISH_ERROR_MESSAGE);
-      return;
-    }
-
     shareFlowInFlightRef.current = true;
     setIsShareFlowPending(true);
 
@@ -104,7 +103,7 @@ export const LeafletSharePage = () => {
       try {
         const { slug } = await publishLeafletMutation.mutateAsync(marketId);
 
-        setShareUrl(`${clientBaseUrl}/markets/${encodeURIComponent(slug)}`);
+        setShareUrl(`${getLeafletShareBaseUrl()}/markets/${encodeURIComponent(slug)}`);
         setShareView('share');
       } catch (error) {
         showShareFlowErrorToast(isApiError(error) ? error.message : LEAFLET_PUBLISH_ERROR_MESSAGE);

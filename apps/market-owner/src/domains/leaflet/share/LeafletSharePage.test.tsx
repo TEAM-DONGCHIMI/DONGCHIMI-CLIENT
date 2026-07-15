@@ -147,6 +147,22 @@ describe('LeafletSharePage', () => {
     ).toBeInTheDocument();
   });
 
+  it('does not block product confirmation and leaflet publishing when the client base URL is not configured', async () => {
+    const user = userEvent.setup();
+
+    vi.stubEnv('VITE_PUBLIC_CLIENT_BASE_URL', '');
+    mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
+    render(<LeafletSharePage />, { wrapper: createWrapper() });
+
+    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
+
+    expect(mockedConfirmPreparedProductDrafts).toHaveBeenCalledOnce();
+    expect(mockedPublishLeaflet).toHaveBeenCalledOnce();
+    expect(
+      await screen.findByText(`${window.location.origin}/markets/VQ6EAOKbQdSnFkRlVUQAAA`),
+    ).toBeInTheDocument();
+  });
+
   it('disables the share action while product confirmation is pending', async () => {
     const user = userEvent.setup();
 
