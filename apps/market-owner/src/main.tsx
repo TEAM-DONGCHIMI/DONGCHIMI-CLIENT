@@ -4,9 +4,10 @@ import '@dongchimi/design-system/styles/reset.css';
 import '@dongchimi/design-system/styles/fonts.css';
 
 import { App } from '@/app/App';
-import { getSentryReactRootOptions, initSentry } from './shared/config/sentry';
+import { configureDotLottieWasm, getSentryReactRootOptions, initSentry } from './shared/config';
 
 initSentry();
+configureDotLottieWasm();
 
 const rootElement = document.getElementById('root');
 

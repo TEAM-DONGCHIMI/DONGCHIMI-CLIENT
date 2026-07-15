@@ -7,7 +7,7 @@
 - Page: `event-discount-registration`
 - Route: `/products/event-discount/new`
 - Path: `apps/market-owner/src/domains/product/event-discount-registration/EventDiscountRegistrationPage.tsx`
-- Jira: DCMSM-18, DCMSM-19, DCMSM-25, DCMSM-33, DCMSM-34, DCMSM-52, DCMSM-62
+- Jira: DCMSM-18, DCMSM-19, DCMSM-25, DCMSM-33, DCMSM-34, DCMSM-52, DCMSM-62, DCMSM-95
 - Figma:
   - APPJAM registration method home node 3799:102468
   - APPJAM excel upload image node 3799:102479
@@ -47,7 +47,7 @@
 - Shared `ToastProvider`/`useToast` runtime is reused for action feedback while design-system `Toast` remains the rendered UI.
 - `FileAnalysisConfirmSection` and `FileAnalysisProgressSection` remain page-local flow steps for the uploaded file confirmation and AI analysis progress.
 - `ProcessingStep` is reused from market-owner shared UI for the ordered analysis step list.
-- The page passes the supplied `/public/lottie/spinner.lottie` asset through `ProcessingStep.iconSlot`; Lottie playback remains page-specific.
+- The page passes the supplied `/public/lottie/spinner.lottie` asset through `ProcessingStep.iconSlot`; Lottie playback remains page-specific, while the dotLottie WASM runtime URL is configured once from the app bundle during bootstrap.
 - App-shared `DesktopHeader` is reused for the breadcrumb header.
 - Design-system `Flex` and `Button` are reused for internal layout and actions.
 - No new shared/design-system component is introduced in this issue.
@@ -98,6 +98,7 @@
   - `fileAnalysisConfirmFixture`
   - `fileAnalysisProgressFixtures`
 - static registration-method, upload-modal, POS guide, toast copy, and the excel template download URL are colocated with the page that triggers them.
+- dotLottie runtime: `@lottiefiles/dotlottie-web/dotlottie-player.wasm` is imported as a Vite asset and registered with `setWasmUrl` so preview deployments do not depend on the default CDN WASM fallback.
 - registration method card assets are page-local `assets/img-excel-upload.svg` and `assets/img-leaflet-upload.svg`; both are pure-vector SVGs and render as decorative 80×80 images because the adjacent heading and description provide the card meaning.
 - the POS guide asset is `/images/pos-excel-guide.webp` and renders at the Figma size of 360×722; it is informative and uses one alt text that preserves the three-step instructions.
 - accepted excel extensions shown to users: `.xlsx`, `.csv`

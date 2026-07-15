@@ -64,7 +64,7 @@ export const marketDetailSchema = z.object({
   address: z.string(),
   businessHours: z.array(businessHourSchema),
   isOpenNow: z.boolean(),
-  marketId: z.number(),
+  marketId: z.number().int().positive(),
   marketPhone1: z.string(),
   marketPhone2: nullableStringSchema,
   name: z.string(),
