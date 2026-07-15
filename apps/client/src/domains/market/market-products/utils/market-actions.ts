@@ -1,4 +1,4 @@
-import type { BusinessDayTypes, BusinessHourTypes } from '../fixtures/market-products.fixture';
+import type { BusinessDayTypes, BusinessHourTypes } from '../../model/market-detail-schema';
 
 type OpenBusinessHourTypes = Extract<BusinessHourTypes, { isOpen: true }>;
 

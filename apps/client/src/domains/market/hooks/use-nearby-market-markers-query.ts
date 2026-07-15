@@ -6,11 +6,11 @@ import {
   getNearbyMarketMarkers,
   type NearbyMarketsListParamsTypes,
 } from '../api/nearby-markets-api';
-import { nearbyMarketsQueryKeys } from '../query-keys';
+import { marketQueryKeys } from '../query-keys';
 
 export const useGetNearbyMarketMarkersQuery = (params: NearbyMarketsListParamsTypes = {}) => {
   return useQuery({
-    queryKey: nearbyMarketsQueryKeys.markers(params),
+    queryKey: marketQueryKeys.nearbyMarkers(params),
     queryFn: () => getNearbyMarketMarkers(params),
     select: (response) => response.contents,
   });
