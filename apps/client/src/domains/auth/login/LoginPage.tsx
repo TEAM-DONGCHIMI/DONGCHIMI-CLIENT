@@ -1,5 +1,5 @@
 import * as S from './LoginPage.css';
-import { KakaoLoginButton } from './components/KakaoLoginButton';
+import { KakaoLoginLink } from './components/KakaoLoginLink';
 
 export const LoginPage = () => {
   return (
@@ -9,7 +9,7 @@ export const LoginPage = () => {
       <div aria-hidden='true' className={S.onboardingImageClassName} />
 
       <section aria-label='로그인' className={S.loginSectionClassName}>
-        <KakaoLoginButton />
+        <KakaoLoginLink />
 
         <p className={S.termsClassName}>
           가입 시 이용약관 및 개인정보처리방침에

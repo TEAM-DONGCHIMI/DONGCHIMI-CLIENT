@@ -1,74 +1,21 @@
 import { API_ENDPOINTS, type CommonApiTypes } from '@dongchimi/shared/api';
 import { NextResponse } from 'next/server';
 
-import { AUTH_COOKIE_NAMES, AUTH_COOKIE_PATHS, UPSTREAM_AUTH_COOKIE_NAMES } from '@/shared/auth';
+import {
+  appendRefreshTokenCookies,
+  AUTH_COOKIE_NAMES,
+  clearAuthCookies,
+  getRefreshTokenSetCookieHeaders,
+  getRequestCookie,
+  setAccessTokenCookie,
+  UPSTREAM_AUTH_COOKIE_NAMES,
+} from '@/shared/auth';
 import { createServerApi } from '@/shared/api/server-client';
 
 export const runtime = 'nodejs';
 
 const createErrorResponse = (status: number, code: string, message: string) => {
   return NextResponse.json({ code, message, success: false }, { status });
-};
-
-const getRequestCookie = (request: Request, cookieName: string) => {
-  const cookie = request.headers
-    .get('cookie')
-    ?.split(';')
-    .map((value) => value.trim())
-    .find((value) => value.startsWith(`${cookieName}=`));
-
-  return cookie?.slice(cookieName.length + 1);
-};
-
-const getSetCookieHeaders = (headers: Headers) => {
-  const setCookieHeaders = headers.getSetCookie();
-
-  if (setCookieHeaders.length > 0) {
-    return setCookieHeaders;
-  }
-
-  const setCookieHeader = headers.get('set-cookie');
-
-  return setCookieHeader ? [setCookieHeader] : [];
-};
-
-const rewriteRefreshCookie = (setCookieHeader: string) => {
-  const preservedAttributes = setCookieHeader
-    .split(';')
-    .map((attribute) => attribute.trim())
-    .filter(
-      (attribute, index) =>
-        index === 0 || !/^(Domain|HttpOnly|Path|SameSite|Secure)(?:=|$)/i.test(attribute),
-    );
-
-  preservedAttributes.push(`Path=${AUTH_COOKIE_PATHS.refresh}`, 'HttpOnly', 'SameSite=Lax');
-
-  if (process.env.NODE_ENV === 'production') {
-    preservedAttributes.push('Secure');
-  }
-
-  return preservedAttributes.join('; ');
-};
-
-const clearAuthCookies = (response: NextResponse) => {
-  const secure = process.env.NODE_ENV === 'production';
-
-  response.cookies.set(AUTH_COOKIE_NAMES.accessToken, '', {
-    httpOnly: true,
-    maxAge: 0,
-    path: '/',
-    sameSite: 'lax',
-    secure,
-  });
-  response.cookies.set(AUTH_COOKIE_NAMES.refreshToken, '', {
-    httpOnly: true,
-    maxAge: 0,
-    path: AUTH_COOKIE_PATHS.refresh,
-    sameSite: 'lax',
-    secure,
-  });
-
-  return response;
 };
 
 export async function POST(request: Request) {
@@ -94,9 +41,7 @@ export async function POST(request: Request) {
     }
 
     const accessToken = upstreamBody.data?.accessToken;
-    const refreshCookies = getSetCookieHeaders(upstreamResponse.headers).filter((cookie) =>
-      new RegExp(`^${AUTH_COOKIE_NAMES.refreshToken}=`, 'i').test(cookie),
-    );
+    const refreshCookies = getRefreshTokenSetCookieHeaders(upstreamResponse.headers);
 
     if (!accessToken || refreshCookies.length === 0) {
       return clearAuthCookies(
@@ -114,16 +59,8 @@ export async function POST(request: Request) {
       success: true,
     });
 
-    response.cookies.set(AUTH_COOKIE_NAMES.accessToken, accessToken, {
-      httpOnly: true,
-      path: '/',
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-    });
-
-    for (const refreshCookie of refreshCookies) {
-      response.headers.append('set-cookie', rewriteRefreshCookie(refreshCookie));
-    }
+    setAccessTokenCookie(response, accessToken);
+    appendRefreshTokenCookies(response, refreshCookies);
 
     return response;
   } catch {

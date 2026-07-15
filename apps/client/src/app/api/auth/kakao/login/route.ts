@@ -1,7 +1,17 @@
+import { timingSafeEqual } from 'node:crypto';
+
 import { API_ENDPOINTS } from '@dongchimi/shared/api';
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
-import { AUTH_COOKIE_NAMES, AUTH_COOKIE_PATHS } from '@/shared/auth';
+import {
+  appendRefreshTokenCookies,
+  AUTH_COOKIE_NAMES,
+  clearKakaoOAuthStateCookie,
+  getRefreshTokenSetCookieHeaders,
+  getRequestCookie,
+  setAccessTokenCookie,
+} from '@/shared/auth';
 import { type UserApiTypes } from '@/shared/api';
 import { createServerApi } from '@/shared/api/server-client';
 
@@ -18,26 +28,23 @@ const createErrorResponse = (status: number, code: string, message: string) => {
   );
 };
 
-const getSetCookieHeaders = (headers: Headers) => {
-  const setCookieHeaders = headers.getSetCookie();
+const loginRequestSchema = z.object({
+  code: z.string().trim().min(1).max(4096),
+  state: z.string().trim().min(1).max(128),
+});
 
-  if (setCookieHeaders.length > 0) {
-    return setCookieHeaders;
+const isMatchingOAuthState = (cookieState: string | undefined, callbackState: string) => {
+  if (!cookieState) {
+    return false;
   }
 
-  const setCookieHeader = headers.get('set-cookie');
+  const cookieStateBuffer = Buffer.from(cookieState);
+  const callbackStateBuffer = Buffer.from(callbackState);
 
-  return setCookieHeader ? [setCookieHeader] : [];
-};
-
-const rewriteRefreshCookie = (setCookieHeader: string) => {
-  const cookieWithoutDomain = setCookieHeader.replace(/;\s*Domain=[^;]+/gi, '');
-
-  if (/;\s*Path=[^;]+/i.test(cookieWithoutDomain)) {
-    return cookieWithoutDomain.replace(/;\s*Path=[^;]+/i, `; Path=${AUTH_COOKIE_PATHS.refresh}`);
-  }
-
-  return `${cookieWithoutDomain}; Path=${AUTH_COOKIE_PATHS.refresh}`;
+  return (
+    cookieStateBuffer.length === callbackStateBuffer.length &&
+    timingSafeEqual(cookieStateBuffer, callbackStateBuffer)
+  );
 };
 
 export async function POST(request: Request) {
@@ -46,16 +53,30 @@ export async function POST(request: Request) {
   try {
     requestBody = await request.json();
   } catch {
-    return createErrorResponse(400, 'INVALID_INPUT', '인가 코드는 필수로 입력해 주세요.');
+    return clearKakaoOAuthStateCookie(
+      createErrorResponse(400, 'INVALID_INPUT', '인가 코드와 state는 필수로 입력해 주세요.'),
+    );
   }
 
-  const code =
-    typeof requestBody === 'object' && requestBody !== null && 'code' in requestBody
-      ? requestBody.code
-      : undefined;
+  const parsedRequestBody = loginRequestSchema.safeParse(requestBody);
 
-  if (typeof code !== 'string' || !code.trim()) {
-    return createErrorResponse(400, 'INVALID_INPUT', '인가 코드는 필수로 입력해 주세요.');
+  if (!parsedRequestBody.success) {
+    return clearKakaoOAuthStateCookie(
+      createErrorResponse(400, 'INVALID_INPUT', '인가 코드와 state는 필수로 입력해 주세요.'),
+    );
+  }
+
+  const { code, state } = parsedRequestBody.data;
+  const cookieState = getRequestCookie(request, AUTH_COOKIE_NAMES.kakaoOAuthState);
+
+  if (!isMatchingOAuthState(cookieState, state)) {
+    return clearKakaoOAuthStateCookie(
+      createErrorResponse(
+        400,
+        'OAUTH_STATE_INVALID',
+        '카카오 로그인 요청을 확인할 수 없습니다. 다시 시도해 주세요.',
+      ),
+    );
   }
 
   try {
@@ -68,19 +89,21 @@ export async function POST(request: Request) {
       (await upstreamResponse.json()) as UserApiTypes.ApiResponseOAuthLoginResponse;
 
     if (!upstreamResponse.ok) {
-      return NextResponse.json(upstreamBody, { status: upstreamResponse.status });
+      return clearKakaoOAuthStateCookie(
+        NextResponse.json(upstreamBody, { status: upstreamResponse.status }),
+      );
     }
 
     const accessToken = upstreamBody.data?.accessToken;
-    const refreshCookies = getSetCookieHeaders(upstreamResponse.headers).filter((cookie) =>
-      new RegExp(`^${AUTH_COOKIE_NAMES.refreshToken}=`, 'i').test(cookie),
-    );
+    const refreshCookies = getRefreshTokenSetCookieHeaders(upstreamResponse.headers);
 
     if (!accessToken || refreshCookies.length === 0) {
-      return createErrorResponse(
-        502,
-        'OAUTH_TOKEN_MISSING',
-        '로그인 응답에서 인증 정보를 확인할 수 없습니다.',
+      return clearKakaoOAuthStateCookie(
+        createErrorResponse(
+          502,
+          'OAUTH_TOKEN_MISSING',
+          '로그인 응답에서 인증 정보를 확인할 수 없습니다.',
+        ),
       );
     }
 
@@ -90,19 +113,14 @@ export async function POST(request: Request) {
       success: true,
     });
 
-    response.cookies.set(AUTH_COOKIE_NAMES.accessToken, accessToken, {
-      httpOnly: true,
-      path: '/',
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-    });
-
-    for (const refreshCookie of refreshCookies) {
-      response.headers.append('set-cookie', rewriteRefreshCookie(refreshCookie));
-    }
+    setAccessTokenCookie(response, accessToken);
+    clearKakaoOAuthStateCookie(response);
+    appendRefreshTokenCookies(response, refreshCookies);
 
     return response;
   } catch {
-    return createErrorResponse(502, 'OAUTH_UPSTREAM_FAILED', '로그인 서버 연결에 실패했습니다.');
+    return clearKakaoOAuthStateCookie(
+      createErrorResponse(502, 'OAUTH_UPSTREAM_FAILED', '로그인 서버 연결에 실패했습니다.'),
+    );
   }
 }

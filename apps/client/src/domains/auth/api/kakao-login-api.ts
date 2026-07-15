@@ -1,6 +1,10 @@
-import { browserApi, type UserApiTypes } from '@/shared/api';
+import { browserApi } from '@/shared/api';
+import { normalizeKakaoLoginError } from '../model/kakao-login-error';
 
-export type KakaoLoginPayloadTypes = UserApiTypes.OAuthLoginRequest;
+export interface KakaoLoginPayload {
+  code: string;
+  state: string;
+}
 
 export interface KakaoLoginResponse {
   code: string;
@@ -8,8 +12,12 @@ export interface KakaoLoginResponse {
   success: boolean;
 }
 
-export const postKakaoLogin = async (payload: KakaoLoginPayloadTypes) => {
-  return browserApi.post<KakaoLoginResponse>('auth/kakao/login', {
-    json: payload,
-  });
+export const postKakaoLogin = async (payload: KakaoLoginPayload) => {
+  try {
+    return await browserApi.post<KakaoLoginResponse>('auth/kakao/login', {
+      json: payload,
+    });
+  } catch (error) {
+    throw normalizeKakaoLoginError(error);
+  }
 };

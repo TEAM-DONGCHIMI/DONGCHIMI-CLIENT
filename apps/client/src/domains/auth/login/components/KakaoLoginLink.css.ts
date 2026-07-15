@@ -4,7 +4,7 @@ import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
-export const buttonClassName = style({
+export const linkClassName = style({
   ...typography['body-3-semibold'],
   display: 'inline-flex',
   width: '100%',
@@ -19,17 +19,14 @@ export const buttonClassName = style({
   borderRadius: '1.2rem',
   backgroundColor: semantic.status.kakaoYellow,
   color: atomic.neutral[90],
+  cursor: 'pointer',
+  textDecoration: 'none',
   transition:
     'background-color 160ms ease, border-color 160ms ease, color 160ms ease, outline-color 160ms ease',
   selectors: {
     '&:focus-visible': {
       outline: `0.3rem solid ${focusOutlineColor}`,
       outlineOffset: '0.2rem',
-    },
-    '&:disabled': {
-      backgroundColor: atomic.neutral[30],
-      color: atomic.common[0],
-      cursor: 'not-allowed',
     },
   },
 });
