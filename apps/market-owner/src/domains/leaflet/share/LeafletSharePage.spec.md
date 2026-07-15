@@ -7,7 +7,7 @@
 - Page: `share`
 - Route: `/leaflets/share`
 - Path: `apps/market-owner/src/domains/leaflet/share/LeafletSharePage.tsx`
-- Jira: DCMSM-29, DCMSM-67, DCMSM-71
+- Jira: DCMSM-29, DCMSM-67, DCMSM-71, DCMSM-86
 - Status: Implemented
 
 ## Purpose
@@ -51,7 +51,7 @@
 - 발행 실패 시 서버 오류 메시지를 우선 표시하고 confirm UI를 유지합니다.
 - `marketId`가 없으면 요청하지 않고 재로그인 안내 toast를 표시합니다.
 - QR 이미지와 상품 개수는 fixture 값을 사용합니다.
-- `링크 복사`는 fixture 공유 링크를 clipboard에 기록하고 성공한 경우에만 toast UI를 표시합니다.
+- 링크 필드의 `전단 공유 링크 복사` IconButton과 `링크 복사` 액션은 현재 공유 링크를 clipboard에 기록하고 성공한 경우에만 toast UI를 표시합니다.
 - clipboard 미지원 또는 복사 실패 시 `링크를 복사하지 못했습니다. 다시 시도해주세요.` error toast를 표시합니다.
 - 로그인 응답에서 auth store에 저장된 현재 `marketId`를 QR 요청에 사용합니다.
 - QR 응답이 순수 Base64이면 PNG data URL로 정규화하고, image data URL이면 그대로 사용합니다.
@@ -65,6 +65,7 @@
 - page root는 현재 화면 상태에 맞는 visible `h1`을 제공합니다.
 - QR 모달은 `role="dialog"`와 `aria-modal="true"`를 사용합니다.
 - 버튼은 native `button` 또는 design-system `Button`을 사용해 keyboard focus를 유지합니다.
+- 링크 필드의 복사 액션은 design-system `IconButton`을 사용하고 `전단 공유 링크 복사` accessible name을 제공합니다.
 - `/leaflets/share`는 기존 정책대로 sidebar active item을 갖지 않습니다.
 
 ## Verification
@@ -75,6 +76,7 @@
 - [ ] successful publish renders `오늘의 전단 공유` and the slug-based URL
 - [ ] failed publish renders an error toast and keeps the confirmation view
 - [ ] clicking `링크 복사` renders copied toast UI
+- [ ] clicking `전단 공유 링크 복사` renders copied toast UI
 - [ ] clipboard write failure renders copy error toast UI
 - [ ] clicking `홈으로 돌아가기` navigates to the home route
 - [ ] clicking `매장 고유 QR코드 보기` issues a QR code for the authenticated market
