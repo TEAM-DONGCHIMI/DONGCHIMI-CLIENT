@@ -27,7 +27,7 @@ const createQueryResult = (overrides: Record<string, unknown> = {}) => {
 const renderHomeDashboardSection = () => {
   return render(
     <MemoryRouter>
-      <HomeDashboardSection onCopyLinkResult={vi.fn()} onQrCodePreparing={vi.fn()} />
+      <HomeDashboardSection onCopyLinkResult={vi.fn()} onOpenQrCode={vi.fn()} />
     </MemoryRouter>,
   );
 };
