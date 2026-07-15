@@ -379,7 +379,7 @@ describe('marketOwnerRoutes', () => {
     await user.click(marketInformationLink);
 
     expect(await screen.findByRole('heading', { name: '마트 정보 관리' })).toBeInTheDocument();
-    expect(screen.getByLabelText('마트명')).toHaveValue('상현 마트');
+    expect(screen.getByLabelText('마트명')).toHaveValue('상헌 마트');
     expect(screen.getByRole('button', { name: '수정 완료' })).toBeDisabled();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   });
@@ -394,7 +394,9 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('button', { name: '수정 완료' })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: '취소' }));
 
-    expect(screen.getByRole('dialog', { name: '저장하지 않고 나가시겠어요?' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('dialog', { name: '저장하지 않고 나가시겠어요?' }),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '취소' }));
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.marketInformationManagement);
@@ -412,7 +414,7 @@ describe('marketOwnerRoutes', () => {
     await user.clear(marketNameInput);
     await user.type(marketNameInput, '새 마트');
     await user.click(screen.getByRole('button', { name: '취소' }));
-    await user.click(screen.getByRole('button', { name: '나가기' }));
+    await user.click(await screen.findByRole('button', { name: '나가기' }));
 
     await waitFor(() => {
       expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.home);
