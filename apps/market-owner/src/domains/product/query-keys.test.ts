@@ -4,12 +4,11 @@ import { productQueryKeys } from './query-keys';
 import { productDetailQueryOptions, productListQueryOptions } from './query-options';
 
 describe('productQueryKeys', () => {
-  it('declares static hierarchical product keys', () => {
-    expect(productQueryKeys).toEqual({
-      all: ['product'],
-      detail: ['product', 'detail'],
-      list: ['product', 'list'],
-    });
+  it('declares hierarchical product keys', () => {
+    expect(productQueryKeys.all).toEqual(['product']);
+    expect(productQueryKeys.detail).toEqual(['product', 'detail']);
+    expect(productQueryKeys.list).toEqual(['product', 'list']);
+    expect(productQueryKeys.listByMarket(1)).toEqual(['product', 'list', 1]);
   });
 
   it('combines detail params in query options', () => {
@@ -29,8 +28,8 @@ describe('productQueryKeys', () => {
     expect(defaultSortKey).toEqual([
       'product',
       'list',
+      1,
       {
-        marketId: 1,
         sort: 'CATEGORY',
         type: 'DAILY',
       },

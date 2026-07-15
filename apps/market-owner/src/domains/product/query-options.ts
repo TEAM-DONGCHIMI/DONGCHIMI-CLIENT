@@ -17,7 +17,7 @@ export const productListQueryOptions = (params: GetProductListParams) => {
   const queryParams = { marketId, sort, type };
 
   return queryOptions({
-    queryKey: [...productQueryKeys.list, queryParams],
+    queryKey: [...productQueryKeys.listByMarket(marketId), { sort, type }],
     queryFn: () => getProductList(queryParams),
   });
 };

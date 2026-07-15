@@ -37,7 +37,7 @@ export const useProductDeletionActions = (marketId: number) => {
   };
 
   const invalidateProductLists = () => {
-    return queryClient.invalidateQueries({ queryKey: productQueryKeys.list });
+    return queryClient.invalidateQueries({ queryKey: productQueryKeys.listByMarket(marketId) });
   };
 
   const deleteProduct = async (productId: number) => {
