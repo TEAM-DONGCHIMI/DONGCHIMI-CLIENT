@@ -25,3 +25,5 @@ export type {
   ProductHeaderSearchProductTypes,
   ProductHeaderSearchProps,
 } from './product-header-search';
+export { QrDownloadModal } from './qr-download-modal';
+export type { QrDownloadModalProps } from './qr-download-modal';

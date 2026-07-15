@@ -155,4 +155,22 @@ describe('LeafletSharePage', () => {
     );
     expect(screen.getByRole('heading', { name: '오늘의 전단 최종 확인' })).toBeInTheDocument();
   });
+
+  it('keeps the QR issue flow connected to the shared QR modal', async () => {
+    const user = userEvent.setup();
+
+    mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
+    mockedIssueQrCode.mockResolvedValueOnce({ qrCode: 'base64-qr-code' });
+    render(<LeafletSharePage />, { wrapper: createWrapper() });
+
+    await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+    await user.click(await screen.findByRole('button', { name: '매장 고유 QR코드 보기' }));
+
+    expect(mockedIssueQrCode.mock.calls[0]?.[0]).toBe(12);
+    expect(await screen.findByRole('dialog', { name: '매장 고유 QR코드' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: '매장 고유 QR코드' })).toHaveAttribute(
+      'src',
+      'data:image/png;base64,base64-qr-code',
+    );
+  });
 });

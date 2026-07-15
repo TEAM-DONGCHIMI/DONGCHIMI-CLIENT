@@ -18,10 +18,11 @@
 
 ## Ownership
 
-- React Router route object는 기존 `MARKET_OWNER_ROUTES.leafletShare`와 `LeafletSharePage` import를 유지한다.
-- Sidebar/protected layout 책임은 `src/app/layouts/SidebarLayout.tsx`와 `src/app/routes/ProtectedRoute.tsx`에 둔다.
-- 화면 전용 section, component, query hook, 표시 모델은 `src/domains/leaflet/share` 아래 page-local로 둔다.
-- 공유 카드, QR 모달, 휴대폰 미리보기는 app shared 또는 design-system으로 승격하지 않는다.
+- React Router route object는 기존 `MARKET_OWNER_ROUTES.leafletShare`와 `LeafletSharePage` import를 유지합니다.
+- Sidebar/protected layout 책임은 `src/app/layouts/SidebarLayout.tsx`와 `src/app/routes/ProtectedRoute.tsx`에 둡니다.
+- 화면 전용 section, component, fixture는 `src/domains/leaflet/share` 아래 page-local로 둡니다.
+- 홈에서도 동일한 UI와 다운로드 동작을 사용하므로 QR 모달과 이미지 유틸은 `src/shared`에서 재사용합니다.
+- 모바일 프레임과 공유 화면 전용 카드는 page-local로 유지합니다.
 
 ## UI States
 
@@ -50,9 +51,17 @@
 - 모바일 미리보기는 market 정보, 영업시간, top3, daily products, prepared products를 API 응답에서 렌더링한다.
 - `전단 공유하기`는 현재 `marketId`로 전단 발행 mutation을 호출한다.
 - 발행 성공 시 응답 `slug`를 `VITE_PUBLIC_CLIENT_BASE_URL/markets/{slug}` 형태로 조합하고 share UI로 전환한다.
-- `marketId`가 없으면 API 요청 대신 로그인/마트 정보 확인 안내 toast를 표시한다.
-- QR 응답이 순수 Base64이면 PNG data URL로 정규화하고, image data URL이면 그대로 사용한다.
-- `전단 수정하기`는 이번 UI 범위에서 실제 라우팅을 수행하지 않는다.
+- 발행 실패 시 서버 오류 메시지를 우선 표시하고 confirm UI를 유지합니다.
+- `marketId`가 없으면 요청하지 않고 재로그인 안내 toast를 표시합니다.
+- QR 이미지와 상품 개수는 fixture 값을 사용합니다.
+- `링크 복사`는 fixture 공유 링크를 clipboard에 기록하고 성공한 경우에만 toast UI를 표시합니다.
+- clipboard 미지원 또는 복사 실패 시 `링크를 복사하지 못했습니다. 다시 시도해주세요.` error toast를 표시합니다.
+- 로그인 응답에서 auth store에 저장된 현재 `marketId`를 QR 요청에 사용합니다.
+- QR 응답이 순수 Base64이면 PNG data URL로 정규화하고, image data URL이면 그대로 사용합니다.
+- QR 다운로드 버튼은 실제 QR 이미지를 `market-leaflet-qr.png`로 다운로드합니다.
+- QR modal UI와 이미지 정규화·다운로드 유틸은 홈과 동일한 app-shared 구현을 사용합니다.
+- `홈으로 돌아가기`는 `MARKET_OWNER_ROUTES.home`으로 이동합니다.
+- `전단 수정하기`는 이번 UI-only 범위에서 실제 라우팅을 수행하지 않습니다.
 
 ## Accessibility
 

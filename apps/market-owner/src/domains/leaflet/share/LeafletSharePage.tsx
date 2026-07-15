@@ -6,12 +6,12 @@ import { IcCircleCheckFill, IcCircleExclamation } from '@dongchimi/design-system
 import { useToast } from '@dongchimi/shared/toast';
 
 import { isApiError } from '@/shared/api';
-import { DesktopHeader } from '@/shared/components';
+import { DesktopHeader, QrDownloadModal } from '@/shared/components';
 import { getMarketOwnerEnv } from '@/shared/config';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/auth-store';
+import { downloadQrCodeImage, getQrCodeImageSource } from '@/shared/utils/qr-code-image.utils';
 
-import { QrDownloadModal } from './components';
 import { leafletShareFixture } from './fixtures/leaflet-share.fixture';
 import {
   useIssueQrCodeMutation,
@@ -20,7 +20,6 @@ import {
 } from './hooks';
 import { createLeafletPreviewViewModel } from './model/leaflet-preview-view-model';
 import { LeafletConfirmSection, LeafletShareSection } from './sections';
-import { downloadQrCodeImage, getQrCodeImageSource } from './utils/qr-code-image';
 import * as S from './LeafletSharePage.css';
 
 type LeafletShareViewTypes = 'confirm' | 'share';

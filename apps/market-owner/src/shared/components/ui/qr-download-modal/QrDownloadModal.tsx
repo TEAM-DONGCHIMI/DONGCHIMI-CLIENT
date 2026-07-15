@@ -29,7 +29,7 @@ export const QrDownloadModal = ({
       <Dialog.Content aria-label='매장 고유 QR코드' className={S.modalClassName}>
         <img alt={imageLabel} className={S.qrImageClassName} src={imageSrc} />
         <LineButton className={S.downloadButtonClassName} onClick={onDownload}>
-          매장 고유 QR코드 다운로드
+          <span className={S.downloadButtonLabelClassName}>매장 고유 QR코드 다운로드</span>
         </LineButton>
       </Dialog.Content>
     </Dialog>

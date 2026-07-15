@@ -9,7 +9,8 @@
 - Path: `apps/market-owner/src/domains/home/overview/HomePage.tsx`
 - Jira: DCMSM-27
 - Related Jira: DCMSM-32 홈 상품 0건 딤드 상태 UI, DCMSM-38 헤더 상품 검색 공통화,
-  DCMSM-57 사장님 홈 화면 조회 API 연동, DCMSM-73 상품 검색 API 연동
+  DCMSM-57 사장님 홈 화면 조회 API 연동, DCMSM-73 상품 검색 API 연동,
+  DCMSM-76 홈 QR 코드 모달 연동
 - Related Jira: DCMSM-15 route scaffold
 - Status: Implemented
 
@@ -28,6 +29,8 @@
 - Hero action Figma: [APPJAM hero quick action node 2403:69244](https://www.figma.com/design/xIDbjqPKzG4bQL5Gaoqfvb/APPJAM?node-id=2403-69244&m=dev)
 - Search panel screenshots: 입력 1자 이상 dropdown, 외부 클릭 닫힘, 상품 없음, 상품 정보 load 실패 케이스
 - Screen IDs: `2273:132751`, `2403:118466`, `2403:69244`
+- QR modal Figma: [APPJAM 홈*전단공유하기*모달 node 4010:53139](https://www.figma.com/design/xIDbjqPKzG4bQL5Gaoqfvb/APPJAM?node-id=4010-53139&m=dev)
+- QR modal Screen ID: `4010:53139`
 - Target viewport: desktop operation tool, sidebar layout 기준
 - Existing route scaffold: DCMSM-15
 
@@ -45,6 +48,7 @@
 - Header product search uses the `market-owner` app-shared `ProductHeaderSearch` through
   `DesktopHeader.searchSlot`.
 - Leaflet share card UI uses the `market-owner` app-shared `LeafletShareCard`.
+- QR modal UI uses the `market-owner` app-shared `QrDownloadModal` shared with `/leaflets/share`.
 
 ## Scope
 
@@ -57,6 +61,7 @@
 - 오른쪽 전단 공유 카드를 `LeafletShareCard`로 구성합니다.
 - `GET /v1/owners/home`의 loading, error, empty 상태를 홈 대시보드 안에서 처리합니다.
 - 공유 카드에는 공유 링크, 링크 복사 액션, 매장 고유 QR코드 보기 액션을 노출합니다.
+- 홈 조회 응답의 `flyer.qrCode`를 기존 QR 다운로드 모달에서 표시하고 PNG로 다운로드합니다.
 - sidebar `홈` active state와 protected layout 안 렌더링을 유지합니다.
 - `HomePage` 구현 범위와 미확정 flow를 이 spec에 동기화합니다.
 
@@ -64,7 +69,7 @@
 
 - 상품 검색 외 상품 등록/수정 mutation과 cache invalidation
 - 상품 수정 페이지에서 `productId` search param을 소비해 특정 상품 form/modal을 여는 상세 동작
-- QR 코드 실제 생성 또는 QR modal 구현
+- 홈에서 QR 발급 API를 새로 호출하는 흐름
 - 카카오/문자 실제 공유 연동
 - 인증 토큰 저장, 주입, 갱신과 공통 HTTP client 정책 변경
 - `MarketShareBottomSheet` client 리팩터
@@ -85,6 +90,7 @@ HomePage(main)
       ProductCard(period)
     HomeShareSection
       LeafletShareCard
+  QrDownloadModal            // overlay, flyer.qrCode가 있을 때
 ```
 
 - `DesktopHeader`: app-shared header를 `onlyHome` 모드로 소비하고 상품 검색 slot에 `ProductHeaderSearch`를
@@ -103,8 +109,9 @@ HomePage(main)
   배치합니다.
 - `HomeProductSummarySection`: shared `ProductCard` 오늘의 특가 상품 카드와 행사 할인 상품 카드를
   배치합니다. 0건 딤드 정책은 홈 전용이므로 `ProductCard` public API를 바꾸지 않고 section이 담당합니다.
-- `HomeShareSection`: 전단 공유 링크 복사 결과와 QR 준비중 feedback을 홈 toast flow에 연결합니다.
+- `HomeShareSection`: 전단 공유 링크 복사 결과를 전달하고 홈 응답의 QR 값을 page modal flow에 연결합니다.
 - `LeafletShareCard`: 전단 공유 카드 heading, description, link field, action buttons를 담당합니다.
+- `QrDownloadModal`: 홈과 전단 공유 화면이 공유하는 app-shared QR 표시·다운로드 action UI입니다.
 
 ## Design System And Component Boundary
 
@@ -119,6 +126,7 @@ HomePage(main)
   - `SearchBar` via `ProductSearchPanel`
   - `Sidebar` and `SidebarLayout`
   - `LeafletShareCard`
+  - `QrDownloadModal`
 - package shared runtime:
   - `@dongchimi/shared/toast` `useToast` via app-level `ToastProvider`
 - package shared components:
@@ -150,7 +158,7 @@ HomePage(main)
 - error: 알 수 없는 route는 router fallback에서 처리합니다. 상품 검색 API 또는 response validation이
   실패하면 검색 패널에 `상품 정보를 불러오지 못했어요.` error 상태를 표시합니다. 홈 조회 실패는
   대시보드 안에 `role="alert"` message와 재시도 button을 표시합니다.
-- disabled: QR 보기 실제 API 동작은 후속 범위이며, 현재는 버튼 클릭 시 준비 중 toast를 표시합니다.
+- QR unavailable: 전단은 있지만 `flyer.qrCode`가 없거나 빈 값이면 모달을 열지 않고 error toast를 표시합니다.
 - selected / active: sidebar `홈` item은 현재 route에 `aria-current="page"`를 적용합니다.
 - hover/focus: 검색 입력의 focus-visible 상태를 유지합니다. 검색 결과 item hover 시 해당 item button에
   focus를 이동합니다.
@@ -175,7 +183,7 @@ HomePage(main)
     `app.dongchiimi.com/markets/{slug}`와 클립보드 복사용
     `https://app.dongchiimi.com/markets/{slug}`로 변환하고, `flyer === null`은 전단 공유 empty state로
     변환합니다.
-  - `flyer.qrCode`는 schema에서 검증하지만 QR UI가 범위 밖이므로 소비하지 않습니다.
+  - `flyer.qrCode`는 Base64 또는 image Data URL을 이미지 source로 정규화해 QR 모달에 전달합니다.
 
 ## Behavior
 
@@ -193,7 +201,10 @@ HomePage(main)
   layout은 유지한 채 딤드 오버레이가 클릭을 막습니다.
 - 링크 복사는 clipboard 성공 시 `전단 링크가 복사되었습니다.` completed toast를 표시합니다.
 - 링크 복사 실패 또는 clipboard 미지원 시 `링크를 복사하지 못했습니다. 다시 시도해주세요.` error toast를 표시합니다.
-- QR 보기 클릭은 QR 표시 API/flow가 확정되기 전까지 `QR코드 보기 기능은 준비 중입니다.` completed toast를 표시합니다.
+- QR 보기 클릭은 홈 조회 응답의 `flyer.qrCode`가 있으면 app-shared QR 모달을 엽니다.
+- 홈에서는 별도 QR 발급 API를 호출하지 않습니다.
+- QR 다운로드는 `market-leaflet-qr.png` 파일을 생성하고 성공 시 모달을 닫습니다.
+- QR 값 누락 또는 다운로드 실패는 error toast로 안내합니다.
 - toast는 `@dongchimi/shared/toast` 런타임을 사용하고, 위치는 `SidebarLayout`의 전체 viewport 기준
   `top-center` toast provider 정책을 따릅니다.
 - 상품 검색은 한 글자 이상 입력 시 dropdown을 열고, 검색창과 dropdown 사이 gap은 4px입니다.
@@ -272,7 +283,10 @@ HomePage(main)
 - [x] null flyer state dims the share card, clears only its URL text, and disables all share actions
 - [x] link copy success shows completed toast
 - [x] link copy failure shows error toast
-- [x] QR code action shows preparing toast
+- [x] QR code action opens the app-shared modal with the home response QR image
+- [x] raw Base64 and image Data URL values are normalized for the modal image
+- [x] QR download creates `market-leaflet-qr.png` and closes the modal
+- [x] missing QR values and download failures show error toast feedback
 - [x] search input is keyboard/focus accessible
 - [x] search dropdown opens after one or more characters
 - [x] search dropdown closes on outside click
@@ -297,5 +311,3 @@ HomePage(main)
 ## Open Questions
 
 - Swagger/OpenAPI의 `keyword` required 표기 동기화
-- QR 보기 실제 API와 modal 또는 route 연결 방식
-- Figma URL 또는 Screen ID
