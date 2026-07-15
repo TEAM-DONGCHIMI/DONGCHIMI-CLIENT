@@ -83,8 +83,12 @@ describe('signupMarketOwner', () => {
       code: 'SUCCESS',
       message: 'ok',
       data: {
+        accessToken: 'access-token',
         ownerId: 1,
         email: 'owner@example.com',
+        marketId: null,
+        marketName: null,
+        marketThumbnailUrl: null,
       },
     };
     const requestBody = {
@@ -100,6 +104,7 @@ describe('signupMarketOwner', () => {
         skipAuthorization: true,
         skipRefresh: true,
       },
+      credentials: 'include',
       json: requestBody,
     });
   });
@@ -110,7 +115,8 @@ describe('signupMarketOwner', () => {
       code: 'SUCCESS',
       message: 'ok',
       data: {
-        ownerId: '1',
+        accessToken: 123,
+        ownerId: 1,
         email: 'owner@example.com',
       },
     });

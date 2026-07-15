@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useToast } from '@dongchimi/shared/toast';
 import { useNavigate } from 'react-router';
 
 import { isApiError } from '@/shared/api';
@@ -12,6 +12,7 @@ export interface SignupSubmitParams {
 }
 
 const SIGNUP_FALLBACK_ERROR_MESSAGE = '회원가입에 실패했습니다. 다시 시도해주세요.';
+const SIGNUP_ERROR_TOAST_ID = 'signup-submit-error';
 
 const getSignupErrorMessage = (error: unknown) => {
   if (isApiError(error) && error.message.length > 0) {
@@ -23,21 +24,21 @@ const getSignupErrorMessage = (error: unknown) => {
 
 export const useSignupSubmit = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const signupMutation = useSignupMutation();
-  const [submitErrorMessage, setSubmitErrorMessage] = useState<string>();
 
   const clearSubmitErrorMessage = () => {
-    setSubmitErrorMessage(undefined);
+    toast.dismiss(SIGNUP_ERROR_TOAST_ID);
   };
 
   const submit = async (params: SignupSubmitParams) => {
-    setSubmitErrorMessage(undefined);
+    toast.dismiss(SIGNUP_ERROR_TOAST_ID);
 
     try {
       await signupMutation.mutateAsync(params);
       navigate(MARKET_OWNER_ROUTES.marketInformationRegistration);
     } catch (error) {
-      setSubmitErrorMessage(getSignupErrorMessage(error));
+      toast.error(getSignupErrorMessage(error), { id: SIGNUP_ERROR_TOAST_ID });
     }
   };
 
@@ -48,7 +49,6 @@ export const useSignupSubmit = () => {
     },
     state: {
       isSubmitting: signupMutation.isPending,
-      submitErrorMessage,
     },
   };
 };

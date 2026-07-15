@@ -79,12 +79,14 @@ describe('useAuthStore', () => {
 
   it('clears the login session hint without storing token data', () => {
     useAuthStore.getState().setAccessToken('access-token');
+    useAuthStore.getState().setMarketId(12);
 
     useAuthStore.getState().clearSession();
 
     expect(useAuthStore.getState().accessToken).toBeUndefined();
     expect(useAuthStore.getState().bootstrapStatus).toBe('unauthenticated');
     expect(useAuthStore.getState().isLoggedIn).toBe(false);
+    expect(useAuthStore.getState().marketId).toBeUndefined();
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('access-token');
   });
 

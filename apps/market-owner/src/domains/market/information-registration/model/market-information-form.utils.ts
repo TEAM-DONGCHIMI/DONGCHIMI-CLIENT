@@ -1,22 +1,19 @@
 import {
-  type BusinessHourDayTypes,
-  type BusinessHoursTypes,
   type MarketInformationFormTypes,
-  type MarketInformationRegistrationRequest,
+  type MarketInformationRegistrationRequestTypes,
 } from './market-information-form.types';
 
 const businessRegistrationNumberDigitPattern = /\D/g;
 const businessTimeDigitPattern = /\D/g;
 const phoneDigitPattern = /\D/g;
-const businessHourDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
-const businessDayToApiDayMap: Record<string, BusinessHourDayTypes> = {
-  월요일: 'mon',
-  화요일: 'tue',
-  수요일: 'wed',
-  목요일: 'thu',
-  금요일: 'fri',
-  토요일: 'sat',
-  일요일: 'sun',
+const businessDayToApiDayMap: Record<string, string> = {
+  월요일: 'MONDAY',
+  화요일: 'TUESDAY',
+  수요일: 'WEDNESDAY',
+  목요일: 'THURSDAY',
+  금요일: 'FRIDAY',
+  토요일: 'SATURDAY',
+  일요일: 'SUNDAY',
 };
 
 export const formatBusinessRegistrationNumber = (value: string) => {
@@ -163,61 +160,52 @@ export const isValidMarketPhone = (marketPhone: string) => {
   );
 };
 
-const createEmptyBusinessHours = (): BusinessHoursTypes => {
-  return businessHourDays.reduce(
-    (businessHours, day) => ({
-      ...businessHours,
-      [day]: null,
-    }),
-    {} as BusinessHoursTypes,
-  );
-};
-
 const parseBusinessTime = (businessTime: string) => {
   const [open, close] = businessTime.split(' - ');
 
   return { close, open };
 };
 
-const applyBusinessHours = ({
+const createBusinessHourSlot = ({
   businessDay,
-  businessHours,
   businessTime,
 }: {
   businessDay: string;
-  businessHours: BusinessHoursTypes;
   businessTime: string;
 }) => {
   if (businessDay.length === 0 || businessTime.length === 0) {
-    return;
+    return null;
   }
 
-  const businessTimeValue = parseBusinessTime(businessTime);
+  const days = businessDay
+    .split(', ')
+    .map((dayLabel) => businessDayToApiDayMap[dayLabel])
+    .filter((day): day is string => day !== undefined);
+  const { close, open } = parseBusinessTime(businessTime);
 
-  businessDay.split(', ').forEach((dayLabel) => {
-    const day = businessDayToApiDayMap[dayLabel];
+  return { close, days, isOpen: true, open };
+};
 
-    if (day) {
-      businessHours[day] = businessTimeValue;
-    }
-  });
+const createClosedBusinessHourSlot = (holiday: string) => {
+  const day = businessDayToApiDayMap[holiday];
+
+  return day ? { close: null, days: [day], isOpen: false, open: null } : null;
 };
 
 export const createMarketInformationRegistrationRequest = (
   form: MarketInformationFormTypes,
-): MarketInformationRegistrationRequest => {
-  const businessHours = createEmptyBusinessHours();
-
-  applyBusinessHours({
-    businessDay: form.businessDay,
-    businessHours,
-    businessTime: form.businessTime,
-  });
-  applyBusinessHours({
-    businessDay: form.additionalBusinessDay,
-    businessHours,
-    businessTime: form.additionalBusinessTime,
-  });
+): MarketInformationRegistrationRequestTypes => {
+  const businessHours = [
+    createBusinessHourSlot({
+      businessDay: form.businessDay,
+      businessTime: form.businessTime,
+    }),
+    createBusinessHourSlot({
+      businessDay: form.additionalBusinessDay,
+      businessTime: form.additionalBusinessTime,
+    }),
+    createClosedBusinessHourSlot(form.holiday),
+  ].filter((slot): slot is NonNullable<typeof slot> => slot !== null);
 
   return {
     address: form.address,

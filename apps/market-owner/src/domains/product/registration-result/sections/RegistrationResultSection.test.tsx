@@ -74,6 +74,18 @@ describe('RegistrationResultSection', () => {
     expect(screen.getByRole('button', { name: '등록 완료' })).toBeDisabled();
   });
 
+  it('shows the default image for a completed product without an uploaded image', async () => {
+    const user = userEvent.setup();
+
+    renderSection();
+
+    await user.click(screen.getByRole('button', { name: '등록 완료 112' }));
+
+    expect(
+      screen.getByRole('img', { name: '전라도 포기김치 3kg 기본 상품 이미지' }),
+    ).toBeInTheDocument();
+  });
+
   it('enables selected deletion and updates the needs-edit notice count', async () => {
     const user = userEvent.setup();
 
@@ -220,9 +232,9 @@ describe('RegistrationResultSection', () => {
 
     const dropdown = await screen.findByRole('group', { name: '상품 카테고리' });
 
-    await user.click(within(dropdown).getByRole('button', { name: '수산' }));
+    await user.click(within(dropdown).getByRole('button', { name: '수산물' }));
 
-    expect(categoryButton).toHaveTextContent('수산');
+    expect(categoryButton).toHaveTextContent('수산물');
   });
 
   it('keeps the product category dropdown anchored while scrolling', async () => {

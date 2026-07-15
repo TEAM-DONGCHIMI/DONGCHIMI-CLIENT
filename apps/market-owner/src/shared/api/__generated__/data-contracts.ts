@@ -338,41 +338,6 @@ export interface OwnerSignupRequest {
   password: string;
 }
 
-export interface ApiResponseOwnerSignupResponse {
-  success: boolean;
-  code: string;
-  message: string;
-  data?: OwnerSignupResponse | null;
-}
-
-export interface OwnerSignupResponse {
-  /**
-   * 점주 id
-   * @format int64
-   */
-  ownerId: number;
-  /** 점주 이메일 */
-  email: string;
-}
-
-export interface OwnerLoginRequest {
-  /**
-   * 이메일
-   * @example "ddongchiim@gmail.com"
-   */
-  email: string;
-  /**
-   * 비밀번호
-   * @example "password123!"
-   */
-  password: string;
-  /**
-   * 로그인 상태 유지(자동 로그인) 여부
-   * @example true
-   */
-  isAutoLogin: boolean;
-}
-
 export interface ApiResponseOwnerLoginResponse {
   success: boolean;
   code: string;
@@ -399,6 +364,24 @@ export interface OwnerLoginResponse {
   marketName?: string | null;
   /** 마트 이미지 URL (미등록 시 null) */
   marketThumbnailUrl?: string | null;
+}
+
+export interface OwnerLoginRequest {
+  /**
+   * 이메일
+   * @example "ddongchiim@gmail.com"
+   */
+  email: string;
+  /**
+   * 비밀번호
+   * @example "password123!"
+   */
+  password: string;
+  /**
+   * 로그인 상태 유지(자동 로그인) 여부
+   * @example true
+   */
+  isAutoLogin: boolean;
 }
 
 export interface ProductDiscountPeriodUpdateRequest {
@@ -901,7 +884,7 @@ export type PublishData = ApiResponseFlyerPublishResponse;
 
 export type IssueQrCodeData = ApiResponseFlyerQrResponse;
 
-export type SignupData = ApiResponseOwnerSignupResponse;
+export type SignupData = ApiResponseOwnerLoginResponse;
 
 export type LoginData = ApiResponseOwnerLoginResponse;
 
