@@ -21,6 +21,9 @@ describe('API_ENDPOINTS', () => {
     expect(API_ENDPOINTS.owner.products.detail('market/1', 'product 1')).toBe(
       '/v1/owners/markets/market%2F1/products/product%201',
     );
+    expect(API_ENDPOINTS.owner.products.confirmDrafts('market/1')).toBe(
+      '/v1/owners/markets/market%2F1/products',
+    );
   });
 
   it('builds owner product query endpoints', () => {
@@ -33,13 +36,13 @@ describe('API_ENDPOINTS', () => {
 
     expect(
       API_ENDPOINTS.owner.products.draft('market-1', {
-        category: '과일',
+        categories: ['VEGETABLE_FRUIT', 'SEAFOOD'],
         page: 1,
         search: '사과',
         size: 20,
       }),
     ).toBe(
-      '/v1/owners/markets/market-1/products/draft?category=%EA%B3%BC%EC%9D%BC&page=1&search=%EC%82%AC%EA%B3%BC&size=20',
+      '/v1/owners/markets/market-1/products/draft?categories=VEGETABLE_FRUIT&categories=SEAFOOD&page=1&search=%EC%82%AC%EA%B3%BC&size=20',
     );
 
     expect(

@@ -9,6 +9,7 @@ import { QueryProvider } from '@/shared/query';
 import { useAuthStore } from '@/shared/stores/auth-store';
 
 import {
+  EXCEL_TEMPLATE_DOWNLOAD_URL,
   EventDiscountRegistrationPage,
   type EventDiscountRegistrationPageProps,
 } from './EventDiscountRegistrationPage';
@@ -540,17 +541,15 @@ describe('EventDiscountRegistrationPage', () => {
     expect(screen.getByText('지원 파일은 .xlsx, .csv예요.')).toBeInTheDocument();
   });
 
-  it('renders toast feedback and POS guide panel from method actions', async () => {
+  it('opens the excel template download URL and renders the remaining method actions', async () => {
     const user = userEvent.setup();
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null);
 
     renderEventDiscountRegistrationPage();
 
     await user.click(screen.getByRole('button', { name: '엑셀 양식 다운로드' }));
 
-    const successToast = screen.getByRole('status');
-
-    expect(successToast).toHaveTextContent('엑셀 양식 다운로드 완료');
-    expect(successToast.querySelector('svg')).toBeInTheDocument();
+    expect(open).toHaveBeenCalledWith(EXCEL_TEMPLATE_DOWNLOAD_URL, '_blank', 'noopener');
 
     await user.click(screen.getByRole('button', { name: 'POS에서 엑셀 파일 받는 방법 보기' }));
 

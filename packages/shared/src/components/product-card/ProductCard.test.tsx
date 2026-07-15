@@ -59,7 +59,9 @@ describe('ProductCard', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: '상품 보기: 풀무원 콩나물 500g 1' }));
+    await user.click(
+      screen.getByRole('button', { name: '상품 보기: 풀무원 콩나물 500g 1, 10% 할인' }),
+    );
 
     expect(handleProductClick).toHaveBeenCalledTimes(1);
     expect(handleProductClick).toHaveBeenCalledWith(productCardItemsFixture[0], 0);

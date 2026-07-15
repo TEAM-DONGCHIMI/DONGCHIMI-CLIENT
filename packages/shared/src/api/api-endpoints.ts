@@ -8,7 +8,7 @@ export type ApiSearchParamValueTypes =
 export type ApiSearchParamsTypes = Record<string, ApiSearchParamValueTypes>;
 
 export interface OwnerDraftProductsSearchParamsTypes extends ApiSearchParamsTypes {
-  category?: string;
+  categories?: readonly string[];
   page?: number;
   search?: string;
   size?: number;
@@ -100,6 +100,8 @@ export const API_ENDPOINTS = {
         `/v1/owners/markets/${encodePathParam(marketId)}/products/all`,
       collection: (marketId: ApiPathParamTypes, searchParams?: OwnerProductsSearchParamsTypes) =>
         buildApiPath(`/v1/owners/markets/${encodePathParam(marketId)}/products`, searchParams),
+      confirmDrafts: (marketId: ApiPathParamTypes) =>
+        `/v1/owners/markets/${encodePathParam(marketId)}/products`,
       daily: (marketId: ApiPathParamTypes) =>
         `/v1/owners/markets/${encodePathParam(marketId)}/products/daily`,
       detail: (marketId: ApiPathParamTypes, productId: ApiPathParamTypes) =>

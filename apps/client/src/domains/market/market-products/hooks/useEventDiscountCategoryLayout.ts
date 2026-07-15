@@ -59,7 +59,7 @@ export const useEventDiscountCategoryLayout = ({
   categories,
   visibleCategoryCount,
 }: UseEventDiscountCategoryLayoutTypes) => {
-  const categoryListRef = useRef<HTMLDivElement>(null);
+  const categoryPrimaryRowRef = useRef<HTMLDivElement>(null);
   const categoryMeasureRowRef = useRef<HTMLDivElement>(null);
   const [firstRowCategoryCount, setFirstRowCategoryCount] = useState(visibleCategoryCount);
   const categoryLayoutSignature = categories
@@ -67,14 +67,14 @@ export const useEventDiscountCategoryLayout = ({
     .join('|');
 
   const updateFirstRowCategoryCount = useCallback(() => {
-    const categoryListElement = categoryListRef.current;
+    const categoryPrimaryRowElement = categoryPrimaryRowRef.current;
     const measureRowElement = categoryMeasureRowRef.current;
 
-    if (categoryListElement == null || measureRowElement == null) {
+    if (categoryPrimaryRowElement == null || measureRowElement == null) {
       return;
     }
 
-    const containerWidth = categoryListElement.clientWidth;
+    const containerWidth = categoryPrimaryRowElement.clientWidth;
 
     if (containerWidth <= 0) {
       setFirstRowCategoryCount(visibleCategoryCount);
@@ -111,9 +111,9 @@ export const useEventDiscountCategoryLayout = ({
   }, [categoryLayoutSignature, updateFirstRowCategoryCount]);
 
   useEffect(() => {
-    const categoryListElement = categoryListRef.current;
+    const categoryPrimaryRowElement = categoryPrimaryRowRef.current;
 
-    if (typeof ResizeObserver === 'undefined' || categoryListElement == null) {
+    if (typeof ResizeObserver === 'undefined' || categoryPrimaryRowElement == null) {
       window.addEventListener('resize', updateFirstRowCategoryCount);
 
       return () => {
@@ -125,7 +125,7 @@ export const useEventDiscountCategoryLayout = ({
       updateFirstRowCategoryCount();
     });
 
-    resizeObserver.observe(categoryListElement);
+    resizeObserver.observe(categoryPrimaryRowElement);
 
     return () => {
       resizeObserver.disconnect();
@@ -133,8 +133,8 @@ export const useEventDiscountCategoryLayout = ({
   }, [updateFirstRowCategoryCount]);
 
   return {
-    categoryListRef,
     categoryMeasureRowRef,
+    categoryPrimaryRowRef,
     firstRowCategoryCount,
   };
 };

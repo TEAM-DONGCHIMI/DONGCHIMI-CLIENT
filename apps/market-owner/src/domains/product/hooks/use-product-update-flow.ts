@@ -19,6 +19,8 @@ interface SubmitProductUpdateParams {
   values: ProductUpdateFormValuesTypes;
 }
 
+type ProductUpdateResultTypes = { success: true; thumbnailUrl: string | null } | { success: false };
+
 const productUpdateErrorMessages = {
   failed: '상품 정보를 수정하지 못했습니다. 다시 시도해주세요.',
   network: '인터넷 연결을 확인한 후 다시 시도해주세요.',
@@ -51,9 +53,9 @@ export const useProductUpdateFlow = () => {
     marketId,
     productId,
     values,
-  }: SubmitProductUpdateParams) => {
+  }: SubmitProductUpdateParams): Promise<ProductUpdateResultTypes> => {
     if (isPending) {
-      return false;
+      return { success: false };
     }
 
     setIsPending(true);
@@ -69,11 +71,11 @@ export const useProductUpdateFlow = () => {
         request: createProductUpdateRequest({ dealType, thumbnailUrl, values }),
       });
 
-      return true;
+      return { success: true, thumbnailUrl };
     } catch (error) {
       toast.error(getProductUpdateErrorMessage(error));
 
-      return false;
+      return { success: false };
     } finally {
       setIsPending(false);
     }

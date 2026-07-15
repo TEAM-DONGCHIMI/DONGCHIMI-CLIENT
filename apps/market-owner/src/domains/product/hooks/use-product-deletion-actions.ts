@@ -56,6 +56,10 @@ export const useProductDeletionActions = (marketId: number) => {
         productId,
         request: { forceDelete: true },
       });
+      queryClient.removeQueries({
+        exact: true,
+        queryKey: productQueryKeys.detail({ marketId, productId }),
+      });
       await invalidateProductLists();
 
       return true;

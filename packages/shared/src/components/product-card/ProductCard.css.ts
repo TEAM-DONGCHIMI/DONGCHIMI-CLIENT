@@ -2,13 +2,10 @@ import { style, styleVariants } from '@vanilla-extract/css';
 
 import { atomic, semantic, shadow, typography } from '@dongchimi/design-system/tokens';
 
-import chipPointImageUrl from './assets/img-chip-point.webp';
-
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 const PRODUCT_IMAGE_SIZE = '5.6rem';
 const PRODUCT_ITEM_HEIGHT = PRODUCT_IMAGE_SIZE;
 const PRODUCT_CONTENT_GAP = '1.7rem';
-const PRODUCT_BADGE_SIZE = '4.5rem';
 const PRODUCT_MEDIA_COLUMNS = `${PRODUCT_IMAGE_SIZE} minmax(0, 1fr)`;
 
 export const cardClassName = style({
@@ -187,22 +184,6 @@ export const originalPriceClassName = style({
   color: atomic.neutral[40],
   textDecoration: 'line-through',
   textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-});
-
-export const badgeClassName = style({
-  ...typography['caption-2-medium'],
-  display: 'inline-flex',
-  width: PRODUCT_BADGE_SIZE,
-  height: PRODUCT_BADGE_SIZE,
-  flexShrink: 0,
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundImage: `url(${chipPointImageUrl})`,
-  backgroundPosition: 'center',
-  backgroundRepeat: 'no-repeat',
-  backgroundSize: '100% 100%',
-  color: atomic.neutral[5],
   whiteSpace: 'nowrap',
 });
 

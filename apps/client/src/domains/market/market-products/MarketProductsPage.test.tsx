@@ -2,6 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { HttpResponse, http } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { formatBusinessDays } from '@dongchimi/shared/business-hours';
 import { act, renderWithProviders, screen, server, userEvent, waitFor, within } from '@/test';
 
 import { MARKET_DETAIL_API_RESPONSE_FIXTURE } from '../api/market-detail-api.mock';
@@ -13,7 +14,6 @@ import type { BusinessHourTypes } from '../model/market-detail-schema';
 import { MarketProductsPage } from './MarketProductsPage';
 import { marketProductsFixture } from './fixtures/market-products.fixture';
 import { calculateFirstRowCategoryCount } from './hooks/useEventDiscountCategoryLayout';
-import { formatBusinessDays } from './sections/MarketOverviewSection';
 import { formatPrice } from './utils/format-price';
 import { getCurrentBusinessCloseTime } from './utils/market-actions';
 

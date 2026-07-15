@@ -35,6 +35,7 @@ export const todaySpecialProductFormSchema = z
     imageFile: z.file().nullable(),
     imagePreviewUrl: z.string().nullable(),
     name: productNameSchema,
+    productId: z.number().int().positive().optional(),
     salePrice: createPriceInputSchema('판매가를 입력해주세요.'),
     specialPrice: createPriceInputSchema('오늘의 특가를 입력해주세요.'),
     startDate: z.iso.date('행사 시작일을 선택해주세요.').refine(isTodaySpecialStartDateSelectable, {

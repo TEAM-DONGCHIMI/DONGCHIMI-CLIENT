@@ -1,3 +1,15 @@
+import type { BusinessDayTypes, BusinessHourTypes } from '@dongchimi/shared/business-hours';
+
+export type { BusinessDayTypes, BusinessHourTypes };
+
+export interface TopProductFixtureTypes {
+  discountedPrice: number;
+  discountRate: number;
+  name: string;
+  productId: number;
+  thumbnailUrl: string | null;
+}
+
 export interface TodaySpecialProductFixtureTypes {
   discountedPrice: number;
   discountRate: number;

@@ -46,6 +46,7 @@ describe('useDailyProductRegistrationMutation', () => {
       success: true,
       code: 'SUCCESS',
       message: '요청에 성공했습니다.',
+      data: { productId: 101 },
     };
 
     mockedRegisterDailyProduct.mockResolvedValue(response);
@@ -91,6 +92,7 @@ describe('useDailyProductRegistrationMutation', () => {
       success: true,
       code: 'SUCCESS',
       message: '요청에 성공했습니다.',
+      data: { productId: 101 },
     });
 
     const { result } = renderHook(() => useDailyProductRegistrationMutation(), {
