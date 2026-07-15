@@ -55,6 +55,7 @@ const EVENT_DISCOUNT_CATEGORIES = [
 interface EventDiscountProductsContentProps {
   hasNextPage: boolean;
   isError: boolean;
+  isFetchNextPageError: boolean;
   isPending: boolean;
   marketSlug: string;
   onRetry: () => void;
@@ -92,6 +93,7 @@ const EventDiscountProductPage = memo(function EventDiscountProductPage({
 const EventDiscountProductsContent = ({
   hasNextPage,
   isError,
+  isFetchNextPageError,
   isPending,
   marketSlug,
   onRetry,
@@ -108,7 +110,7 @@ const EventDiscountProductsContent = ({
     );
   }
 
-  if (isError && !hasProducts) {
+  if (isError && !isFetchNextPageError && !hasProducts) {
     return (
       <div className={S.eventDiscountStateClassName}>
         <p className={S.emptyTextClassName} role='alert'>
@@ -180,8 +182,11 @@ export const EventDiscountProductsSection = ({
     availableCategorySnapshot?.marketId === marketId ? availableCategorySnapshot.values : [];
   const availableCategorySet = new Set(responseAvailableCategories ?? snapshotAvailableCategories);
   const availableCategories = EVENT_DISCOUNT_CATEGORIES.filter((category) => {
-    return availableCategorySet.has(category.apiCategory);
+    return (
+      availableCategorySet.has(category.apiCategory) || category.categoryId === selectedCategoryId
+    );
   });
+
   const handleSelectCategory = (categoryId: string) => {
     if (categoryId === selectedCategoryId) {
       return;
@@ -309,6 +314,7 @@ export const EventDiscountProductsSection = ({
       <EventDiscountProductsContent
         hasNextPage={Boolean(hasNextPage)}
         isError={isError}
+        isFetchNextPageError={isFetchNextPageError}
         isPending={isPending}
         marketSlug={marketSlug}
         onRetry={() => void refetch()}

@@ -274,6 +274,61 @@ describe('MarketProductsPage', () => {
     expect(eventSection.queryByRole('button', { name: '더보기' })).not.toBeInTheDocument();
   });
 
+  it('선택한 카테고리의 상품이 없어져도 현재 필터 칩은 유지한다', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get(PERIODIC_PRODUCTS_API_PATH, ({ request }) => {
+        const category = new URL(request.url).searchParams.get('category');
+
+        if (category === 'MEAT_EGG') {
+          return HttpResponse.json({
+            code: 'SUCCESS',
+            data: { availableCategories: [], content: [], hasNext: false, nextCursor: null },
+            message: '요청에 성공했습니다.',
+            success: true,
+          });
+        }
+
+        return HttpResponse.json({
+          code: 'SUCCESS',
+          data: {
+            availableCategories: ['MEAT_EGG'],
+            content: categoryProducts.MEAT_EGG,
+            hasNext: false,
+            nextCursor: null,
+          },
+          message: '요청에 성공했습니다.',
+          success: true,
+        });
+      }),
+    );
+
+    await renderMarketProductsPage();
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+    await user.click(await eventSection.findByRole('button', { name: '정육·달걀' }));
+
+    expect(
+      await eventSection.findByText('해당 카테고리에 등록된 상품이 없어요.'),
+    ).toBeInTheDocument();
+    expect(eventSection.getByRole('button', { name: '정육·달걀' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(eventSection.getByRole('button', { name: '전체' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
+
+    await user.click(eventSection.getByRole('button', { name: '전체' }));
+
+    expect(eventSection.getByRole('button', { name: '전체' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
   it('sentinel이 교차하면 다음 cursor 페이지를 한 번만 추가한다', async () => {
     let nextPageRequestCount = 0;
 
@@ -400,6 +455,50 @@ describe('MarketProductsPage', () => {
     await user.click(eventSection.getByRole('button', { name: '다시 시도' }));
 
     expect(await eventSection.findByText('양배추 1통')).toBeInTheDocument();
+  });
+
+  it('빈 중간 페이지의 다음 요청이 실패하면 다음 페이지 오류만 표시한다', async () => {
+    server.use(
+      http.get(PERIODIC_PRODUCTS_API_PATH, ({ request }) => {
+        const cursor = new URL(request.url).searchParams.get('cursor');
+
+        if (cursor != null) {
+          return HttpResponse.json({ message: 'Bad request' }, { status: 400 });
+        }
+
+        return HttpResponse.json({
+          code: 'SUCCESS',
+          data: {
+            availableCategories: [],
+            content: [],
+            hasNext: true,
+            nextCursor: 10,
+          },
+          message: '요청에 성공했습니다.',
+          success: true,
+        });
+      }),
+    );
+
+    await renderMarketProductsPage();
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+
+    expect(await eventSection.findByText('행사 상품을 더 찾고 있어요.')).toBeInTheDocument();
+
+    act(() => {
+      intersectionObserverCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+
+    expect(await eventSection.findByRole('alert')).toHaveTextContent(
+      '상품을 더 불러오지 못했어요.',
+    );
+    expect(eventSection.getAllByRole('alert')).toHaveLength(1);
+    expect(eventSection.getAllByRole('button', { name: '다시 시도' })).toHaveLength(1);
+    expect(eventSection.queryByText('행사 상품을 불러오지 못했어요.')).not.toBeInTheDocument();
   });
 });
 
