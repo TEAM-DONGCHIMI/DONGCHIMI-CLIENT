@@ -3,6 +3,8 @@ import { useState, type ChangeEventHandler } from 'react';
 import { Button, Dialog } from '@dongchimi/design-system/components';
 import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
 
+import { useProductDiscountPeriodUpdateFlow } from '@/domains/product/hooks';
+
 import {
   addOneDayToProductEditDate,
   formatProductEditDateForInput,
@@ -18,16 +20,19 @@ import * as S from './ProductEditPeriodModal.css';
 
 interface ProductEditPeriodModalProps {
   initialPeriod?: ProductEditPeriodValues;
+  isSubmitting?: boolean;
   open: boolean;
   variant: ProductEditTypeTypes;
   onClose: () => void;
-  onSubmit?: (period: Required<ProductEditPeriodValues>) => void;
+  onSubmit?: (period: Required<ProductEditPeriodValues>) => Promise<boolean>;
 }
 
 interface OpenProductEditPeriodModalParams {
   initialPeriod?: ProductEditPeriodValues;
+  marketId: number;
   onClose?: () => void;
   onSubmit?: (period: Required<ProductEditPeriodValues>) => void;
+  productIds: number[];
   variant: ProductEditTypeTypes;
 }
 
@@ -48,6 +53,7 @@ const createInitialPeriod = (period?: ProductEditPeriodValues) => {
 
 export const ProductEditPeriodModal = ({
   initialPeriod: initialPeriodProp,
+  isSubmitting = false,
   open,
   variant,
   onClose,
@@ -77,18 +83,21 @@ export const ProductEditPeriodModal = ({
     );
   };
 
-  const submitPeriod = () => {
-    onSubmit?.({
+  const submitPeriod = async () => {
+    const didUpdate = await onSubmit?.({
       endDate,
       startDate,
     });
-    onClose();
+
+    if (didUpdate) {
+      onClose();
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
       <Dialog.Content ref={contentRef} className={S.contentClassName}>
-        <div className={S.containerClassName}>
+        <div aria-busy={isSubmitting} className={S.containerClassName}>
           <Dialog.Title className={S.titleClassName}>
             선택된 상품들의 판매 기간을 수정해주세요
           </Dialog.Title>
@@ -142,6 +151,7 @@ export const ProductEditPeriodModal = ({
             <Button
               className={S.footerButtonClassName}
               color='assistive'
+              disabled={isSubmitting}
               size='small'
               variant='outlined'
               onClick={onClose}
@@ -150,7 +160,7 @@ export const ProductEditPeriodModal = ({
             </Button>
             <Button
               className={S.footerButtonClassName}
-              disabled={!isEdited || !isStartDateValid || !isDateRangeValid}
+              disabled={isSubmitting || !isEdited || !isStartDateValid || !isDateRangeValid}
               size='small'
               variant='solid'
               onClick={submitPeriod}
@@ -166,8 +176,10 @@ export const ProductEditPeriodModal = ({
 
 export const openProductEditPeriodModal = ({
   initialPeriod,
+  marketId,
   onClose,
   onSubmit,
+  productIds,
   variant,
 }: OpenProductEditPeriodModalParams) => {
   openProductEditOverlay({
@@ -178,9 +190,11 @@ export const openProductEditPeriodModal = ({
       };
 
       return (
-        <ProductEditPeriodModal
+        <ProductEditPeriodModalContainer
           initialPeriod={initialPeriod}
+          marketId={marketId}
           open={isOpen}
+          productIds={productIds}
           variant={variant}
           onClose={closePeriodModal}
           onSubmit={onSubmit}
@@ -188,4 +202,44 @@ export const openProductEditPeriodModal = ({
       );
     },
   });
+};
+
+interface ProductEditPeriodModalContainerProps extends Omit<
+  ProductEditPeriodModalProps,
+  'isSubmitting' | 'onSubmit'
+> {
+  marketId: number;
+  onSubmit?: (period: Required<ProductEditPeriodValues>) => void;
+  productIds: number[];
+}
+
+const ProductEditPeriodModalContainer = ({
+  marketId,
+  productIds,
+  onSubmit,
+  ...modalProps
+}: ProductEditPeriodModalContainerProps) => {
+  const updateFlow = useProductDiscountPeriodUpdateFlow();
+  const submitPeriod = async (period: Required<ProductEditPeriodValues>) => {
+    const didUpdate = await updateFlow.submitProductDiscountPeriodUpdate({
+      endDate: period.endDate,
+      marketId,
+      productIds,
+      startDate: period.startDate,
+    });
+
+    if (didUpdate) {
+      onSubmit?.(period);
+    }
+
+    return didUpdate;
+  };
+
+  return (
+    <ProductEditPeriodModal
+      {...modalProps}
+      isSubmitting={updateFlow.isPending}
+      onSubmit={submitPeriod}
+    />
+  );
 };

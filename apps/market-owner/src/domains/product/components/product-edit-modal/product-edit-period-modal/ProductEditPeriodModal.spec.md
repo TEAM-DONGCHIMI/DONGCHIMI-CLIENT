@@ -3,7 +3,7 @@
 ## Purpose
 
 `ProductEditPeriodModal`은 상품 수정 화면 상단의 `기간 일괄 수정` 버튼에서 열리는 판매 기간 수정 modal입니다.
-오늘의 특가와 행사 할인의 기간 입력 차이만 variant로 분기합니다.
+오늘의 특가와 행사 할인의 기간 입력 차이만 variant로 분기하고, 선택 상품의 기간 일괄 수정 API를 호출합니다.
 
 ## Ownership
 
@@ -19,6 +19,7 @@
 - `onClose`: OverlayKit `close`/`unmount` 흐름으로 modal을 닫는 handler입니다.
 - `onSubmit`: 변경 확정 시 선택 상품에 적용할 시작일/종료일 값을 호출부로 전달하는 handler입니다.
 - `openProductEditPeriodModal`: 호출부에서 variant와 initialPeriod를 전달하면 modal overlay helper로 modal을 엽니다.
+- `marketId`, `productIds`: 일괄 수정 API path와 body에 사용할 마트 및 선택 상품 ID입니다.
 
 ## Behavior
 
@@ -32,4 +33,6 @@
 - 종료일 field의 최소 날짜는 시작일과 오늘 중 더 늦은 날짜이며, 종료일이 시작일보다 이전이면 `변경하기`를 비활성화합니다.
 - 변경 전에는 `변경하기` 버튼을 disabled 상태로 표시합니다.
 - modal 최초 진입 시 특정 제목/날짜 field/button에 focus-visible 상태를 만들지 않고 dialog container에 focus를 둡니다.
-- `변경하기` 클릭 시 수정된 기간을 `onSubmit`으로 전달하고 modal을 닫습니다.
+- pending 동안 취소와 `변경하기`를 비활성화해 중복 제출을 막습니다.
+- `변경하기` 클릭 시 수정된 기간과 선택 상품 ID로 API를 호출하고 성공한 경우에만 modal을 닫습니다.
+- API 실패 시 별도 toast 없이 입력 기간과 bulk selection 상태를 유지합니다.

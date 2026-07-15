@@ -12,6 +12,7 @@ import { type ProductCategoryTypes } from '@/domains/product/constants';
 import { useProductEditProducts, useProductListQuery } from '@/domains/product/hooks';
 import {
   createProductEditListItem,
+  createProductEditListStateKey,
   getProductListSort,
   type ProductEditListItemTypes,
 } from '@/domains/product/model/product-list';
@@ -63,7 +64,7 @@ const EventDiscountEditProductList = ({
       groups={productGroups}
       marketId={marketId}
       registrationHref={MARKET_OWNER_ROUTES.eventDiscountRegistration}
-      selectedProductNames={selection.selectedProductNames}
+      selectedProductIds={selection.selectedProductIds}
       selectionMode={selection.selectionMode}
       onAutoOpenProductMissing={onAutoOpenProductMissing}
       onAutoOpenProductModalClose={onAutoOpenProductModalClose}
@@ -91,11 +92,11 @@ export const EventDiscountEditProductSection = (props: EventDiscountEditProductS
   }
 
   const products = (productListQuery.data?.data?.content ?? []).map(createProductEditListItem);
-  const productIdsKey = products.map(({ productId }) => productId).join('-');
+  const productListStateKey = createProductEditListStateKey(products);
 
   return (
     <EventDiscountEditProductList
-      key={`${props.selectedFilter}-${productIdsKey}`}
+      key={`${props.selectedFilter}-${productListStateKey}`}
       {...props}
       initialProducts={products}
       marketId={marketId}

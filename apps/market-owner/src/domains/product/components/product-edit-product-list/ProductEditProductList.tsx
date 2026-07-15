@@ -19,7 +19,7 @@ interface ProductEditProductListProps {
   groups: ProductEditProductGroup[];
   marketId: number;
   registrationHref: string;
-  selectedProductNames?: string[];
+  selectedProductIds?: (number | string)[];
   selectionMode?: boolean;
   onDeleteProduct?: (product: ProductEditCardProps) => void;
   onAutoOpenProductMissing?: (productId: string) => void;
@@ -37,7 +37,7 @@ export const ProductEditProductList = ({
   autoOpenProductId,
   groups,
   marketId,
-  selectedProductNames = [],
+  selectedProductIds = [],
   selectionMode = false,
   registrationHref,
   onAutoOpenProductMissing,
@@ -71,10 +71,18 @@ export const ProductEditProductList = ({
       return;
     }
 
+    const targetProductId = Number(targetProduct.productId);
+
+    if (!Number.isSafeInteger(targetProductId)) {
+      onAutoOpenProductMissing?.(autoOpenProductId);
+
+      return;
+    }
+
     openProductEditModal({
       marketId,
       product: targetProduct,
-      productId: Number(targetProduct.productId),
+      productId: targetProductId,
       variant: editModalVariant,
       onClose: onAutoOpenProductModalClose,
       onSubmit: (updatedProduct) => onUpdateProduct?.(targetProduct.productName, updatedProduct),
@@ -101,19 +109,21 @@ export const ProductEditProductList = ({
     });
   };
   const editProduct = (product: ProductEditCardProps) => {
-    if (product.productId == null) {
+    const productId = Number(product.productId);
+
+    if (!Number.isSafeInteger(productId)) {
       return;
     }
 
     openProductEditModal({
       marketId,
       product,
-      productId: Number(product.productId),
+      productId,
       variant: editModalVariant,
       onSubmit: (updatedProduct) => onUpdateProduct?.(product.productName, updatedProduct),
     });
   };
-  const selectedProductNameSet = new Set(selectedProductNames);
+  const selectedProductIdSet = new Set(selectedProductIds.map(String));
 
   return (
     <section aria-label={ariaLabel} className={S.sectionListClassName}>
@@ -123,7 +133,8 @@ export const ProductEditProductList = ({
 
           <div className={S.productGridClassName}>
             {products.map((product) => {
-              const isSelected = selectedProductNameSet.has(product.productName);
+              const isSelected =
+                product.productId != null && selectedProductIdSet.has(String(product.productId));
 
               return (
                 <ProductEditCardDesktop

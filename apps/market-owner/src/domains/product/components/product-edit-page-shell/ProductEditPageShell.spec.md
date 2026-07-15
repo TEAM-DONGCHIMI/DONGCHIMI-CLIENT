@@ -59,7 +59,8 @@
 - bulk period selection mode에서 같은 버튼을 다시 눌렀을 때 선택 상품이 없으면 selection mode를 종료합니다.
 - bulk period selection mode에서 선택 상품이 1개 이상이면 기간 일괄 수정 버튼을 강조 상태로 표시합니다.
 - bulk period selection mode에서 선택 상품이 있으면 첫 번째 선택 상품의 기간을 기본값으로 전달해 `ProductEditPeriodModal`을 엽니다.
-- 기간 수정 modal에서 변경을 확정하면 `onUpdateProductPeriods`를 호출하고 selection mode를 종료합니다.
+- 선택 상품의 `productId` 목록과 현재 `marketId`를 기간 수정 modal에 전달합니다.
+- 기간 수정 API가 성공하면 `onUpdateProductPeriods`를 호출하고 selection mode를 종료하며, 실패하면 선택 상태를 유지합니다.
 - 오늘의 특가 기간 수정 modal은 시작일을 비활성 상태로 표시하고 `하루 더 늘리기` 버튼을 제공합니다.
 - 행사 할인 기간 수정 modal은 시작일과 종료일을 모두 수정 가능하게 표시하고 `하루 더 늘리기` 버튼을 제공하지 않습니다.
 - 일괄 삭제 버튼을 처음 누르면 bulk delete selection mode에 진입하고 `선택된 상품 (0)`을 표시합니다.

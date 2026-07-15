@@ -11,6 +11,7 @@ import {
 import { useProductEditProducts, useProductListQuery } from '@/domains/product/hooks';
 import {
   createProductEditListItem,
+  createProductEditListStateKey,
   getProductListSort,
   type ProductEditListItemTypes,
 } from '@/domains/product/model/product-list';
@@ -59,7 +60,7 @@ const TodaySpecialEditProductList = ({
       groups={productGroups}
       marketId={marketId}
       registrationHref={MARKET_OWNER_ROUTES.todaySpecialRegistration}
-      selectedProductNames={selection.selectedProductNames}
+      selectedProductIds={selection.selectedProductIds}
       selectionMode={selection.selectionMode}
       onAutoOpenProductMissing={onAutoOpenProductMissing}
       onAutoOpenProductModalClose={onAutoOpenProductModalClose}
@@ -87,11 +88,11 @@ export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSec
   }
 
   const products = (productListQuery.data?.data?.content ?? []).map(createProductEditListItem);
-  const productIdsKey = products.map(({ productId }) => productId).join('-');
+  const productListStateKey = createProductEditListStateKey(products);
 
   return (
     <TodaySpecialEditProductList
-      key={`${props.selectedFilter}-${productIdsKey}`}
+      key={`${props.selectedFilter}-${productListStateKey}`}
       {...props}
       initialProducts={products}
       marketId={marketId}

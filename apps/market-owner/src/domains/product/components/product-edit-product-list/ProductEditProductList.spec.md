@@ -21,7 +21,7 @@
 - `groups`: 렌더링할 상품 그룹입니다. 모든 그룹의 `products`가 비어 있으면 empty 상태를 표시합니다.
 - `registrationHref`: empty CTA가 이동할 상품 등록 route입니다.
 - `selectionMode`: true이면 상품 카드를 bulk selection 상태로 렌더링합니다.
-- `selectedProductNames`: bulk selection 상태에서 선택된 상품명 목록입니다.
+- `selectedProductIds`: bulk selection 상태에서 선택된 상품 ID 목록입니다.
 - `onDeleteProduct`: 개별 카드 삭제가 확인 modal에서 확정되면 호출하는 handler입니다.
 - `onAutoOpenProductMissing`: `autoOpenProductId`에 해당하는 상품을 찾지 못하면 호출하는 handler입니다.
 - `onAutoOpenProductModalClose`: 자동으로 열린 개별 수정 modal이 닫히면 호출하는 handler입니다.

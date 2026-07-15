@@ -14,9 +14,15 @@ import {
 } from './display-groups';
 
 const mockUseProductDetailQuery = vi.hoisted(() => vi.fn());
+const mockSubmitProductUpdate = vi.hoisted(() => vi.fn());
+const mockUseProductUpdateFlow = vi.hoisted(() => vi.fn());
 
 vi.mock('@/domains/product/hooks/use-product-detail-query', () => ({
   useProductDetailQuery: mockUseProductDetailQuery,
+}));
+
+vi.mock('@/domains/product/hooks/use-product-update-flow', () => ({
+  useProductUpdateFlow: mockUseProductUpdateFlow,
 }));
 
 mockUseProductDetailQuery.mockImplementation(({ productId }: { productId: number }) => {
@@ -80,6 +86,12 @@ const renderProductList = (
 describe('ProductEditProductList', () => {
   beforeEach(() => {
     mockUseProductDetailQuery.mockClear();
+    mockSubmitProductUpdate.mockReset();
+    mockSubmitProductUpdate.mockResolvedValue(true);
+    mockUseProductUpdateFlow.mockReturnValue({
+      isPending: false,
+      submitProductUpdate: mockSubmitProductUpdate,
+    });
   });
 
   it('renders empty state with registration button when no products are available', async () => {
@@ -119,6 +131,7 @@ describe('ProductEditProductList', () => {
                     categoryName: '채소/과일',
                     endDate: '2026. 8. 16',
                     originalPrice: '5,000',
+                    productId: 101,
                     productName: '딸기 2팩',
                     salePrice: '4,500',
                     viewCount: 162,
@@ -128,7 +141,7 @@ describe('ProductEditProductList', () => {
             ]}
             registrationHref='/products/today-special/new'
             marketId={1}
-            selectedProductNames={['딸기 2팩']}
+            selectedProductIds={[101]}
             selectionMode
             onToggleProductSelection={handleToggleProductSelection}
           />
@@ -277,6 +290,16 @@ describe('ProductEditProductList', () => {
 
     await user.click(screen.getByRole('button', { name: '변경하기' }));
 
+    expect(mockSubmitProductUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        currentThumbnailUrl: null,
+        dealType: 'PERIODIC',
+        imageFile: null,
+        marketId: 1,
+        productId: 201,
+        values: expect.objectContaining({ categoryName: '정육/달걀' }),
+      }),
+    );
     expect(handleUpdateProduct).toHaveBeenCalledWith(
       '햇감자 1kg',
       expect.objectContaining({
@@ -284,6 +307,74 @@ describe('ProductEditProductList', () => {
         productName: '햇감자 1kg',
       }),
     );
+    expect(
+      screen.queryByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('keeps the edited values and modal open when product update fails', async () => {
+    const user = userEvent.setup();
+    const handleUpdateProduct = vi.fn();
+    mockSubmitProductUpdate.mockResolvedValueOnce(false);
+
+    renderProductList(
+      [
+        {
+          title: '채소/과일',
+          products: [
+            {
+              categoryName: '채소/과일',
+              endDate: '2026. 8. 16',
+              productId: 201,
+              productName: '햇감자 1kg',
+              salePrice: '3,900',
+              startDate: '2026. 8. 12',
+            },
+          ],
+        },
+      ],
+      'eventDiscount',
+      undefined,
+      handleUpdateProduct,
+    );
+
+    await user.click(screen.getByRole('button', { name: '햇감자 1kg 상품 수정' }));
+    fireEvent.change(await screen.findByLabelText('판매가'), { target: { value: '4200' } });
+    await user.click(screen.getByRole('button', { name: '변경하기' }));
+
+    expect(screen.getByRole('dialog', { name: '판매 정보를 수정해주세요' })).toBeInTheDocument();
+    expect(screen.getByLabelText('판매가')).toHaveValue('4,200');
+    expect(handleUpdateProduct).not.toHaveBeenCalled();
+  });
+
+  it('disables modal actions while product update is pending', async () => {
+    const user = userEvent.setup();
+    mockUseProductUpdateFlow.mockReturnValue({
+      isPending: true,
+      submitProductUpdate: mockSubmitProductUpdate,
+    });
+
+    renderProductList([
+      {
+        title: '2026년 8월 15일',
+        products: [
+          {
+            categoryName: '채소/과일',
+            endDate: '2026. 8. 16',
+            originalPrice: '5,000',
+            productId: 101,
+            productName: '딸기 2팩',
+            salePrice: '4,500',
+          },
+        ],
+      },
+    ]);
+
+    await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 수정' }));
+
+    expect(await screen.findByRole('button', { name: '취소' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '변경하기' })).toBeDisabled();
+    expect(screen.getByRole('dialog').querySelector('[aria-busy="true"]')).toBeInTheDocument();
   });
 
   it('closes the overlay and shows a toast when product detail loading fails', async () => {

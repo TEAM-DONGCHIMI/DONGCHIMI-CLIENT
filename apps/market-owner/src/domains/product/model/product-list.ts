@@ -54,3 +54,6 @@ export const createProductEditListItem = (product: OwnerApiTypes.OwnerProductLis
 };
 
 export type ProductEditListItemTypes = ReturnType<typeof createProductEditListItem>;
+
+export const createProductEditListStateKey = (products: readonly ProductEditListItemTypes[]) =>
+  JSON.stringify(products);
