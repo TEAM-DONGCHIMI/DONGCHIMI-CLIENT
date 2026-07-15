@@ -7,6 +7,7 @@ import { OverlayProvider } from 'overlay-kit';
 import { ToastProvider } from '@dongchimi/shared/toast';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { confirmPreparedProductDrafts } from '@/domains/product/api/confirm-prepared-product-drafts';
 import { ApiError } from '@/shared/api';
 import { useAuthStore } from '@/shared/stores/auth-store';
 
@@ -19,7 +20,11 @@ vi.mock('./api', () => ({
   issueQrCode: vi.fn(),
   publishLeaflet: vi.fn(),
 }));
+vi.mock('@/domains/product/api/confirm-prepared-product-drafts', () => ({
+  confirmPreparedProductDrafts: vi.fn(),
+}));
 
+const mockedConfirmPreparedProductDrafts = vi.mocked(confirmPreparedProductDrafts);
 const mockedGetPeriodicPreview = vi.mocked(getPeriodicPreview);
 const mockedIssueQrCode = vi.mocked(issueQrCode);
 const mockedPublishLeaflet = vi.mocked(publishLeaflet);
@@ -101,7 +106,13 @@ describe('LeafletSharePage', () => {
     mockedGetPeriodicPreview.mockReset();
     mockedIssueQrCode.mockReset();
     mockedPublishLeaflet.mockReset();
+    mockedConfirmPreparedProductDrafts.mockReset();
     mockedGetPeriodicPreview.mockResolvedValue(periodicPreviewFixture);
+    mockedConfirmPreparedProductDrafts.mockResolvedValue({
+      success: true,
+      code: 'SUCCESS',
+      message: '요청에 성공했습니다.',
+    });
     useAuthStore.getState().clearSession();
     useAuthStore.getState().setMarketId(12);
   });
@@ -111,7 +122,7 @@ describe('LeafletSharePage', () => {
     useAuthStore.getState().clearSession();
   });
 
-  it('publishes the leaflet and shows a share URL made from the returned slug', async () => {
+  it('confirms product drafts before publishing and shows the returned share URL', async () => {
     const user = userEvent.setup();
 
     mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
@@ -124,14 +135,32 @@ describe('LeafletSharePage', () => {
 
     await user.click(shareButton);
 
+    expect(mockedConfirmPreparedProductDrafts).toHaveBeenCalledOnce();
+    expect(mockedConfirmPreparedProductDrafts).toHaveBeenCalledWith(12);
     expect(mockedPublishLeaflet).toHaveBeenCalledOnce();
     expect(mockedPublishLeaflet.mock.calls[0]?.[0]).toBe(12);
+    expect(mockedConfirmPreparedProductDrafts.mock.invocationCallOrder[0]).toBeLessThan(
+      mockedPublishLeaflet.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
+    );
     expect(
       await screen.findByText('https://app.dongchiimi.com/markets/VQ6EAOKbQdSnFkRlVUQAAA'),
     ).toBeInTheDocument();
   });
 
-  it('disables the publish button while the request is pending', async () => {
+  it('disables the share action while product confirmation is pending', async () => {
+    const user = userEvent.setup();
+
+    mockedConfirmPreparedProductDrafts.mockImplementation(() => new Promise(() => undefined));
+    render(<LeafletSharePage />, { wrapper: createWrapper() });
+
+    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
+
+    expect(screen.getByRole('button', { name: '전단 발행 중' })).toBeDisabled();
+    expect(mockedConfirmPreparedProductDrafts).toHaveBeenCalledOnce();
+    expect(mockedPublishLeaflet).not.toHaveBeenCalled();
+  });
+
+  it('keeps the share action disabled while leaflet publishing is pending', async () => {
     const user = userEvent.setup();
 
     mockedPublishLeaflet.mockImplementation(() => new Promise(() => undefined));
@@ -140,7 +169,30 @@ describe('LeafletSharePage', () => {
     await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
 
     expect(screen.getByRole('button', { name: '전단 발행 중' })).toBeDisabled();
+    expect(mockedConfirmPreparedProductDrafts).toHaveBeenCalledOnce();
     expect(mockedPublishLeaflet).toHaveBeenCalledOnce();
+  });
+
+  it('shows the server message and does not publish when product confirmation fails', async () => {
+    const user = userEvent.setup();
+
+    mockedConfirmPreparedProductDrafts.mockRejectedValueOnce(
+      new ApiError({
+        code: 'DRAFT_NOT_COMPLETED',
+        message: '등록 완료되지 않은 임시 상품이 있습니다.',
+        status: 409,
+        type: 'client',
+      }),
+    );
+    render(<LeafletSharePage />, { wrapper: createWrapper() });
+
+    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '등록 완료되지 않은 임시 상품이 있습니다.',
+    );
+    expect(mockedPublishLeaflet).not.toHaveBeenCalled();
+    expect(screen.getByRole('heading', { name: '오늘의 전단 최종 확인' })).toBeInTheDocument();
   });
 
   it('shows the server message and keeps the confirmation view when publishing fails', async () => {
@@ -161,7 +213,32 @@ describe('LeafletSharePage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       '해당 마트에 대한 접근 권한이 없습니다.',
     );
+    expect(mockedConfirmPreparedProductDrafts).toHaveBeenCalledOnce();
+    expect(mockedPublishLeaflet).toHaveBeenCalledOnce();
     expect(screen.getByRole('heading', { name: '오늘의 전단 최종 확인' })).toBeInTheDocument();
+  });
+
+  it('retries only publishing after product confirmation has already succeeded', async () => {
+    const user = userEvent.setup();
+
+    mockedPublishLeaflet
+      .mockRejectedValueOnce(new Error('Publish failed.'))
+      .mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
+    render(<LeafletSharePage />, { wrapper: createWrapper() });
+
+    const shareButton = await screen.findByRole('button', { name: '전단 공유하기' });
+    await user.click(shareButton);
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '전단을 발행하지 못했습니다. 다시 시도해주세요.',
+    );
+
+    await user.click(shareButton);
+
+    expect(mockedConfirmPreparedProductDrafts).toHaveBeenCalledOnce();
+    expect(mockedPublishLeaflet).toHaveBeenCalledTimes(2);
+    expect(
+      await screen.findByText('https://app.dongchiimi.com/markets/VQ6EAOKbQdSnFkRlVUQAAA'),
+    ).toBeInTheDocument();
   });
 
   it('keeps the loaded preview visible when refetch fails', async () => {

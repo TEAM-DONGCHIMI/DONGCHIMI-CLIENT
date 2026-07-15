@@ -1,4 +1,5 @@
 export { useFileDrop } from './use-file-drop';
+export { useConfirmPreparedProductDraftsMutation } from './use-confirm-prepared-product-drafts-mutation';
 export { useProductCategoryDropdown } from './use-product-category-dropdown';
 export { useProductCategoryDropdownLayout } from './use-product-category-dropdown-layout';
 export {
