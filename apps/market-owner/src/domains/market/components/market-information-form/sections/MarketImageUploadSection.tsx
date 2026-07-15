@@ -7,7 +7,7 @@ import * as S from './MarketImageUploadSection.css';
 
 export interface MarketImageUploadSectionProps {
   onImageError: (error: MarketImageUploadErrorTypes) => void;
-  onImageSelect: (file: File) => Promise<void> | void;
+  onImageSelect: (file: File) => Promise<string | void> | string | void;
 }
 
 export type MarketImageUploadErrorTypes = 'network' | 'size' | 'type' | 'upload';

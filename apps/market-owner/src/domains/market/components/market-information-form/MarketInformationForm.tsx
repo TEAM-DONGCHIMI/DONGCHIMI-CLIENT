@@ -17,7 +17,7 @@ import {
   formatMobilePhoneNumber,
   marketInformationRegistrationSchema,
   type MarketInformationFormTypes,
-  type MarketInformationRegistrationRequest,
+  type MarketInformationRegistrationRequestTypes,
 } from '../../model';
 import {
   AddressSection,
@@ -29,6 +29,14 @@ import {
 } from './sections';
 
 export type { MarketInformationFormTypes } from '../../model';
+
+export type MarketInformationAddressSearchResultTypes =
+  | string
+  | Readonly<{
+      address: string;
+      latitude: number;
+      longitude: number;
+    }>;
 
 type StringMarketInformationFormFieldTypes = {
   [Field in keyof MarketInformationFormTypes]: MarketInformationFormTypes[Field] extends string
@@ -74,11 +82,14 @@ export interface MarketInformationFormProps {
   submitButtonClassName?: string;
   submitAreaClassName?: string;
   secondaryAction?: ReactNode;
-  onAddressSearch?: () => Promise<string> | string;
-  onImageSelect?: (file: File) => Promise<void> | void;
+  onAddressSearch?: () =>
+    | Promise<MarketInformationAddressSearchResultTypes>
+    | MarketInformationAddressSearchResultTypes;
+  onImageSelect?: (file: File) => Promise<string | void> | string | void;
   onDirtyChange?: (isDirty: boolean) => void;
+  getSubmitErrorMessage?: (error: unknown) => ReactNode;
   onSubmit?: (
-    request: MarketInformationRegistrationRequest,
+    request: MarketInformationRegistrationRequestTypes,
     form: MarketInformationFormTypes,
     reset: () => void,
   ) => Promise<void> | void;
@@ -130,6 +141,7 @@ export const MarketInformationForm = ({
   onAddressSearch = defaultAddressSearch,
   onImageSelect = defaultImageSelect,
   onDirtyChange,
+  getSubmitErrorMessage,
   onSubmit = defaultSubmit,
 }: MarketInformationFormProps) => {
   const toast = useToast();
@@ -239,11 +251,30 @@ export const MarketInformationForm = ({
 
   const handleAddressSearch = async () => {
     try {
-      const address = await onAddressSearch();
+      const result = await onAddressSearch();
 
-      setFormValue('address', address);
+      if (typeof result === 'string') {
+        setFormValue('address', result);
+
+        return;
+      }
+
+      setFormValue('address', result.address);
+      setValue('latitude', result.latitude, { shouldDirty: true, shouldValidate: true });
+      setValue('longitude', result.longitude, { shouldDirty: true, shouldValidate: true });
     } catch {
       toast.error(addressSearchErrorMessage, toastErrorOptions);
+    }
+  };
+
+  const handleImageSelect = async (file: File) => {
+    const thumbnailUrl = await onImageSelect(file);
+
+    if (thumbnailUrl) {
+      setValue('thumbnailUrl', thumbnailUrl, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
     }
   };
 
@@ -254,7 +285,8 @@ export const MarketInformationForm = ({
       await onSubmit(request, form, () => reset(form));
     } catch (error) {
       toast.error(
-        isServerError(error) ? serverErrorMessage : registrationErrorMessage,
+        getSubmitErrorMessage?.(error) ??
+          (isServerError(error) ? serverErrorMessage : registrationErrorMessage),
         toastErrorOptions,
       );
     }
@@ -279,7 +311,7 @@ export const MarketInformationForm = ({
             <Flex align='start' className={S.formContentClassName}>
               <MarketImageUploadSection
                 onImageError={handleImageError}
-                onImageSelect={onImageSelect}
+                onImageSelect={handleImageSelect}
               />
 
               <Stack className={S.fieldsClassName} gap='2xl'>
