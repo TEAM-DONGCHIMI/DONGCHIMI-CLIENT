@@ -33,6 +33,13 @@
 - 인증 cookie 설정·삭제와 refresh는 Route Handler 또는 Server Action에서 처리합니다.
 - 공통화가 필요해도 먼저 앱 요구사항을 확인합니다.
 
+## Client Authentication BFF
+
+- `apps/client`의 브라우저 요청은 동치미 백엔드를 직접 호출하지 않고 same-origin Next.js `/api` Route Handler를 경유합니다.
+- access token과 refresh token은 모두 `HttpOnly` cookie로 관리하며 browser JavaScript에 노출하거나 `sessionStorage`에 저장하지 않습니다.
+- server request는 access token cookie를 읽을 수 있는 server-only client를 사용하고, browser request는 BFF 전용 client를 사용합니다.
+- browser request가 `401`을 반환하면 진행 중인 refresh 요청 하나를 공유하고, refresh 성공 후 원 요청을 최대 한 번 재시도합니다.
+
 ## Domain API Boundary
 
 화면 도메인에 묶인 API helper, query/mutation hook, query key는 먼저 앱 domain 안에 둡니다.

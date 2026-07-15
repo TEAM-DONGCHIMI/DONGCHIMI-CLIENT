@@ -9,7 +9,7 @@
 
 ## Purpose
 
-- 카카오가 전달한 authorization code를 동치미 로그인 API로 한 번만 전송합니다.
+- 카카오가 전달한 authorization code를 동치미 로그인 BFF로 한 번만 전송합니다.
 - 로그인 성공 시 token을 직접 저장하지 않고 `/markets`로 이동합니다.
 
 ## Scope
@@ -22,7 +22,7 @@
 ## Out Of Scope
 
 - access token과 refresh token 직접 접근 또는 저장
-- access token 재발급
+- access token 재발급 이후의 전체 session 복구와 route 접근 제어
 - callback 화면의 별도 디자인 시안
 
 ## Routing And Access
@@ -35,8 +35,8 @@
 ## States
 
 - loading: 로그인 정보를 확인하고 있다는 live region을 표시합니다.
-- error: 인증 취소, code 누락, API 오류, access token 누락을 구분해 안내합니다.
-- success: access token을 저장한 뒤 `/markets`로 replace 이동합니다.
+- error: 인증 취소, code 누락, API 오류, 인증 token 누락을 구분해 안내합니다.
+- success: BFF가 인증 token을 HttpOnly cookie로 설정한 뒤 `/markets`로 replace 이동합니다.
 
 ## Accessibility
 
@@ -52,7 +52,3 @@
 - [ ] `pnpm --filter client test`
 - [ ] `pnpm --filter client build`
 - [ ] browser route: `/oauth/callback`
-
-## Open Questions
-
-- access token 재발급 endpoint와 앱 초기 session 복구 정책
