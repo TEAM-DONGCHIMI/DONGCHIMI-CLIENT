@@ -19,6 +19,7 @@ import { ToastProvider } from '@dongchimi/shared/toast';
 import { Sidebar, type SidebarItem, type SidebarSection } from '@/shared/components';
 import sidebarBrandLogo from '@/shared/assets/images/Img_pavicon.svg';
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
 
 import * as S from './SidebarLayout.css';
 import { SIDEBAR_LAYOUT_TOAST_OFFSET_Y } from './SidebarLayout.constants';
@@ -158,6 +159,7 @@ const SidebarHelp = () => (
 export const SidebarLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const account = useAuthStore((state) => state.account);
   const activeItemId = getActiveSidebarItemId(location.pathname);
   const profile = useMemo(
     () => ({
@@ -170,6 +172,29 @@ export const SidebarLayout = () => {
       name: '신선마트 사장님',
     }),
     [],
+  );
+  const accountProfile = useMemo(
+    () =>
+      account
+        ? {
+            avatar: (
+              <span aria-hidden='true' className={S.profileAvatarClassName}>
+                {account.marketThumbnailUrl ? (
+                  <img
+                    alt=''
+                    className={S.profileAvatarImageClassName}
+                    src={account.marketThumbnailUrl}
+                  />
+                ) : (
+                  (account.marketName ?? account.email).slice(0, 1).toUpperCase()
+                )}
+              </span>
+            ),
+            description: account.marketName ? account.email : undefined,
+            name: account.marketName ?? account.email,
+          }
+        : profile,
+    [account, profile],
   );
 
   const handleSidebarItemSelect = (item: SidebarItem) => {
@@ -188,7 +213,7 @@ export const SidebarLayout = () => {
           footerItems={footerItems}
           helpCard={<SidebarHelp />}
           onItemSelect={handleSidebarItemSelect}
-          profile={profile}
+          profile={accountProfile}
           sections={sidebarSections}
         />
       </div>
