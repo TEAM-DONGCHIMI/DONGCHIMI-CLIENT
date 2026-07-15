@@ -9,7 +9,7 @@ import {
   MarketInformationForm,
   MarketInformationFormToastProvider,
 } from '@/domains/market/components/market-information-form';
-import { useOwnerMarketDetailQuery } from '@/domains/market/hooks';
+import { useOwnerMarketDetailQuery, useUpdateOwnerMarketMutation } from '@/domains/market/hooks';
 import { createMarketInformationForm } from '@/domains/market/model';
 import { isApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
@@ -32,11 +32,26 @@ const getMarketDetailErrorMessage = (error: unknown) => {
   return '마트 정보를 불러오지 못했어요.';
 };
 
+const getMarketUpdateErrorMessage = (error: unknown) => {
+  if (
+    isApiError(error) &&
+    (error.code === 'INVALID_INPUT' ||
+      error.code === 'MARKET_ACCESS_DENIED' ||
+      error.code === 'MARKET_NOT_FOUND' ||
+      error.code === 'MARKET_ALREADY_EXISTS')
+  ) {
+    return error.message;
+  }
+
+  return '마트 정보를 수정하지 못했습니다. 잠시 후 다시 시도해주세요.';
+};
+
 const MarketInformationManagementPageController = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const marketId = useAuthStore((state) => state.marketId);
   const marketDetailQuery = useOwnerMarketDetailQuery({ marketId });
+  const updateOwnerMarketMutation = useUpdateOwnerMarketMutation();
   const [isDirty, setIsDirty] = useState(false);
   const isLeaveConfirmationOpenRef = useRef(false);
   const blocker = useBlocker(isDirty);
@@ -93,6 +108,7 @@ const MarketInformationManagementPageController = () => {
 
   return (
     <MarketInformationForm
+      getSubmitErrorMessage={getMarketUpdateErrorMessage}
       description='점주님의 마트 정보를 관리하세요.'
       initialForm={createMarketInformationForm(marketDetailQuery.data)}
       secondaryAction={
@@ -109,13 +125,15 @@ const MarketInformationManagementPageController = () => {
       }
       submitAreaClassName={S.actionAreaClassName}
       submitButtonClassName={S.actionButtonClassName}
-      submitDisabled={!isDirty}
-      submitLabel='수정 완료'
+      submitDisabled={!isDirty || updateOwnerMarketMutation.isPending}
+      submitLabel={updateOwnerMarketMutation.isPending ? '수정 중...' : '수정 완료'}
       title='마트 정보 관리'
       onDirtyChange={handleDirtyChange}
-      onSubmit={async (_request, _form, reset) => {
+      onSubmit={async (request, _form, reset) => {
+        const response = await updateOwnerMarketMutation.mutateAsync({ marketId, request });
+
         reset();
-        toast.completed('정보가 변경되었습니다.', {
+        toast.completed(response.message, {
           id: 'market-information-management-completed',
         });
       }}

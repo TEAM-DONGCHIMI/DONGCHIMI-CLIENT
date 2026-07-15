@@ -49,6 +49,13 @@
 
 ## Verification
 
+### Market Update API
+
+- `PUT /v1/owners/markets/{marketId}`로 현재 폼 값을 전송합니다.
+- 요청 중에는 수정 버튼을 비활성화하고 `수정 중...`을 표시합니다.
+- 성공하면 상세 query를 무효화하고 dirty 상태를 초기화한 뒤 서버 message Toast를 표시합니다.
+- `INVALID_INPUT`, `MARKET_ACCESS_DENIED`, `MARKET_NOT_FOUND`, `MARKET_ALREADY_EXISTS`는 서버 message를 표시합니다.
+
 - [ ] `git diff --check`
 - [ ] `pnpm format:check`
 - [ ] `pnpm lint`
