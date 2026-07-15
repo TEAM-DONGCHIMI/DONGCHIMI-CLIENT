@@ -30,11 +30,14 @@
 {
   "success": true,
   "code": "SUCCESS",
-  "message": "요청에 성공했습니다."
+  "message": "요청에 성공했습니다.",
+  "data": {
+    "productId": 101
+  }
 }
 ```
 
-응답 Zod schema는 `satisfies z.ZodType<OwnerApiTypes.RegisterDailyProductData>`로 OpenAPI 생성 타입과 구조를 맞추고, API boundary에서 `success: true`, `code: SUCCESS`, `message: string` 계약을 검증합니다.
+응답 Zod schema는 `satisfies z.ZodType<OwnerApiTypes.RegisterDailyProductData>`로 OpenAPI 생성 타입과 구조를 맞추고, API boundary에서 `success: true`, `code: SUCCESS`, `message: string`, `data.productId: number` 계약을 검증합니다. `productId`가 없는 성공 응답은 validation error로 처리합니다.
 
 ## Errors
 
@@ -72,5 +75,6 @@
 - [x] S3 base URL 누락 시 상대경로를 등록하지 않는 mapper test
 - [x] 이미지 미선택 시 기본 상품 이미지가 `thumbnailUrl`에 연결되는 mapper/page test
 - [x] 임시 `marketId = 1`로 page submit 연결
+- [x] 등록 성공 응답의 `data.productId` runtime validation
 - [ ] 실제 session의 `marketId`로 임시값 교체
 - [ ] 실제 서버 200/401/403/404 확인
