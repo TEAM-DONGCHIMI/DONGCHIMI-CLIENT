@@ -22,6 +22,35 @@ describe('marketQueryKeys', () => {
     ]);
   });
 
+  it('nearbyList key는 radius/size를 보존하고, keyword처럼 허용되지 않은 값과 undefined 값을 제거한다', () => {
+    expect(
+      marketQueryKeys.nearbyList({
+        lat: 37.556,
+        lng: 126.91,
+        radius: 500,
+        size: 20,
+        keyword: '망원시장',
+      }),
+    ).toEqual(['market', 'nearby-markets', { lat: 37.556, lng: 126.91, radius: 500, size: 20 }]);
+  });
+
+  it('nearbyMarkers key는 radius/size를 보존하고, keyword처럼 허용되지 않은 값과 undefined 값을 제거한다', () => {
+    expect(
+      marketQueryKeys.nearbyMarkers({
+        lat: 37.556,
+        lng: 126.91,
+        radius: 500,
+        size: 20,
+        keyword: '망원시장',
+      }),
+    ).toEqual([
+      'market',
+      'nearby-markets',
+      'markers',
+      { lat: 37.556, lng: 126.91, radius: 500, size: 20 },
+    ]);
+  });
+
   it('상품 상세 응답을 바꾸는 marketId와 productId를 key에 포함한다', () => {
     expect(marketQueryKeys.productDetail({ marketId: 1, productId: '10' })).toEqual([
       'market',
