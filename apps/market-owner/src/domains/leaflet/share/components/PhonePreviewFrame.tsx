@@ -71,9 +71,25 @@ export const PhonePreviewFrame = ({ preview }: PhonePreviewFrameProps) => {
                         <IcCalendar aria-hidden='true' />
                       </dt>
                       <dd className={S.businessHourLinesClassName}>
-                        {preview.businessHourLines.map((businessHourLine) => (
-                          <span key={businessHourLine}>{businessHourLine}</span>
-                        ))}
+                        {preview.businessHourTexts.map((businessHour) =>
+                          businessHour.isClosed ? (
+                            <span
+                              key={businessHour.dayText}
+                              className={S.closedBusinessHourClassName}
+                            >
+                              <span className={S.closedDayClassName}>휴무</span>
+                              <span>{businessHour.dayText}</span>
+                            </span>
+                          ) : (
+                            <span
+                              key={`${businessHour.dayText} ${businessHour.timeText}`}
+                              className={S.openBusinessHourClassName}
+                            >
+                              <span>{businessHour.dayText}</span>
+                              <span>{businessHour.timeText}</span>
+                            </span>
+                          ),
+                        )}
                       </dd>
                     </div>
                   </dl>

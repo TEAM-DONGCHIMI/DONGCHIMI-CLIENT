@@ -1,3 +1,5 @@
+import { formatBusinessHour } from '@dongchimi/shared';
+
 import type { FlyerPreviewResponseTypes } from '../api';
 import type { LeafletSummaryFixture } from '../fixtures/leaflet-share.fixture';
 
@@ -18,7 +20,7 @@ export interface PhonePreviewDailyProductViewModel extends PhonePreviewDiscountP
 
 export interface PhonePreviewViewModel {
   address: string;
-  businessHourLines: string[];
+  businessHourTexts: ReturnType<typeof formatBusinessHour>[];
   dailyProducts: PhonePreviewDailyProductViewModel[];
   dailyTotalCount: number;
   eventProducts: PhonePreviewProductViewModel[];
@@ -36,16 +38,6 @@ export interface LeafletPreviewViewModel {
 
 const formatPrice = (price: number) => price.toLocaleString('ko-KR');
 
-const formatBusinessHour = (businessHour: FlyerPreviewResponseTypes['businessHours'][number]) => {
-  const days = businessHour.days.join(', ');
-
-  if (!businessHour.isOpen || businessHour.open == null || businessHour.close == null) {
-    return `${days} 휴무`;
-  }
-
-  return `${days} ${businessHour.open} - ${businessHour.close}`;
-};
-
 export const createLeafletPreviewViewModel = (
   preview: FlyerPreviewResponseTypes,
 ): LeafletPreviewViewModel => {
@@ -60,7 +52,7 @@ export const createLeafletPreviewViewModel = (
       address: preview.address,
       isOpenNow: preview.isOpenNow,
       marketPhone: preview.marketPhone1 || preview.marketPhone2 || preview.ownerPhone,
-      businessHourLines: preview.businessHours.map(formatBusinessHour),
+      businessHourTexts: preview.businessHours.map(formatBusinessHour),
       topProducts: preview.top3.map((product) => ({
         id: product.productId,
         name: product.name,

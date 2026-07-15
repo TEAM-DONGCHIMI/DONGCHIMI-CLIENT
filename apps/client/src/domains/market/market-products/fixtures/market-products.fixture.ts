@@ -1,23 +1,6 @@
-export type BusinessDayTypes =
-  | 'MONDAY'
-  | 'TUESDAY'
-  | 'WEDNESDAY'
-  | 'THURSDAY'
-  | 'FRIDAY'
-  | 'SATURDAY'
-  | 'SUNDAY';
+import type { BusinessDayTypes, BusinessHourTypes } from '@dongchimi/shared';
 
-export type BusinessHourTypes =
-  | {
-      close: string;
-      days: BusinessDayTypes[];
-      isOpen: true;
-      open: string;
-    }
-  | {
-      days: BusinessDayTypes[];
-      isOpen: false;
-    };
+export type { BusinessDayTypes, BusinessHourTypes };
 
 export interface TopProductFixtureTypes {
   discountedPrice: number;

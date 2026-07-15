@@ -29,7 +29,7 @@ const periodicPreviewResponse = {
     thumbnailUrl: 'https://cdn.example.com/market.png',
     address: '서울 마포구 망원동',
     isOpenNow: true,
-    businessHours: [{ days: ['월', '화'], isOpen: true, open: '10:00', close: '20:00' }],
+    businessHours: [{ days: ['MONDAY', 'TUESDAY'], isOpen: true, open: '10:00', close: '20:00' }],
     marketPhone1: '02-123-4567',
     marketPhone2: null,
     ownerPhone: '010-0000-0000',

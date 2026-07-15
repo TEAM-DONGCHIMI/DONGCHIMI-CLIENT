@@ -188,6 +188,21 @@ export const businessHourLinesClassName = style({
   margin: 0,
 });
 
+export const openBusinessHourClassName = style({
+  display: 'flex',
+  gap: '0.4rem',
+});
+
+export const closedBusinessHourClassName = style({
+  display: 'flex',
+  gap: '0.4rem',
+});
+
+export const closedDayClassName = style({
+  flexShrink: 0,
+  color: atomic.neutral[50],
+});
+
 export const actionRowClassName = style({
   display: 'grid',
   gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',

@@ -10,8 +10,18 @@ import { httpClient, type OwnerApiTypes } from '@/shared/api';
 type FlyerPreviewApiResponseTypes = OwnerApiTypes.ApiResponseFlyerPreviewResponse;
 export type FlyerPreviewResponseTypes = OwnerApiTypes.FlyerPreviewResponse;
 
+const businessDaySchema = z.enum([
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+  'SUNDAY',
+]);
+
 const flyerPreviewBusinessHourResponseSchema = z.object({
-  days: z.array(z.string()),
+  days: z.array(businessDaySchema),
   isOpen: z.boolean(),
   open: z.string().nullable().optional(),
   close: z.string().nullable().optional(),
