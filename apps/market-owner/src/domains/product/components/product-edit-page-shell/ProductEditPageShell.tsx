@@ -105,6 +105,7 @@ export const ProductEditPageShell = ({
     openResetConfirm,
   } = useProductEditBulkSelection({
     activeType,
+    marketId,
     periodBaseProduct,
     onDeleteProducts,
     onResetProducts,

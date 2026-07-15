@@ -36,7 +36,7 @@ const productDetailResponseSchema = z.object({
     discountStartDate: z.string(),
     discountEndDate: z.string(),
   }),
-}) satisfies z.ZodType<OwnerApiTypes.GetDetailData>;
+}) satisfies z.ZodType<OwnerApiTypes.GetDetail1Data>;
 
 export type GetProductDetailResponseTypes = z.infer<typeof productDetailResponseSchema>;
 

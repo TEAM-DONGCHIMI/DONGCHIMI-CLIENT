@@ -74,8 +74,14 @@ describe('useSignupMutation', () => {
     });
 
     expect(useAuthStore.getState().accessToken).toBe('signup-access-token');
+    expect(useAuthStore.getState().account).toEqual({
+      email: 'owner@example.com',
+      marketName: undefined,
+      marketThumbnailUrl: undefined,
+    });
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('signup-access-token');
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"isLoggedIn":true');
+    expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"email":"owner@example.com"');
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBeNull();
   });
 });

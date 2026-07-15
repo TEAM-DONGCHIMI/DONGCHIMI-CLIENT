@@ -11,13 +11,21 @@ export const authLayoutRootClassName = style({
 });
 
 export const onboardingPanelClassName = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   flexShrink: 0,
-  width: '36.5rem',
+  width: 'min(36.5rem, calc(100vh * 0.4056))',
+  height: '100%',
+  overflow: 'hidden',
   backgroundColor: atomic.common[0],
-  backgroundImage:
-    'linear-gradient(45deg, #d8dde3 25%, transparent 25%), linear-gradient(-45deg, #d8dde3 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d8dde3 75%), linear-gradient(-45deg, transparent 75%, #d8dde3 75%)',
-  backgroundPosition: '0 0, 0 0.6rem, 0.6rem -0.6rem, -0.6rem 0',
-  backgroundSize: '1.2rem 1.2rem',
+});
+
+export const onboardingImageClassName = style({
+  display: 'block',
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
 });
 
 export const authLayoutContentWrapperClassName = style({

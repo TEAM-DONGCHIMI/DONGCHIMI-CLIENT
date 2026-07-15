@@ -20,7 +20,7 @@ interface ProductEditProductListProps {
   groups: ProductEditProductGroup[];
   marketId: number;
   registrationHref: string;
-  selectedProductNames?: string[];
+  selectedProductIds?: (number | string)[];
   selectionMode?: boolean;
   onDeleteProduct?: (product: ProductEditCardProps) => void;
   onAutoOpenProductMissing?: (productId: string) => void;
@@ -32,6 +32,16 @@ interface ProductEditProductListProps {
 const hasProducts = (groups: ProductEditProductGroup[]) =>
   groups.some(({ products }) => products.length > 0);
 
+const parseProductId = (value: ProductEditCardProps['productId']) => {
+  if (value == null || (typeof value === 'string' && value.trim() === '')) {
+    return null;
+  }
+
+  const productId = Number(value);
+
+  return Number.isSafeInteger(productId) && productId > 0 ? productId : null;
+};
+
 export const ProductEditProductList = ({
   ariaLabel,
   deletePending = false,
@@ -39,7 +49,7 @@ export const ProductEditProductList = ({
   autoOpenProductId,
   groups,
   marketId,
-  selectedProductNames = [],
+  selectedProductIds = [],
   selectionMode = false,
   registrationHref,
   onAutoOpenProductMissing,
@@ -73,10 +83,18 @@ export const ProductEditProductList = ({
       return;
     }
 
+    const targetProductId = parseProductId(targetProduct.productId);
+
+    if (targetProductId == null) {
+      onAutoOpenProductMissing?.(autoOpenProductId);
+
+      return;
+    }
+
     openProductEditModal({
       marketId,
       product: targetProduct,
-      productId: Number(targetProduct.productId),
+      productId: targetProductId,
       variant: editModalVariant,
       onClose: onAutoOpenProductModalClose,
       onSubmit: (updatedProduct) => onUpdateProduct?.(targetProduct.productName, updatedProduct),
@@ -103,19 +121,21 @@ export const ProductEditProductList = ({
     });
   };
   const editProduct = (product: ProductEditCardProps) => {
-    if (product.productId == null) {
+    const productId = parseProductId(product.productId);
+
+    if (productId == null) {
       return;
     }
 
     openProductEditModal({
       marketId,
       product,
-      productId: Number(product.productId),
+      productId,
       variant: editModalVariant,
       onSubmit: (updatedProduct) => onUpdateProduct?.(product.productName, updatedProduct),
     });
   };
-  const selectedProductNameSet = new Set(selectedProductNames);
+  const selectedProductIdSet = new Set(selectedProductIds.map(String));
 
   return (
     <section aria-label={ariaLabel} className={S.sectionListClassName}>
@@ -125,7 +145,8 @@ export const ProductEditProductList = ({
 
           <div className={S.productGridClassName}>
             {products.map((product) => {
-              const isSelected = selectedProductNameSet.has(product.productName);
+              const isSelected =
+                product.productId != null && selectedProductIdSet.has(String(product.productId));
 
               return (
                 <ProductEditCardDesktop
