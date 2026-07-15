@@ -3,6 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { API_ENDPOINTS, buildApiPath } from './api-endpoints';
 
 describe('API_ENDPOINTS', () => {
+  it('builds the common token refresh endpoint', () => {
+    expect(API_ENDPOINTS.common.auth.refresh).toBe('/v1/auth/token/refresh');
+  });
+
   it('exposes owner auth and product import endpoints', () => {
     expect(API_ENDPOINTS.owner.auth.login).toBe('/v1/owners/auth/login');
     expect(API_ENDPOINTS.owner.products.import('market-1')).toBe(
