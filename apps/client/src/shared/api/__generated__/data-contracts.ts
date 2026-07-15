@@ -154,6 +154,8 @@ export interface CursorSliceResponsePeriodicProductResponse {
    * @format int64
    */
   nextCursor?: number | null;
+  /** 행사 상품이 존재하는 카테고리 목록 */
+  availableCategories: string[];
 }
 
 export interface PeriodicProductResponse {

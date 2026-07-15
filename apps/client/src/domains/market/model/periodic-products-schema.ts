@@ -44,6 +44,7 @@ export const periodicProductSchema = z.object({
 export type PeriodicProductTypes = z.infer<typeof periodicProductSchema>;
 
 export const periodicProductsPageSchema = z.object({
+  availableCategories: z.array(periodicProductCategorySchema),
   content: z.array(periodicProductSchema),
   hasNext: z.boolean(),
   nextCursor: z

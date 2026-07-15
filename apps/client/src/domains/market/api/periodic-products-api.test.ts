@@ -50,9 +50,30 @@ describe('getPeriodicProducts', () => {
       http.get(PERIODIC_PRODUCTS_ENDPOINT, () => {
         return HttpResponse.json({
           code: 'SUCCESS',
-          data: { content: [{ productId: '301' }], hasNext: false, nextCursor: null },
+          data: {
+            availableCategories: ['MEAT_EGG'],
+            content: [{ productId: '301' }],
+            hasNext: false,
+            nextCursor: null,
+          },
           message: '요청에 성공했습니다.',
           success: true,
+        });
+      }),
+    );
+
+    await expect(getPeriodicProducts({ marketId: 1 })).rejects.toThrow(ApiResponseValidationError);
+  });
+
+  it('지원하지 않는 availableCategories 값은 validation error로 노출한다', async () => {
+    server.use(
+      http.get(PERIODIC_PRODUCTS_ENDPOINT, () => {
+        return HttpResponse.json({
+          ...PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE,
+          data: {
+            ...PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE.data,
+            availableCategories: ['PET'],
+          },
         });
       }),
     );

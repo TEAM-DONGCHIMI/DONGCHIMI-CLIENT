@@ -3,6 +3,7 @@ import type { UserApiTypes } from '@/shared/api';
 export const PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE = {
   code: 'SUCCESS',
   data: {
+    availableCategories: ['VEGETABLE_FRUIT', 'MEAT_EGG', 'SEAFOOD'],
     content: [
       {
         discountedPrice: 4900,
@@ -27,6 +28,7 @@ export const PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE = {
 export const PERIODIC_PRODUCTS_LAST_PAGE_RESPONSE_FIXTURE = {
   code: 'SUCCESS',
   data: {
+    availableCategories: ['VEGETABLE_FRUIT', 'MEAT_EGG', 'SEAFOOD'],
     content: [
       {
         discountedPrice: 3900,
