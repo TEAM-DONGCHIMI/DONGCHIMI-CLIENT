@@ -80,13 +80,17 @@ QrDownloadModal(Dialog)
 - `Dialog.Content`는 `매장 고유 QR코드` accessible name을 제공합니다.
 - QR 이미지는 호출부가 전달한 `imageLabel`을 `alt`로 사용합니다.
 - 다운로드 액션은 native button semantics를 제공하는 design-system `LineButton`을 사용합니다.
+- 다운로드 액션의 하단선, 타이포그래피, 색상은 default, hover, focus-visible 상태에서 동일하게 유지합니다.
 - Escape, 외부 영역 클릭, focus 관리는 design-system `Dialog` 동작을 따릅니다.
 
 ## Styling Constraints
 
-- Dialog content: 374px 너비에 대응하는 좌우 52px padding, 36px radius
-- QR image: 270px 정사각형, `object-fit: contain`
+- Dialog content: 콘텐츠 기반 Hug, 좌우 52px·상하 40px padding, 36px radius, shadow 없음
+- QR 270px와 action 216px를 기준으로 기본 콘텐츠에서 374px × 396px 결과 크기를 구성
+- QR image: 270px 정사각형, `object-fit: cover`
 - image/action gap: 14px
+- download action: 216px 너비, `heading-3-semibold`, neutral 70, Figma 자간 `-0.04rem`, 상하 2px padding을 적용
+- download label: Figma `Linebutton/qr`와 동일하게 텍스트 컨테이너에 neutral 70의 1.5px border-bottom을 적용
 - Figma와 기존 전단 공유 화면의 modal visual을 유지합니다.
 
 ## Verification
