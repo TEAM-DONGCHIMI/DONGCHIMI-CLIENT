@@ -1,2 +1,4 @@
-// Domain query key factories live here.
-// Include every parameter that changes the response in the query key.
+export const productQueryKeys = {
+  all: ['product'] as const,
+  search: ['product', 'search'] as const,
+} as const;
