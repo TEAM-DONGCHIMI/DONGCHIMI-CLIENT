@@ -87,6 +87,7 @@ describe('useAuthStore', () => {
 
   it('clears the login session hint without storing token data', () => {
     useAuthStore.getState().setAccessToken('access-token');
+    useAuthStore.getState().setMarketId(12);
 
     useAuthStore.getState().clearSession();
 

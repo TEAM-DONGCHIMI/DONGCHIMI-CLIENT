@@ -1,34 +1,17 @@
-import { type ProductCardItemTypes, type ProductCardProps } from '@dongchimi/shared';
+import { type ProductCardItemTypes } from '@dongchimi/shared';
 
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
 
-export interface HomeProductSectionFixtureTypes {
-  editRoute: MarketOwnerRouteTypes;
-  id: string;
-  itemVariant: NonNullable<ProductCardProps['itemVariant']>;
-  items: ProductCardItemTypes[];
-  title: string;
-  totalCount: number;
-}
+import {
+  type HomeProductSectionTypes,
+  type HomeShareTypes,
+} from '../model/home-dashboard-view-model';
 
 interface HomeHeroActionFixtureTypes {
   description: string;
-  id: string;
+  id: 'daily-registration' | 'periodic-registration' | 'product-edit';
   route: MarketOwnerRouteTypes;
   title: string;
-}
-
-interface HomeFlyerFixtureTypes {
-  flyerId: number;
-  qrCode: string;
-  slug: string;
-}
-
-export interface HomeShareFixtureTypes {
-  description: string;
-  flyer: HomeFlyerFixtureTypes | null;
-  title: string;
-  url: string;
 }
 
 const dailyProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
@@ -53,7 +36,7 @@ export const homeProductSummary = {
   periodicProducts,
 } as const;
 
-export const homeProductSections: HomeProductSectionFixtureTypes[] = [
+export const homeProductSections: HomeProductSectionTypes[] = [
   {
     editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
     id: 'daily',
@@ -70,7 +53,7 @@ export const homeProductSections: HomeProductSectionFixtureTypes[] = [
     title: '행사 할인 상품',
     totalCount: homeProductSummary.periodicCount,
   },
-] satisfies HomeProductSectionFixtureTypes[];
+] satisfies HomeProductSectionTypes[];
 
 export const homeHeroActions: HomeHeroActionFixtureTypes[] = [
   {
@@ -93,13 +76,14 @@ export const homeHeroActions: HomeHeroActionFixtureTypes[] = [
   },
 ] satisfies HomeHeroActionFixtureTypes[];
 
-export const homeShare: HomeShareFixtureTypes = {
+export const homeShare: HomeShareTypes = {
+  copyUrl: 'https://app.dongchiimi.com/markets/mangwon-fresh',
   description: '카카오톡, 문자로 공유하거나 마트에 QR을 붙여보세요.',
+  displayUrl: 'app.dongchiimi.com/markets/mangwon-fresh',
   flyer: {
     flyerId: 1,
     qrCode: 'QR코드 base64 이미지',
     slug: 'mangwon-fresh',
   },
   title: '전단 공유하기',
-  url: 'dongchimi.kr/mangwon-fresh',
 };

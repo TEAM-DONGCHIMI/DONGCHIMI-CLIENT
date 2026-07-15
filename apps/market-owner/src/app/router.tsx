@@ -81,6 +81,14 @@ export const marketOwnerRoutes = [
         Component: NoSidebarLayout,
         children: [
           {
+            path: MARKET_OWNER_ROUTES.marketInformationManagement,
+            ...createLazyRoute(
+              () =>
+                import('@/domains/market/information-management/MarketInformationManagementPage'),
+              'MarketInformationManagementPage',
+            ),
+          },
+          {
             path: MARKET_OWNER_ROUTES.marketInformationRegistration,
             ...createLazyRoute(
               () =>

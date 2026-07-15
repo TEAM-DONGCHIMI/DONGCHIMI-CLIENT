@@ -16,6 +16,7 @@ interface AuthStoreStateTypes {
   ) => void;
   setBootstrapStatus: (bootstrapStatus: AuthBootstrapStatusTypes) => void;
   setLoggedIn: (isLoggedIn: boolean) => void;
+  setMarketId: (marketId?: number) => void;
 }
 
 export const AUTH_STORE_STORAGE_KEY = 'market-owner-auth';
@@ -111,6 +112,9 @@ export const useAuthStore = create<AuthStoreStateTypes>()(
       },
       setLoggedIn: (isLoggedIn) => {
         set({ isLoggedIn });
+      },
+      setMarketId: (marketId) => {
+        set({ marketId });
       },
     }),
     {

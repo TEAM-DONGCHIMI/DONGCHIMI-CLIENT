@@ -5,11 +5,16 @@ import type { LeafletSummaryFixture } from '../fixtures/leaflet-share.fixture';
 import * as S from './LeafletConfirmSection.css';
 
 export interface LeafletConfirmSectionProps {
+  isPublishing?: boolean;
   leafletSummary: LeafletSummaryFixture;
   onShare: () => void;
 }
 
-export const LeafletConfirmSection = ({ leafletSummary, onShare }: LeafletConfirmSectionProps) => {
+export const LeafletConfirmSection = ({
+  isPublishing = false,
+  leafletSummary,
+  onShare,
+}: LeafletConfirmSectionProps) => {
   return (
     <Grid aria-labelledby='leaflet-confirm-title' as='section' className={S.sectionClassName}>
       <Flex className={S.headingGroupClassName} direction='column'>
@@ -20,7 +25,11 @@ export const LeafletConfirmSection = ({ leafletSummary, onShare }: LeafletConfir
       </Flex>
 
       <Grid align='start' className={S.contentClassName}>
-        <LeafletSummaryCard leafletSummary={leafletSummary} onShare={onShare} />
+        <LeafletSummaryCard
+          isPublishing={isPublishing}
+          leafletSummary={leafletSummary}
+          onShare={onShare}
+        />
         <PhonePreviewFrame />
       </Grid>
     </Grid>

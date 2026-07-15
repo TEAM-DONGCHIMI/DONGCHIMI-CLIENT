@@ -4,6 +4,7 @@ import { ShareLinkBox } from '../components';
 import * as S from './LeafletShareSection.css';
 
 export interface LeafletShareSectionProps {
+  isQrCodePending?: boolean;
   shareUrl: string;
   onCopyLink: () => void;
   onCopyLinkError: () => void;
@@ -12,6 +13,7 @@ export interface LeafletShareSectionProps {
 }
 
 export const LeafletShareSection = ({
+  isQrCodePending = false,
   shareUrl,
   onCopyLink,
   onCopyLinkError,
@@ -31,6 +33,7 @@ export const LeafletShareSection = ({
 
       <Flex align='start' justify='center'>
         <ShareLinkBox
+          isQrCodePending={isQrCodePending}
           shareUrl={shareUrl}
           onCopyLink={onCopyLink}
           onCopyLinkError={onCopyLinkError}

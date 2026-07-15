@@ -32,7 +32,7 @@
 ## Behavior
 
 - 요청 타입은 공통 OpenAPI generated `PresignedUploadRequest`에서 `purpose`만 `PRESIGNED_UPLOAD_PURPOSE` 상수 union으로 좁혀 사용합니다.
-- 지원하는 `purpose` 값은 `PRODUCT_THUMBNAIL`, `DEFAULT_PRODUCT_THUMBNAIL`, `PRODUCT_IMPORT_EXCEL`입니다.
+- 지원하는 `purpose` 값은 `PRODUCT_THUMBNAIL`, `DEFAULT_PRODUCT_THUMBNAIL`, `MARKET_THUMBNAIL`, `PRODUCT_IMPORT_EXCEL`입니다.
 - 성공 응답은 API boundary에서 검증하고 후속 S3 PUT에 필요한 `data`만 반환합니다.
 - HTTP 오류는 기존 `normalizeApiError` 경로로 전달하며 조용히 삼키지 않습니다.
 - product domain의 `usePresignedUploadMutation`은 TanStack Query mutation 상태와 실행 함수를 제공하고 mutation 객체를 그대로 반환합니다.
