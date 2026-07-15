@@ -2,14 +2,19 @@ import { type ChangeEvent } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 import { ToastProvider, useToast } from '@dongchimi/shared/toast';
 
 import { Button, Flex, Stack } from '@dongchimi/design-system/components';
 import { IcCircleExclamation } from '@dongchimi/design-system/icons';
 
 import { DesktopHeader } from '@/shared/components';
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { isApiError } from '@/shared/api';
 
+import { useMarketThumbnailUploadMutation, useRegisterMarketMutation } from '../hooks';
 import { marketInformationRegistrationFixture } from './fixtures';
+import { type MarketAddressSearchResultTypes, useMarketAddressSearch } from './hooks';
 import * as S from './MarketInformationRegistrationPage.css';
 import {
   createMarketInformationRegistrationRequest,
@@ -19,7 +24,7 @@ import {
   formatMobilePhoneNumber,
   marketInformationRegistrationSchema,
   type MarketInformationFormTypes,
-  type MarketInformationRegistrationRequest,
+  type MarketInformationRegistrationRequestTypes,
 } from './model';
 import {
   AddressSection,
@@ -66,25 +71,30 @@ const registrationErrorMessage = (
     잠시 후 다시 시도해주세요.
   </>
 );
+const marketAlreadyExistsErrorMessage = '이미 존재하는 마트입니다.';
 
 export interface MarketInformationRegistrationPageProps {
-  onAddressSearch?: () => Promise<string> | string;
-  onImageSelect?: (file: File) => Promise<void> | void;
-  onRegister?: (request: MarketInformationRegistrationRequest) => Promise<void> | void;
+  onAddressSearch?: () => MarketAddressSearchResultTypes | Promise<MarketAddressSearchResultTypes>;
+  onImageSelect?: (file: File) => Promise<string | void> | string | void;
+  onRegister?: (request: MarketInformationRegistrationRequestTypes) => Promise<void> | void;
 }
 
-const defaultAddressSearch = () => marketInformationRegistrationFixture.selectedAddress;
-const defaultImageSelect = () => undefined;
-const defaultRegister = () => undefined;
-
-const isServerError = (error: unknown) => {
-  if (typeof error !== 'object' || error === null || !('response' in error)) {
-    return false;
+const getRegistrationErrorMessage = (error: unknown) => {
+  if (!isApiError(error)) {
+    return registrationErrorMessage;
   }
 
-  const { response } = error;
+  if (error.code === 'INVALID_INPUT') {
+    return error.message;
+  }
 
-  return response instanceof Response && response.status >= 500;
+  if (error.code === 'MARKET_ALREADY_EXISTS') {
+    return marketAlreadyExistsErrorMessage;
+  }
+
+  return error.type === 'server' || error.type === 'network'
+    ? serverErrorMessage
+    : registrationErrorMessage;
 };
 
 const getNextFormValue = (name: string, value: string) => {
@@ -108,10 +118,14 @@ const getNextFormValue = (name: string, value: string) => {
 };
 
 const MarketInformationRegistrationPageContent = ({
-  onAddressSearch = defaultAddressSearch,
-  onImageSelect = defaultImageSelect,
-  onRegister = defaultRegister,
+  onAddressSearch,
+  onImageSelect,
+  onRegister,
 }: MarketInformationRegistrationPageProps = {}) => {
+  const searchMarketAddress = useMarketAddressSearch();
+  const navigate = useNavigate();
+  const registerMarketMutation = useRegisterMarketMutation();
+  const uploadMarketThumbnailMutation = useMarketThumbnailUploadMutation();
   const toast = useToast();
   const {
     formState: { errors, isValid },
@@ -215,9 +229,11 @@ const MarketInformationRegistrationPageContent = ({
 
   const handleAddressSearch = async () => {
     try {
-      const address = await onAddressSearch();
+      const { address, latitude, longitude } = await (onAddressSearch ?? searchMarketAddress)();
 
       setFormValue('address', address);
+      setValue('latitude', latitude, { shouldDirty: true, shouldValidate: true });
+      setValue('longitude', longitude, { shouldDirty: true, shouldValidate: true });
     } catch {
       toast.error(addressSearchErrorMessage, toastErrorOptions);
     }
@@ -227,17 +243,34 @@ const MarketInformationRegistrationPageContent = ({
     try {
       const request = createMarketInformationRegistrationRequest(form);
 
-      await onRegister(request);
+      if (onRegister) {
+        await onRegister(request);
+      } else {
+        const response = await registerMarketMutation.mutateAsync(request);
+
+        toast.completed(response.message);
+        navigate(MARKET_OWNER_ROUTES.home, { replace: true });
+      }
     } catch (error) {
-      toast.error(
-        isServerError(error) ? serverErrorMessage : registrationErrorMessage,
-        toastErrorOptions,
-      );
+      toast.error(getRegistrationErrorMessage(error), toastErrorOptions);
     }
   });
 
   const handleImageError = (error: MarketImageUploadErrorTypes) => {
     toast.error(imageErrorMessageMap[error], toastErrorOptions);
+  };
+
+  const handleImageSelect = async (file: File) => {
+    const objectKey = onImageSelect
+      ? await onImageSelect(file)
+      : await uploadMarketThumbnailMutation.mutateAsync(file);
+
+    if (objectKey) {
+      setValue('thumbnailUrl', objectKey, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
   };
 
   return (
@@ -255,7 +288,7 @@ const MarketInformationRegistrationPageContent = ({
             <Flex align='start' className={S.formContentClassName}>
               <MarketImageUploadSection
                 onImageError={handleImageError}
-                onImageSelect={onImageSelect}
+                onImageSelect={handleImageSelect}
               />
 
               <Stack className={S.fieldsClassName} gap='2xl'>
@@ -327,11 +360,16 @@ const MarketInformationRegistrationPageContent = ({
             <Flex className={S.submitAreaClassName} justify='center'>
               <Button
                 className={S.submitButtonClassName}
-                disabled={!isValid}
+                aria-busy={registerMarketMutation.isPending || undefined}
+                disabled={
+                  !isValid ||
+                  registerMarketMutation.isPending ||
+                  uploadMarketThumbnailMutation.isPending
+                }
                 size='medium'
                 type='submit'
               >
-                등록하기
+                {registerMarketMutation.isPending ? '등록 중...' : '등록하기'}
               </Button>
             </Flex>
           </form>
