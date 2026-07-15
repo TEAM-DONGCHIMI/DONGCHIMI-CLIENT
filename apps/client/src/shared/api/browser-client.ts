@@ -68,7 +68,6 @@ export const createBrowserApi = () => {
 
           return ky.retry({
             code: 'AUTH_SESSION_REFRESHED',
-            request: new Request(request),
           });
         },
       ],
