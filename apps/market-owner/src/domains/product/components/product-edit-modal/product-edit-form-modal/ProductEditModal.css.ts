@@ -93,11 +93,7 @@ export const categoryDropdownClassName = style({
   right: 0,
   zIndex: 1,
   width: categoryFieldWidth,
-  maxHeight: 'var(--product-category-dropdown-max-height)',
   backgroundColor: atomic.common[0],
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  overscrollBehaviorY: 'none',
 });
 
 export const dateRowClassName = style({

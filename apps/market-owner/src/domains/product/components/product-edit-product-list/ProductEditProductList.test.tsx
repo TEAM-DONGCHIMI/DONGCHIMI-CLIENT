@@ -319,6 +319,7 @@ describe('ProductEditProductList', () => {
     expect(
       categoryDropdown.style.getPropertyValue('--product-category-dropdown-max-height'),
     ).toMatch(/px$/);
+    expect(getComputedStyle(categoryDropdown).overflowY).toBe('auto');
 
     fireEvent.scroll(categoryDropdown);
     fireEvent.scroll(document);

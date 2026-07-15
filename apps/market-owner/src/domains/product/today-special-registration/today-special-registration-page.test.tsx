@@ -111,6 +111,7 @@ describe('TodaySpecialRegistrationPage', () => {
     useAuthStore.getState().clearSession();
     vi.useRealTimers();
     vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
   });
 
   it('redirects to market information registration when the login store has no market ID', async () => {
@@ -751,9 +752,18 @@ describe('TodaySpecialRegistrationPage', () => {
 
     renderTodaySpecialRegistrationPage();
 
-    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    vi.stubGlobal('innerHeight', 500);
+    const categoryTrigger = screen.getByRole('button', { name: '카테고리' });
+    vi.spyOn(categoryTrigger, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(0, 300, 206, 40),
+    );
+
+    await user.click(categoryTrigger);
 
     const dropdown = await screen.findByRole('group', { name: '상품 구분 선택' });
+
+    expect(dropdown.style.getPropertyValue('--product-category-dropdown-max-height')).toBe('112px');
+    expect(getComputedStyle(dropdown).overflowY).toBe('auto');
 
     fireEvent.scroll(dropdown);
     expect(dropdown).toBeInTheDocument();
