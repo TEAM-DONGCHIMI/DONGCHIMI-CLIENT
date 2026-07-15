@@ -21,6 +21,9 @@ describe('API_ENDPOINTS', () => {
     expect(API_ENDPOINTS.owner.products.detail('market/1', 'product 1')).toBe(
       '/v1/owners/markets/market%2F1/products/product%201',
     );
+    expect(API_ENDPOINTS.owner.products.confirmDrafts('market/1')).toBe(
+      '/v1/owners/markets/market%2F1/products',
+    );
   });
 
   it('builds owner product query endpoints', () => {
