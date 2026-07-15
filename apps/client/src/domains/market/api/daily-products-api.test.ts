@@ -60,6 +60,25 @@ describe('getDailyProducts', () => {
     });
   });
 
+  it('totalCount와 products 개수가 다르면 validation error로 노출한다', async () => {
+    server.use(
+      http.get(DAILY_PRODUCTS_ENDPOINT, () => {
+        return HttpResponse.json({
+          ...DAILY_PRODUCTS_API_RESPONSE_FIXTURE,
+          data: {
+            ...DAILY_PRODUCTS_API_RESPONSE_FIXTURE.data,
+            totalCount: DAILY_PRODUCTS_API_RESPONSE_FIXTURE.data.products.length + 1,
+          },
+        });
+      }),
+    );
+
+    await expect(getDailyProducts({ marketId: 2 })).rejects.toMatchObject({
+      name: 'ApiResponseValidationError',
+      type: 'validation',
+    });
+  });
+
   it('계약과 다른 응답은 validation error로 노출한다', async () => {
     server.use(
       http.get(DAILY_PRODUCTS_ENDPOINT, () => {

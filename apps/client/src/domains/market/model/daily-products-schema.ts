@@ -24,10 +24,15 @@ export const dailyProductSchema = z.object({
 
 export type DailyProductTypes = z.infer<typeof dailyProductSchema>;
 
-export const dailyProductsSchema = z.object({
-  products: z.array(dailyProductSchema),
-  totalCount: z.number().int().nonnegative(),
-}) satisfies ZodType<UserApiTypes.DailyProductListResponse>;
+export const dailyProductsSchema = z
+  .object({
+    products: z.array(dailyProductSchema),
+    totalCount: z.number().int().nonnegative(),
+  })
+  .refine(({ products, totalCount }) => totalCount === products.length, {
+    message: '오늘의 특가 상품 수와 전체 개수가 일치해야 합니다.',
+    path: ['totalCount'],
+  }) satisfies ZodType<UserApiTypes.DailyProductListResponse>;
 
 export type DailyProductsTypes = z.infer<typeof dailyProductsSchema>;
 
