@@ -14,7 +14,9 @@ const normalizeNearbyMarketsListParams = ({
   lng,
   radius,
   size,
-}: NearbyMarketsListParamsTypes) => {
+}: NearbyMarketsListParamsTypes): Partial<
+  Pick<NearbyMarketsListParamsTypes, 'lat' | 'lng' | 'radius' | 'size'>
+> => {
   return Object.fromEntries(
     Object.entries({
       lat,
@@ -22,7 +24,7 @@ const normalizeNearbyMarketsListParams = ({
       radius,
       size,
     }).filter(([, value]) => value !== undefined),
-  );
+  ) satisfies Partial<Pick<NearbyMarketsListParamsTypes, 'lat' | 'lng' | 'radius' | 'size'>>;
 };
 
 export const marketQueryKeys = {
