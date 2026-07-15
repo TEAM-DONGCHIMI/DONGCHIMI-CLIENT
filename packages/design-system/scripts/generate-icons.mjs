@@ -1,0 +1,153 @@
+/* global console, process */
+
+import { spawn } from 'node:child_process';
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { createIconIndexSource, normalizeCurrentColorAttributes } from './icon-utils.mjs';
+import {
+  buildIconManifest,
+  collectGeneratedIconEntries,
+  collectIconSvgEntries,
+  iconManifestFileName,
+  serializeIconManifest,
+} from './icon-sync.mjs';
+import { validateSvgContent } from './validate-icons.mjs';
+
+const packageRoot = process.cwd();
+const iconsRoot = path.join(packageRoot, 'src', 'icons');
+const svgRoot = path.join(iconsRoot, 'svg');
+const generatedRoot = path.join(iconsRoot, 'generated');
+const indexPath = path.join(iconsRoot, 'index.ts');
+const manifestPath = path.join(generatedRoot, iconManifestFileName);
+
+const cleanGeneratedFiles = async () => {
+  await mkdir(generatedRoot, { recursive: true });
+
+  const entries = await readdir(generatedRoot, { withFileTypes: true });
+  await Promise.all(
+    entries
+      .filter(
+        (entry) => entry.isFile() && (entry.name.endsWith('.ts') || entry.name.endsWith('.tsx')),
+      )
+      .map((entry) => rm(path.join(generatedRoot, entry.name))),
+  );
+};
+
+const runSvgr = () => {
+  const svgrCliPath = path.join(packageRoot, 'node_modules', '@svgr', 'cli', 'bin', 'svgr');
+  const args = [
+    svgrCliPath,
+    '--typescript',
+    '--icon',
+    '--memo',
+    '--ref',
+    '--no-index',
+    '--out-dir',
+    path.relative(packageRoot, generatedRoot),
+    path.relative(packageRoot, svgRoot),
+  ];
+
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, args, {
+      cwd: packageRoot,
+      stdio: 'inherit',
+    });
+
+    child.on('error', reject);
+    child.on('exit', (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+
+      reject(new Error(`SVGR exited with code ${code}`));
+    });
+  });
+};
+
+const runPrettier = () => {
+  const args = [
+    path.join(packageRoot, '..', '..', 'node_modules', 'prettier', 'bin', 'prettier.cjs'),
+    '--write',
+    path.relative(packageRoot, generatedRoot),
+    path.relative(packageRoot, indexPath),
+  ];
+
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, args, {
+      cwd: packageRoot,
+      stdio: 'inherit',
+    });
+
+    child.on('error', reject);
+    child.on('exit', (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+
+      reject(new Error(`Prettier exited with code ${code}`));
+    });
+  });
+};
+
+const normalizeGeneratedIconImports = async () => {
+  const entries = await readdir(generatedRoot, { withFileTypes: true });
+  await Promise.all(
+    entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.tsx'))
+      .map(async (entry) => {
+        const filePath = path.join(generatedRoot, entry.name);
+        const source = await readFile(filePath, 'utf8');
+        const normalizedSource = normalizeCurrentColorAttributes(
+          source
+            .replace('import * as React from "react";\n', '')
+            .replace(
+              'import type { SVGProps } from "react";\nimport { Ref, forwardRef, memo } from "react";',
+              "import { forwardRef, memo, type Ref, type SVGProps } from 'react';",
+            ),
+        );
+
+        await writeFile(filePath, normalizedSource, 'utf8');
+      }),
+  );
+};
+
+const writeIconIndex = async (svgFiles) => {
+  await writeFile(indexPath, createIconIndexSource(svgFiles), 'utf8');
+};
+
+const writeIconManifest = async (svgEntries) => {
+  const generatedEntries = await collectGeneratedIconEntries(generatedRoot);
+
+  await writeFile(
+    manifestPath,
+    serializeIconManifest(buildIconManifest({ generatedEntries, svgEntries })),
+    'utf8',
+  );
+};
+
+const svgEntries = await collectIconSvgEntries(svgRoot);
+const svgFiles = svgEntries.map((entry) => entry.filePath);
+const validationErrors = svgEntries.flatMap((entry) =>
+  validateSvgContent(entry.filePath, entry.source, packageRoot),
+);
+
+if (validationErrors.length > 0) {
+  console.error('Icon SVG validation failed:');
+  console.error(validationErrors.map((error) => `- ${error}`).join('\n'));
+  process.exit(1);
+}
+
+await cleanGeneratedFiles();
+
+if (svgFiles.length > 0) {
+  await runSvgr();
+  await normalizeGeneratedIconImports();
+}
+
+await writeIconIndex(svgFiles);
+await runPrettier();
+await writeIconManifest(svgEntries);
+
+console.log(`Generated ${svgFiles.length} icon${svgFiles.length === 1 ? '' : 's'}.`);

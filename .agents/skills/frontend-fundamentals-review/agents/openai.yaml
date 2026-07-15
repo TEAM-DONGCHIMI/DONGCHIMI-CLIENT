@@ -1,0 +1,6 @@
+interface:
+  display_name: '프론트엔드 펀더멘탈 리뷰'
+  short_description: '가독성, 예측 가능성, 응집도, 결합도 기준 리뷰'
+  default_prompt: '$frontend-fundamentals-review로 현재 프론트엔드 diff를 코드 품질 관점에서 리뷰해줘.'
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "routes": [
+    {
+      "src": "/v1/(.*)",
+      "headers": {
+        "x-vercel-enable-rewrite-caching": "0"
+      },
+      "continue": true
+    },
+    {
+      "src": "/v1/(.*)",
+      "dest": "https://api.dongchiimi.com/v1/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "/images/$1"
+    },
+    {
+      "src": "/lottie/(.*)",
+      "dest": "/lottie/$1"
+    },
+    {
+      "src": "/favicon.svg",
+      "dest": "/favicon.svg"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html",
+      "status": 404
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+import { type ReactNode } from 'react';
+
+import { Flex } from '@dongchimi/design-system/components';
+import { IcSearchSizeSmall } from '@dongchimi/design-system/icons';
+import { cn } from '@dongchimi/design-system/styles';
+
+import { SearchBar, type SearchBarProps } from '../search-bar';
+import * as S from './DesktopHeader.css';
+
+interface DesktopHeaderSearchBarProps {
+  searchValue?: string;
+  onSearch?: SearchBarProps['onSearch'];
+  onSearchValueChange?: SearchBarProps['onValueChange'];
+}
+
+type DesktopHeaderSearchProps =
+  | (DesktopHeaderSearchBarProps & {
+      searchSlot?: never;
+      showSearchBar?: true;
+    })
+  | {
+      searchSlot: ReactNode;
+      searchValue?: never;
+      onSearch?: never;
+      onSearchValueChange?: never;
+      showSearchBar?: true;
+    }
+  | {
+      searchSlot?: never;
+      searchValue?: never;
+      onSearch?: never;
+      onSearchValueChange?: never;
+      showSearchBar: false;
+    };
+
+type DesktopHeaderSearchRenderProps = DesktopHeaderSearchBarProps & {
+  searchSlot?: ReactNode;
+};
+
+type DesktopHeaderBaseProps = DesktopHeaderSearchProps & {
+  className?: string;
+};
+
+interface DesktopHeaderDefaultProps {
+  currentLabel: string;
+  logo?: ReactNode;
+  parentLabel: string;
+  variant?: 'default';
+}
+
+interface DesktopHeaderOnlyHomeProps {
+  homeLabel?: string;
+  variant: 'onlyHome';
+}
+
+interface DesktopHeaderLogoOnlyProps {
+  logo: ReactNode;
+  variant: 'logoOnly';
+}
+
+export type DesktopHeaderProps = DesktopHeaderBaseProps &
+  (DesktopHeaderDefaultProps | DesktopHeaderOnlyHomeProps | DesktopHeaderLogoOnlyProps);
+
+const searchIcon = <IcSearchSizeSmall aria-hidden='true' className={S.searchIconClassName} />;
+
+const renderSearchBar = ({
+  searchValue,
+  onSearch,
+  onSearchValueChange,
+}: DesktopHeaderSearchBarProps) => (
+  <SearchBar
+    aria-label='상품 검색'
+    icon={searchIcon}
+    onSearch={onSearch}
+    onValueChange={onSearchValueChange}
+    placeholder='상품 검색...'
+    value={searchValue}
+  />
+);
+
+const renderSearchArea = ({
+  searchSlot,
+  searchValue,
+  onSearch,
+  onSearchValueChange,
+}: DesktopHeaderSearchRenderProps) => {
+  return searchSlot ?? renderSearchBar({ searchValue, onSearch, onSearchValueChange });
+};
+
+export const DesktopHeader = ({
+  className,
+  searchSlot,
+  searchValue,
+  showSearchBar = true,
+  onSearch,
+  onSearchValueChange,
+  ...props
+}: DesktopHeaderProps) => {
+  if (props.variant === 'logoOnly') {
+    return (
+      <Flex align='center' as='header' className={cn(S.logoHeaderClassName, className)}>
+        <span className={S.logoSlotClassName}>{props.logo}</span>
+      </Flex>
+    );
+  }
+
+  const hasLogo = props.variant !== 'onlyHome' && props.logo != null;
+
+  if (hasLogo) {
+    return (
+      <Flex align='center' as='header' className={cn(S.logoHeaderClassName, className)}>
+        <span className={S.logoSlotClassName}>{props.logo}</span>
+
+        <Flex align='center' as='nav' aria-label='현재 위치' className={S.logoBreadcrumbClassName}>
+          <span className={S.parentLabelClassName}>{props.parentLabel}</span>
+          <span aria-hidden='true' className={S.separatorClassName}>
+            /
+          </span>
+          <span aria-current='page' className={S.currentLabelClassName}>
+            {props.currentLabel}
+          </span>
+        </Flex>
+
+        {showSearchBar && (
+          <span className={S.logoSearchSlotClassName}>
+            {renderSearchArea({ searchSlot, searchValue, onSearch, onSearchValueChange })}
+          </span>
+        )}
+      </Flex>
+    );
+  }
+
+  return (
+    <Flex align='center' as='header' className={cn(S.headerClassName, className)} justify='between'>
+      {props.variant === 'onlyHome' ? (
+        <span className={S.homeLabelClassName}>{props.homeLabel ?? '동치미 작업 홈'}</span>
+      ) : (
+        <Flex align='center' as='nav' className={S.breadcrumbClassName} aria-label='현재 위치'>
+          <span className={S.parentLabelClassName}>{props.parentLabel}</span>
+          <span aria-hidden='true' className={S.separatorClassName}>
+            /
+          </span>
+          <span aria-current='page' className={S.currentLabelClassName}>
+            {props.currentLabel}
+          </span>
+        </Flex>
+      )}
+
+      {showSearchBar &&
+        renderSearchArea({ searchSlot, searchValue, onSearch, onSearchValueChange })}
+    </Flex>
+  );
+};

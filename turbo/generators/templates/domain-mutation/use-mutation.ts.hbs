@@ -1,0 +1,11 @@
+'use client';
+
+import { useMutation } from '@tanstack/react-query';
+
+import { {{mutationCamelName}}, type {{mutationName}}Payload } from '../api/{{mutationKebabName}}-api';
+
+export const use{{mutationName}}Mutation = () => {
+  return useMutation({
+    mutationFn: (payload: {{mutationName}}Payload) => {{mutationCamelName}}(payload),
+  });
+};

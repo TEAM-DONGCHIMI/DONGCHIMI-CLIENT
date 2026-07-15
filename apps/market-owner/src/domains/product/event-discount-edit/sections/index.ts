@@ -1,0 +1,1 @@
+export { EventDiscountEditProductSection } from './EventDiscountEditProductSection';

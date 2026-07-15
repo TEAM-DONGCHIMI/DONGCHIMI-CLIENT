@@ -1,0 +1,296 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: 'ko-KR' # 리뷰 언어 설정
+early_access: true # 얼리 액세스 기능 활성화
+
+# 리뷰 톤 및 스타일 지정(스키마 maxLength=250을 준수해 축약)
+tone_instructions: |
+  한국어(ko-KR)로 간결하고 건설적인 코드 리뷰를 제공해요. 보안(security), 성능(performance), 유지보수성(maintainability)을 우선해요.
+  상세 컨벤션은 리포의 규칙 문서를 최우선으로 적용해요(knowledge_base.code_guidelines 참조).
+
+reviews:
+  profile: 'assertive' # 리뷰 스타일: assertive(엄격), chill(관대)
+  request_changes_workflow: false
+  high_level_summary: true # PR 요약 생성
+  poem: false # 시(POEM) 생성 비활성화
+  review_status: true # 리뷰 상태 표시
+  assess_linked_issues: false # 연결된 이슈 분석
+  related_prs: false # 관련 PR 표시
+  suggested_labels: true # 라벨 자동 제안
+  sequence_diagrams: false # 시퀀스 다이어그램 생성 비활성화(기본 노이즈 절감)
+  changed_files_summary: true # 변경된 파일 요약
+
+  # 워크플로우 개선
+  high_level_summary_in_walkthrough: true # 요약을 워크스루에 포함
+  high_level_summary_placeholder: '이 PR의 주요 변경사항을 요약합니다'
+  collapse_walkthrough: true # 워크스루 섹션 접기(기본은 접어서 노이즈 감소)
+  commit_status: true # 커밋 상태 체크
+  fail_commit_status: false # 커밋 실패 시 상태 체크 실패하지 않음
+  related_issues: false # 관련 이슈 추적
+  abort_on_close: true # PR 닫힐 때 리뷰 중단
+
+  # 파일 경로 필터링 (agent harness와 예정 workspace 구조 기준)
+  path_filters:
+    # 포함(allow-list)
+    - 'AGENTS.md'
+    - 'README.md'
+    - 'docs/**'
+    - 'recipes/**'
+    - 'templates/**'
+    - '.agents/**'
+    - '.github/**'
+    - 'packages/**'
+    - 'apps/**'
+    - 'turbo/**'
+    - 'package.json'
+    - 'pnpm-workspace.yaml'
+    - 'turbo.json'
+    - 'eslint.config.*'
+    - '.prettierrc'
+    - 'prettier.config.*'
+    - '.prettierignore'
+    - 'tsconfig*.json'
+    - '.env.example'
+    # 제외(deny-list)
+    - '!.coderabbit.yaml'
+    - '!node_modules/**'
+    - '!.pnpm-store/**'
+    - '!.turbo/**'
+    - '!apps/**/node_modules/**'
+    - '!apps/**/.next/**'
+    - '!apps/**/.turbo/**'
+    - '!dist/**'
+    - '!coverage/**'
+    - '!storybook-static/**'
+    - '!build/**'
+    - '!packages/**/dist/**'
+    - '!**/*.snap'
+    - '!**/*.png'
+    - '!**/*.jpg'
+    - '!**/*.jpeg'
+    - '!**/*.svg'
+    - '!**/*.gif'
+    - '!**/*.webp'
+    - '!**/*.ico'
+    - '!**/*.avif'
+    - '!**/*.mp4'
+    - '!**/*.webm'
+    - '!**/*.mp3'
+    - '!**/*.ogg'
+    - '!*.lock'
+    - '!pnpm-lock.yaml'
+    - '!package-lock.json'
+    - '!bun.lockb'
+
+  # 경로별 특별 지침 (구체적인 패턴부터 일반적인 패턴 순으로 배열)
+  path_instructions:
+    - path: 'packages/design-system/**/*.stories.tsx'
+      instructions: |
+        Storybook 스토리 리뷰 시:
+        - 모든 props 변형에 대한 스토리 작성
+        - a11y 테스트 통과 여부
+        - 적절한 문서화와 컨트롤 제공
+
+    - path: 'apps/client/src/**/components/**/*.tsx'
+      instructions: |
+        컴포넌트 파일 리뷰 시:
+        - 파일명이 PascalCase인지 확인
+        - Props 타입은 docs/conventions/coding.md의 Props suffix 규칙을 따르는지 확인
+        - export 방식은 주변 파일과 package public API 기준을 우선 적용
+        - 컴포넌트는 arrow function과 named export를 우선 사용하는지 확인
+        - 이벤트 핸들러는 동작을 잘 드러내는 이름인지 확인
+        - 접근성 준수: ARIA 속성, label 연결, 키보드 포커스
+        - 전체 클릭/링크 제안 시 내부에 <a>가 있는지 먼저 확인 (중첩 앵커 금지, 필요 시 overlay 링크 등 대안 제시)
+        - 성능 최적화 훅은 실제 비용이나 참조 안정성 필요가 있을 때만 제안
+
+    - path: 'apps/client/src/**/hooks/**/*.ts'
+      instructions: |
+        커스텀 훅 리뷰 시:
+        - Hook/API/Utils 파일명은 kebab-case, 함수명은 use* 접두사 사용
+        - 의존성 배열(exhaustive-deps) 준수, 참조 안정성 유지(함수/객체 메모이제이션)
+        - 반환 값 일관성(tuple/object), 에러/로딩 상태 명확화
+        - 제네릭 훅은 타입 매개변수 기본값 검토
+        - TanStack Query 훅 네이밍: use + 행위 + 대상 + Query/Mutation (예: useGetUserListQuery)
+
+    - path: 'apps/client/src/**/*.ts'
+      instructions: |
+        앱 TypeScript 파일 리뷰 시:
+        - type-only import 사용(import type), 불필요한 런타임 의존성 제거
+        - var 사용 금지, const 우선 사용 확인
+        - 타입 이름은 PascalCase, Props 타입은 Props suffix, 일반 type은 Types suffix 규칙을 확인
+        - API 응답처럼 확장 가능한 객체 계약은 interface 사용을 우선 검토
+        - API Response는 XXXResponse 네이밍을 따르는지 확인
+        - satisfies 연산자 활용으로 정확한 타입 보장
+
+    - path: 'apps/client/src/shared/components/**'
+      instructions: |
+        공통 컴포넌트 리뷰 시 다음 사항을 중점적으로 검토해주세요:
+        - TypeScript 타입 정의의 정확성과 제네릭 활용
+        - 높은 재사용성을 위한 props 설계
+        - 일관된 API 디자인과 명명 규칙
+        - 접근성(a11y) 준수
+
+    - path: 'apps/client/src/domains/**'
+      instructions: |
+        도메인 코드 리뷰 시:
+        - 도메인 내부 구현과 shared 추출 기준이 과하지 않은지 확인
+        - fixture-only UI와 real API integration 경계가 명확한지 확인
+        - route-local 코드와 shared 코드의 책임이 섞이지 않는지 확인
+
+    - path: 'apps/client/src/shared/api/**'
+      instructions: |
+        API 레이어 리뷰 시:
+        - shared HTTP client와 API error 포맷을 우선 사용
+        - API error를 조용히 삼키지 않는지 확인
+        - 타입 안정성 확보(응답 제네릭, 불변 데이터)
+        - auth/refresh/retry 같은 전역 side effect 추가는 별도 정책 없이 확장하지 않도록 확인
+
+    - path: 'apps/client/src/shared/query/**'
+      instructions: |
+        TanStack Query 리뷰 시:
+        - query key에 response-changing params가 포함되는지 확인
+        - mutation 후 invalidate/setQueryData/optimistic update 선택 기준이 명확한지 확인
+        - 기본 staleTime, retry, refetch 정책이 의도와 맞는지 확인
+
+    - path: 'apps/client/src/shared/constants/**'
+      instructions: |
+        상수 파일 리뷰 시:
+        - 모든 상수가 BIG_SNAKE_CASE로 작성되었는지 확인
+        - export const 사용 확인
+        - 의미있는 이름 사용 여부 확인
+        - 리터럴은 as const로 타입 좁히기
+
+    - path: 'packages/design-system/**'
+      instructions: |
+        디자인시스템 package 리뷰 시:
+        - public export API가 과하게 넓어지지 않는지 확인
+        - component props, variant, state, accessibility 기준이 명확한지 확인
+        - app-specific 로직이 design-system package로 들어오지 않는지 확인
+
+    - path: 'turbo/generators/**'
+      instructions: |
+        Turbo generator 리뷰 시:
+        - 출력 경로가 현재 workspace 구조와 일치하는지 확인
+        - template output과 spec template이 서로 맞는지 확인
+        - generator argument naming이 docs/workflows/turbo-generators.md와 일치하는지 확인
+
+    - path: 'docs/**'
+      instructions: |
+        문서 리뷰 시:
+        - AGENTS.md가 허브 역할만 하고 source of truth를 중복하지 않는지 확인
+        - docs/index.md 또는 관련 index에서 문서 링크가 발견 가능한지 확인
+        - 현재 구현과 제안/후속 작업의 경계가 명확한지 확인
+        - 실제 실행한 검증과 계획 또는 미실행 검증을 분리해서 적는지 확인
+
+    - path: 'apps/client/src/**'
+      instructions: |
+        클라이언트 앱 코드 리뷰 시:
+
+        # 기본 규칙
+        - 실제 apps/client 구조와 프레임워크 설정이 존재하는지 먼저 확인
+        - TypeScript 기반 컴포넌트 작성 여부 확인
+        - Next.js App Router 또는 server/client boundary는 실제 설정이 확인될 때만 전제로 삼음
+        - shared, domains, app route 책임이 섞이지 않는지 확인
+        - 절대 경로 alias는 실제 tsconfig 설정과 일치할 때만 제안
+
+        # 네이밍 컨벤션
+        - 컴포넌트와 클래스는 PascalCase 사용
+        - 변수와 함수는 camelCase 사용
+        - 상수는 BIG_SNAKE_CASE 사용
+        - 타입 이름은 PascalCase 사용
+        - Props 타입은 Props suffix, 일반 type은 Types suffix 규칙 사용
+        - API Response 타입은 XXXResponse 형식
+        - Boolean 값은 is prefix 사용을 권장
+        - API 함수는 HTTP메서드 + 명사 형식 (getUserList, postComment)
+        - TanStack Query 훅: use + 행위 + 대상 + Query/Mutation (예: useGetUserListQuery)
+        - Hook/API/Utils/TanStack Query 파일명은 kebab-case 사용
+
+        # 보안 및 성능
+        - 환경 변수는 실제 런타임과 공개/비공개 prefix 기준을 확인
+        - API 키나 시크릿을 하드코딩하지 않음
+        - React.memo, useMemo, useCallback은 실제 필요가 있을 때만 제안
+        - 큰 번들 사이즈 경고 (dynamic import 제안)
+        - 템플릿 리터럴 사용 권장 (문자열 조합 시)
+        - 구조 분해 할당 적극 활용
+        - Frontend Fundamentals 기준(readability, predictability, cohesion, coupling)을 적용
+
+        # 커밋 및 브랜치 패턴
+        - 커밋 메시지: prefix(scope): JIRAKEY work summary 형식
+        - 브랜치 패턴: prefix/{scope}/{JIRAKEY}-work-summary 형식
+        - PR 제목은 [PREFIX](scope): JIRAKEY work summary 형식
+
+  auto_review:
+    enabled: true # 자동 리뷰 활성화
+    drafts: false # 드래프트 리뷰 사용 여부
+    base_branches: # Git Flow와 정렬
+      - 'develop'
+      - 'main'
+    labels: # 라벨 기반 필터(느슨한 NOT 매칭)
+      - '!wip'
+      - '!draft'
+      - '!skip-review'
+    ignore_usernames: # 봇 PR 무시
+      - 'dependabot'
+      - 'renovate'
+    ignore_title_keywords: # 특정 키워드가 포함된 PR 제목 무시
+      - '[docs]'
+      - '[skip-review]'
+
+  # 사전 병합 검사(팀 규칙의 가시화, 엄격도는 warning로 시작)
+  pre_merge_checks:
+    title:
+      mode: 'warning'
+      requirements: 'PR 제목은 [PREFIX](scope): JIRAKEY work summary 형식을 따릅니다.'
+    description:
+      mode: 'warning'
+    issue_assessment:
+      mode: 'off'
+
+  # 코드 개선 기능 (finishing_touches) - 전역 비활성화
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: false
+
+  # TypeScript/React 환경에 최적화된 도구들 (실제 사용하는 것만)
+  tools:
+    eslint:
+      enabled: true # TypeScript/React 린팅
+    languagetool:
+      enabled: true # 한국어 문법 검사
+      level: 'default'
+    markdownlint:
+      enabled: true # 문서 품질 검사
+    gitleaks:
+      enabled: true # 보안 비밀 정보 스캔
+    yamllint:
+      enabled: true # YAML 파일 검증
+    actionlint:
+      enabled: true # GitHub Actions 검증
+
+# 채팅 설정
+chat:
+  art: false # 아스키/이모지 아트 비활성화(전문성 유지)
+  auto_reply: true # AI 자동 답변 활성화
+
+# 지식 베이스 설정
+knowledge_base:
+  web_search:
+    enabled: true # 웹 검색 기능 활성화
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - 'README.md'
+      - '.prettierignore'
+      - 'prettier.config.mjs'
+      - 'AGENTS.md'
+      - 'docs/index.md'
+      - 'docs/agent/**/*.md'
+      - 'docs/architecture/**/*.md'
+      - 'docs/decisions/**/*.md'
+      - 'docs/conventions/**/*.md'
+      - 'docs/workflows/**/*.md'
+      - 'docs/code-quality/**/*.md'
+      - 'recipes/**/*.md'
+      - 'templates/**/*.md'
+      - '.agents/skills/**/SKILL.md'

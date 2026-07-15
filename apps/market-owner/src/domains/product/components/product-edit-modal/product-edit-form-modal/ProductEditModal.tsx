@@ -1,0 +1,489 @@
+import { useEffect, useRef, useState, type ChangeEventHandler } from 'react';
+
+import { Button, Dialog, InlineField } from '@dongchimi/design-system/components';
+import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
+import { useToast } from '@dongchimi/shared/toast';
+
+import { useProductDetailQuery, useProductUpdateFlow } from '@/domains/product/hooks';
+import { type ProductUpdateFormValuesTypes } from '@/domains/product/model/create-product-update-request';
+import { type OwnerApiTypes } from '@/shared/api';
+import { PRODUCT_CATEGORY_NAME_BY_CODE } from '@/shared/constants/product-categories';
+import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
+import { imageUploadInputAccept, isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
+
+import {
+  productSelectableCategoryOptions,
+  type ProductSelectableCategoryTypes,
+} from '../../../constants';
+import { useProductCategoryDropdownLayout, useProductOverlayDisclosure } from '../../../hooks';
+import {
+  addOneDayToProductEditDate,
+  formatProductEditDateForInput,
+  getProductDateMinimum,
+  isProductEditDateRangeValid,
+  isProductEditDateTodayOrFuture,
+} from '../../../utils/product-date';
+import {
+  formatProductPriceInput,
+  limitProductNameInput,
+  limitProductPromotionTextInput,
+  sanitizeProductName,
+} from '../../../utils/product-input';
+import {
+  type ProductEditCardProps,
+  type ProductEditCardVariantTypes,
+} from '../../product-edit-product-list';
+import { DateField } from '../../date-field';
+import { ProductCategoryDropdown, ProductCategoryTrigger } from '../../product-category-dropdown';
+import { ProductImageUploadField } from '../../product-image-upload-field';
+import { useProductEditModalContentFocus } from '../hooks/use-product-edit-modal-content-focus';
+import { keepProductEditDialogOpen, openProductEditOverlay } from '../open-product-edit-overlay';
+import * as S from './ProductEditModal.css';
+
+interface ProductEditModalProps {
+  marketId: number;
+  open: boolean;
+  product: ProductEditCardProps;
+  productId: number;
+  variant: ProductEditCardVariantTypes;
+  onClose: () => void;
+  onSubmit?: (product: ProductEditCardProps) => void;
+}
+
+interface OpenProductEditModalParams {
+  marketId: number;
+  product: ProductEditCardProps;
+  productId: number;
+  onClose?: () => void;
+  onSubmit?: (product: ProductEditCardProps) => void;
+  variant: ProductEditCardVariantTypes;
+}
+
+interface ProductEditFormValues extends ProductUpdateFormValuesTypes {
+  endDate: string;
+  imageFile: File | null;
+  imagePreviewUrl: string | null;
+}
+
+const PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID = 'product-edit-modal-category-dropdown';
+const PRODUCT_DETAIL_LOAD_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요. 다시 시도해주세요.';
+
+interface ProductEditModalFormProps extends Omit<
+  ProductEditModalProps,
+  'marketId' | 'onSubmit' | 'product' | 'productId'
+> {
+  detail: OwnerApiTypes.OwnerProductDetailResponse;
+  isSubmitting: boolean;
+  onSubmit: (values: ProductEditFormValues) => Promise<boolean>;
+}
+
+const createInitialValues = (
+  detail: OwnerApiTypes.OwnerProductDetailResponse,
+): ProductEditFormValues => {
+  const categoryName = PRODUCT_CATEGORY_NAME_BY_CODE[detail.category];
+
+  return {
+    categoryName,
+    endDate: formatProductEditDateForInput(detail.discountEndDate),
+    imageFile: null,
+    imagePreviewUrl: detail.thumbnailUrl ?? null,
+    originalPrice: detail.originalPrice.toLocaleString('ko-KR'),
+    productName: detail.name,
+    promotionText: detail.promotionalPhrase ?? '',
+    salePrice: detail.discountedPrice.toLocaleString('ko-KR'),
+    startDate: formatProductEditDateForInput(detail.discountStartDate),
+  };
+};
+
+const isSameFormValues = (values: ProductEditFormValues, initialValues: ProductEditFormValues) => {
+  return (Object.keys(initialValues) as (keyof ProductEditFormValues)[]).every(
+    (key) => values[key] === initialValues[key],
+  );
+};
+
+const parseProductPrice = (value: string | undefined) => {
+  if (value == null) {
+    return undefined;
+  }
+
+  return Number(value.replaceAll(',', ''));
+};
+
+const calculateProductDiscountRate = (originalPrice: number, salePrice: number) => {
+  if (originalPrice <= 0) {
+    return undefined;
+  }
+
+  return String(Math.max(0, Math.round(((originalPrice - salePrice) / originalPrice) * 100)));
+};
+
+const createUpdatedProductCard = ({
+  product,
+  values,
+  variant,
+}: {
+  product: ProductEditCardProps;
+  values: ProductEditFormValues;
+  variant: ProductEditCardVariantTypes;
+}): ProductEditCardProps => {
+  const originalPrice = parseProductPrice(values.originalPrice);
+  const salePrice = parseProductPrice(values.salePrice) ?? 0;
+
+  return {
+    ...product,
+    categoryName: values.categoryName,
+    endDate: values.endDate,
+    originalPrice: variant === 'todaySpecial' ? values.originalPrice : undefined,
+    productName: sanitizeProductName(values.productName),
+    salePercent:
+      variant === 'todaySpecial' && originalPrice != null
+        ? calculateProductDiscountRate(originalPrice, salePrice)
+        : undefined,
+    salePrice: values.salePrice,
+    startDate: values.startDate,
+  };
+};
+
+const ProductEditModalForm = ({
+  detail,
+  isSubmitting,
+  open,
+  variant,
+  onClose,
+  onSubmit,
+}: ProductEditModalFormProps) => {
+  const [initialValues] = useState(() => createInitialValues(detail));
+  const [values, setValues] = useState(initialValues);
+  const categoryFieldRef = useRef<HTMLDivElement>(null);
+  const categoryTriggerRef = useRef<HTMLButtonElement>(null);
+  const contentRef = useProductEditModalContentFocus(open);
+  const categoryDropdown = useProductOverlayDisclosure({
+    overlayId: PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID,
+    triggerRef: categoryFieldRef,
+  });
+  const categoryDropdownStyle = useProductCategoryDropdownLayout({
+    containerRef: categoryFieldRef,
+    isOpen: categoryDropdown.isOpen,
+    triggerRef: categoryTriggerRef,
+  });
+  const isTodaySpecial = variant === 'todaySpecial';
+  const isTodayOnly = values.startDate === values.endDate;
+  const isStartDateValid = isTodaySpecial || isProductEditDateTodayOrFuture(values.startDate);
+  const isDateRangeValid = isProductEditDateRangeValid(values.startDate, values.endDate);
+  const isEdited = !isSameFormValues(values, initialValues);
+  const handleImagePreviewChange = ({ file, previewUrl }: ImagePreviewChangePayload) => {
+    setValues((currentValues) => ({
+      ...currentValues,
+      imageFile: file,
+      imagePreviewUrl: previewUrl,
+    }));
+  };
+  const imagePreview = useImagePreview({
+    currentPreviewUrl: values.imagePreviewUrl,
+    isValidFile: isValidImageUploadFile,
+    onPreviewChange: handleImagePreviewChange,
+    previewUrls: [values.imagePreviewUrl],
+  });
+
+  const closeModal = () => {
+    categoryDropdown.close();
+    onClose();
+  };
+
+  const updateValue =
+    (key: keyof ProductEditFormValues): ChangeEventHandler<HTMLInputElement> =>
+    (event) => {
+      const inputValue = event.target.value;
+      const isPriceField = key === 'originalPrice' || key === 'salePrice';
+      const nextValue =
+        key === 'productName'
+          ? limitProductNameInput(inputValue)
+          : key === 'promotionText'
+            ? limitProductPromotionTextInput(inputValue)
+            : isPriceField
+              ? formatProductPriceInput(inputValue)
+              : inputValue;
+
+      setValues((currentValues) => ({
+        ...currentValues,
+        [key]: nextValue,
+      }));
+    };
+
+  const selectCategory = (categoryName: ProductSelectableCategoryTypes) => {
+    setValues((currentValues) => ({
+      ...currentValues,
+      categoryName,
+    }));
+    categoryDropdown.close();
+  };
+
+  const toggleTodayOnlyPeriod = () => {
+    setValues((currentValues) => ({
+      ...currentValues,
+      endDate:
+        currentValues.endDate === currentValues.startDate
+          ? addOneDayToProductEditDate(currentValues.endDate)
+          : currentValues.startDate,
+    }));
+  };
+
+  const submitModal = async () => {
+    const didUpdate = await onSubmit(values);
+
+    if (didUpdate) {
+      closeModal();
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
+      <Dialog.Content ref={contentRef} className={S.contentClassName}>
+        <div aria-busy={isSubmitting} className={S.containerClassName}>
+          <Dialog.Title className={S.titleClassName}>판매 정보를 수정해주세요</Dialog.Title>
+
+          <div className={S.bodyClassName}>
+            <section className={S.sectionClassName}>
+              <h3 className={S.sectionTitleClassName}>상품 정보</h3>
+              <div className={S.formColumnClassName}>
+                <ProductImageUploadField
+                  accept={imageUploadInputAccept}
+                  id='product-edit-modal-image'
+                  label='상품 이미지'
+                  previewUrl={values.imagePreviewUrl}
+                  variant='editModal'
+                  onImageChange={imagePreview.imageInputProps.onChange}
+                />
+                <div className={S.productInfoGridClassName}>
+                  <div className={S.fieldGroupClassName}>
+                    <span className={S.fieldLabelClassName}>상품명</span>
+                    <InlineField
+                      aria-label='상품명'
+                      value={values.productName}
+                      onChange={updateValue('productName')}
+                    />
+                  </div>
+                  <div ref={categoryFieldRef} className={S.categoryFieldClassName}>
+                    <span className={S.fieldLabelClassName}>상품 구분</span>
+                    <ProductCategoryTrigger
+                      aria-controls={PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID}
+                      aria-expanded={categoryDropdown.isOpen}
+                      label={values.categoryName}
+                      onClick={categoryDropdown.toggle}
+                      ref={categoryTriggerRef}
+                    />
+
+                    {categoryDropdown.isOpen && (
+                      <ProductCategoryDropdown
+                        ariaLabel='상품 구분 선택'
+                        className={S.categoryDropdownClassName}
+                        id={PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID}
+                        options={productSelectableCategoryOptions}
+                        selectedCategory={values.categoryName}
+                        style={categoryDropdownStyle}
+                        onSelect={selectCategory}
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div className={S.fieldGroupClassName}>
+                  <span className={S.fieldLabelClassName}>상품 한줄 홍보글</span>
+                  <InlineField
+                    aria-label='상품 한줄 홍보글'
+                    value={values.promotionText}
+                    onChange={updateValue('promotionText')}
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className={S.sectionClassName}>
+              <h3 className={S.sectionTitleClassName}>상품 가격</h3>
+              <div className={S.formColumnClassName}>
+                <div className={S.priceGridRecipe({ variant })}>
+                  {isTodaySpecial && (
+                    <div className={S.fieldGroupClassName}>
+                      <span className={S.fieldLabelClassName}>원가</span>
+                      <InlineField
+                        aria-label='원가'
+                        inputMode='numeric'
+                        unit='원'
+                        value={values.originalPrice}
+                        onChange={updateValue('originalPrice')}
+                      />
+                    </div>
+                  )}
+                  <div className={S.fieldGroupClassName}>
+                    <span className={S.fieldLabelClassName}>
+                      {isTodaySpecial ? '오늘의 특가' : '판매가'}
+                    </span>
+                    <InlineField
+                      aria-label={isTodaySpecial ? '오늘의 특가' : '판매가'}
+                      inputMode='numeric'
+                      unit='원'
+                      value={values.salePrice}
+                      onChange={updateValue('salePrice')}
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className={S.sectionClassName}>
+              <h3 className={S.sectionTitleClassName}>기간 설정</h3>
+              <div className={S.formColumnClassName}>
+                <div className={S.fieldGroupClassName}>
+                  <span className={S.fieldLabelClassName}>행사 기간</span>
+                  <div className={S.dateRowClassName}>
+                    <div className={S.dateRangeClassName}>
+                      <DateField
+                        ariaLabel='행사 시작일'
+                        className={S.dateFieldClassName}
+                        readOnly={isTodaySpecial}
+                        value={values.startDate}
+                        onChange={updateValue('startDate')}
+                      />
+                      <span className={S.dateDividerClassName}>~</span>
+                      <DateField
+                        ariaLabel='행사 종료일'
+                        className={S.dateFieldClassName}
+                        min={getProductDateMinimum(values.startDate)}
+                        value={values.endDate}
+                        onChange={updateValue('endDate')}
+                      />
+                    </div>
+                    {isTodaySpecial && (
+                      <Button
+                        className={S.periodToggleButtonClassName}
+                        color='assistive'
+                        rightIcon={
+                          isTodayOnly ? (
+                            <IcCalendarPlusSizeSmall aria-hidden='true' />
+                          ) : (
+                            <IcLineHorizontalSizeSmall aria-hidden='true' />
+                          )
+                        }
+                        size='small'
+                        type='button'
+                        variant='outlined'
+                        onClick={toggleTodayOnlyPeriod}
+                      >
+                        {isTodayOnly ? '하루 더 늘리기' : '오늘만 특가로'}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div className={S.footerClassName}>
+            <Button
+              className={S.footerButtonClassName}
+              color='assistive'
+              disabled={isSubmitting}
+              size='small'
+              variant='outlined'
+              onClick={closeModal}
+            >
+              취소
+            </Button>
+            <Button
+              className={S.footerButtonClassName}
+              disabled={isSubmitting || !isEdited || !isStartDateValid || !isDateRangeValid}
+              size='small'
+              variant='solid'
+              onClick={submitModal}
+            >
+              변경하기
+            </Button>
+          </div>
+        </div>
+      </Dialog.Content>
+    </Dialog>
+  );
+};
+
+export const ProductEditModal = ({
+  marketId,
+  open,
+  product,
+  productId,
+  variant,
+  onClose,
+  onSubmit,
+}: ProductEditModalProps) => {
+  const toast = useToast();
+  const productDetailQuery = useProductDetailQuery({ marketId, productId });
+  const productUpdateFlow = useProductUpdateFlow();
+
+  useEffect(() => {
+    if (!productDetailQuery.isError) {
+      return;
+    }
+
+    toast.error(PRODUCT_DETAIL_LOAD_ERROR_MESSAGE);
+    onClose();
+  }, [onClose, productDetailQuery.isError, toast]);
+
+  if (productDetailQuery.isPending || productDetailQuery.isError) {
+    return null;
+  }
+
+  const detail = productDetailQuery.data.data;
+
+  const submitProductUpdate = async (values: ProductEditFormValues) => {
+    const result = await productUpdateFlow.submitProductUpdate({
+      currentThumbnailUrl: detail.thumbnailUrl ?? null,
+      dealType: detail.dealType,
+      imageFile: values.imageFile,
+      marketId,
+      productId,
+      values,
+    });
+
+    if (result.success) {
+      onSubmit?.(createUpdatedProductCard({ product, values, variant }));
+    }
+
+    return result.success;
+  };
+
+  return (
+    <ProductEditModalForm
+      detail={detail}
+      isSubmitting={productUpdateFlow.isPending}
+      open={open}
+      variant={variant}
+      onClose={onClose}
+      onSubmit={submitProductUpdate}
+    />
+  );
+};
+
+export const openProductEditModal = ({
+  marketId,
+  product,
+  productId,
+  variant,
+  onClose,
+  onSubmit,
+}: OpenProductEditModalParams) => {
+  openProductEditOverlay({
+    render: ({ closeOverlay, isOpen }) => (
+      <ProductEditModal
+        marketId={marketId}
+        open={isOpen}
+        product={product}
+        productId={productId}
+        variant={variant}
+        onClose={() => {
+          closeOverlay();
+          onClose?.();
+        }}
+        onSubmit={onSubmit}
+      />
+    ),
+  });
+};

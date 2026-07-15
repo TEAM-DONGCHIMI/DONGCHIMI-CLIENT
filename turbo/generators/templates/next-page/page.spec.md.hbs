@@ -1,0 +1,35 @@
+# Next Route Spec: `{{routePath}}`
+
+## Metadata
+
+- App: `{{app}}`
+- Route: `/{{routePath}}`
+- Route path: `apps/{{app}}/src/app/{{routePath}}/page.tsx`
+- Domain page: `apps/{{app}}/src/domains/{{domain}}/{{page}}/{{pageName}}.tsx`
+- Status: Draft
+
+## Purpose
+
+- TODO
+
+## Route
+
+- params:
+- search params:
+- layout:
+- access rule:
+
+## Composition
+
+- Route entry imports `{{pageName}}` from `src/domains/{{domain}}/{{page}}`.
+- Route-specific parsing and Next.js concerns stay in `src/app`.
+- Domain UI and data hooks stay in `src/domains`.
+- Client provider composition stays in `src/app/providers.tsx`.
+
+## Verification
+
+- [ ] `git diff --check`
+- [ ] `pnpm format:check`
+- [ ] `pnpm lint`
+- [ ] `pnpm typecheck`
+- [ ] route smoke check

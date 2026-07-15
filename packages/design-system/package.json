@@ -1,0 +1,72 @@
+{
+  "name": "@dongchimi/design-system",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css.ts"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./components": "./src/components/index.ts",
+    "./icons": "./src/icons/index.ts",
+    "./styles": "./src/styles/index.ts",
+    "./styles/fonts.css": "./src/styles/fonts.css.ts",
+    "./styles/reset.css": "./src/styles/reset.css.ts",
+    "./tokens": "./src/tokens/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "check:icons": "node scripts/check-icons.mjs",
+    "icons:generate": "node scripts/generate-icons.mjs",
+    "icons:import": "node scripts/import-icons.mjs",
+    "lint": "eslint . --max-warnings=0",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "chromatic": "chromatic --build-script-name build-storybook --exit-zero-on-changes",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
+    "test:integration": "vitest run --project integration --passWithNoTests",
+    "test:unit": "vitest run --project unit --project scripts --passWithNoTests",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vanilla-extract/css": "catalog:",
+    "@vanilla-extract/recipes": "catalog:",
+    "clsx": "catalog:",
+    "overlay-kit": "1.9.0"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^5.2.1",
+    "@dongchimi/eslint-config": "workspace:*",
+    "@dongchimi/typescript-config": "workspace:*",
+    "@storybook/addon-a11y": "^10.4.6",
+    "@storybook/addon-docs": "^10.4.6",
+    "@storybook/react-vite": "^10.4.6",
+    "@svgr/cli": "catalog:",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vanilla-extract/vite-plugin": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "chromatic": "^16.10.0",
+    "eslint": "catalog:",
+    "eslint-plugin-storybook": "^10.4.6",
+    "jsdom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "storybook": "^10.4.6",
+    "svgo": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

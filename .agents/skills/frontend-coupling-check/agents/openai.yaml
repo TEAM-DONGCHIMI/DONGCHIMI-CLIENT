@@ -1,0 +1,6 @@
+interface:
+  display_name: '프론트엔드 결합도 점검'
+  short_description: '책임, props, shared 승격, context 점검'
+  default_prompt: '$frontend-coupling-check로 현재 프론트엔드 diff의 결합도를 점검해줘.'
+policy:
+  allow_implicit_invocation: true

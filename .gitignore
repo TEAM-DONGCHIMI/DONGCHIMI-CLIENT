@@ -1,0 +1,57 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+.pnpm-store
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.env
+.env.local
+.env.*
+!.env.example
+
+*storybook.log
+storybook-static
+
+# Deployment tool state
+.vercel
+
+.turbo
+.cache
+coverage
+
+.lighthouseci
+lighthouse-report
+
+apps/*/.vercel
+
+.playwright-mcp
+playwright-report
+test-results
+.next
+.vercel
+apps/*/.vercel
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# Serena MCP keeps runtime data under .serena. Commit only the project config.
+.serena/*
+!.serena/project.yml
