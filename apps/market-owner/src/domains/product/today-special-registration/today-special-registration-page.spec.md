@@ -94,7 +94,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - submit pending: action button을 disabled 처리하고 submit button copy를 `등록 중`으로 변경합니다.
 - submit success: 선택 이미지를 임시 저장소에 업로드하고 상품 등록 API가 성공하면 오늘의 특가 상품 수정 route로 이동합니다.
 - field error: blur 또는 submit validation 이후 필드 아래에 icon과 error message를 표시합니다.
-- registration error: 일반 실패는 `상품을 등록하지 못했습니다. 다시 시도해주세요.`, 네트워크 실패는 `인터넷 연결을 확인한 후 다시 시도해주세요.` toast를 표시하고 현재 페이지에 머뭅니다.
+- registration error: 일반 실패는 `상품을 등록하지 못했습니다. 다시 시도해주세요.`, 네트워크 실패는 `인터넷 연결을 확인한 후 다시 시도해주세요.` toast를 `IcCircleExclamation` 아이콘과 함께 표시하고 현재 페이지에 머뭅니다.
 - market missing: auth store에 `marketId`가 없으면 마트 정보 등록 route로 이동합니다.
 
 ## Form Rules

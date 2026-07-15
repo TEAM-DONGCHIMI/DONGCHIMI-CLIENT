@@ -238,6 +238,7 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       '상품을 등록하지 못했습니다. 다시 시도해주세요.',
     );
+    expect(screen.getByTestId('today-special-registration-error-toast-icon')).toBeInTheDocument();
     expect(screen.queryByText('오늘의 특가 상품 수정 페이지')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '등록 완료' })).toBeEnabled();
   });
@@ -258,6 +259,7 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       '인터넷 연결을 확인한 후 다시 시도해주세요.',
     );
+    expect(screen.getByTestId('today-special-registration-error-toast-icon')).toBeInTheDocument();
     expect(screen.queryByText('오늘의 특가 상품 수정 페이지')).not.toBeInTheDocument();
   });
 
