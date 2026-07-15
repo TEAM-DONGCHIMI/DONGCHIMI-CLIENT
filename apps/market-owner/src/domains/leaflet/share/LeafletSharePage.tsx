@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { overlay } from 'overlay-kit';
 
 import { IcCircleCheckFill, IcCircleExclamation } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
+import { useConfirmPreparedProductDraftsMutation } from '@/domains/product/hooks';
 import { isApiError } from '@/shared/api';
 import { DesktopHeader, QrDownloadModal } from '@/shared/components';
 import { getMarketOwnerEnv } from '@/shared/config';
@@ -29,6 +30,7 @@ const TOAST_ICON_SIZE = '2.4rem';
 const QR_DOWNLOAD_MODAL_OVERLAY_ID = 'leaflet-share-qr-download-modal';
 const QR_DOWNLOAD_FILENAME = 'market-leaflet-qr.png';
 const QR_ISSUE_ERROR_MESSAGE = 'QR 코드를 불러오지 못했습니다. 다시 시도해주세요.';
+const PRODUCT_CONFIRM_ERROR_MESSAGE = '상품을 최종 저장하지 못했습니다. 다시 시도해주세요.';
 const LEAFLET_PUBLISH_ERROR_MESSAGE = '전단을 발행하지 못했습니다. 다시 시도해주세요.';
 const MARKET_CONTEXT_ERROR_MESSAGE = '마트 정보를 확인할 수 없습니다. 다시 로그인해주세요.';
 
@@ -44,9 +46,13 @@ export const LeafletSharePage = () => {
   const marketId = useAuthStore((state) => state.marketId);
   const issueQrCodeMutation = useIssueQrCodeMutation();
   const periodicPreviewQuery = usePeriodicPreviewQuery({ marketId });
+  const confirmPreparedProductDraftsMutation = useConfirmPreparedProductDraftsMutation();
   const publishLeafletMutation = usePublishLeafletMutation();
+  const confirmedMarketIdRef = useRef<number | undefined>(undefined);
+  const shareFlowInFlightRef = useRef(false);
   const [shareView, setShareView] = useState<LeafletShareViewTypes>('confirm');
   const [shareUrl, setShareUrl] = useState('');
+  const [isShareFlowPending, setIsShareFlowPending] = useState(false);
   const isConfirmView = shareView === 'confirm';
   const leafletPreview = useMemo(() => {
     if (periodicPreviewQuery.data == null) {
@@ -56,32 +62,56 @@ export const LeafletSharePage = () => {
     return createLeafletPreviewViewModel(periodicPreviewQuery.data);
   }, [periodicPreviewQuery.data]);
 
-  const showPublishErrorToast = (message: string) => {
+  const showShareFlowErrorToast = (message: string) => {
     toast.error(message, {
       durationMs: TOAST_DURATION_MS,
       icon: <IcCircleExclamation {...toastIconProps} className={S.errorIconClassName} />,
     });
   };
-  const publishAndShowShareView = async () => {
+  const finalizeProductsAndPublishLeaflet = async () => {
+    if (shareFlowInFlightRef.current) {
+      return;
+    }
+
     if (marketId == null) {
-      showPublishErrorToast(MARKET_CONTEXT_ERROR_MESSAGE);
+      showShareFlowErrorToast(MARKET_CONTEXT_ERROR_MESSAGE);
       return;
     }
 
     const { clientBaseUrl } = getMarketOwnerEnv();
 
     if (clientBaseUrl == null) {
-      showPublishErrorToast(LEAFLET_PUBLISH_ERROR_MESSAGE);
+      showShareFlowErrorToast(LEAFLET_PUBLISH_ERROR_MESSAGE);
       return;
     }
 
-    try {
-      const { slug } = await publishLeafletMutation.mutateAsync(marketId);
+    shareFlowInFlightRef.current = true;
+    setIsShareFlowPending(true);
 
-      setShareUrl(`${clientBaseUrl}/markets/${encodeURIComponent(slug)}`);
-      setShareView('share');
-    } catch (error) {
-      showPublishErrorToast(isApiError(error) ? error.message : LEAFLET_PUBLISH_ERROR_MESSAGE);
+    try {
+      if (confirmedMarketIdRef.current !== marketId) {
+        try {
+          await confirmPreparedProductDraftsMutation.mutateAsync(marketId);
+          confirmedMarketIdRef.current = marketId;
+        } catch (error) {
+          showShareFlowErrorToast(
+            isApiError(error) ? error.message : PRODUCT_CONFIRM_ERROR_MESSAGE,
+          );
+          return;
+        }
+      }
+
+      try {
+        const { slug } = await publishLeafletMutation.mutateAsync(marketId);
+
+        setShareUrl(`${clientBaseUrl}/markets/${encodeURIComponent(slug)}`);
+        setShareView('share');
+      } catch (error) {
+        showShareFlowErrorToast(isApiError(error) ? error.message : LEAFLET_PUBLISH_ERROR_MESSAGE);
+      }
+    } finally {
+      shareFlowInFlightRef.current = false;
+      setIsShareFlowPending(false);
     }
   };
   const showCopiedToast = () => {
@@ -168,10 +198,10 @@ export const LeafletSharePage = () => {
         <LeafletConfirmSection
           isPreviewError={periodicPreviewQuery.isError}
           isPreviewPending={periodicPreviewQuery.isLoading}
-          isPublishing={publishLeafletMutation.isPending}
+          isPublishing={isShareFlowPending}
           leafletPreview={leafletPreview}
           onPreviewRetry={() => void periodicPreviewQuery.refetch()}
-          onShare={() => void publishAndShowShareView()}
+          onShare={() => void finalizeProductsAndPublishLeaflet()}
         />
       ) : (
         <LeafletShareSection
