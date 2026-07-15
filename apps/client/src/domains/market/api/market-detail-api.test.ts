@@ -47,6 +47,18 @@ describe('getMarketDetail', () => {
     });
   });
 
+  it('marketId는 양의 정수만 허용한다', () => {
+    const response = {
+      ...MARKET_DETAIL_API_RESPONSE_FIXTURE,
+      data: {
+        ...MARKET_DETAIL_API_RESPONSE_FIXTURE.data,
+        marketId: 0,
+      },
+    };
+
+    expect(() => resolveMarketDetailResponse(response)).toThrow(ApiResponseValidationError);
+  });
+
   it('MONDAY부터 SUNDAY까지의 요일 값만 허용한다', () => {
     const response = {
       ...MARKET_DETAIL_API_RESPONSE_FIXTURE,
