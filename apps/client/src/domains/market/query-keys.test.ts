@@ -34,6 +34,35 @@ describe('marketQueryKeys', () => {
     );
   });
 
+  it('nearbyList key는 radius/size를 보존하고, keyword처럼 허용되지 않은 값과 undefined 값을 제거한다', () => {
+    expect(
+      marketQueryKeys.nearbyList({
+        lat: 37.556,
+        lng: 126.91,
+        radius: 500,
+        size: 20,
+        keyword: '망원시장',
+      }),
+    ).toEqual(['market', 'nearby-markets', { lat: 37.556, lng: 126.91, radius: 500, size: 20 }]);
+  });
+
+  it('nearbyMarkers key는 radius/size를 보존하고, keyword처럼 허용되지 않은 값과 undefined 값을 제거한다', () => {
+    expect(
+      marketQueryKeys.nearbyMarkers({
+        lat: 37.556,
+        lng: 126.91,
+        radius: 500,
+        size: 20,
+        keyword: '망원시장',
+      }),
+    ).toEqual([
+      'market',
+      'nearby-markets',
+      'markers',
+      { lat: 37.556, lng: 126.91, radius: 500, size: 20 },
+    ]);
+  });
+
   it('행사 상품의 기본 size를 정규화해 같은 query key를 만든다', () => {
     expect(marketQueryKeys.periodicProducts({ marketId: 1 })).toEqual(
       marketQueryKeys.periodicProducts({ marketId: 1, size: 12 }),
