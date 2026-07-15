@@ -362,9 +362,15 @@ describe('marketOwnerRoutes', () => {
     expect(screen.getByRole('complementary')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '홈' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('search', { name: '상품 검색' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /오늘의 특가 상품 등록하기/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /행사 할인 상품 등록하기/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /상품 수정하러 가기/ })).toBeInTheDocument();
+    const quickActionButtons = [
+      screen.getByRole('button', { name: /오늘의 특가 상품 등록하기/ }),
+      screen.getByRole('button', { name: /행사 할인 상품 등록하기/ }),
+      screen.getByRole('button', { name: /상품 수정하러 가기/ }),
+    ];
+
+    quickActionButtons.forEach((button) => {
+      expect(button.querySelector('img')).toBeInTheDocument();
+    });
     expect(screen.getByRole('heading', { name: '오늘의 특가 상품' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '행사 할인 상품' })).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: '등록한 상품 전체보기' })).toHaveLength(2);

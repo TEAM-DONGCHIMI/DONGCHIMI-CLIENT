@@ -9,7 +9,7 @@ import {
 
 interface HomeHeroActionFixtureTypes {
   description: string;
-  id: string;
+  id: 'daily-registration' | 'periodic-registration' | 'product-edit';
   route: MarketOwnerRouteTypes;
   title: string;
 }

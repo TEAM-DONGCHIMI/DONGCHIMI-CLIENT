@@ -94,8 +94,10 @@ HomePage(main)
 - `HomePage`: 전달받은 상품의 `dealType`에 맞는 상품 수정 route를 만들고 `productId` search param을 붙여
   이동합니다. 상품 정보를 불러올 수 없는 선택 결과의 error feedback도 담당합니다.
 - `HomeHeroSection`: radius 20px banner hero surface와 quick action 카드를 담당합니다.
-  - quick action의 오른쪽 mint 영역은 icon/PNG asset 확정 전 placeholder slot으로 유지합니다.
-- `HomeQuickButton`: Figma `button_home quick` node `2403:69244` 기준의 312x74 quick button입니다.
+  - quick action의 오른쪽 영역은 `Img_homecard` state 1/2/3에서 추출한 page-local SVG를 action별로
+    렌더링합니다.
+- `HomeQuickButton`: Figma `button_home quick` node `2403:69244`와 `Img_homecard` node
+  `3539:151151` 기준의 312x74 quick button 및 action별 46x46 SVG visual입니다.
 - `HomeDashboardSection`: 홈 조회 query를 소유하고, 2개 상품 카드와 공유 카드를 같은 responsive grid에
   배치합니다.
 - `HomeProductSummarySection`: shared `ProductCard` 오늘의 특가 상품 카드와 행사 할인 상품 카드를
@@ -108,6 +110,7 @@ HomePage(main)
 - design-system layout/components:
   - `Flex`, `Stack`, `Grid` 등 기존 layout primitive는 필요할 때 사용합니다.
   - `IconButton`, `Button`, generated icons는 공유 카드 액션에 맞으면 사용합니다.
+  - 홈 quick action visual은 홈 화면에 종속된 일러스트이므로 design-system icon으로 승격하지 않습니다.
 - app shared components:
   - `DesktopHeader`
   - `ProductHeaderSearch` via `DesktopHeader.searchSlot`
