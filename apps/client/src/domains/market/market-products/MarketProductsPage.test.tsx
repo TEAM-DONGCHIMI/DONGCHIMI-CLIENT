@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import { HttpResponse, http } from 'msw';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { act, renderWithProviders, screen, server, userEvent, waitFor, within } from '@/test';
 
@@ -19,8 +19,7 @@ const router = {
 };
 
 const MARKET_SLUG = 'mangwon-fresh';
-const API_BASE_URL = 'https://api.test';
-const MARKET_DETAIL_API_PATH = `${API_BASE_URL}/v1/users/markets/:slug`;
+const MARKET_DETAIL_API_PATH = `${window.location.origin}/api/markets/:slug`;
 
 let intersectionObserverCallback: IntersectionObserverCallback | undefined;
 let intersectionObserverOptions: IntersectionObserverInit | undefined;
@@ -70,14 +69,6 @@ const getSectionQueries = (headingName: string) => {
 };
 
 describe('MarketProductsPage', () => {
-  beforeAll(() => {
-    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', API_BASE_URL);
-  });
-
-  afterAll(() => {
-    vi.unstubAllEnvs();
-  });
-
   beforeEach(() => {
     router.back.mockClear();
     router.push.mockClear();

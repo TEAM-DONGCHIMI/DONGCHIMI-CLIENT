@@ -3,6 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { API_ENDPOINTS, buildApiPath } from './api-endpoints';
 
 describe('API_ENDPOINTS', () => {
+  it('builds the common token refresh endpoint', () => {
+    expect(API_ENDPOINTS.common.auth.refresh).toBe('/v1/auth/token/refresh');
+  });
+
   it('exposes owner auth and product import endpoints', () => {
     expect(API_ENDPOINTS.owner.auth.login).toBe('/v1/owners/auth/login');
     expect(API_ENDPOINTS.owner.products.import('market-1')).toBe(
@@ -37,6 +41,15 @@ describe('API_ENDPOINTS', () => {
     ).toBe(
       '/v1/owners/markets/market-1/products/draft?category=%EA%B3%BC%EC%9D%BC&page=1&search=%EC%82%AC%EA%B3%BC&size=20',
     );
+
+    expect(
+      API_ENDPOINTS.owner.products.search('market-1', {
+        keyword: '풀 무원',
+        size: 10,
+      }),
+    ).toBe(
+      '/v1/owners/markets/market-1/products/search?keyword=%ED%92%80+%EB%AC%B4%EC%9B%90&size=10',
+    );
   });
 
   it('exposes user and common endpoints', () => {
@@ -44,6 +57,7 @@ describe('API_ENDPOINTS', () => {
     expect(API_ENDPOINTS.user.markets.location({ lat: 37.5, lng: 127.1 })).toBe(
       '/v1/users/markets/location?lat=37.5&lng=127.1',
     );
+    expect(API_ENDPOINTS.common.auth.refresh).toBe('/v1/auth/token/refresh');
     expect(API_ENDPOINTS.common.uploads.presignedUrl).toBe('/v1/uploads/presigned-url');
   });
 });

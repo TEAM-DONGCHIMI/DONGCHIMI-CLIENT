@@ -1,18 +1,28 @@
-import ky, { type KyInstance, type Options } from 'ky';
+import ky, { type KyInstance } from 'ky';
 
 import { getMarketOwnerEnv } from '../config';
 import { createApiConfigurationError, normalizeApiError } from './api-error';
+import {
+  clearAuthSession,
+  createAuthorizedRequestOptions,
+  refreshAccessToken,
+  shouldRefreshAccessToken,
+  type HttpClientOptionsTypes,
+} from './http-auth';
 import { HTTP_STATUS } from './http-status';
 
 type HttpMethodTypes = 'delete' | 'get' | 'patch' | 'post' | 'put';
 
 type HttpRequestTypes = <ResponseDataTypes>(
   path: string,
-  options?: Options,
+  options?: HttpClientOptionsTypes,
 ) => Promise<ResponseDataTypes>;
+
+type HttpStreamRequestTypes = (path: string, options?: HttpClientOptionsTypes) => Promise<Response>;
 
 type HttpClientTypes = Record<HttpMethodTypes, HttpRequestTypes> & {
   request: HttpRequestTypes;
+  stream: HttpStreamRequestTypes;
 };
 
 const REQUEST_TIMEOUT_MS = 10_000;
@@ -23,7 +33,7 @@ const getApiBaseUrl = () => {
   const { apiBaseUrl } = getMarketOwnerEnv();
 
   if (!apiBaseUrl) {
-    throw createApiConfigurationError('VITE_API_BASE_URL is not configured.');
+    throw createApiConfigurationError('VITE_PUBLIC_API_SERVER_BASE_URL is not configured.');
   }
 
   return apiBaseUrl;
@@ -39,7 +49,16 @@ export const createHttpClient = () => {
     hooks: {
       beforeRequest: [
         ({ request }) => {
-          request.headers.set('Accept', 'application/json');
+          if (!request.headers.has('Accept')) {
+            request.headers.set('Accept', 'application/json');
+          }
+
+          const { devAccessToken } = getMarketOwnerEnv();
+
+          // TODO: 로그인 세션 연동 후 개발용 토큰 주입을 제거합니다.
+          if (devAccessToken && !request.headers.has('Authorization')) {
+            request.headers.set('Authorization', `Bearer ${devAccessToken}`);
+          }
         },
       ],
     },
@@ -66,18 +85,86 @@ const parseJsonResponse = async <ResponseDataTypes>(response: Response) => {
   return JSON.parse(text) as ResponseDataTypes;
 };
 
-const request = async <ResponseDataTypes>(path: string, options?: Options) => {
-  try {
-    const response = await getHttpClient()(path, options);
+const performResponse = (path: string, options?: HttpClientOptionsTypes, accessToken?: string) => {
+  return getHttpClient()(path, createAuthorizedRequestOptions(options, accessToken));
+};
 
-    return await parseJsonResponse<ResponseDataTypes>(response);
+const performRequest = async <ResponseDataTypes>(
+  path: string,
+  options?: HttpClientOptionsTypes,
+  accessToken?: string,
+) => {
+  const response = await performResponse(path, options, accessToken);
+
+  return await parseJsonResponse<ResponseDataTypes>(response);
+};
+
+export const refreshAuthSession = () => {
+  return refreshAccessToken(performRequest);
+};
+
+const requestWithAuthRefresh = async <ResponseDataTypes>(
+  perform: (accessToken?: string) => Promise<ResponseDataTypes>,
+  options?: HttpClientOptionsTypes,
+) => {
+  try {
+    return await perform();
   } catch (error) {
-    throw await normalizeApiError(error);
+    if (!shouldRefreshAccessToken(error, options)) {
+      throw await normalizeApiError(error);
+    }
+
+    let accessToken: string;
+
+    try {
+      accessToken = await refreshAuthSession();
+    } catch (refreshError) {
+      clearAuthSession();
+
+      throw await normalizeApiError(refreshError);
+    }
+
+    try {
+      return await perform(accessToken);
+    } catch (retryError) {
+      throw await normalizeApiError(retryError);
+    }
   }
 };
 
+const request = <ResponseDataTypes>(path: string, options?: HttpClientOptionsTypes) => {
+  const retryOptions = {
+    ...options,
+    auth: {
+      ...options?.auth,
+      skipRefresh: true,
+    },
+  } satisfies HttpClientOptionsTypes;
+
+  return requestWithAuthRefresh(
+    (accessToken) =>
+      performRequest<ResponseDataTypes>(path, accessToken ? retryOptions : options, accessToken),
+    options,
+  );
+};
+
+const stream = (path: string, options?: HttpClientOptionsTypes) => {
+  const retryOptions = {
+    ...options,
+    auth: {
+      ...options?.auth,
+      skipRefresh: true,
+    },
+  } satisfies HttpClientOptionsTypes;
+
+  return requestWithAuthRefresh(
+    (accessToken) => performResponse(path, accessToken ? retryOptions : options, accessToken),
+    options,
+  );
+};
+
 const withMethod = (method: HttpMethodTypes) => {
-  return <ResponseDataTypes>(path: string, options?: Options) => {
+  return <ResponseDataTypes>(path: string, options?: HttpClientOptionsTypes) => {
     return request<ResponseDataTypes>(path, { ...options, method });
   };
 };
@@ -89,4 +176,7 @@ export const httpClient: HttpClientTypes = {
   post: withMethod('post'),
   put: withMethod('put'),
   request,
+  stream,
 };
+
+export type { HttpClientOptionsTypes } from './http-auth';

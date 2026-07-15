@@ -22,6 +22,11 @@ export interface OwnerProductsSearchParamsTypes extends ApiSearchParamsTypes {
   type?: OwnerProductListTypeTypes;
 }
 
+export interface OwnerProductSearchParamsTypes extends ApiSearchParamsTypes {
+  keyword: string;
+  size?: number;
+}
+
 export interface UserMarketLocationSearchParamsTypes extends ApiSearchParamsTypes {
   lat: number;
   lng: number;
@@ -62,7 +67,7 @@ export const buildApiPath = (pathname: string, searchParams?: ApiSearchParamsTyp
 export const API_ENDPOINTS = {
   common: {
     auth: {
-      refresh: '/v1/auth/refresh',
+      refresh: '/v1/auth/token/refresh',
     },
     uploads: {
       presignedUrl: '/v1/uploads/presigned-url',
@@ -110,6 +115,11 @@ export const API_ENDPOINTS = {
         `/v1/owners/markets/${encodePathParam(marketId)}/products/import/${encodePathParam(jobId)}/cancel`,
       importProgress: (marketId: ApiPathParamTypes, jobId: ApiPathParamTypes) =>
         `/v1/owners/markets/${encodePathParam(marketId)}/products/import/${encodePathParam(jobId)}/progress`,
+      search: (marketId: ApiPathParamTypes, searchParams: OwnerProductSearchParamsTypes) =>
+        buildApiPath(
+          `/v1/owners/markets/${encodePathParam(marketId)}/products/search`,
+          searchParams,
+        ),
     },
   },
   user: {

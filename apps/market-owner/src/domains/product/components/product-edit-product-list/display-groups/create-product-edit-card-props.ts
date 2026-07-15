@@ -34,7 +34,8 @@ export const createProductEditCardProps = <ProductTypes extends ProductEditGroup
 }: CreateProductEditCardPropsParams<ProductTypes>): ProductEditCardProps => {
   const { ariaLabelSuffix, periodDiscountDate, todayDiscountPrice } =
     productEditCardCopyByVariant[variant];
-  const { registeredDateLabel, ...cardProduct } = product;
+  const { registeredAt, registeredDateLabel, ...cardProduct } = product;
+  void registeredAt;
   void registeredDateLabel;
 
   return {

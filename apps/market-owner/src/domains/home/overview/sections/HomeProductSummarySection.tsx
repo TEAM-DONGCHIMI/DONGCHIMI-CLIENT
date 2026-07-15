@@ -3,22 +3,20 @@ import { useNavigate } from 'react-router';
 import { TextButton } from '@dongchimi/design-system/components';
 import { ProductCard, type ProductCardProps } from '@dongchimi/shared';
 
-import { homeProductSections, type HomeProductSectionFixtureTypes } from '../fixtures';
+import { type HomeProductSectionTypes } from '../model/home-dashboard-view-model';
 import * as S from '../HomePage.css';
 
 const PRODUCT_INITIAL_VISIBLE_COUNT = 4;
 const EMPTY_PRODUCT_MESSAGE = '등록한 상품이 없어요.\n상품을 먼저 등록해주세요.';
 
 export interface HomeProductSummarySectionProps {
-  sections?: readonly HomeProductSectionFixtureTypes[];
+  sections: readonly HomeProductSectionTypes[];
 }
 
-export const HomeProductSummarySection = ({
-  sections = homeProductSections,
-}: HomeProductSummarySectionProps) => {
+export const HomeProductSummarySection = ({ sections }: HomeProductSummarySectionProps) => {
   const navigate = useNavigate();
 
-  const handleProductClick = (section: HomeProductSectionFixtureTypes) => {
+  const handleProductClick = (section: HomeProductSectionTypes) => {
     const onProductClick: ProductCardProps['onProductClick'] = (item) => {
       navigate(section.editRoute, { state: { productId: item.id } });
     };

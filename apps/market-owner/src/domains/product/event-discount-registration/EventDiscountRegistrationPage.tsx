@@ -4,65 +4,94 @@ import { IcCircleCheckFill, IcCircleExclamationFillColor0 } from '@dongchimi/des
 import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader, UploadModal } from '@/shared/components';
+import { isApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
+import { usePresignedUploadMutation } from '@/domains/product/hooks';
 
-import { PosExcelGuidePanel } from './components';
+import type {
+  CancelProductImportParams,
+  ProductImportResponseTypes,
+  StartProductImportParams,
+  SubscribeProductImportProgressTypes,
+} from './api';
+import { PosExcelGuidePanel, ProductImportProgress } from './components';
 import { fileAnalysisConfirmFixture } from './fixtures';
 import { useExcelUploadFlow } from './hooks/useExcelUploadFlow';
-import { useFileAnalysisSimulation } from './hooks/useFileAnalysisSimulation';
-import {
-  FileAnalysisConfirmSection,
-  FileAnalysisProgressSection,
-  RegistrationMethodSection,
-} from './sections';
+import { useStartProductImportMutation } from './hooks/use-start-product-import-mutation';
+import { FileAnalysisConfirmSection, RegistrationMethodSection } from './sections';
 import * as S from './EventDiscountRegistrationPage.css';
+import { type ResolveExcelFileUrlTypes } from './utils/resolve-excel-file-url';
+import { resolvePresignedExcelFileUrl } from './utils/resolve-excel-file-url';
 
 const EXCEL_UPLOAD_ACCEPT = '.xlsx,.csv';
 const ACTION_FEEDBACK_TOAST_ID = 'event-discount-registration-action-feedback';
+const EXCEL_UPLOAD_ERROR_TOAST_ID = 'event-discount-registration-excel-upload-error';
+const FILE_ANALYSIS_ERROR_TOAST_ID = 'event-discount-registration-file-analysis-error';
 const TOAST_ICON_SIZE = '2.4rem';
 const EXCEL_UPLOAD_DEFAULT_LABEL =
   '상품이 등록된 엑셀 파일을 선택해주세요.\n업로드하면 상품이 자동으로 등록됩니다.';
+const FILE_ANALYSIS_START_ERROR_MESSAGE = '파일 분석을 시작하지 못했습니다. 다시 시도해주세요.';
+const FILE_ANALYSIS_ERROR_LOG_PREFIX = '[EventDiscountRegistration] Failed to start product import';
 
 const toastIconProps = {
   height: TOAST_ICON_SIZE,
   width: TOAST_ICON_SIZE,
 } as const;
 
-const SimulatedFileAnalysisProgressSection = ({
-  onCancel,
-  onComplete,
-}: {
-  onCancel: () => void;
-  onComplete: () => void;
-}) => {
-  const { progressPercentage, steps } = useFileAnalysisSimulation({ onComplete });
-
-  return (
-    <FileAnalysisProgressSection
-      onCancel={onCancel}
-      progressPercentage={progressPercentage}
-      steps={steps}
-    />
-  );
+const getFileAnalysisStartErrorMessage = (error: unknown) => {
+  return isApiError(error) ? error.message : FILE_ANALYSIS_START_ERROR_MESSAGE;
 };
 
-export const EventDiscountRegistrationPage = () => {
+export interface EventDiscountRegistrationPageProps {
+  cancelProductImport?: (params: CancelProductImportParams) => Promise<void>;
+  marketId?: StartProductImportParams['marketId'];
+  resolveExcelFileUrl?: ResolveExcelFileUrlTypes;
+  startProductImport?: (params: StartProductImportParams) => Promise<ProductImportResponseTypes>;
+  subscribeProductImportProgress?: SubscribeProductImportProgressTypes;
+}
+
+export const EventDiscountRegistrationPage = ({
+  cancelProductImport,
+  marketId,
+  resolveExcelFileUrl,
+  startProductImport,
+  subscribeProductImportProgress,
+}: EventDiscountRegistrationPageProps = {}) => {
   const navigate = useNavigate();
   const toast = useToast();
+  const presignedUploadMutation = usePresignedUploadMutation();
+  const startProductImportMutation = useStartProductImportMutation();
+  const sessionMarketId = useAuthStore((state) => state.marketId);
+  const resolvedMarketId = marketId ?? sessionMarketId;
   const [isPosGuideOpen, setIsPosGuideOpen] = useState(false);
+  const resolveUploadedExcelFileUrl =
+    resolveExcelFileUrl ?? resolvePresignedExcelFileUrl(presignedUploadMutation.mutateAsync);
+  const handleExcelUploadError = (message: string) => {
+    toast.error(message, {
+      id: EXCEL_UPLOAD_ERROR_TOAST_ID,
+      icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
+    });
+  };
   const {
     cancelFileAnalysisConfirmation,
-    cancelFileAnalysisProgress,
     excelUploadModal,
     handleExcelFileChange,
     handleExcelFileDrop,
     handleExcelUploadModalOpenChange,
+    isUploading,
+    isUploadedExcelFileReady,
     openExcelUpload,
+    productImportJobId,
     registrationView,
+    returnToFileAnalysisConfirmation,
     startFileAnalysis,
-    uploadExcelFile,
+    uploadedExcelFileUrl,
     uploadedExcelFileName,
-  } = useExcelUploadFlow();
+  } = useExcelUploadFlow({
+    onExcelUploadError: handleExcelUploadError,
+    resolveExcelFileUrl: resolveUploadedExcelFileUrl,
+  });
   const headerLabels =
     registrationView === 'method'
       ? {
@@ -91,6 +120,36 @@ export const EventDiscountRegistrationPage = () => {
   const handleFileAnalysisComplete = useCallback(() => {
     navigate(MARKET_OWNER_ROUTES.registrationResult);
   }, [navigate]);
+  const handleStartFileAnalysis = async () => {
+    if (resolvedMarketId == null || uploadedExcelFileUrl == null) {
+      toast.error(FILE_ANALYSIS_START_ERROR_MESSAGE, {
+        id: FILE_ANALYSIS_ERROR_TOAST_ID,
+        icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
+      });
+      return;
+    }
+
+    try {
+      const startImport = startProductImport ?? startProductImportMutation.mutateAsync;
+      const result = await startImport({
+        marketId: resolvedMarketId,
+        request: {
+          excelFileUrl: uploadedExcelFileUrl,
+        },
+      });
+
+      startFileAnalysis(result.jobId);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error(FILE_ANALYSIS_ERROR_LOG_PREFIX, error);
+      }
+
+      toast.error(getFileAnalysisStartErrorMessage(error), {
+        id: FILE_ANALYSIS_ERROR_TOAST_ID,
+        icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
+      });
+    }
+  };
 
   let registrationContent: ReactNode = null;
 
@@ -103,11 +162,19 @@ export const EventDiscountRegistrationPage = () => {
         onUploadLeaflet={handleUploadLeaflet}
       />
     );
-  } else if (registrationView === 'progress') {
+  } else if (
+    registrationView === 'progress' &&
+    resolvedMarketId != null &&
+    productImportJobId != null
+  ) {
     registrationContent = (
-      <SimulatedFileAnalysisProgressSection
-        onCancel={cancelFileAnalysisProgress}
-        onComplete={handleFileAnalysisComplete}
+      <ProductImportProgress
+        cancelProductImport={cancelProductImport}
+        jobId={productImportJobId}
+        marketId={resolvedMarketId}
+        onCompleted={handleFileAnalysisComplete}
+        onReturnToConfirmation={returnToFileAnalysisConfirmation}
+        subscribeProductImportProgress={subscribeProductImportProgress}
       />
     );
   } else if (uploadedExcelFileName != null) {
@@ -115,8 +182,9 @@ export const EventDiscountRegistrationPage = () => {
       <FileAnalysisConfirmSection
         analysisItems={fileAnalysisConfirmFixture.analysisItems}
         fileName={uploadedExcelFileName}
+        isStartAnalysisPending={startProductImportMutation.isPending}
         onCancel={cancelFileAnalysisConfirmation}
-        onStartAnalysis={startFileAnalysis}
+        onStartAnalysis={handleStartFileAnalysis}
       />
     );
   }
@@ -143,10 +211,16 @@ export const EventDiscountRegistrationPage = () => {
         onFileChange={handleExcelFileChange}
         onFileDrop={handleExcelFileDrop}
         onOpenChange={handleExcelUploadModalOpenChange}
-        onUpload={uploadExcelFile}
+        onUpload={handleStartFileAnalysis}
         open={excelUploadModal.open}
         selectedFileText={excelUploadModal.selectedFileName ?? '선택된 파일이 없습니다.'}
         state={excelUploadModal.state}
+        uploadButtonDisabled={
+          excelUploadModal.state !== 'upload' ||
+          isUploading ||
+          !isUploadedExcelFileReady ||
+          startProductImportMutation.isPending
+        }
       />
 
       <PosExcelGuidePanel onClose={() => setIsPosGuideOpen(false)} open={isPosGuideOpen} />

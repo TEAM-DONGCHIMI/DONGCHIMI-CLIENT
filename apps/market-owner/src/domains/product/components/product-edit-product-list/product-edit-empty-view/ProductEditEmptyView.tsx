@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router';
 
 import { Button } from '@dongchimi/design-system/components';
 
+import ImageEmpty from './ImageEmpty';
 import * as S from './ProductEditEmptyView.css';
 
 interface ProductEditEmptyViewProps {
@@ -17,8 +18,7 @@ export const ProductEditEmptyView = ({
 
   return (
     <section aria-label={ariaLabel} className={S.emptySectionClassName}>
-      {/* 이미지 교체 필요 */}
-      <img alt='' className={S.emptyImageClassName} src='/images/product-empty.png' />
+      <ImageEmpty aria-hidden='true' className={S.emptyImageClassName} focusable='false' />
       <div className={S.emptyContentClassName}>
         <div className={S.emptyTextBlockClassName}>
           <h2 className={S.emptyTitleClassName}>등록된 상품이 존재하지 않아요!</h2>

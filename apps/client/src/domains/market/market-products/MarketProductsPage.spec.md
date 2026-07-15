@@ -53,7 +53,7 @@
 - market detail: `GET /v1/users/markets/{slug}`의 성공 envelope를 Zod로 검증하고 non-null `data`를 사용합니다.
 - market summary: `marketId`, `name`, `thumbnailUrl`, `address`, `isOpenNow`, `businessHours`, `marketPhone1`, optional `marketPhone2`, `ownerPhone`, `top3[]`. `businessHours`는 요일 묶음 배열이며, `days`는 `MONDAY`부터 `SUNDAY`까지만 허용합니다. 영업일은 `HH:mm` 형식의 `open`/`close`가 필수이고 휴무일은 두 필드를 포함하지 않습니다.
 - top3 item: `productId`, `name`, `thumbnailUrl`, `discountedPrice`, `discountRate`. `thumbnailUrl`이 있으면 이미지, 없으면 fallback을 렌더링합니다.
-- API transport: browser는 `NEXT_PUBLIC_API_BASE_URL`을 prefix로 사용하는 app-local Ky client로 마트 상세 API를 직접 호출합니다. 이번 범위에서는 인증 header를 구성하지 않으며, 실제 인증은 후속 공통 인증 계층에서 처리합니다.
+- API transport: browser는 same-origin `GET /api/markets/{slug}` Route Handler를 호출합니다. Route Handler는 server-only `API_BASE_URL`을 사용하는 Ky client로 마트 상세 API를 호출하며, 공개 조회이므로 access token을 전달하지 않습니다.
 - today special, event discount, leaflet share는 이번 범위에서 fixture를 유지합니다.
 - today special response: `totalCount`, `products[]`.
 - today special item: `productId`, `name`, `thumbnailUrl`, `originalPrice`, `discountedPrice`, `discountRate`.

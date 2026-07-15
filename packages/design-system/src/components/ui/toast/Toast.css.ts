@@ -40,17 +40,9 @@ export const toastIconClassName = style({
   justifyContent: 'center',
   width: '2.4rem',
   height: '2.4rem',
+  fontSize: '2.4rem',
   lineHeight: 0,
   color: atomic.common[100],
-});
-
-export const toastDefaultIconClassName = style({
-  display: 'block',
-  boxSizing: 'border-box',
-  width: '1.93rem',
-  height: '1.93rem',
-  border: `0.2rem dashed ${atomic.common[100]}`,
-  borderRadius: '0.6rem',
 });
 
 export const toastMessageClassName = style({

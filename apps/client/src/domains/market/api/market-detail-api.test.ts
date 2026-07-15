@@ -1,28 +1,19 @@
 import { HttpResponse, http } from 'msw';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { server } from '@/test';
-import { API_ENDPOINTS, ApiResponseValidationError } from '@dongchimi/shared/api';
+import { ApiResponseValidationError } from '@dongchimi/shared/api';
 
 import { getMarketDetail } from './market-detail-api';
 import { MARKET_DETAIL_API_RESPONSE_FIXTURE } from './market-detail-api.mock';
 import { resolveMarketDetailResponse } from '../model/market-detail-schema';
 
-const API_BASE_URL = 'https://api.test';
-const MARKET_DETAIL_ENDPOINT = API_ENDPOINTS.user.markets.detail('mangwon-fresh');
+const MARKET_DETAIL_ENDPOINT = `${window.location.origin}/api/markets/mangwon-fresh`;
 
 describe('getMarketDetail', () => {
-  beforeAll(() => {
-    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', API_BASE_URL);
-  });
-
-  afterAll(() => {
-    vi.unstubAllEnvs();
-  });
-
   it('slug path parameter로 마트 상세 정보를 조회한다', async () => {
     server.use(
-      http.get(`${API_BASE_URL}${MARKET_DETAIL_ENDPOINT}`, () => {
+      http.get(MARKET_DETAIL_ENDPOINT, () => {
         return HttpResponse.json(MARKET_DETAIL_API_RESPONSE_FIXTURE);
       }),
     );
@@ -34,7 +25,7 @@ describe('getMarketDetail', () => {
 
   it('계약과 다른 응답은 validation error로 노출한다', async () => {
     server.use(
-      http.get(`${API_BASE_URL}${MARKET_DETAIL_ENDPOINT}`, () => {
+      http.get(MARKET_DETAIL_ENDPOINT, () => {
         return HttpResponse.json({
           code: 'SUCCESS',
           data: {},

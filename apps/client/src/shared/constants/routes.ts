@@ -6,5 +6,6 @@ export const CLIENT_ROUTES = {
   marketProduct: (marketSlug: string, productId: string) =>
     `/markets/${encodeRouteSegment(marketSlug)}/products/${encodeRouteSegment(productId)}`,
   markets: '/markets',
+  oauthCallback: '/oauth/callback',
   root: '/',
 } as const;

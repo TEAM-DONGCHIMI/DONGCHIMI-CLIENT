@@ -1,6 +1,4 @@
-import { API_ENDPOINTS } from '@dongchimi/shared/api';
-
-import { httpClient } from '@/shared/api';
+import { browserApi } from '@/shared/api';
 
 import {
   resolveMarketDetailParams,
@@ -15,8 +13,7 @@ export const getMarketDetail = async (
   rawParams: MarketDetailParamsTypes,
 ): Promise<MarketDetailTypes> => {
   const { slug } = resolveMarketDetailParams(rawParams);
-  const endpoint = API_ENDPOINTS.user.markets.detail(slug);
-  const response = await httpClient.get<unknown>(endpoint);
+  const response = await browserApi.get<unknown>(`markets/${encodeURIComponent(slug)}`);
 
   return resolveMarketDetailResponse(response);
 };

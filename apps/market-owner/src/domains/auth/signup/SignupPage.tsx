@@ -1,18 +1,12 @@
-import { useNavigate } from 'react-router';
-
-import { Button, Flex, TextInput, Toast } from '@dongchimi/design-system/components';
+import { Button, Flex, TextInput } from '@dongchimi/design-system/components';
 import { IcCircleCheckFill } from '@dongchimi/design-system/icons';
-
-import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 
 import { useSignupForm } from './hooks/use-signup-form';
 import * as S from './SignupPage.css';
 
 export const SignupPage = () => {
-  const navigate = useNavigate();
   const {
     action: {
-      clearSubmitErrorMessage,
       handleEmailBlur,
       handleEmailChange,
       handlePasswordBlur,
@@ -25,18 +19,13 @@ export const SignupPage = () => {
       email,
       emailStatusProps,
       isPasswordConfirmValid,
-      isValid,
+      isSubmitDisabled,
       password,
       passwordConfirm,
       passwordConfirmStatusProps,
       passwordStatusProps,
-      submitErrorMessage,
     },
   } = useSignupForm();
-  const handleSignupSubmit = handleSubmit(() => {
-    clearSubmitErrorMessage();
-    navigate(MARKET_OWNER_ROUTES.login);
-  });
 
   return (
     <main className={S.pageClassName}>
@@ -50,7 +39,7 @@ export const SignupPage = () => {
         </p>
       </Flex>
 
-      <form className={S.formClassName} noValidate onSubmit={handleSignupSubmit}>
+      <form className={S.formClassName} noValidate onSubmit={handleSubmit}>
         <Flex className={S.fieldGroupClassName} direction='column'>
           <TextInput
             autoComplete='email'
@@ -90,13 +79,12 @@ export const SignupPage = () => {
           />
         </Flex>
 
-        {submitErrorMessage !== undefined && (
-          <div className={S.submitToastClassName}>
-            <Toast status='error'>{submitErrorMessage}</Toast>
-          </div>
-        )}
-
-        <Button className={S.submitButtonClassName} disabled={!isValid} size='large' type='submit'>
+        <Button
+          className={S.submitButtonClassName}
+          disabled={isSubmitDisabled}
+          size='large'
+          type='submit'
+        >
           가입 완료
         </Button>
       </form>

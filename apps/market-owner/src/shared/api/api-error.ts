@@ -50,6 +50,34 @@ const getStringField = (value: unknown, fieldName: string) => {
   return typeof fieldValue === 'string' ? fieldValue : undefined;
 };
 
+const parseErrorBody = (body: unknown) => {
+  if (typeof body !== 'string') {
+    return body;
+  }
+
+  try {
+    return JSON.parse(body) as unknown;
+  } catch {
+    return body;
+  }
+};
+
+const getSafeErrorMessage = (value: unknown) => {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const message = value.trim();
+
+  return message === '' || message.startsWith('<') ? undefined : message;
+};
+
+const getResponseMessage = (status: number) => {
+  return status >= HTTP_STATUS.SERVER_ERROR
+    ? (RESPONSE_MESSAGE[status] ?? RESPONSE_MESSAGE[HTTP_STATUS.SERVER_ERROR])
+    : RESPONSE_MESSAGE[status];
+};
+
 const getErrorType = (status: number): ApiErrorCategoryTypes => {
   if (status === HTTP_STATUS.UNAUTHORIZED || status === HTTP_STATUS.FORBIDDEN) {
     return 'auth';
@@ -70,10 +98,6 @@ const getErrorType = (status: number): ApiErrorCategoryTypes => {
   return 'client';
 };
 
-const readErrorBody = async (error: HTTPError) => {
-  return error.data;
-};
-
 export const isApiError = (error: unknown): error is ApiError => {
   return error instanceof ApiError;
 };
@@ -85,18 +109,19 @@ export const createApiConfigurationError = (message: string) => {
   });
 };
 
-export const normalizeApiError = async (error: unknown) => {
+export const normalizeApiError = (error: unknown) => {
   if (isApiError(error)) {
     return error;
   }
 
   if (error instanceof HTTPError) {
-    const body = await readErrorBody(error);
+    const body = parseErrorBody(error.data);
     const status = error.response.status;
     const message =
-      getStringField(body, 'message') ??
-      getStringField(body, 'error') ??
-      RESPONSE_MESSAGE[status] ??
+      getSafeErrorMessage(getStringField(body, 'message')) ??
+      getSafeErrorMessage(getStringField(body, 'error')) ??
+      getSafeErrorMessage(body) ??
+      getResponseMessage(status) ??
       error.message;
 
     return new ApiError({
