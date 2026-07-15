@@ -87,6 +87,7 @@ export const submitAreaClassName = style({
   bottom: '6.2rem',
   left: 0,
   padding: '0 2.4rem',
+  gap: '1.2rem',
 });
 
 export const submitButtonClassName = style({

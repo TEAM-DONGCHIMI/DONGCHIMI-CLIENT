@@ -89,6 +89,23 @@ export const dashboardGridClassName = style({
   gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${dashboardCardMinWidth}), 1fr))`,
 });
 
+export const dashboardQueryStateClassName = style({
+  ...typography['body-2-medium'],
+  display: 'flex',
+  minHeight: dashboardCardHeight,
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '1.2rem',
+  borderRadius: '2rem',
+  backgroundColor: atomic.common[0],
+  color: atomic.neutral[70],
+  textAlign: 'center',
+});
+
+export const dashboardQueryErrorMessageClassName = style({
+  margin: 0,
+});
+
 export const productCardClassName = style({
   height: dashboardCardHeight,
   overflow: 'hidden',

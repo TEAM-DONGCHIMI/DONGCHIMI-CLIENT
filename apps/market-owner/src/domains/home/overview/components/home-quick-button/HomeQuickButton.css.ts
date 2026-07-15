@@ -73,8 +73,6 @@ export const visualSlotClassName = style({
   height: '4.6rem',
   alignItems: 'center',
   justifyContent: 'center',
-  borderRadius: '0.8rem',
-  backgroundColor: semantic.primary.light,
 });
 
 globalStyle(`${visualSlotClassName} > :is(img, svg)`, {

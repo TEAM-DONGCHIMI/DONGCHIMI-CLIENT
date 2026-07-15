@@ -1,4 +1,5 @@
 export { marketInformationRegistrationSchema } from './market-information-form.schema';
+export { emptyMarketInformationForm } from './market-information-form.fixture';
 export type {
   MarketInformationFormTypes,
   MarketInformationRegistrationRequestTypes,

@@ -1,26 +1,8 @@
+import { emptyMarketInformationForm } from '@/domains/market/model';
+
 export const marketInformationRegistrationFixture = {
-  businessDays: ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'],
   selectedAddress: '서울특별시 마포구 월드컵로 123',
-  initialForm: {
-    name: '',
-    thumbnailUrl: null,
-    address: '',
-    detailAddress: '',
-    latitude: 0,
-    longitude: 0,
-    businessDay: '',
-    businessTime: '',
-    additionalBusinessDay: '',
-    additionalBusinessTime: '',
-    hasAdditionalBusinessHours: false,
-    hasAdditionalMarketPhone: false,
-    holiday: '',
-    marketPhone1: '',
-    marketPhone2: null,
-    marketPhonePrimary: 1,
-    ownerPhone: '',
-    brn: '',
-  },
+  initialForm: emptyMarketInformationForm,
   requiredFieldNames: [
     'name',
     'address',
@@ -31,5 +13,3 @@ export const marketInformationRegistrationFixture = {
     'ownerPhone',
   ],
 } as const;
-
-export const holidayOptions = ['공휴일', ...marketInformationRegistrationFixture.businessDays];

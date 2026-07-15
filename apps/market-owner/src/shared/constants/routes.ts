@@ -5,6 +5,7 @@ export const MARKET_OWNER_ROUTES = {
   leafletShare: '/leaflets/share',
   login: '/login',
   marketInformationRegistration: '/markets/information-registration',
+  marketInformationManagement: '/markets/information-management',
   notFound: '*',
   registrationResult: '/products/registration-result',
   signup: '/signup',
