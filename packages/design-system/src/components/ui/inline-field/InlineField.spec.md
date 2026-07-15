@@ -104,6 +104,7 @@ visible label을 렌더링하지 않으므로 `aria-label`과 `aria-labelledby` 
 - medium: 40px 높이, 상하 padding 10px, 좌우 padding 16px, Body 3 Medium
 - border: 1px, radius 4px
 - medium input과 unit 간격: 10px
+- unit: 크기와 관계없이 Caption 1 Medium과 neutral-60을 사용합니다.
 - text: neutral-90, placeholder: neutral-60
 - unit은 줄바꿈하지 않고 input은 남은 너비에서 축소되어 두 콘텐츠가 겹치지 않습니다.
 - error message: Caption 1 Medium, negative color, 16px 오류 아이콘과 4px gap을 사용합니다.
