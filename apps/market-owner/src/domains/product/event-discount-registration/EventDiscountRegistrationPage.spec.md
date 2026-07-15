@@ -73,7 +73,7 @@
 - completed: a `completed` SSE event sets progress to 100%, marks the visible steps complete, and navigates to the result route once.
 - failed: a `failed` SSE event shows the server message and returns to file confirmation so analysis can be retried.
 - canceling: cancel action is disabled as `취소 중` while the POST request is pending; after the cancel API succeeds, the view returns to file confirmation immediately.
-- toast/completed: clicking `엑셀 양식 다운로드` shows completed feedback with the completed status icon.
+- download: clicking `엑셀 양식 다운로드` opens the provided static `.xlsx` URL in a new tab with `noopener`, preserving the registration screen state.
 - toast/error: the page can render error toast feedback with the error status icon; `전단지 업로드` currently shows Figma error-style feedback because the actual upload API is out of scope.
 - guide line button: `POS에서 엑셀 파일 받는 방법 보기` keeps its visible action styling (`body-3-semibold`, neutral 60, underline) unchanged across default, hover, and focus-visible states.
 - panel: clicking `POS에서 엑셀 파일 받는 방법 보기` opens the right POS guide modal panel with a right-to-left slide-in animation, a `2.8rem × 4rem` close button frame aligned at the panel's `1.8rem` top and offset `0.555rem` left from the `2.5rem` content grid, the two-line title (`POS에서 엑셀 파일을` / `이렇게 다운 받으시면 돼요.`), and the single 360×722 WebP guide image; Escape, backdrop click, or the close button hides it and restores focus.
@@ -97,7 +97,7 @@
 - fixture:
   - `fileAnalysisConfirmFixture`
   - `fileAnalysisProgressFixtures`
-- static registration-method, upload-modal, POS guide, and toast copy is colocated with the component that renders or triggers it.
+- static registration-method, upload-modal, POS guide, toast copy, and the excel template download URL are colocated with the page that triggers them.
 - registration method card assets are page-local `assets/img-excel-upload.svg` and `assets/img-leaflet-upload.svg`; both are pure-vector SVGs and render as decorative 80×80 images because the adjacent heading and description provide the card meaning.
 - the POS guide asset is `/images/pos-excel-guide.webp` and renders at the Figma size of 360×722; it is informative and uses one alt text that preserves the three-step instructions.
 - accepted excel extensions shown to users: `.xlsx`, `.csv`
@@ -132,7 +132,7 @@
 - A `completed` terminal event navigates once to `/products/registration-result`; `failed` and `canceled` terminal events do not navigate to the result route.
 - Progress `취소` posts the current `marketId` and string `jobId` to the cancel endpoint. API success returns to confirmation and shows completed feedback immediately; a later SSE `canceled` event must not duplicate the return behavior.
 - Cancel API failure keeps the progress stream active, unlocks cancel, and shows the normalized server message when available.
-- `엑셀 양식 다운로드` shows the success toast. Actual file download/API failure mapping is out of scope.
+- `엑셀 양식 다운로드` opens the provided static `.xlsx` URL in a new tab with `noopener`; browser download behavior follows the static server response and the current registration screen remains unchanged.
 - `전단지 업로드` shows the Figma toast feedback. Actual leaflet image upload/API is out of scope.
 - Toast feedback uses the shared toast runtime. The page passes the Figma status icon through the toast `icon` slot and uses a stable toast id for registration action feedback so triggering a new toast replaces the visible toast and resets the runtime timer.
 - The page does not own toast viewport positioning or sidebar-width correction.
@@ -179,7 +179,7 @@
 - [x] cancel posts the current `marketId` and `jobId`, locks duplicate actions, and returns to confirmation after API success
 - [x] canceled SSE analysis returns to confirmation without duplicating cancel completion behavior
 - [x] premature disconnect retries at most three attempts and unmount aborts the active stream
-- [x] clicking `엑셀 양식 다운로드` renders toast feedback with icon
+- [x] clicking `엑셀 양식 다운로드` opens the provided static `.xlsx` URL without changing the registration screen state
 - [x] clicking POS guide link opens the modal panel; close button, Escape, and backdrop click close it
 - [x] POS guide panel renders the Figma 360×722 guide as one informative WebP image
 - [x] clicking `전단지 업로드` renders toast feedback with icon
