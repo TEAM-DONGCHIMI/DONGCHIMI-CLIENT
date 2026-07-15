@@ -2,6 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { uploadFileToPresignedUrl } from '@/shared/api';
+import { PRESIGNED_UPLOAD_PURPOSE } from '@/shared/constants/presigned-upload-purpose';
 
 import { usePresignedUploadMutation } from '../../hooks';
 import { createEmptyTodaySpecialProductForm } from '../model';
@@ -56,7 +57,7 @@ describe('useTodaySpecialImageUpload', () => {
     expect(createPresignedUploadUrl).toHaveBeenCalledWith({
       contentLength: file.size,
       contentType: 'image/png',
-      purpose: 'PRODUCT_THUMBNAIL',
+      purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_THUMBNAIL,
     });
     expect(mockedUploadFileToPresignedUrl).toHaveBeenCalledWith({
       file,

@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { PRESIGNED_UPLOAD_PURPOSE } from '@/shared/constants/presigned-upload-purpose';
+
 import { resolvePresignedExcelFileUrl } from './resolve-excel-file-url';
 
 describe('resolvePresignedExcelFileUrl', () => {
@@ -33,7 +35,7 @@ describe('resolvePresignedExcelFileUrl', () => {
     expect(requestPresignedUploadUrl).toHaveBeenCalledWith({
       contentLength: file.size,
       contentType: file.type,
-      purpose: 'product_import',
+      purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_IMPORT_EXCEL,
     });
     expect(fetchSpy).toHaveBeenCalledWith(
       'https://s3.ap-northeast-2.amazonaws.com/bucket/tmp/products.xlsx',

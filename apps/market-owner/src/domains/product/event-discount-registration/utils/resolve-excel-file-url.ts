@@ -3,8 +3,8 @@ import {
   type PresignedUploadRequestTypes,
   type PresignedUploadResponseTypes,
 } from '@/shared/api';
+import { PRESIGNED_UPLOAD_PURPOSE } from '@/shared/constants/presigned-upload-purpose';
 
-const PRODUCT_IMPORT_UPLOAD_PURPOSE = 'product_import';
 const DEFAULT_EXCEL_CONTENT_TYPE = 'application/octet-stream';
 const PRESIGNED_UPLOAD_TIMEOUT_MS = 60_000;
 const PRESIGNED_UPLOAD_ERROR_MESSAGE = '파일 업로드에 실패했습니다. 다시 시도해주세요.';
@@ -55,7 +55,7 @@ export const resolvePresignedExcelFileUrl =
     const presignedUpload = await requestPresignedUploadUrl({
       contentLength: file.size,
       contentType: getExcelUploadContentType(file),
-      purpose: PRODUCT_IMPORT_UPLOAD_PURPOSE,
+      purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_IMPORT_EXCEL,
     });
 
     await uploadFileToPresignedUrl({ file, presignedUpload });

@@ -40,7 +40,7 @@
 - `useStartProductImportMutation` stays page-local because it wraps the analysis-start mutation without introducing cross-page cache behavior.
 - `cancelProductImport` and `useCancelProductImportMutation` stay page-local because canceling an active import is specific to this flow and does not invalidate a cached query.
 - `subscribeProductImportProgress` stays page-local because SSE is a long-lived transport connection rather than query cache state; it uses the app HTTP client's authenticated raw response path instead of a query key.
-- `resolvePresignedExcelFileUrl` stays page-local because it orchestrates the flow-specific `product_import` presigned upload purpose, S3 PUT, and import-start handoff value.
+- `resolvePresignedExcelFileUrl` stays page-local because it orchestrates the flow-specific `PRODUCT_IMPORT_EXCEL` presigned upload purpose, S3 PUT, and import-start handoff value.
 - The page uses the optional `marketId` prop for isolated tests and otherwise reads the non-sensitive market id persisted from the owner login response; the access token remains memory-only.
 - `useFileDrop` is reused from product domain hooks for file drop event handling; accepted extension validation stays in `useExcelUploadFlow` because `.xlsx/.csv` is specific to this flow.
 - App-shared `UploadModal` is reused for the excel upload modal default/upload states.
@@ -112,7 +112,7 @@
 - Drag over / drag leave / drop visual effects are intentionally out of scope for DCMSM-34.
 - The modal file format tooltip is hidden after the modal moves to upload state.
 - The page performs lightweight client-side extension checking for local selection and drag & drop. Files outside `.xlsx` and `.csv` move the modal to error state.
-- Upload action requests a presigned URL with purpose `product_import`, the selected file content type, and file byte size.
+- Upload action requests a presigned URL with purpose `PRODUCT_IMPORT_EXCEL`, the selected file content type, and file byte size.
 - Upload action PUTs the selected file to the returned `uploadUrl` with `requiredHeaders`.
 - Upload success stores the selected file name and the returned `objectKey` as the import handoff value, then switches to confirmation.
 - Confirmation `취소` clears the uploaded file state and returns to the method view.
