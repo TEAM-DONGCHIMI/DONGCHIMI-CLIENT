@@ -842,6 +842,19 @@ export interface ProductBulkDeleteRequest {
    * @example [1,2,3]
    */
   productIds: number[];
+  /**
+   * 할인 기간 중이어도 삭제할지 여부
+   * @example false
+   */
+  forceDelete: boolean;
+}
+
+export interface ProductDeleteRequest {
+  /**
+   * 할인 기간 중이어도 삭제할지 여부
+   * @example false
+   */
+  forceDelete: boolean;
 }
 
 export interface ProductResetRequest {
@@ -850,6 +863,11 @@ export interface ProductResetRequest {
    * @example "DAILY"
    */
   dealType: 'PERIODIC' | 'DAILY';
+  /**
+   * 할인 기간 중이어도 삭제할지 여부
+   * @example false
+   */
+  forceDelete: boolean;
 }
 
 export type UpdateData = ApiResponseUnit;
