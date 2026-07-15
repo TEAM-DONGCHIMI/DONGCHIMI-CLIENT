@@ -87,7 +87,7 @@ describe('ProductEditProductList', () => {
   beforeEach(() => {
     mockUseProductDetailQuery.mockClear();
     mockSubmitProductUpdate.mockReset();
-    mockSubmitProductUpdate.mockResolvedValue(true);
+    mockSubmitProductUpdate.mockResolvedValue({ success: true, thumbnailUrl: null });
     mockUseProductUpdateFlow.mockReturnValue({
       isPending: false,
       submitProductUpdate: mockSubmitProductUpdate,
@@ -357,7 +357,7 @@ describe('ProductEditProductList', () => {
   it('keeps the edited values and modal open when product update fails', async () => {
     const user = userEvent.setup();
     const handleUpdateProduct = vi.fn();
-    mockSubmitProductUpdate.mockResolvedValueOnce(false);
+    mockSubmitProductUpdate.mockResolvedValueOnce({ success: false });
 
     renderProductList(
       [

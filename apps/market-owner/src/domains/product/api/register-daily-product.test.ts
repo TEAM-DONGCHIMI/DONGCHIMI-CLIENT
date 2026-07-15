@@ -37,6 +37,7 @@ describe('registerDailyProduct', () => {
       success: true,
       code: 'SUCCESS',
       message: '요청에 성공했습니다.',
+      data: { productId: 101 },
     };
 
     mockedPost.mockResolvedValue(response);
@@ -52,6 +53,28 @@ describe('registerDailyProduct', () => {
       success: false,
       code: 'MARKET_NOT_FOUND',
       message: '존재하지 않는 마트입니다.',
+    });
+
+    await expect(
+      registerDailyProduct({
+        marketId: 12,
+        request: {
+          name: '토마토',
+          category: 'VEGETABLE_FRUIT',
+          originalPrice: 5000,
+          discountedPrice: 4500,
+          discountStartDate: '2026-06-30',
+          discountEndDate: '2026-06-30',
+        },
+      }),
+    ).rejects.toSatisfy(isApiResponseValidationError);
+  });
+
+  it('rejects a success response without the registered product id', async () => {
+    mockedPost.mockResolvedValue({
+      success: true,
+      code: 'SUCCESS',
+      message: '요청에 성공했습니다.',
     });
 
     await expect(

@@ -10,6 +10,7 @@ export {
   sanitizeProductName,
 } from './product-form.utils';
 export { createDailyProductRequest } from './create-daily-product-request';
+export { createTodaySpecialProductUpdateValues } from './create-today-special-product-update-values';
 export {
   todaySpecialProductFormSchema,
   todaySpecialRegistrationFormSchema,
