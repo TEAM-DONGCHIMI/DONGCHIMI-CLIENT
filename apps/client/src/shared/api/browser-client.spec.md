@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-17
+- Jira: DCMCL-17, DCMCL-22
 - Owner: `apps/client/src/shared/api/browser-client.ts`
 - Status: Implemented
 
@@ -17,6 +17,7 @@
 - `401`이 아닌 응답은 refresh하지 않습니다.
 - 최초 `401` 응답에만 `POST /api/auth/token/refresh`를 호출합니다.
 - refresh 성공 시 원 요청을 한 번 재시도합니다.
+- body가 있는 POST/PUT 요청도 소비된 `Request`를 직접 복제하지 않고 Ky가 안전하게 재시도합니다.
 - 재시도 응답이 다시 `401`이어도 추가 refresh를 수행하지 않습니다.
 - 로그인과 refresh를 포함한 `/api/auth/*` 요청은 `401`이어도 refresh하지 않습니다.
 - 동시에 여러 요청이 `401`을 반환하면 진행 중인 refresh 요청 하나를 공유합니다.
@@ -31,5 +32,5 @@
 
 - [x] browser API integration test
 - [x] lint
-- [ ] typecheck
-- [ ] build
+- [x] typecheck
+- [x] build

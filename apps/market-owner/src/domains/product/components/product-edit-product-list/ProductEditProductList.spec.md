@@ -21,7 +21,8 @@
 - `groups`: 렌더링할 상품 그룹입니다. 모든 그룹의 `products`가 비어 있으면 empty 상태를 표시합니다.
 - `registrationHref`: empty CTA가 이동할 상품 등록 route입니다.
 - `selectionMode`: true이면 상품 카드를 bulk selection 상태로 렌더링합니다.
-- `selectedProductNames`: bulk selection 상태에서 선택된 상품명 목록입니다.
+- `selectedProductIds`: bulk selection 상태에서 선택된 상품 ID 목록입니다.
+- `deletePending`: 삭제 요청 중 카드 수정/삭제 action을 비활성화하는 상태입니다.
 - `onDeleteProduct`: 개별 카드 삭제가 확인 modal에서 확정되면 호출하는 handler입니다.
 - `onAutoOpenProductMissing`: `autoOpenProductId`에 해당하는 상품을 찾지 못하면 호출하는 handler입니다.
 - `onAutoOpenProductModalClose`: 자동으로 열린 개별 수정 modal이 닫히면 호출하는 handler입니다.
@@ -50,6 +51,7 @@
 - `autoOpenProductId`에 해당하는 상품이 없으면 `onAutoOpenProductMissing`을 호출하고 modal은 열지 않습니다.
 - bulk selection mode에서는 카드 수정/삭제 버튼을 disabled 처리하고, selection button만 `onToggleProductSelection`으로 동작합니다.
 - 카드 삭제 버튼을 누르면 `ProductEditConfirmModal action="delete"`를 열고, 확인 버튼을 누르면 `onDeleteProduct`를 호출합니다.
+- 삭제 요청 중에는 카드별 수정/삭제 버튼을 비활성화해 중복 요청을 막습니다.
 - 오늘의 특가 수정 modal은 시작일을 비활성 상태로 표시하고 `하루 더 늘리기` 버튼을 제공합니다.
 - 행사 할인 수정 modal은 시작일과 종료일을 모두 수정 가능하게 표시하고 `하루 더 늘리기` 버튼을 제공하지 않습니다.
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { overlay } from 'overlay-kit';
 import { useToast, type ToastStatusTypes } from '@dongchimi/shared/toast';
 import {
   IcCircleCheckFillSizeSmall,
@@ -10,10 +11,12 @@ import {
   DesktopHeader,
   ProductHeaderSearch,
   type ProductHeaderSearchProductTypes,
+  QrDownloadModal,
 } from '@/shared/components';
 import { useProductSearchQuery } from '@/domains/product/hooks';
 import { useAuthStore } from '@/shared/stores/auth-store';
 import { createProductEditTargetPath } from '@/shared/utils/product-edit-target-path.utils';
+import { downloadQrCodeImage, getQrCodeImageSource } from '@/shared/utils/qr-code-image.utils';
 
 import * as S from './HomePage.css';
 import { HomeDashboardSection, HomeHeroSection } from './sections';
@@ -21,7 +24,11 @@ import { HomeDashboardSection, HomeHeroSection } from './sections';
 const HOME_TOAST_DISMISS_MS = 2500;
 const SHARE_COPY_SUCCESS_MESSAGE = '전단 링크가 복사되었습니다.';
 const SHARE_COPY_ERROR_MESSAGE = '링크를 복사하지 못했습니다. 다시 시도해주세요.';
-const QR_CODE_PREPARING_MESSAGE = 'QR코드 보기 기능은 준비 중입니다.';
+const QR_CODE_UNAVAILABLE_MESSAGE = 'QR 코드를 불러오지 못했습니다. 다시 시도해주세요.';
+const QR_DOWNLOAD_ERROR_MESSAGE = 'QR 이미지 다운로드를 실패했습니다.';
+const QR_DOWNLOAD_FILENAME = 'market-leaflet-qr.png';
+const QR_DOWNLOAD_MODAL_OVERLAY_ID = 'home-qr-download-modal';
+const QR_IMAGE_LABEL = '매장 고유 QR코드';
 const PRODUCT_SEARCH_RESULT_SIZE = 10;
 
 const getHomeToastIcon = (status: ToastStatusTypes) => {
@@ -70,8 +77,43 @@ export const HomePage = () => {
     navigate(createProductEditTargetPath(product));
   };
 
-  const handleQrCodePreparing = () => {
-    showHomeToast(QR_CODE_PREPARING_MESSAGE, 'completed');
+  const handleOpenQrCode = (qrCode?: string | null) => {
+    const normalizedQrCode = qrCode?.trim();
+
+    if (normalizedQrCode == null || normalizedQrCode.length === 0) {
+      showHomeToast(QR_CODE_UNAVAILABLE_MESSAGE, 'error');
+      return;
+    }
+
+    const imageSource = getQrCodeImageSource(normalizedQrCode);
+
+    overlay.open(
+      ({ close, isOpen, unmount }) => {
+        const closeQrModal = () => {
+          close();
+          unmount();
+        };
+        const handleDownloadQrCode = () => {
+          try {
+            downloadQrCodeImage(imageSource, QR_DOWNLOAD_FILENAME);
+            closeQrModal();
+          } catch {
+            showHomeToast(QR_DOWNLOAD_ERROR_MESSAGE, 'error');
+          }
+        };
+
+        return (
+          <QrDownloadModal
+            imageLabel={QR_IMAGE_LABEL}
+            imageSrc={imageSource}
+            open={isOpen}
+            onClose={closeQrModal}
+            onDownload={handleDownloadQrCode}
+          />
+        );
+      },
+      { overlayId: QR_DOWNLOAD_MODAL_OVERLAY_ID },
+    );
   };
 
   return (
@@ -97,7 +139,7 @@ export const HomePage = () => {
         <HomeHeroSection />
         <HomeDashboardSection
           onCopyLinkResult={handleCopyLinkResult}
-          onQrCodePreparing={handleQrCodePreparing}
+          onOpenQrCode={handleOpenQrCode}
         />
       </div>
     </main>

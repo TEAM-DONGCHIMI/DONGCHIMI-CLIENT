@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { createProductEditListItem, getProductListSort } from './product-list';
+import {
+  createProductEditListItem,
+  createProductEditListStateKey,
+  getProductListSort,
+} from './product-list';
 
 describe('product list model', () => {
   it('maps server category code and product fields to edit card data', () => {
@@ -38,5 +42,27 @@ describe('product list model', () => {
     expect(getProductListSort('category')).toBe('CATEGORY');
     expect(getProductListSort('registered')).toBe('LATEST');
     expect(getProductListSort('views')).toBe('VIEW_COUNT');
+  });
+
+  it('changes the list state key when a refetched product period changes', () => {
+    const product = createProductEditListItem({
+      productId: 101,
+      name: '삼겹살 500g',
+      thumbnailUrl: null,
+      category: 'MEAT_EGG',
+      categoryName: '정육/달걀',
+      originalPrice: 5000,
+      discountedPrice: 4500,
+      promotionalPhrase: null,
+      discountStartDate: '2026-07-15',
+      discountEndDate: '2026-07-15',
+      viewCount: 162,
+      createdAt: '2026-07-15T10:00:00',
+    });
+
+    const previousKey = createProductEditListStateKey([product]);
+    const updatedKey = createProductEditListStateKey([{ ...product, endDate: '2026-07-16' }]);
+
+    expect(updatedKey).not.toBe(previousKey);
   });
 });

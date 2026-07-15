@@ -31,7 +31,7 @@ export const linkFieldClassName = style({
   gap: '1.2rem',
   boxSizing: 'border-box',
   margin: '1.8rem 0 0.8rem 0',
-  padding: '1.4rem 1.6rem',
+  padding: '0.4rem 0.6rem 0.4rem 1.6rem',
   borderRadius: '1.2rem',
   backgroundColor: semantic.primary.light,
 });
@@ -46,10 +46,8 @@ export const linkTextClassName = style({
   whiteSpace: 'nowrap',
 });
 
-export const linkCopyIconClassName = style({
-  flexShrink: 0,
-  width: '2rem',
-  height: '2rem',
+export const linkCopyButtonClassName = style({
+  color: atomic.neutral[50],
 });
 
 export const actionListClassName = style({

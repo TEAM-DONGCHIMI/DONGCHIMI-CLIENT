@@ -13,9 +13,10 @@ interface ProductEditBulkSelectionState {
 
 interface UseProductEditBulkSelectionParams {
   activeType: ProductEditTypeTypes;
+  marketId?: number;
   periodBaseProduct?: ProductEditCardProps;
-  onDeleteProducts?: (productNames: string[]) => void;
-  onResetProducts?: () => void;
+  onDeleteProducts?: (productIds: number[]) => Promise<boolean>;
+  onResetProducts?: () => Promise<boolean>;
   onUpdateProductPeriods?: (
     productNames: string[],
     period: { endDate: string; startDate: string },
@@ -23,6 +24,7 @@ interface UseProductEditBulkSelectionParams {
 }
 
 export interface ProductEditPageSelectionControls {
+  selectedProductIds: number[];
   selectedProductNames: string[];
   selectionMode: boolean;
   onToggleProductSelection: (product: ProductEditCardProps) => void;
@@ -30,6 +32,7 @@ export interface ProductEditPageSelectionControls {
 
 export const useProductEditBulkSelection = ({
   activeType,
+  marketId,
   periodBaseProduct,
   onDeleteProducts,
   onResetProducts,
@@ -46,7 +49,10 @@ export const useProductEditBulkSelection = ({
   // 일괄 작업 파생값
   const selectionMode = bulkAction != null;
   const selectedProductCount = selectedProducts.length;
-  const selectedProductNames = selectedProducts.map((product) => product.productName); // 선택 상품 이름만
+  const selectedProductIds = selectedProducts
+    .map(({ productId }) => Number(productId))
+    .filter(Number.isSafeInteger);
+  const selectedProductNames = selectedProducts.map((product) => product.productName);
 
   // 일괄 작업 닫기
   const closeBulkAction = () => {
@@ -68,12 +74,12 @@ export const useProductEditBulkSelection = ({
   const toggleProductSelection = (product: ProductEditCardProps) => {
     setBulkSelection((currentSelection) => {
       const isSelected = currentSelection.products.some(
-        (currentProduct) => currentProduct.productName === product.productName,
+        (currentProduct) => currentProduct.productId === product.productId,
       );
 
       const products = isSelected
         ? currentSelection.products.filter(
-            (currentProduct) => currentProduct.productName !== product.productName,
+            (currentProduct) => currentProduct.productId !== product.productId,
           )
         : [...currentSelection.products, product];
 
@@ -85,6 +91,7 @@ export const useProductEditBulkSelection = ({
   };
 
   const selectionControls: ProductEditPageSelectionControls = {
+    selectedProductIds,
     selectedProductNames,
     selectionMode,
     onToggleProductSelection: toggleProductSelection,
@@ -102,8 +109,18 @@ export const useProductEditBulkSelection = ({
       return;
     }
 
+    if (marketId == null) {
+      return;
+    }
+
+    if (selectedProductIds.length !== selectedProductCount) {
+      return;
+    }
+
     openProductEditPeriodModal({
       initialPeriod: selectedProducts[0] ?? periodBaseProduct,
+      marketId,
+      productIds: selectedProductIds,
       variant: activeType,
       onSubmit: (period) => {
         onUpdateProductPeriods?.(selectedProductNames, period);
@@ -124,11 +141,18 @@ export const useProductEditBulkSelection = ({
       return;
     }
 
+    if (selectedProductIds.length !== selectedProductCount) {
+      return;
+    }
+
     openProductEditConfirmModal({
       action: 'delete',
-      onConfirm: () => {
-        onDeleteProducts?.(selectedProductNames);
-        closeBulkAction();
+      onConfirm: async () => {
+        const isDeleted = await onDeleteProducts?.(selectedProductIds);
+
+        if (isDeleted !== false) {
+          closeBulkAction();
+        }
       },
     });
   };
@@ -136,9 +160,12 @@ export const useProductEditBulkSelection = ({
   const openResetConfirm = () => {
     openProductEditConfirmModal({
       action: 'reset',
-      onConfirm: () => {
-        onResetProducts?.();
-        closeBulkAction();
+      onConfirm: async () => {
+        const isReset = await onResetProducts?.();
+
+        if (isReset !== false) {
+          closeBulkAction();
+        }
       },
     });
   };

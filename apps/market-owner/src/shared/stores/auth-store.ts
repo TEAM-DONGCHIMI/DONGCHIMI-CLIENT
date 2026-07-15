@@ -3,7 +3,14 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type AuthBootstrapStatusTypes = 'authenticated' | 'idle' | 'refreshing' | 'unauthenticated';
 
+export interface AuthAccountTypes {
+  email: string;
+  marketName?: string;
+  marketThumbnailUrl?: string;
+}
+
 interface AuthStoreStateTypes {
+  account?: AuthAccountTypes;
   accessToken?: string;
   bootstrapStatus: AuthBootstrapStatusTypes;
   isLoggedIn: boolean;
@@ -12,8 +19,13 @@ interface AuthStoreStateTypes {
   clearSession: () => void;
   setAccessToken: (
     accessToken: string,
-    options?: { isAutoLogin?: boolean; marketId?: number | null },
+    options?: {
+      account?: AuthAccountTypes;
+      isAutoLogin?: boolean;
+      marketId?: number | null;
+    },
   ) => void;
+  setAccount: (account?: AuthAccountTypes) => void;
   setBootstrapStatus: (bootstrapStatus: AuthBootstrapStatusTypes) => void;
   setLoggedIn: (isLoggedIn: boolean) => void;
   setMarketId: (marketId?: number) => void;
@@ -77,6 +89,7 @@ const authStorage = {
 export const useAuthStore = create<AuthStoreStateTypes>()(
   persist(
     (set) => ({
+      account: undefined,
       accessToken: undefined,
       bootstrapStatus: 'idle',
       isLoggedIn: false,
@@ -89,6 +102,7 @@ export const useAuthStore = create<AuthStoreStateTypes>()(
           accessToken: undefined,
           bootstrapStatus: 'unauthenticated',
           isLoggedIn: false,
+          account: undefined,
           marketId: undefined,
         });
       },
@@ -101,11 +115,15 @@ export const useAuthStore = create<AuthStoreStateTypes>()(
 
         set((state) => ({
           accessToken,
+          account: options && 'account' in options ? (options.account ?? undefined) : state.account,
           bootstrapStatus: 'authenticated',
           isLoggedIn: true,
           marketId:
             options && 'marketId' in options ? (options.marketId ?? undefined) : state.marketId,
         }));
+      },
+      setAccount: (account) => {
+        set({ account });
       },
       setBootstrapStatus: (bootstrapStatus) => {
         set({ bootstrapStatus });
@@ -119,7 +137,7 @@ export const useAuthStore = create<AuthStoreStateTypes>()(
     }),
     {
       name: AUTH_STORE_STORAGE_KEY,
-      partialize: ({ isLoggedIn, marketId }) => ({ isLoggedIn, marketId }),
+      partialize: ({ account, isLoggedIn, marketId }) => ({ account, isLoggedIn, marketId }),
       storage: createJSONStorage(() => authStorage),
     },
   ),
