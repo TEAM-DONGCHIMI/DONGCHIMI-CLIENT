@@ -20,6 +20,18 @@ export const periodicProductCategorySchema = z.enum(PERIODIC_PRODUCT_CATEGORIES)
 
 export type PeriodicProductCategoryTypes = z.infer<typeof periodicProductCategorySchema>;
 
+// Swagger보다 먼저 배포된 서버 필드를 generated 파일 수정 없이 격리한다.
+type PeriodicProductsPageContractTypes = UserApiTypes.CursorSliceResponsePeriodicProductResponse & {
+  availableCategories: PeriodicProductCategoryTypes[];
+};
+
+type PeriodicProductsResponseContractTypes = Omit<
+  UserApiTypes.ApiResponseCursorSliceResponsePeriodicProductResponse,
+  'data'
+> & {
+  data?: PeriodicProductsPageContractTypes | null;
+};
+
 export const periodicProductsListParamsSchema = z.object({
   category: periodicProductCategorySchema.optional(),
   marketId: z.number().int().positive(),
@@ -35,9 +47,9 @@ export const periodicProductsParamsSchema = periodicProductsListParamsSchema.ext
 export type PeriodicProductsParamsTypes = z.input<typeof periodicProductsParamsSchema>;
 
 export const periodicProductSchema = z.object({
-  discountedPrice: z.number(),
-  name: z.string(),
-  productId: z.number(),
+  discountedPrice: z.number().nonnegative(),
+  name: z.string().min(1),
+  productId: z.number().int().positive(),
   thumbnailUrl: z.string().nullish(),
 }) satisfies ZodType<UserApiTypes.PeriodicProductResponse>;
 
@@ -53,7 +65,7 @@ export const periodicProductsPageSchema = z.object({
     .positive()
     .nullish()
     .transform((value) => value ?? null),
-}) satisfies ZodType<UserApiTypes.CursorSliceResponsePeriodicProductResponse>;
+}) satisfies ZodType<PeriodicProductsPageContractTypes>;
 
 export type PeriodicProductsPageTypes = z.infer<typeof periodicProductsPageSchema>;
 
@@ -62,7 +74,9 @@ const periodicProductsResponseSchema = z.object({
   data: periodicProductsPageSchema,
   message: z.string(),
   success: z.literal(true),
-}) satisfies ZodType<UserApiTypes.ApiResponseCursorSliceResponsePeriodicProductResponse>;
+}) satisfies ZodType<PeriodicProductsResponseContractTypes>;
+
+export type PeriodicProductsResponseTypes = z.input<typeof periodicProductsResponseSchema>;
 
 export const resolvePeriodicProductsParams = (rawParams: unknown) => {
   return periodicProductsParamsSchema.parse(rawParams);

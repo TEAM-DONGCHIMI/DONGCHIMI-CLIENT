@@ -1,4 +1,4 @@
-import type { UserApiTypes } from '@/shared/api';
+import type { PeriodicProductsResponseTypes } from '../model/periodic-products-schema';
 
 export const PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE = {
   code: 'SUCCESS',
@@ -23,7 +23,7 @@ export const PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE = {
   },
   message: '요청에 성공했습니다.',
   success: true,
-} satisfies UserApiTypes.ApiResponseCursorSliceResponsePeriodicProductResponse;
+} satisfies PeriodicProductsResponseTypes;
 
 export const PERIODIC_PRODUCTS_LAST_PAGE_RESPONSE_FIXTURE = {
   code: 'SUCCESS',
@@ -42,4 +42,4 @@ export const PERIODIC_PRODUCTS_LAST_PAGE_RESPONSE_FIXTURE = {
   },
   message: '요청에 성공했습니다.',
   success: true,
-} satisfies UserApiTypes.ApiResponseCursorSliceResponsePeriodicProductResponse;
+} satisfies PeriodicProductsResponseTypes;
