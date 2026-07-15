@@ -13,7 +13,6 @@ export const emptySectionClassName = style({
 export const emptyImageClassName = style({
   width: '18.3rem',
   height: '18.3rem',
-  objectFit: 'cover',
 });
 
 export const emptyContentClassName = style({

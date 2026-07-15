@@ -1,11 +1,8 @@
 export { marketInformationRegistrationSchema } from './market-information-form.schema';
 export { emptyMarketInformationForm } from './market-information-form.fixture';
 export type {
-  BusinessHourDayTypes,
-  BusinessHoursTypes,
-  BusinessHourValueTypes,
   MarketInformationFormTypes,
-  MarketInformationRegistrationRequest,
+  MarketInformationRegistrationRequestTypes,
 } from './market-information-form.types';
 export {
   createMarketInformationRegistrationRequest,

@@ -1,8 +1,10 @@
 import { AUTH_PASSWORD_ERROR_MESSAGES } from '../../constants/auth-messages';
 
 export const SIGNUP_PASSWORD_ERROR_MESSAGES = {
-  format: '6-20자로 입력해주세요.',
+  korean: '한글은 사용할 수 없습니다.',
+  length: '6~20자로 입력해주세요.',
   required: AUTH_PASSWORD_ERROR_MESSAGES.required,
+  whitespace: '공백은 사용할 수 없습니다.',
 } as const;
 
 export const SIGNUP_PASSWORD_CONFIRM_ERROR_MESSAGES = {

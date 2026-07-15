@@ -14,10 +14,7 @@ export const qrImageClassName = style({
   width: '27rem',
   aspectRatio: '1',
   backgroundColor: atomic.common[0],
-  backgroundImage:
-    'linear-gradient(45deg, rgba(229, 232, 235, 0.7) 25%, transparent 25%), linear-gradient(-45deg, rgba(229, 232, 235, 0.7) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(229, 232, 235, 0.7) 75%), linear-gradient(-45deg, transparent 75%, rgba(229, 232, 235, 0.7) 75%)',
-  backgroundPosition: '0 0, 0 0.8rem, 0.8rem -0.8rem, -0.8rem 0',
-  backgroundSize: '1.6rem 1.6rem',
+  objectFit: 'contain',
 });
 
 export const downloadButtonClassName = style({

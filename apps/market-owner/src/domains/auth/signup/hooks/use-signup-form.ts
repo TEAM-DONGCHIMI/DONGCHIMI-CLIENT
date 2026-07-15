@@ -14,7 +14,7 @@ import { useSignupSubmit } from './use-signup-submit';
 export const useSignupForm = () => {
   const {
     action: { clearSubmitErrorMessage, submit },
-    state: { isSubmitting, submitErrorMessage },
+    state: { isSubmitting },
   } = useSignupSubmit();
   const form = useForm<SignupFormTypes>({
     defaultValues: SIGNUP_FORM_DEFAULT_VALUES,
@@ -94,7 +94,6 @@ export const useSignupForm = () => {
       passwordConfirm: passwordConfirmController.field.value,
       passwordConfirmStatusProps: getTextInputStatusProps(passwordConfirmErrorMessage),
       passwordStatusProps: getTextInputStatusProps(passwordErrorMessage),
-      submitErrorMessage,
     },
   };
 };

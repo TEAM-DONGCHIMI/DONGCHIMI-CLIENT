@@ -1,6 +1,7 @@
 import { useToast } from '@dongchimi/shared/toast';
 
 import { normalizeApiError } from '@/shared/api';
+import { getMarketOwnerEnv } from '@/shared/config';
 
 import { useDailyProductRegistrationMutation } from '../../hooks/use-daily-product-registration-mutation';
 import { createDailyProductRequest, type TodaySpecialProductFormTypes } from '../model';
@@ -25,11 +26,17 @@ export const useTodaySpecialProductRegistration = () => {
     product: TodaySpecialProductFormTypes,
   ): Promise<RegistrationResultTypes> => {
     try {
+      const { s3BaseUrl } = getMarketOwnerEnv();
+
+      if (product.imageFile != null && s3BaseUrl == null) {
+        throw new Error('VITE_PUBLIC_S3_BASE_URL is not configured.');
+      }
+
       const uploadedImageObjectKey = await uploadProductImage(product);
 
       await dailyProductRegistrationMutation.mutateAsync({
         marketId: TEMPORARY_MARKET_ID,
-        request: createDailyProductRequest({ product, uploadedImageObjectKey }),
+        request: createDailyProductRequest({ product, s3BaseUrl, uploadedImageObjectKey }),
       });
 
       return { success: true };
