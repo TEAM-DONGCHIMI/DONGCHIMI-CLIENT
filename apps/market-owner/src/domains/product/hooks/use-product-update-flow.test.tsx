@@ -59,13 +59,18 @@ describe('useProductUpdateFlow', () => {
       message: '요청에 성공했습니다.',
     });
     const { result } = renderHook(() => useProductUpdateFlow());
-    let didUpdate = false;
+    let updateResult: Awaited<
+      ReturnType<ReturnType<typeof useProductUpdateFlow>['submitProductUpdate']>
+    > = { success: false };
 
     await act(async () => {
-      didUpdate = await result.current.submitProductUpdate(commonParams);
+      updateResult = await result.current.submitProductUpdate(commonParams);
     });
 
-    expect(didUpdate).toBe(true);
+    expect(updateResult).toEqual({
+      success: true,
+      thumbnailUrl: 'https://cdn.dongchimi.kr/products/101.png',
+    });
     expect(uploadProductThumbnail).not.toHaveBeenCalled();
     expect(mutateProductUpdate).toHaveBeenCalledWith({
       marketId: 1,
@@ -107,13 +112,15 @@ describe('useProductUpdateFlow', () => {
   it('reports failure when the update request fails', async () => {
     mutateProductUpdate.mockRejectedValue(new TypeError('Failed to fetch'));
     const { result } = renderHook(() => useProductUpdateFlow());
-    let didUpdate = true;
+    let updateResult: Awaited<
+      ReturnType<ReturnType<typeof useProductUpdateFlow>['submitProductUpdate']>
+    > = { success: true, thumbnailUrl: null };
 
     await act(async () => {
-      didUpdate = await result.current.submitProductUpdate(commonParams);
+      updateResult = await result.current.submitProductUpdate(commonParams);
     });
 
-    expect(didUpdate).toBe(false);
+    expect(updateResult).toEqual({ success: false });
     expect(toastError).toHaveBeenCalledWith('인터넷 연결을 확인한 후 다시 시도해주세요.');
   });
 });
