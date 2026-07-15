@@ -139,6 +139,14 @@ export const productContentClassName = style({
   gap: '1.2rem',
 });
 
+export const productClassName = style({
+  display: 'flex',
+  width: '100%',
+  minWidth: 0,
+  flexDirection: 'column',
+  gap: '0.6rem',
+});
+
 export const productNameClassName = style({
   ...typography['body-1-semibold'],
   display: '-webkit-box',

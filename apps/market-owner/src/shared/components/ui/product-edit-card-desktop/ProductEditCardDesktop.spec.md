@@ -65,6 +65,7 @@ Figma APPJAM `Product Edit Card Desktop` node `793:6739`와 첨부 이미지를 
 
 - root: 25.2rem fixed desktop card width, common 0 background, 1.2rem radius
 - padding: top 1.2rem, horizontal 1.6rem, bottom 1.8rem
+- spacing: header와 content 1rem, 상품명과 가격 0.6rem, 가격 묶음과 기간 1.2rem
 - category chip: primary light background, primary strong text, 10rem pill radius
 - view chip: neutral 10 background, neutral 70 text, 0.4rem radius
 - action buttons: 2.4rem square icon buttons
