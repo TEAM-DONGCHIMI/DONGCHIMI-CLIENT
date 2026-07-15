@@ -79,7 +79,7 @@ export const fieldPairGridClassName = style({
 });
 
 export const submitAreaClassName = style({
-  marginTop: '3.6rem',
+  marginTop: '5.1rem',
   padding: '0 2.4rem',
   gap: '1.2rem',
 });
