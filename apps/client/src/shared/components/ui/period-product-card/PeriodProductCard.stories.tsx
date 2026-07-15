@@ -35,6 +35,9 @@ const meta = {
     onClick: {
       control: false,
     },
+    prefetch: {
+      control: 'boolean',
+    },
     priceText: {
       control: 'text',
     },

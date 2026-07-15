@@ -19,11 +19,13 @@ type PeriodProductCardBaseProps = AriaAttributes & {
 type PeriodProductCardLinkProps = PeriodProductCardBaseProps & {
   href: LinkProps['href'];
   onClick?: MouseEventHandler<HTMLAnchorElement>;
+  prefetch?: LinkProps['prefetch'];
 };
 
 type PeriodProductCardStaticProps = PeriodProductCardBaseProps & {
   href?: undefined;
   onClick?: undefined;
+  prefetch?: undefined;
 };
 
 export type PeriodProductCardProps = PeriodProductCardLinkProps | PeriodProductCardStaticProps;
@@ -83,6 +85,7 @@ export const PeriodProductCard = ({
   imageSizes,
   imageSrc,
   onClick,
+  prefetch,
   priceText,
   productName,
   ...props
@@ -96,6 +99,7 @@ export const PeriodProductCard = ({
         className={cn(S.rootClassName, S.interactiveRootClassName, className)}
         href={href}
         onClick={onClick}
+        prefetch={prefetch}
         {...props}
       >
         <PeriodProductCardContent
