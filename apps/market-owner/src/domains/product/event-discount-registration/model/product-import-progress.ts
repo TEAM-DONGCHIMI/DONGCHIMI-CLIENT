@@ -19,7 +19,7 @@ export const productImportStepStatusSchema = z.enum([
 
 export const productImportProgressDataSchema = z.object({
   jobId: z.string(),
-  status: z.literal('IN_PROGRESS'),
+  status: z.enum(['PENDING', 'IN_PROGRESS']),
   progress: z.number().min(0).max(100),
   remainingSeconds: z.number().nonnegative().nullish(),
   currentStep: productImportStepSchema.nullish(),
