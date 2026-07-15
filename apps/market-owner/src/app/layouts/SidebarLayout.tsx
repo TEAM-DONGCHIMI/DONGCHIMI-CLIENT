@@ -27,7 +27,7 @@ const sidebarItemRoutes = {
   eventDiscountEdit: MARKET_OWNER_ROUTES.eventDiscountEdit,
   eventDiscountRegistration: MARKET_OWNER_ROUTES.eventDiscountRegistration,
   home: MARKET_OWNER_ROUTES.home,
-  marketInformationRegistration: MARKET_OWNER_ROUTES.marketInformationRegistration,
+  marketInformationManagement: MARKET_OWNER_ROUTES.marketInformationManagement,
   todaySpecialEdit: MARKET_OWNER_ROUTES.todaySpecialEdit,
   todaySpecialRegistration: MARKET_OWNER_ROUTES.todaySpecialRegistration,
 } as const;
@@ -126,7 +126,7 @@ const sidebarSections: SidebarSection[] = [
 const footerItems: SidebarItem[] = [
   createSidebarItem({
     icon: <IcSetting aria-hidden='true' />,
-    id: 'marketInformationRegistration',
+    id: 'marketInformationManagement',
     label: '마트 정보 관리',
   }),
 ];

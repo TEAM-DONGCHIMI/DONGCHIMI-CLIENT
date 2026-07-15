@@ -362,7 +362,7 @@ describe('marketOwnerRoutes', () => {
     expect(screen.queryByRole('link', { name: '오늘의 전단 공유' })).not.toBeInTheDocument();
   });
 
-  it('navigates the sidebar market information link to the registration page', async () => {
+  it('navigates the sidebar market information link to the management page', async () => {
     const user = userEvent.setup();
 
     renderRoute(MARKET_OWNER_ROUTES.home);
@@ -373,13 +373,51 @@ describe('marketOwnerRoutes', () => {
 
     expect(marketInformationLink).toHaveAttribute(
       'href',
-      MARKET_OWNER_ROUTES.marketInformationRegistration,
+      MARKET_OWNER_ROUTES.marketInformationManagement,
     );
 
     await user.click(marketInformationLink);
 
-    expect(await screen.findByRole('heading', { name: '마트 정보 등록' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '마트 정보 관리' })).toBeInTheDocument();
+    expect(screen.getByLabelText('마트명')).toHaveValue('상현 마트');
+    expect(screen.getByRole('button', { name: '수정 완료' })).toBeDisabled();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
+  });
+
+  it('shows management completion feedback and confirms leaving dirty values', async () => {
+    const user = userEvent.setup();
+    const { router } = renderRoute(MARKET_OWNER_ROUTES.marketInformationManagement);
+
+    const marketNameInput = await screen.findByLabelText('마트명');
+    await user.clear(marketNameInput);
+    await user.type(marketNameInput, '새 마트');
+    expect(screen.getByRole('button', { name: '수정 완료' })).toBeEnabled();
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    expect(screen.getByRole('dialog', { name: '저장하지 않고 나가시겠어요?' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '취소' }));
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.marketInformationManagement);
+    expect(marketNameInput).toHaveValue('새 마트');
+
+    await user.click(screen.getByRole('button', { name: '수정 완료' }));
+    expect(await screen.findByRole('status')).toHaveTextContent('정보가 변경되었습니다.');
+  });
+
+  it('leaves the management page with a single confirmation', async () => {
+    const user = userEvent.setup();
+    const { router } = renderRoute(MARKET_OWNER_ROUTES.marketInformationManagement);
+
+    const marketNameInput = await screen.findByLabelText('마트명');
+    await user.clear(marketNameInput);
+    await user.type(marketNameInput, '새 마트');
+    await user.click(screen.getByRole('button', { name: '취소' }));
+    await user.click(screen.getByRole('button', { name: '나가기' }));
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.home);
+    });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('centers sidebar-layout toasts over the viewport', async () => {
