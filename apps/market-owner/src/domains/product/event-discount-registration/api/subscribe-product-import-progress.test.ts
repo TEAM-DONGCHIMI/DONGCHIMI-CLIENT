@@ -123,6 +123,20 @@ describe('subscribeProductImportProgress', () => {
 
   it('infers event types from default SSE message data status', async () => {
     const onEvent = vi.fn();
+    const pendingData = {
+      jobId: 'job-pending',
+      status: 'PENDING',
+      progress: 0,
+      remainingSeconds: null,
+      currentStep: null,
+      steps: [
+        { step: 'FILE_UPLOAD', status: 'PENDING' },
+        { step: 'NAME_EXTRACTION', status: 'PENDING' },
+        { step: 'PRICE_EXTRACTION', status: 'PENDING' },
+        { step: 'CATEGORY_CLASSIFICATION', status: 'PENDING' },
+        { step: 'IMAGE_MATCHING', status: 'PENDING' },
+      ],
+    };
     const progressData = {
       jobId: 'job-123',
       status: 'IN_PROGRESS',
@@ -148,6 +162,7 @@ describe('subscribeProductImportProgress', () => {
 
     mockedHttpClientStream.mockResolvedValueOnce(
       createChunkedResponse([
+        `data: ${JSON.stringify(pendingData)}\n\n`,
         `data: ${JSON.stringify(progressData)}\n\n`,
         `event: message\ndata: ${JSON.stringify(completedData)}\n\n`,
       ]),
@@ -160,8 +175,9 @@ describe('subscribeProductImportProgress', () => {
       signal: new AbortController().signal,
     });
 
-    expect(onEvent).toHaveBeenNthCalledWith(1, { data: progressData, type: 'progress' });
-    expect(onEvent).toHaveBeenNthCalledWith(2, { data: completedData, type: 'completed' });
+    expect(onEvent).toHaveBeenNthCalledWith(1, { data: pendingData, type: 'progress' });
+    expect(onEvent).toHaveBeenNthCalledWith(2, { data: progressData, type: 'progress' });
+    expect(onEvent).toHaveBeenNthCalledWith(3, { data: completedData, type: 'completed' });
   });
 
   it('ignores default SSE message timeout payloads', async () => {
@@ -243,7 +259,7 @@ describe('subscribeProductImportProgress', () => {
     const onEvent = vi.fn();
     const initialProgressData = {
       jobId: 'job-123',
-      status: 'IN_PROGRESS',
+      status: 'PENDING',
       progress: 0,
       currentStep: null,
       remainingSeconds: null,
