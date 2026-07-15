@@ -8,7 +8,6 @@ export type ProductHeaderSearchDealTypes = 'DAILY' | 'PERIODIC';
 
 export interface ProductHeaderSearchProductTypes {
   dealType: ProductHeaderSearchDealTypes;
-  isProductInfoLoadable?: boolean;
   name: string;
   productId: number | string;
 }

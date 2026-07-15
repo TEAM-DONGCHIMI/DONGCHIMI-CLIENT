@@ -658,14 +658,21 @@ describe('marketOwnerRoutes', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('keeps the current edit page when shared header product info cannot be loaded', async () => {
+  it('keeps the current edit page when the shared header search API fails', async () => {
     const user = userEvent.setup();
+    mockGetProductSearch.mockRejectedValueOnce(
+      new ApiError({
+        code: 'INVALID_SEARCH_KEYWORD',
+        message: '상품 정보를 불러오지 못했어요.',
+        status: 400,
+        type: 'validation',
+      }),
+    );
 
     const { router } = renderRoute(MARKET_OWNER_ROUTES.eventDiscountEdit);
 
     await screen.findByRole('heading', { name: '행사 할인 상품을 수정하세요' });
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '대란 30구');
-    await user.click(await screen.findByRole('button', { name: /행사 할인.*대란 30구/ }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('상품 정보를 불러오지 못했어요.');
     expect(
