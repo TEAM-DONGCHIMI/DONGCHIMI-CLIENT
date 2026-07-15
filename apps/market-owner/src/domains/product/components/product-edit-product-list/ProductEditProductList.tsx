@@ -13,6 +13,7 @@ import {
 import { ProductEditEmptyView } from './product-edit-empty-view';
 
 interface ProductEditProductListProps {
+  deletePending?: boolean;
   ariaLabel: string;
   editModalVariant: ProductEditCardVariantTypes;
   autoOpenProductId?: string | null;
@@ -33,6 +34,7 @@ const hasProducts = (groups: ProductEditProductGroup[]) =>
 
 export const ProductEditProductList = ({
   ariaLabel,
+  deletePending = false,
   editModalVariant,
   autoOpenProductId,
   groups,
@@ -140,12 +142,14 @@ export const ProductEditProductList = ({
                 <ProductEditCardDesktop
                   key={`${title}-${product.productName}`}
                   {...product}
-                  actionsDisabled={selectionMode}
+                  actionsDisabled={selectionMode || deletePending}
                   aria-label={product['aria-label'] ?? `${product.productName} 상품 수정 카드`}
                   selectionState={
                     selectionMode ? (isSelected ? 'selected' : 'selectable') : 'default'
                   }
-                  onDeleteClick={selectionMode ? undefined : () => deleteProduct(product)}
+                  onDeleteClick={
+                    selectionMode || deletePending ? undefined : () => deleteProduct(product)
+                  }
                   onEditClick={selectionMode ? undefined : () => editProduct(product)}
                   onSelectClick={
                     selectionMode ? () => onToggleProductSelection?.(product) : undefined

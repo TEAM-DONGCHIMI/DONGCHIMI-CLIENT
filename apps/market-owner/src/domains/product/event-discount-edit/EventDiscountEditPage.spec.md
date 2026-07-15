@@ -30,13 +30,14 @@
 - error: 상품 목록 query error는 route `AsyncBoundary`의 복구 가능한 error fallback에서 처리합니다.
   알 수 없는 route는 router fallback에서 처리합니다.
   `productId` search param에 해당하는 상품을 찾지 못하면 error toast를 표시하고 search param을 제거합니다.
+- market missing: auth store에 `marketId`가 없으면 마트 정보 등록 route로 이동합니다.
 - success: `/products/event-discount/edit` route가 `행사 할인 상품을 수정하세요` heading과 행사 할인 상품 수정 카드 section을 렌더링합니다.
 
 ## Data
 
-- query: `useProductListQuery({ marketId: 1, type: 'PERIODIC', sort })`
-- mutation: none
-- fixture: 목록 렌더링에 사용하지 않음
+- query: auth store의 `marketId`로 `useProductListQuery({ marketId, type: 'PERIODIC', sort })`
+- mutation: 개별 삭제, 일괄 삭제, `dealType=PERIODIC` 상품 초기화
+- fixture: 사용하지 않음
 - model: `domains/product/model/product-list.ts`
 
 ## Behavior
@@ -57,8 +58,12 @@
 - 일괄 기간 수정, 일괄 삭제, 초기화 버튼은 기존 활성 스타일을 유지합니다.
 - 기간 일괄 수정 성공 후 refetch된 상품 기간으로 로컬 카드 목록 상태를 다시 초기화합니다.
 - 개별 상품 카드의 삭제 버튼은 행사 기간이 남았으면 삭제 확인 modal 확인 후 해당 카드를 목록에서 제거하고, 기간이 지났으면 바로 제거합니다.
-- 개별 수정/삭제는 기존 UI 확인을 위해 현재 조회 결과의 로컬 상태만 변경하며 서버에는 반영하지 않습니다.
-- 실제 mutation과 cursor pagination은 후속 범위입니다.
+- 개별 삭제는 해당 상품의 `productId`로 삭제 API가 성공한 뒤 목록에서 제거합니다.
+- 일괄 삭제는 선택 상품의 `productId[]`로 삭제 API가 성공한 뒤 목록에서 제거합니다.
+- 삭제 API가 실패하면 기존 상품 목록과 선택 상태를 유지하고 오류를 안내합니다.
+- 초기화 확인 시 `dealType: PERIODIC`, `forceDelete: true`로 전체 삭제 API를 요청합니다.
+- 개별 삭제, 일괄 삭제, 초기화는 같은 deletion action 인스턴스를 공유하며 요청 중 모든 삭제 action을 비활성화합니다.
+- 수정 mutation과 cursor pagination은 후속 범위입니다.
 
 ## Accessibility
 
