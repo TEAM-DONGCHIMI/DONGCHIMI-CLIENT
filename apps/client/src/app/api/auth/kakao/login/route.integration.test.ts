@@ -84,6 +84,32 @@ describe('POST /api/auth/kakao/login', () => {
     expectOAuthStateCookieToBeDeleted(response);
   });
 
+  it('백엔드가 refresh cookie를 주지 않아도 access token으로 로그인을 완료한다', async () => {
+    server.use(
+      http.post(`${API_BASE_URL}/v1/users/login/oauth2/kakao`, () => {
+        return HttpResponse.json({
+          code: 'SUCCESS',
+          data: { accessToken: 'access-token' },
+          message: '요청에 성공했습니다.',
+          success: true,
+        });
+      }),
+    );
+
+    const response = await POST(createLoginRequest());
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      code: 'SUCCESS',
+      message: '요청에 성공했습니다.',
+      success: true,
+    });
+    expect(response.headers.getSetCookie()).toEqual(
+      expect.arrayContaining([expect.stringContaining('access_token=access-token')]),
+    );
+    expectOAuthStateCookieToBeDeleted(response);
+  });
+
   it.each([[{ code: '', state: OAUTH_STATE }], [{ code: 'authorization-code', state: '' }]])(
     '빈 code/state를 백엔드로 전달하지 않는다',
     async (body) => {
@@ -186,7 +212,7 @@ describe('POST /api/auth/kakao/login', () => {
     expectOAuthStateCookieToBeDeleted(response);
   });
 
-  it('성공 응답에 token이 없으면 502를 반환한다', async () => {
+  it('성공 응답에 access token이 없으면 502를 반환한다', async () => {
     server.use(
       http.post(`${API_BASE_URL}/v1/users/login/oauth2/kakao`, () => {
         return HttpResponse.json({

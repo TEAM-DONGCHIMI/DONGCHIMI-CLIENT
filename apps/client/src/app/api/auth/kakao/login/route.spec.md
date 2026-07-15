@@ -20,7 +20,7 @@
 - upstream request: `{ code: string }`
 - success response: `{ success, code, message }`
 - upstream access token: `access_token` HttpOnly cookie로 변환
-- upstream refresh cookie: 브라우저에 HttpOnly cookie로 전달
+- upstream refresh cookie: 응답에 포함된 경우 브라우저에 HttpOnly cookie로 전달
 - backend base URL: server-only `API_BASE_URL`
 
 ## OAuth State Policy
@@ -32,7 +32,7 @@
 ## Cookie Policy
 
 - `access_token`: 공통 auth cookie helper의 `HttpOnly`, production `Secure`, `SameSite=Lax`, `Path=/` 정책
-- `refreshToken`: 공통 auth cookie helper가 수명 속성을 보존하고 `Path=/api/auth/token/refresh`로 정규화
+- `refreshToken`: upstream이 제공할 때만 공통 auth cookie helper가 수명 속성을 보존하고 `Path=/api/auth/token/refresh`로 정규화
 - client component는 두 token을 읽거나 저장하지 않습니다.
 
 ## Error
@@ -43,7 +43,8 @@
 - `API_BASE_URL` 설정 누락은 `500 OAUTH_CONFIGURATION_ERROR`로 응답합니다.
 - 백엔드 연결/timeout 실패는 `502 OAUTH_UPSTREAM_FAILED`로 응답합니다.
 - 백엔드 body가 JSON이 아니거나 응답 계약과 다르면 `502 OAUTH_UPSTREAM_INVALID_RESPONSE`로 응답합니다.
-- 성공 응답에 access token 또는 refresh cookie가 없으면 `502 OAUTH_TOKEN_MISSING`으로 응답합니다.
+- 성공 응답에 access token이 없으면 `502 OAUTH_TOKEN_MISSING`으로 응답합니다.
+- refresh cookie는 사용자 API 성공 계약의 필수 필드가 아니므로, 누락되어도 로그인 성공을 502로 바꾸지 않습니다.
 
 ## Verification
 

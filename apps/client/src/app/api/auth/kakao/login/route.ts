@@ -158,9 +158,8 @@ export async function POST(request: Request) {
     }
 
     const accessToken = upstreamBody.data?.accessToken;
-    const refreshCookies = getRefreshTokenSetCookieHeaders(upstreamResponse.headers);
 
-    if (!accessToken || refreshCookies.length === 0) {
+    if (!accessToken) {
       return clearKakaoOAuthStateCookie(
         createErrorResponse(
           502,
@@ -170,6 +169,7 @@ export async function POST(request: Request) {
       );
     }
 
+    const refreshCookies = getRefreshTokenSetCookieHeaders(upstreamResponse.headers);
     const response = NextResponse.json({
       code: upstreamBody.code,
       message: upstreamBody.message,
