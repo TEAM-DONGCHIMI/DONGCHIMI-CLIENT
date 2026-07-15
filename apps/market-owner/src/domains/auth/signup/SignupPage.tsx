@@ -1,5 +1,7 @@
-import { Button, Flex, TextInput, Toast } from '@dongchimi/design-system/components';
+import { Button, Flex, TextInput } from '@dongchimi/design-system/components';
 import { IcCircleCheckFill } from '@dongchimi/design-system/icons';
+
+import loginBrandImageUrl from '@/shared/assets/images/Img_login_pavicon.svg';
 
 import { useSignupForm } from './hooks/use-signup-form';
 import * as S from './SignupPage.css';
@@ -24,7 +26,6 @@ export const SignupPage = () => {
       passwordConfirm,
       passwordConfirmStatusProps,
       passwordStatusProps,
-      submitErrorMessage,
     },
   } = useSignupForm();
 
@@ -32,7 +33,7 @@ export const SignupPage = () => {
     <main className={S.pageClassName}>
       <Flex align='center' as='header' className={S.headerClassName} direction='column'>
         <Flex align='center' className={S.titleGroupClassName} direction='column'>
-          <span aria-hidden='true' className={S.logoSlotClassName} />
+          <img alt='' aria-hidden='true' className={S.logoClassName} src={loginBrandImageUrl} />
           <h1 className={S.titleClassName}>회원가입</h1>
         </Flex>
         <p className={S.descriptionClassName}>
@@ -79,12 +80,6 @@ export const SignupPage = () => {
             {...passwordConfirmStatusProps}
           />
         </Flex>
-
-        {submitErrorMessage !== undefined && (
-          <div className={S.submitToastClassName}>
-            <Toast status='error'>{submitErrorMessage}</Toast>
-          </div>
-        )}
 
         <Button
           className={S.submitButtonClassName}

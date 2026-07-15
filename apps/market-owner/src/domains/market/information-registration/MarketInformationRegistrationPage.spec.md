@@ -48,7 +48,8 @@
 
 ## Out Of Scope
 
-- 실제 이미지 업로드 API 연동
+- 이미지 선택 시 `market_thumbnail` 용도의 presigned URL을 발급받고, 응답의 필수 헤더로
+  스토리지에 PUT 업로드한 뒤 `objectKey`를 마트 등록 요청의 `thumbnailUrl`로 전달합니다.
 - 카카오 주소 검색 외부 서비스 연동과 서비스 오류 처리
 - 마트 정보 등록 API mutation
 - 사업자 등록 번호 실사업자 인증
@@ -83,7 +84,7 @@
 - design-system icons: `IcPlus`, `IcPlusSizeSmallColor60`, `IcLineHorizontalSizeSmall`, `IcClockSizeSmallColor60`, `IcPhoneSizeSmallColor60`, `IcChevronDown`
 - app-shared components: none
 - page-local components: section-local field composition
-- not promoted to design-system: 마트 정보 등록 전용 header/logo placeholder와 field composition은 현재 단일 route 전용입니다.
+- not promoted to design-system: 마트 정보 등록 전용 header와 field composition은 현재 단일 route 전용입니다. 로고는 홈 사이드바와 동일한 app-shared `Img_pavicon.svg` asset을 사용합니다.
 
 ## States
 
@@ -98,7 +99,7 @@
 ## Behavior
 
 - navigation: 이번 UI-only 범위에서는 route 연결 없음
-- interaction: 이미지 추가는 file input으로 이미지 파일 선택 창을 열고 선택한 이미지를 preview로 표시합니다. 주소 찾기는 외부 연동 전 placeholder action입니다. 영업 시간과 마트 번호의 추가 버튼은 추가 입력 row를 노출하고 추가 row의 제거 버튼은 해당 row를 숨깁니다.
+- interaction: 이미지 추가는 file input으로 이미지 파일 선택 창을 열고 presigned URL 업로드 성공 후 preview를 표시합니다. 주소 찾기는 Daum 주소 검색과 Kakao 좌표 변환을 실행합니다. 영업 시간과 마트 번호의 추가 버튼은 추가 입력 row를 노출하고 추가 row의 제거 버튼은 해당 row를 숨깁니다.
 - form / validation: 입력 중에는 에러 메시지를 노출하거나 갱신하지 않고, 필드에서 다른 영역으로 focus가 이동하는 blur 시점에 검증합니다. 영업 요일과 영업 시간은 하나의 입력 영역으로 취급해 영역 내부 이동 중에는 검증하지 않고 영역을 벗어날 때 함께 검증합니다.
 - model: `model/*`에서 form type, 입력 포맷터, validator, zod validation schema를 page-local로 관리합니다.
 - API: none
@@ -118,10 +119,24 @@
 
 ## Publishing Evidence
 
-- Figma mismatch: 실제 로고 asset은 repo에 없어서 page-local `DC` text logo placeholder를 사용합니다.
+- Logo asset: 홈 사이드바와 동일한 app-shared `Img_pavicon.svg`를 92px x 32px 크기로 표시합니다.
 - browser route: TBD
 - screenshot / preview: implementation verification 단계에서 확인합니다.
 - visual notes: Figma의 development annotation 중 이미지 업로드 영역은 button placeholder로 구현합니다.
+
+## DCMSM-61 API Integration
+
+- registration context: 성공 응답의 `data.marketId`를 auth store에 저장한 뒤 완료 Toast와 홈 이동을 수행합니다.
+
+- endpoint: `POST /v1/owners/markets`
+- pending: 등록 버튼을 비활성화하고 `등록 중...`을 표시합니다.
+- success: 완료 Toast를 표시한 뒤 홈 route로 replace 이동합니다.
+- error: `INVALID_INPUT`, `MARKET_ALREADY_EXISTS`, network/server, fallback 오류를 구분합니다.
+- payload: 영업시간을 `days`, `isOpen`, `open`, `close` 배열 계약으로 변환합니다.
+- address search: `주소 찾기` 클릭 시 Daum 우편번호 팝업을 열고 선택한 주소를 자동 입력합니다.
+- coordinates: Kakao Maps JavaScript SDK `services` Geocoder로 선택 주소를 변환해 `latitude`, `longitude`를 form에 저장합니다.
+- configuration: `VITE_PUBLIC_KAKAO_MAP_APP_KEY`가 필요하며 키 값은 저장소에 커밋하지 않습니다.
+- address error: postcode/SDK/geocoder 오류는 `주소 검색 서비스를 이용할 수 없습니다.` Toast로 안내합니다.
 
 ## Verification
 
@@ -136,5 +151,4 @@
 ## Open Questions
 
 - 첫 로그인 또는 회원가입 성공 후 마트 미등록 상태를 어떤 route/guard에서 판단할지는 후속 auth onboarding flow 이슈에서 확정합니다.
-- 실제 로고 asset 위치가 확정되면 page-local placeholder를 교체합니다.
-- 주소 찾기, 이미지 업로드 API, 등록 API는 후속 이슈에서 연결합니다.
+- 주소 찾기, 이미지 업로드 API, 등록 API를 연결합니다.

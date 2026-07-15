@@ -17,14 +17,14 @@ const TODAY_SPECIAL_PRODUCTS_LIST_ID = 'today-special-products-list';
 
 interface TodaySpecialProductsSectionProps {
   initialVisibleCount: number;
-  marketId: string;
+  marketSlug: string;
   products: TodaySpecialProductFixtureTypes[];
   totalCount: number;
 }
 
 export const TodaySpecialProductsSection = ({
   initialVisibleCount,
-  marketId,
+  marketSlug,
   products,
   totalCount,
 }: TodaySpecialProductsSectionProps) => {
@@ -48,7 +48,7 @@ export const TodaySpecialProductsSection = ({
             key={product.productId}
             aria-label={`${product.name} ${formatPrice(product.discountedPrice)}원 상품 보기`}
             className={S.todayProductLinkClassName}
-            href={CLIENT_ROUTES.marketProduct(marketId, String(product.productId))}
+            href={CLIENT_ROUTES.marketProduct(marketSlug, String(product.productId))}
           >
             <span className={S.todayProductImageClassName}>
               <span aria-hidden='true' className={S.imageFallbackClassName} />

@@ -27,7 +27,8 @@ export const periodicProductsInfiniteQueryOptions = (params: PeriodicProductsLis
   >({
     getNextPageParam: getPeriodicProductsNextPageParam,
     initialPageParam: undefined as number | undefined,
-    queryFn: ({ pageParam }) => getPeriodicProducts({ ...params, cursor: pageParam }),
+    queryFn: ({ pageParam, signal }) =>
+      getPeriodicProducts({ ...params, cursor: pageParam }, signal),
     queryKey: marketQueryKeys.periodicProducts(params),
   });
 };

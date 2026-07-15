@@ -1,14 +1,14 @@
 import { LeafletShareCard } from '@/shared/components';
 
-import { homeShare, type HomeShareFixtureTypes } from '../fixtures';
+import { type HomeShareTypes } from '../model/home-dashboard-view-model';
 import * as S from '../HomePage.css';
 
 const EMPTY_FLYER_MESSAGE = '전단을 공유하려면\n상품을 먼저 등록해주세요.';
 
 export interface HomeShareSectionProps {
   onCopyLinkResult: (isCopied: boolean) => void;
-  onQrCodePreparing: () => void;
-  share?: HomeShareFixtureTypes;
+  onOpenQrCode: (qrCode?: string | null) => void;
+  share: HomeShareTypes;
 }
 
 const copyToClipboard = async (text: string) => {
@@ -27,8 +27,8 @@ const copyToClipboard = async (text: string) => {
 
 export const HomeShareSection = ({
   onCopyLinkResult,
-  onQrCodePreparing,
-  share = homeShare,
+  onOpenQrCode,
+  share,
 }: HomeShareSectionProps) => {
   const isFlyerUnavailable = share.flyer === null;
 
@@ -37,7 +37,7 @@ export const HomeShareSection = ({
       return;
     }
 
-    const isCopied = await copyToClipboard(share.url);
+    const isCopied = await copyToClipboard(share.copyUrl);
 
     onCopyLinkResult(isCopied);
   };
@@ -47,7 +47,7 @@ export const HomeShareSection = ({
       return;
     }
 
-    onQrCodePreparing();
+    onOpenQrCode(share.flyer?.qrCode);
   };
 
   return (
@@ -58,7 +58,7 @@ export const HomeShareSection = ({
         disabled={isFlyerUnavailable}
         onCopyLink={handleCopyShareUrl}
         onOpenQrCode={handleOpenQrCode}
-        shareUrl={isFlyerUnavailable ? '' : share.url}
+        shareUrl={isFlyerUnavailable ? '' : share.displayUrl}
         title={share.title}
       />
 

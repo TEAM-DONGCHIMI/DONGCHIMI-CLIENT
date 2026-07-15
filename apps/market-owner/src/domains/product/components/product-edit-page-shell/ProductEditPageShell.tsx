@@ -1,6 +1,5 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { useToast } from '@dongchimi/shared/toast';
 
 import { Button, PillButton, TabNav } from '@dongchimi/design-system/components';
 import {
@@ -19,9 +18,10 @@ import {
   type ProductHeaderSearchProductTypes,
 } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
-import { productHeaderSearchProducts } from '@/shared/fixtures/product-header-search.fixture';
+import { useAuthStore } from '@/shared/stores/auth-store';
 import { createProductEditTargetPath } from '@/shared/utils/product-edit-target-path.utils';
 import { type ProductCategoryTypes } from '../../constants';
+import { useProductSearchQuery } from '../../hooks';
 import { type ProductEditCardProps } from '../product-edit-product-list';
 
 import {
@@ -38,7 +38,7 @@ import {
   useProductEditFilter,
 } from './hooks';
 
-const PRODUCT_LOAD_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요.';
+const PRODUCT_SEARCH_RESULT_SIZE = 10;
 
 export interface ProductEditPageShellProps {
   activeType: ProductEditTypeTypes;
@@ -49,8 +49,9 @@ export interface ProductEditPageShellProps {
         selectedCategory: ProductCategoryTypes | null,
         selection: ProductEditPageSelectionControls,
       ) => ReactNode);
-  onDeleteProducts?: (productNames: string[]) => void;
-  onResetProducts?: () => void;
+  deletePending?: boolean;
+  onDeleteProducts?: (productIds: number[]) => Promise<boolean>;
+  onResetProducts?: () => Promise<boolean>;
   onUpdateProductPeriods?: (
     productNames: string[],
     period: { endDate: string; startDate: string },
@@ -62,14 +63,22 @@ export interface ProductEditPageShellProps {
 export const ProductEditPageShell = ({
   activeType,
   children,
+  deletePending = false,
   onDeleteProducts,
   onResetProducts,
   onUpdateProductPeriods,
   periodBaseProduct,
   productCounts,
 }: ProductEditPageShellProps) => {
-  const toast = useToast();
   const navigate = useNavigate();
+  const [productSearchKeyword, setProductSearchKeyword] = useState('');
+  const marketId = useAuthStore((state) => state.marketId);
+  const productSearchQuery = useProductSearchQuery({
+    keyword: productSearchKeyword,
+    marketId,
+    size: PRODUCT_SEARCH_RESULT_SIZE,
+  });
+  const productSearchProducts = productSearchQuery.data?.data?.products ?? [];
   const pageCopy = editPageCopyByType[activeType];
 
   // 필터/드롭다운 상태
@@ -96,6 +105,7 @@ export const ProductEditPageShell = ({
     openResetConfirm,
   } = useProductEditBulkSelection({
     activeType,
+    marketId,
     periodBaseProduct,
     onDeleteProducts,
     onResetProducts,
@@ -104,12 +114,6 @@ export const ProductEditPageShell = ({
   const isDeleteButtonEmphasized = bulkAction === 'delete' && selectedProductCount > 0;
   const isPeriodButtonEmphasized = bulkAction === 'period' && selectedProductCount > 0;
   const handleSelectHeaderProduct = (product: ProductHeaderSearchProductTypes) => {
-    if (product.isProductInfoLoadable === false) {
-      toast.error(PRODUCT_LOAD_ERROR_MESSAGE);
-
-      return;
-    }
-
     navigate(createProductEditTargetPath(product));
   };
   const periodButtonProps = isPeriodButtonEmphasized
@@ -161,8 +165,11 @@ export const ProductEditPageShell = ({
           parentLabel='홈'
           searchSlot={
             <ProductHeaderSearch
+              isPending={productSearchQuery.isFetching}
+              onQueryChange={setProductSearchKeyword}
               onSelectProduct={handleSelectHeaderProduct}
-              products={productHeaderSearchProducts}
+              products={productSearchProducts}
+              status={productSearchQuery.isError ? 'error' : 'default'}
             />
           }
         />
@@ -199,7 +206,12 @@ export const ProductEditPageShell = ({
                   <span className={S.selectedProductNumberClassName}>{selectedProductCount}</span>)
                 </span>
               )}
-              <Button {...periodButtonProps} size='xsmall' onClick={openPeriodBulkAction}>
+              <Button
+                {...periodButtonProps}
+                disabled={deletePending}
+                size='xsmall'
+                onClick={openPeriodBulkAction}
+              >
                 기간 일괄 수정
               </Button>
               <Button
@@ -209,6 +221,7 @@ export const ProductEditPageShell = ({
                     : S.actionButtonClassNames.negative
                 }
                 color='negative'
+                disabled={deletePending}
                 leftIcon={
                   isDeleteButtonEmphasized ? (
                     <IcTrashSizeSmallColorNegativeStrong aria-hidden='true' />
@@ -225,6 +238,7 @@ export const ProductEditPageShell = ({
               <Button
                 className={S.actionButtonClassNames.reset}
                 color='negative'
+                disabled={deletePending}
                 leftIcon={<IcResetSizeSmallColorNegative aria-hidden='true' />}
                 size='xsmall'
                 variant='outlined'

@@ -1,9 +1,10 @@
-import { Button, Flex, Stack } from '@dongchimi/design-system/components';
+import { Button, Flex, IconButton, Stack } from '@dongchimi/design-system/components';
 import { IcCopy, IcCopyColor50, IcLogin } from '@dongchimi/design-system/icons';
 
 import * as S from './ShareLinkBox.css';
 
 export interface ShareLinkBoxProps {
+  isQrCodePending?: boolean;
   shareUrl: string;
   onCopyLink: () => void;
   onCopyLinkError: () => void;
@@ -12,6 +13,7 @@ export interface ShareLinkBoxProps {
 }
 
 export const ShareLinkBox = ({
+  isQrCodePending = false,
   shareUrl,
   onCopyLink,
   onCopyLinkError,
@@ -45,7 +47,14 @@ export const ShareLinkBox = ({
 
       <Flex align='center' className={S.linkFieldClassName} justify='between'>
         <span className={S.linkTextClassName}>{shareUrl}</span>
-        <IcCopyColor50 aria-hidden='true' className={S.linkCopyIconClassName} />
+        <IconButton
+          aria-label='전단 공유 링크 복사'
+          className={S.linkCopyButtonClassName}
+          color='assistive'
+          icon={<IcCopyColor50 />}
+          onClick={handleCopyLink}
+          variant='ghost'
+        />
       </Flex>
 
       <Stack className={S.actionListClassName}>
@@ -55,11 +64,18 @@ export const ShareLinkBox = ({
           </span>
           <span className={S.actionTextClassName}>링크 복사</span>
         </button>
-        <button className={S.actionItemClassName} onClick={onOpenQrModal} type='button'>
+        <button
+          className={S.actionItemClassName}
+          disabled={isQrCodePending}
+          onClick={onOpenQrModal}
+          type='button'
+        >
           <span className={S.actionIconClassName}>
             <IcLogin aria-hidden='true' className={S.actionSvgClassName} />
           </span>
-          <span className={S.actionTextClassName}>매장 고유 QR코드 보기</span>
+          <span className={S.actionTextClassName}>
+            {isQrCodePending ? 'QR코드 발급 중' : '매장 고유 QR코드 보기'}
+          </span>
         </button>
       </Stack>
 

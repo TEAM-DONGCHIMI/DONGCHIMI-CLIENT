@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { ProductEditCardDesktop } from '@/shared/components';
+import { formatProductCategoryDisplayName } from '@/shared/utils/product-category.utils';
 
 import * as S from './ProductEditProductList.css';
 import { openProductEditConfirmModal, openProductEditModal } from '../product-edit-modal';
@@ -12,12 +13,14 @@ import {
 import { ProductEditEmptyView } from './product-edit-empty-view';
 
 interface ProductEditProductListProps {
+  deletePending?: boolean;
   ariaLabel: string;
   editModalVariant: ProductEditCardVariantTypes;
   autoOpenProductId?: string | null;
   groups: ProductEditProductGroup[];
+  marketId: number;
   registrationHref: string;
-  selectedProductNames?: string[];
+  selectedProductIds?: (number | string)[];
   selectionMode?: boolean;
   onDeleteProduct?: (product: ProductEditCardProps) => void;
   onAutoOpenProductMissing?: (productId: string) => void;
@@ -29,12 +32,24 @@ interface ProductEditProductListProps {
 const hasProducts = (groups: ProductEditProductGroup[]) =>
   groups.some(({ products }) => products.length > 0);
 
+const parseProductId = (value: ProductEditCardProps['productId']) => {
+  if (value == null || (typeof value === 'string' && value.trim() === '')) {
+    return null;
+  }
+
+  const productId = Number(value);
+
+  return Number.isSafeInteger(productId) && productId > 0 ? productId : null;
+};
+
 export const ProductEditProductList = ({
   ariaLabel,
+  deletePending = false,
   editModalVariant,
   autoOpenProductId,
   groups,
-  selectedProductNames = [],
+  marketId,
+  selectedProductIds = [],
   selectionMode = false,
   registrationHref,
   onAutoOpenProductMissing,
@@ -68,8 +83,18 @@ export const ProductEditProductList = ({
       return;
     }
 
+    const targetProductId = parseProductId(targetProduct.productId);
+
+    if (targetProductId == null) {
+      onAutoOpenProductMissing?.(autoOpenProductId);
+
+      return;
+    }
+
     openProductEditModal({
+      marketId,
       product: targetProduct,
+      productId: targetProductId,
       variant: editModalVariant,
       onClose: onAutoOpenProductModalClose,
       onSubmit: (updatedProduct) => onUpdateProduct?.(targetProduct.productName, updatedProduct),
@@ -78,6 +103,7 @@ export const ProductEditProductList = ({
     autoOpenProductId,
     editModalVariant,
     groups,
+    marketId,
     onAutoOpenProductMissing,
     onAutoOpenProductModalClose,
     onUpdateProduct,
@@ -94,39 +120,47 @@ export const ProductEditProductList = ({
       onConfirm: () => onDeleteProduct?.(product),
     });
   };
-  const selectedProductNameSet = new Set(selectedProductNames);
+  const editProduct = (product: ProductEditCardProps) => {
+    const productId = parseProductId(product.productId);
+
+    if (productId == null) {
+      return;
+    }
+
+    openProductEditModal({
+      marketId,
+      product,
+      productId,
+      variant: editModalVariant,
+      onSubmit: (updatedProduct) => onUpdateProduct?.(product.productName, updatedProduct),
+    });
+  };
+  const selectedProductIdSet = new Set(selectedProductIds.map(String));
 
   return (
     <section aria-label={ariaLabel} className={S.sectionListClassName}>
       {groups.map(({ products, title }) => (
         <section key={title} className={S.categorySectionClassName}>
-          <h2 className={S.categoryTitleClassName}>{title}</h2>
+          <h2 className={S.categoryTitleClassName}>{formatProductCategoryDisplayName(title)}</h2>
 
           <div className={S.productGridClassName}>
             {products.map((product) => {
-              const isSelected = selectedProductNameSet.has(product.productName);
+              const isSelected =
+                product.productId != null && selectedProductIdSet.has(String(product.productId));
 
               return (
                 <ProductEditCardDesktop
                   key={`${title}-${product.productName}`}
                   {...product}
-                  actionsDisabled={selectionMode}
+                  actionsDisabled={selectionMode || deletePending}
                   aria-label={product['aria-label'] ?? `${product.productName} 상품 수정 카드`}
                   selectionState={
                     selectionMode ? (isSelected ? 'selected' : 'selectable') : 'default'
                   }
-                  onDeleteClick={selectionMode ? undefined : () => deleteProduct(product)}
-                  onEditClick={
-                    selectionMode
-                      ? undefined
-                      : () =>
-                          openProductEditModal({
-                            product,
-                            variant: editModalVariant,
-                            onSubmit: (updatedProduct) =>
-                              onUpdateProduct?.(product.productName, updatedProduct),
-                          })
+                  onDeleteClick={
+                    selectionMode || deletePending ? undefined : () => deleteProduct(product)
                   }
+                  onEditClick={selectionMode ? undefined : () => editProduct(product)}
                   onSelectClick={
                     selectionMode ? () => onToggleProductSelection?.(product) : undefined
                   }
@@ -137,5 +171,13 @@ export const ProductEditProductList = ({
         </section>
       ))}
     </section>
+  );
+};
+
+export const ProductEditProductListLoading = () => {
+  return (
+    <p aria-live='polite' className={S.loadingClassName} role='status'>
+      상품 목록을 불러오는 중이에요.
+    </p>
   );
 };

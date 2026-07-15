@@ -4,8 +4,8 @@ import { useState } from 'react';
 
 import { MobileModal } from '@/shared/components/ui/mobile-modal';
 
-import type { BusinessHourTypes } from '../fixtures/market-products.fixture';
 import * as S from '../MarketProductsPage.css';
+import type { BusinessHourTypes } from '../../model/market-detail-schema';
 import {
   getCallModalDescription,
   getCurrentBusinessCloseTime,

@@ -29,12 +29,12 @@
 - `useGetNearbyMarketsInfiniteQuery`로 주변 마트 목록을 무한스크롤 방식으로 조회하여 `MartSummaryCard` 목록으로 표시합니다.
 - 위치/마트 검색 input의 입력값을 `useDebouncedValue`로 debounce한 뒤 `keyword` 파라미터로 전달하여, 마트 이름/주소 기준으로 목록을 필터링합니다.
 - 검색 input의 노출 텍스트는 위치 권한 상태에 따라 전환됩니다: 현재 위치 조회 성공 시 위치 안내 텍스트를 input의 기본 값(사용자가 입력한 것처럼 실제 value)으로 채우고, 실패/미허용 시에는 값을 비운 채 "현재 위치를 검색해주세요" placeholder를 노출합니다.
-- 마트 카드 클릭 시 해당 마트의 `/markets/[marketId]` 상세 전단 route로 이동합니다.
+- 마트 카드 클릭 시 해당 마트의 `/markets/[slug]` 상세 전단 route로 이동합니다.
 
 ## Out Of Scope
 
 - 위치 기반 마트 목록 조회 (지도 중심은 geolocation 연동되었으나, 현재 mock API는 위치 파라미터 없이 keyword 필터만 지원합니다)
-- 실제 백엔드 주변 마트 API 연동 (현재 `nearby-markets-api`는 mock 데이터를 반환하며, 백엔드 endpoint가 나오면 `httpClient.get` 호출로 교체합니다)
+- 실제 백엔드 주변 마트 API 연동 (현재 `nearby-markets-api`는 mock 데이터를 반환하며, 백엔드 endpoint가 나오면 BFF Route Handler와 `browserApi.get` 호출로 교체합니다)
 - bottom sheet (마커 터치 시에는 간단한 정보창만 노출하며, 별도 bottom sheet UI는 이후 작업에서 연결합니다)
 - 권한 허용 시 검색 input에 실제 현재 위치의 행정동 주소(reverse geocoding)를 표시하는 것: 현재는 "서울시 마포구 망원동" 고정 텍스트를 기본 값으로 채우며, 실제 주소 조회는 외부 reverse geocoding 소스 확정 후 이후 작업에서 연결합니다.
 - 권한 미허용 시 Container 클릭 → 우편번호 찾기 모달을 통한 행정동 검색 플로우: 현재는 빈 값 + placeholder만 노출하며, 모달을 통한 행정동 검색은 외부 주소 검색 서비스 선정 후 이후 작업에서 연결합니다.
@@ -67,7 +67,7 @@
 - market query ownership: `NearbyMarketsClientProvider`는 `useGetNearbyMarketsInfiniteQuery({ keyword, lat, lng })`로 목록 데이터를 조회해 `NearbyMarketsMarketListSection`에 전달하고, `useGetNearbyMarketMarkersQuery({ keyword, lat, lng })`로 지도 마커 데이터를 별도로 조회해 `NearbyMarketsMapSection`에 전달합니다. 목록에서 무한스크롤로 다음 페이지를 불러와도 지도 핀은 추가되지 않으며, 지도 마커는 marker query 결과만 반영합니다.
 - map marker: 현재 위치가 있으면 커스텀 SVG 이미지의 `MapMarker`로 현재 위치 마커를 표시합니다(`CustomOverlayMap`은 지도에 attach된 후에야 portal이 붙는 렌더링 지연 버그가 있어 사용하지 않습니다 — 최초 진입 시 마커가 몇 초간 보이지 않는 문제가 있었습니다). `NearbyMarketsClientProvider`로부터 전달받은 마트마다 `MapMarker`를 표시하며, 마커를 터치하면 `MapInfoWindow`로 마트명을 보여주고, 같은 마커를 다시 터치하거나 지도의 다른 영역을 터치하면 닫힙니다. 카카오맵 SDK가 지도 좌측 하단에 저작권 표기("kakao")를 자동으로 표시합니다.
 - market list: `useIntersectionObserver`로 목록 하단 sentinel을 감지해 `NearbyMarketsClientProvider`로부터 전달받은 `fetchNextPage`를 호출하여 다음 페이지를 자동으로 불러옵니다(무한스크롤).
-- navigation: 마트 카드 클릭 시 `router.push`로 `/markets/[marketId]`로 이동합니다.
+- navigation: 마트 카드 클릭 시 `router.push`로 `/markets/[slug]`로 이동합니다.
 - form / validation: 요청 파라미터(`keyword`/`cursor`/`lat`/`lng`/`radius`/`size`)와 API 응답 모두 zod 스키마(`nearby-markets-schema`)로 검증합니다. 응답은 검증 후 view model로 매핑합니다.
 - API: `useGetNearbyMarketsInfiniteQuery` → `getNearbyMarkets`(현재 mock)로 주변 마트 목록을 조회합니다. `keyword` 파라미터를 전달하면 mock 목록을 마트 이름/주소 기준(대소문자 무시)으로 필터링합니다.
 

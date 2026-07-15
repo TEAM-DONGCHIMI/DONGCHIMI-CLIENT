@@ -25,6 +25,18 @@ export const contentClassName = style({
   padding: '2rem 2rem calc(3.6rem + var(--client-safe-area-bottom))',
 });
 
+export const queryStateClassName = style({
+  ...typography['body-3-medium'],
+  display: 'flex',
+  minHeight: '24rem',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '1.6rem',
+  color: atomic.neutral[60],
+  textAlign: 'center',
+});
+
 export const productSectionsFrameClassName = style({
   display: 'flex',
   flexDirection: 'column',
@@ -261,6 +273,10 @@ export const topProductImageFallbackClassName = style([
     inset: 0,
   },
 ]);
+
+export const topProductImageClassName = style({
+  objectFit: 'cover',
+});
 
 export const topProductScrimClassName = style({
   position: 'absolute',

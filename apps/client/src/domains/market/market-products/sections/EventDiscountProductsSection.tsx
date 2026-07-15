@@ -4,6 +4,7 @@ import { memo, useState } from 'react';
 
 import { Button, PillButton } from '@dongchimi/design-system';
 import { IcChevronDown, IcChevronUp } from '@dongchimi/design-system/icons';
+
 import { usePeriodicProductsInfiniteQuery } from '@/domains/market/hooks/use-periodic-products-infinite-query';
 import type {
   PeriodicProductCategoryTypes,
@@ -47,6 +48,7 @@ const EVENT_DISCOUNT_CATEGORIES = [
 ] satisfies EventDiscountCategoryTypes[];
 
 interface EventDiscountProductsContentProps {
+  hasNextPage: boolean;
   isError: boolean;
   isPending: boolean;
   marketSlug: string;
@@ -82,6 +84,7 @@ const EventDiscountProductPage = memo(function EventDiscountProductPage({
 });
 
 const EventDiscountProductsContent = ({
+  hasNextPage,
   isError,
   isPending,
   marketSlug,
@@ -109,6 +112,14 @@ const EventDiscountProductsContent = ({
           다시 시도
         </Button>
       </div>
+    );
+  }
+
+  if (!hasProducts && hasNextPage) {
+    return (
+      <p className={S.emptyTextClassName} role='status'>
+        행사 상품을 더 찾고 있어요.
+      </p>
     );
   }
 
@@ -157,7 +168,7 @@ export const EventDiscountProductsSection = ({
   const pageParams = data?.pageParams ?? [];
   const productPages = data?.pages ?? [];
   const handleLoadNextPage = () => {
-    void fetchNextPage();
+    void fetchNextPage({ cancelRefetch: false });
   };
   const loadMoreSentinelRef = useIntersectionObserver<HTMLDivElement>({
     enabled: Boolean(hasNextPage) && !isFetchingNextPage && !isFetchNextPageError,
@@ -267,6 +278,7 @@ export const EventDiscountProductsSection = ({
       </div>
 
       <EventDiscountProductsContent
+        hasNextPage={Boolean(hasNextPage)}
         isError={isError}
         isPending={isPending}
         marketSlug={marketSlug}

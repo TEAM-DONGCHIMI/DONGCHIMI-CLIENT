@@ -3,15 +3,32 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type AuthBootstrapStatusTypes = 'authenticated' | 'idle' | 'refreshing' | 'unauthenticated';
 
+export interface AuthAccountTypes {
+  email: string;
+  marketName?: string;
+  marketThumbnailUrl?: string;
+}
+
 interface AuthStoreStateTypes {
+  account?: AuthAccountTypes;
   accessToken?: string;
   bootstrapStatus: AuthBootstrapStatusTypes;
   isLoggedIn: boolean;
+  marketId?: number;
   clearAccessToken: () => void;
   clearSession: () => void;
-  setAccessToken: (accessToken: string, options?: { isAutoLogin?: boolean }) => void;
+  setAccessToken: (
+    accessToken: string,
+    options?: {
+      account?: AuthAccountTypes;
+      isAutoLogin?: boolean;
+      marketId?: number | null;
+    },
+  ) => void;
+  setAccount: (account?: AuthAccountTypes) => void;
   setBootstrapStatus: (bootstrapStatus: AuthBootstrapStatusTypes) => void;
   setLoggedIn: (isLoggedIn: boolean) => void;
+  setMarketId: (marketId?: number) => void;
 }
 
 export const AUTH_STORE_STORAGE_KEY = 'market-owner-auth';
@@ -72,14 +89,22 @@ const authStorage = {
 export const useAuthStore = create<AuthStoreStateTypes>()(
   persist(
     (set) => ({
+      account: undefined,
       accessToken: undefined,
       bootstrapStatus: 'idle',
       isLoggedIn: false,
+      marketId: undefined,
       clearAccessToken: () => {
         set({ accessToken: undefined });
       },
       clearSession: () => {
-        set({ accessToken: undefined, bootstrapStatus: 'unauthenticated', isLoggedIn: false });
+        set({
+          accessToken: undefined,
+          bootstrapStatus: 'unauthenticated',
+          isLoggedIn: false,
+          account: undefined,
+          marketId: undefined,
+        });
       },
       setAccessToken: (accessToken, options) => {
         if (options?.isAutoLogin !== undefined) {
@@ -88,7 +113,17 @@ export const useAuthStore = create<AuthStoreStateTypes>()(
           selectAuthStorage(true);
         }
 
-        set({ accessToken, bootstrapStatus: 'authenticated', isLoggedIn: true });
+        set((state) => ({
+          accessToken,
+          account: options && 'account' in options ? (options.account ?? undefined) : state.account,
+          bootstrapStatus: 'authenticated',
+          isLoggedIn: true,
+          marketId:
+            options && 'marketId' in options ? (options.marketId ?? undefined) : state.marketId,
+        }));
+      },
+      setAccount: (account) => {
+        set({ account });
       },
       setBootstrapStatus: (bootstrapStatus) => {
         set({ bootstrapStatus });
@@ -96,10 +131,13 @@ export const useAuthStore = create<AuthStoreStateTypes>()(
       setLoggedIn: (isLoggedIn) => {
         set({ isLoggedIn });
       },
+      setMarketId: (marketId) => {
+        set({ marketId });
+      },
     }),
     {
       name: AUTH_STORE_STORAGE_KEY,
-      partialize: ({ isLoggedIn }) => ({ isLoggedIn }),
+      partialize: ({ account, isLoggedIn, marketId }) => ({ account, isLoggedIn, marketId }),
       storage: createJSONStorage(() => authStorage),
     },
   ),

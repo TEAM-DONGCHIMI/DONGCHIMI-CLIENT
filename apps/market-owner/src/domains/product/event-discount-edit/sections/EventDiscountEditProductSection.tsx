@@ -1,41 +1,55 @@
 import {
   createProductEditCardProps,
   createProductEditDisplayGroups,
-  type ProductEditCardProps,
   ProductEditProductList,
+  ProductEditProductListLoading,
 } from '@/domains/product/components/product-edit-product-list';
 import {
   type ProductEditFilterTypes,
   type ProductEditPageSelectionControls,
 } from '@/domains/product/components/product-edit-page-shell';
 import { type ProductCategoryTypes } from '@/domains/product/constants';
+import { useProductEditProducts, useProductListQuery } from '@/domains/product/hooks';
+import {
+  createProductEditListItem,
+  createProductEditListStateKey,
+  getProductListSort,
+  type ProductEditListItemTypes,
+} from '@/domains/product/model/product-list';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
-
-import { type EventDiscountEditProductTypes } from '../fixtures';
 
 interface EventDiscountEditProductSectionProps {
   autoOpenProductId?: string | null;
-  products: EventDiscountEditProductTypes[];
+  deletePending: boolean;
+  marketId: number;
   selection: ProductEditPageSelectionControls;
   selectedCategory: ProductCategoryTypes | null;
   selectedFilter: ProductEditFilterTypes;
   onAutoOpenProductMissing?: (productId: string) => void;
   onAutoOpenProductModalClose?: () => void;
-  onDeleteProduct: (productName: string) => void;
-  onUpdateProduct: (productName: string, product: ProductEditCardProps) => void;
+  onDeleteProduct: (productId: number) => Promise<boolean>;
 }
 
-export const EventDiscountEditProductSection = ({
+interface EventDiscountEditProductListProps extends EventDiscountEditProductSectionProps {
+  initialProducts: ProductEditListItemTypes[];
+}
+
+const EventDiscountEditProductList = ({
   autoOpenProductId,
-  products,
+  deletePending,
+  initialProducts,
+  marketId,
   selection,
   selectedCategory,
   selectedFilter,
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
   onDeleteProduct,
-  onUpdateProduct,
-}: EventDiscountEditProductSectionProps) => {
+}: EventDiscountEditProductListProps) => {
+  const { deleteProduct, products, updateProduct } = useProductEditProducts(
+    initialProducts,
+    onDeleteProduct,
+  );
   const productGroups = createProductEditDisplayGroups({
     createCardProps: (product) =>
       createProductEditCardProps({
@@ -52,16 +66,46 @@ export const EventDiscountEditProductSection = ({
     <ProductEditProductList
       ariaLabel='행사 할인 상품 수정 목록'
       autoOpenProductId={autoOpenProductId}
+      deletePending={deletePending}
       editModalVariant='eventDiscount'
       groups={productGroups}
+      marketId={marketId}
       registrationHref={MARKET_OWNER_ROUTES.eventDiscountRegistration}
-      selectedProductNames={selection.selectedProductNames}
+      selectedProductIds={selection.selectedProductIds}
       selectionMode={selection.selectionMode}
       onAutoOpenProductMissing={onAutoOpenProductMissing}
       onAutoOpenProductModalClose={onAutoOpenProductModalClose}
-      onDeleteProduct={(product) => onDeleteProduct(product.productName)}
+      onDeleteProduct={(product) => void deleteProduct(Number(product.productId))}
       onToggleProductSelection={selection.onToggleProductSelection}
-      onUpdateProduct={onUpdateProduct}
+      onUpdateProduct={updateProduct}
+    />
+  );
+};
+
+export const EventDiscountEditProductSection = (props: EventDiscountEditProductSectionProps) => {
+  const productListQuery = useProductListQuery({
+    marketId: props.marketId,
+    sort: getProductListSort(props.selectedFilter),
+    type: 'PERIODIC',
+  });
+
+  if (productListQuery.isPending) {
+    return <ProductEditProductListLoading />;
+  }
+
+  if (productListQuery.isError) {
+    throw productListQuery.error;
+  }
+
+  const products = (productListQuery.data?.data?.content ?? []).map(createProductEditListItem);
+  const productListStateKey = createProductEditListStateKey(products);
+
+  return (
+    <EventDiscountEditProductList
+      key={`${props.selectedFilter}-${productListStateKey}`}
+      {...props}
+      initialProducts={products}
+      marketId={props.marketId}
     />
   );
 };

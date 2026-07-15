@@ -200,6 +200,21 @@ export interface MarketRegisterRequest {
   brn?: string | null;
 }
 
+export interface ApiResponseMarketRegisterResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  data?: MarketRegisterResponse | null;
+}
+
+export interface MarketRegisterResponse {
+  /**
+   * 등록된 마트 아이디
+   * @format int64
+   */
+  marketId: number;
+}
+
 export interface ProductImportRequest {
   /**
    * S3에 업로드한 엑셀 파일 URL
@@ -301,6 +316,21 @@ export interface DailyProductRegisterRequest {
   discountEndDate: string;
 }
 
+export interface ApiResponseDailyProductRegisterResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  data?: DailyProductRegisterResponse | null;
+}
+
+export interface DailyProductRegisterResponse {
+  /**
+   * 등록된 상품 아이디
+   * @format int64
+   */
+  productId: number;
+}
+
 export interface ApiResponseFlyerPublishResponse {
   success: boolean;
   code: string;
@@ -338,41 +368,6 @@ export interface OwnerSignupRequest {
   password: string;
 }
 
-export interface ApiResponseOwnerSignupResponse {
-  success: boolean;
-  code: string;
-  message: string;
-  data?: OwnerSignupResponse | null;
-}
-
-export interface OwnerSignupResponse {
-  /**
-   * 점주 id
-   * @format int64
-   */
-  ownerId: number;
-  /** 점주 이메일 */
-  email: string;
-}
-
-export interface OwnerLoginRequest {
-  /**
-   * 이메일
-   * @example "ddongchiim@gmail.com"
-   */
-  email: string;
-  /**
-   * 비밀번호
-   * @example "password123!"
-   */
-  password: string;
-  /**
-   * 로그인 상태 유지(자동 로그인) 여부
-   * @example true
-   */
-  isAutoLogin: boolean;
-}
-
 export interface ApiResponseOwnerLoginResponse {
   success: boolean;
   code: string;
@@ -401,6 +396,24 @@ export interface OwnerLoginResponse {
   marketThumbnailUrl?: string | null;
 }
 
+export interface OwnerLoginRequest {
+  /**
+   * 이메일
+   * @example "ddongchiim@gmail.com"
+   */
+  email: string;
+  /**
+   * 비밀번호
+   * @example "password123!"
+   */
+  password: string;
+  /**
+   * 로그인 상태 유지(자동 로그인) 여부
+   * @example true
+   */
+  isAutoLogin: boolean;
+}
+
 export interface ProductDiscountPeriodUpdateRequest {
   /**
    * 할인 시작일 (YYYY-MM-DD)
@@ -419,6 +432,63 @@ export interface ProductDiscountPeriodUpdateRequest {
    * @example [1,2,3]
    */
   productIds: number[];
+}
+
+export interface ApiResponseOwnerMarketDetailResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  data?: OwnerMarketDetailResponse | null;
+}
+
+export interface OwnerMarketBusinessHourResponse {
+  /** 요일 목록 (MONDAY ~ SUNDAY) */
+  days: string[];
+  /** 영업일 여부. 휴무면 false */
+  isOpen: boolean;
+  /** 오픈 시각 (HH:mm). 휴무면 null */
+  open?: string | null;
+  /** 마감 시각 (HH:mm). 휴무면 null */
+  close?: string | null;
+}
+
+export interface OwnerMarketDetailResponse {
+  /**
+   * 마트 id
+   * @format int64
+   */
+  marketId: number;
+  /** 마트명 */
+  name: string;
+  /** 마트 대표 이미지 URL (없으면 null) */
+  thumbnailUrl?: string | null;
+  /** 마트 주소 */
+  address: string;
+  /**
+   * 위도
+   * @format double
+   */
+  latitude: number;
+  /**
+   * 경도
+   * @format double
+   */
+  longitude: number;
+  /** 영업시간 (요일 묶음 배열) */
+  businessHours: OwnerMarketBusinessHourResponse[];
+  /** 마트 대표 전화번호 1 */
+  marketPhone1: string;
+  /** 마트 전화번호 2 (없으면 null) */
+  marketPhone2?: string | null;
+  /**
+   * 마트 번호 중 대표 번호 (1 또는 2)
+   * @format int32
+   */
+  marketPhonePrimary: number;
+  /** 점주 전화번호 */
+  ownerPhone: string;
+  /** 사업자등록번호 (없으면 null) */
+  brn?: string | null;
 }
 
 export interface ApiResponseCursorSliceResponseOwnerProductListItemResponse {
@@ -859,6 +929,19 @@ export interface ProductBulkDeleteRequest {
    * @example [1,2,3]
    */
   productIds: number[];
+  /**
+   * 할인 기간 중이어도 삭제할지 여부
+   * @example false
+   */
+  forceDelete: boolean;
+}
+
+export interface ProductDeleteRequest {
+  /**
+   * 할인 기간 중이어도 삭제할지 여부
+   * @example false
+   */
+  forceDelete: boolean;
 }
 
 export interface ProductResetRequest {
@@ -867,11 +950,18 @@ export interface ProductResetRequest {
    * @example "DAILY"
    */
   dealType: 'PERIODIC' | 'DAILY';
+  /**
+   * 할인 기간 중이어도 삭제할지 여부
+   * @example false
+   */
+  forceDelete: boolean;
 }
+
+export type GetDetailData = ApiResponseOwnerMarketDetailResponse;
 
 export type UpdateData = ApiResponseUnit;
 
-export type GetDetailData = ApiResponseOwnerProductDetailResponse;
+export type GetDetail1Data = ApiResponseOwnerProductDetailResponse;
 
 export type UpdateProductData = ApiResponseUnit;
 
@@ -881,7 +971,7 @@ export type GetDraftsData = ApiResponseOwnerPreparedProductDraftListResponse;
 
 export type SaveDraftsData = ApiResponseUnit;
 
-export type RegisterData = ApiResponseUnit;
+export type RegisterData = ApiResponseMarketRegisterResponse;
 
 export type GetProductsData = ApiResponseCursorSliceResponseOwnerProductListItemResponse;
 
@@ -895,13 +985,13 @@ export type CancelImportData = ApiResponseUnit;
 
 export type ImportSyncData = ApiResponseProductImportSyncResponse;
 
-export type RegisterDailyProductData = ApiResponseUnit;
+export type RegisterDailyProductData = ApiResponseDailyProductRegisterResponse;
 
 export type PublishData = ApiResponseFlyerPublishResponse;
 
 export type IssueQrCodeData = ApiResponseFlyerQrResponse;
 
-export type SignupData = ApiResponseOwnerSignupResponse;
+export type SignupData = ApiResponseOwnerLoginResponse;
 
 export type LoginData = ApiResponseOwnerLoginResponse;
 

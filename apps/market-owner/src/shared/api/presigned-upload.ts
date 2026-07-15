@@ -1,8 +1,12 @@
 import { API_ENDPOINTS, type CommonApiTypes, validateApiResponse, z } from '@dongchimi/shared/api';
 
+import type { PresignedUploadPurposeTypes } from '@/shared/constants/presigned-upload-purpose';
+
 import { httpClient } from './http-client';
 
-export type PresignedUploadRequestTypes = CommonApiTypes.PresignedUploadRequest;
+export type PresignedUploadRequestTypes = Omit<CommonApiTypes.PresignedUploadRequest, 'purpose'> & {
+  purpose: PresignedUploadPurposeTypes;
+};
 export type PresignedUploadResponseTypes = CommonApiTypes.PresignedUploadResponse;
 type PresignedUploadApiResponseTypes = CommonApiTypes.ApiResponsePresignedUploadResponse;
 

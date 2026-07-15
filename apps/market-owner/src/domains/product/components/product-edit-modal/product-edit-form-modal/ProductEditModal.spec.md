@@ -14,21 +14,32 @@
 ## Public API
 
 - `open`: OverlayKit controller가 전달하는 modal open 상태입니다.
-- `product`: 수정할 카드 상품 props입니다. 열릴 때 form 초기값으로 사용합니다.
+- `marketId`, `productId`: modal이 열린 뒤 상세 조회에 사용합니다.
+- `product`: 수정 완료 후 목록의 기존 카드 상태와 병합할 상품 props입니다.
 - `variant`: `todaySpecial` 또는 `eventDiscount`로 가격/기간 입력 구성을 결정합니다.
 - `onClose`: OverlayKit `close`/`unmount` 흐름으로 modal을 닫는 handler입니다.
-- `onSubmit`: 변경 확정 시 수정된 카드 값을 호출부로 전달하는 handler입니다.
+- `onSubmit`: PUT 성공 후 수정된 카드 값을 호출부로 전달하는 handler입니다.
 
 ## UI States
 
-- default: 상품 카드 값으로 form을 채우고 `변경하기`는 disabled입니다.
+- default: 상세 응답으로 form을 채우고 `변경하기`는 disabled입니다.
 - category dropdown: 상품 구분 trigger를 누르면 `Dropdown`으로 카테고리 옵션을 표시합니다.
 - edited: 입력값 또는 카테고리/기간이 초기값과 달라지면 `변경하기`를 활성화합니다.
-- submitted: `변경하기` 클릭 시 수정된 카드 값을 `onSubmit`으로 전달하고 modal을 닫습니다.
+- submitting: 이미지가 바뀌었으면 Presigned URL 발급과 S3 PUT 후 상품 수정 PUT을 호출하고,
+  `취소`와 `변경하기`를 비활성화합니다.
+- submitted: PUT 성공 시 수정된 카드 값을 `onSubmit`으로 전달하고 modal을 닫습니다.
+- submit error: 별도 toast 없이 modal과 현재 입력값을 유지합니다.
 
 ## Behavior
 
 - 수정 버튼 클릭은 `ProductEditProductList`가 `openProductEditModal`을 호출하고, helper가 `overlay.open`으로 선택 상품 modal을 엽니다.
+- modal이 열리면 `marketId`, `productId`로 상품 상세 API를 호출하고 상품명, 이미지, 카테고리, 가격, 홍보글, 기간을 form 초기값으로 사용합니다.
+- 변경 시 상세 응답의 `dealType`을 요청 `type`으로 사용해 기존 판매 유형을 유지합니다.
+- 오늘의 특가는 `originalPrice`를 포함하고, 행사 할인은 `originalPrice`를 전송하지 않습니다.
+- 홍보글을 비우면 `promotionalPhrase: null`을 전송합니다.
+- 이미지가 변경되지 않으면 상세 응답의 기존 URL을 유지하고, 새 이미지가 선택되면 Presigned 업로드 후 public S3 URL을 전송합니다.
+- 수정 성공 후 상품 목록과 해당 상품 상세 query를 invalidate합니다.
+- 상세 조회 중에는 modal을 렌더링하지 않고, 조회 실패 시 error toast를 표시한 뒤 overlay를 닫습니다.
 - 취소는 modal을 닫고 form state를 버립니다.
 - 행사 할인 variant는 판매가, 시작일, 종료일을 표시합니다.
 - 오늘의 특가 variant는 원가, 오늘의 특가, 시작일, 종료일, `하루 더 늘리기` 버튼을 표시합니다.
@@ -55,5 +66,10 @@
 
 - [x] product card edit action opens dialog
 - [x] opened dialog renders selected product values
+- [x] opened dialog renders product detail response values
 - [x] category dropdown changes selected category
 - [x] today special one-day extension updates end date and can restore today-only date
+- [x] `DAILY`/`PERIODIC` 개별 수정 payload와 PUT 호출
+- [x] pending 중 중복 제출 방지
+- [x] 성공 시 modal close와 목록 카드 갱신
+- [x] 실패 시 별도 toast 없이 modal/input 유지

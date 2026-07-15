@@ -1,13 +1,17 @@
-import { useRef, useState, type ChangeEventHandler } from 'react';
+import { useEffect, useRef, useState, type ChangeEventHandler } from 'react';
 
 import { Button, Dialog, InlineField } from '@dongchimi/design-system/components';
 import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
+import { useToast } from '@dongchimi/shared/toast';
 
+import { useProductDetailQuery, useProductUpdateFlow } from '@/domains/product/hooks';
+import { type ProductUpdateFormValuesTypes } from '@/domains/product/model/create-product-update-request';
+import { type OwnerApiTypes } from '@/shared/api';
+import { PRODUCT_CATEGORY_NAME_BY_CODE } from '@/shared/constants/product-categories';
 import { type ImagePreviewChangePayload, useImagePreview } from '@/shared/hooks/useImagePreview';
 import { imageUploadInputAccept, isValidImageUploadFile } from '@/shared/utils/image-upload.utils';
 
 import {
-  isProductSelectableCategory,
   productSelectableCategoryOptions,
   type ProductSelectableCategoryTypes,
 } from '../../../constants';
@@ -23,6 +27,7 @@ import {
   formatProductPriceInput,
   limitProductNameInput,
   limitProductPromotionTextInput,
+  sanitizeProductName,
 } from '../../../utils/product-input';
 import {
   type ProductEditCardProps,
@@ -36,51 +41,57 @@ import { keepProductEditDialogOpen, openProductEditOverlay } from '../open-produ
 import * as S from './ProductEditModal.css';
 
 interface ProductEditModalProps {
+  marketId: number;
   open: boolean;
   product: ProductEditCardProps;
+  productId: number;
   variant: ProductEditCardVariantTypes;
   onClose: () => void;
   onSubmit?: (product: ProductEditCardProps) => void;
 }
 
 interface OpenProductEditModalParams {
+  marketId: number;
   product: ProductEditCardProps;
+  productId: number;
   onClose?: () => void;
   onSubmit?: (product: ProductEditCardProps) => void;
   variant: ProductEditCardVariantTypes;
 }
 
-interface ProductEditFormValues {
-  categoryName: ProductSelectableCategoryTypes;
+interface ProductEditFormValues extends ProductUpdateFormValuesTypes {
   endDate: string;
   imageFile: File | null;
   imagePreviewUrl: string | null;
-  originalPrice: string;
-  productName: string;
-  promotionText: string;
-  salePrice: string;
-  startDate: string;
 }
 
 const PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID = 'product-edit-modal-category-dropdown';
+const PRODUCT_DETAIL_LOAD_ERROR_MESSAGE = '상품 정보를 불러오지 못했어요. 다시 시도해주세요.';
 
-const createInitialValues = (product: ProductEditCardProps): ProductEditFormValues => {
-  const categoryName =
-    product.categoryName != null && isProductSelectableCategory(product.categoryName)
-      ? product.categoryName
-      : '기타';
-  const endDate = formatProductEditDateForInput(product.endDate);
+interface ProductEditModalFormProps extends Omit<
+  ProductEditModalProps,
+  'marketId' | 'onSubmit' | 'product' | 'productId'
+> {
+  detail: OwnerApiTypes.OwnerProductDetailResponse;
+  isSubmitting: boolean;
+  onSubmit: (values: ProductEditFormValues) => Promise<boolean>;
+}
+
+const createInitialValues = (
+  detail: OwnerApiTypes.OwnerProductDetailResponse,
+): ProductEditFormValues => {
+  const categoryName = PRODUCT_CATEGORY_NAME_BY_CODE[detail.category];
 
   return {
     categoryName,
-    endDate,
+    endDate: formatProductEditDateForInput(detail.discountEndDate),
     imageFile: null,
-    imagePreviewUrl: null,
-    originalPrice: product.originalPrice ?? '',
-    productName: product.productName,
-    promotionText: product.promotionText ?? '',
-    salePrice: product.salePrice,
-    startDate: formatProductEditDateForInput(product.startDate ?? product.endDate),
+    imagePreviewUrl: detail.thumbnailUrl ?? null,
+    originalPrice: detail.originalPrice.toLocaleString('ko-KR'),
+    productName: detail.name,
+    promotionText: detail.promotionalPhrase ?? '',
+    salePrice: detail.discountedPrice.toLocaleString('ko-KR'),
+    startDate: formatProductEditDateForInput(detail.discountStartDate),
   };
 };
 
@@ -90,14 +101,58 @@ const isSameFormValues = (values: ProductEditFormValues, initialValues: ProductE
   );
 };
 
-export const ProductEditModal = ({
-  open,
+const parseProductPrice = (value: string | undefined) => {
+  if (value == null) {
+    return undefined;
+  }
+
+  return Number(value.replaceAll(',', ''));
+};
+
+const calculateProductDiscountRate = (originalPrice: number, salePrice: number) => {
+  if (originalPrice <= 0) {
+    return undefined;
+  }
+
+  return String(Math.max(0, Math.round(((originalPrice - salePrice) / originalPrice) * 100)));
+};
+
+const createUpdatedProductCard = ({
   product,
+  values,
+  variant,
+}: {
+  product: ProductEditCardProps;
+  values: ProductEditFormValues;
+  variant: ProductEditCardVariantTypes;
+}): ProductEditCardProps => {
+  const originalPrice = parseProductPrice(values.originalPrice);
+  const salePrice = parseProductPrice(values.salePrice) ?? 0;
+
+  return {
+    ...product,
+    categoryName: values.categoryName,
+    endDate: values.endDate,
+    originalPrice: variant === 'todaySpecial' ? values.originalPrice : undefined,
+    productName: sanitizeProductName(values.productName),
+    salePercent:
+      variant === 'todaySpecial' && originalPrice != null
+        ? calculateProductDiscountRate(originalPrice, salePrice)
+        : undefined,
+    salePrice: values.salePrice,
+    startDate: values.startDate,
+  };
+};
+
+const ProductEditModalForm = ({
+  detail,
+  isSubmitting,
+  open,
   variant,
   onClose,
   onSubmit,
-}: ProductEditModalProps) => {
-  const [initialValues] = useState(() => createInitialValues(product));
+}: ProductEditModalFormProps) => {
+  const [initialValues] = useState(() => createInitialValues(detail));
   const [values, setValues] = useState(initialValues);
   const categoryFieldRef = useRef<HTMLDivElement>(null);
   const categoryTriggerRef = useRef<HTMLButtonElement>(null);
@@ -173,24 +228,18 @@ export const ProductEditModal = ({
     }));
   };
 
-  const submitModal = () => {
-    onSubmit?.({
-      ...product,
-      categoryName: values.categoryName,
-      endDate: values.endDate,
-      originalPrice: values.originalPrice === '' ? undefined : values.originalPrice,
-      productName: values.productName,
-      promotionText: values.promotionText,
-      salePrice: values.salePrice,
-      startDate: values.startDate,
-    });
-    closeModal();
+  const submitModal = async () => {
+    const didUpdate = await onSubmit(values);
+
+    if (didUpdate) {
+      closeModal();
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={keepProductEditDialogOpen}>
       <Dialog.Content ref={contentRef} className={S.contentClassName}>
-        <div className={S.containerClassName}>
+        <div aria-busy={isSubmitting} className={S.containerClassName}>
           <Dialog.Title className={S.titleClassName}>판매 정보를 수정해주세요</Dialog.Title>
 
           <div className={S.bodyClassName}>
@@ -333,6 +382,7 @@ export const ProductEditModal = ({
             <Button
               className={S.footerButtonClassName}
               color='assistive'
+              disabled={isSubmitting}
               size='small'
               variant='outlined'
               onClick={closeModal}
@@ -341,7 +391,7 @@ export const ProductEditModal = ({
             </Button>
             <Button
               className={S.footerButtonClassName}
-              disabled={!isEdited || !isStartDateValid || !isDateRangeValid}
+              disabled={isSubmitting || !isEdited || !isStartDateValid || !isDateRangeValid}
               size='small'
               variant='solid'
               onClick={submitModal}
@@ -355,8 +405,67 @@ export const ProductEditModal = ({
   );
 };
 
-export const openProductEditModal = ({
+export const ProductEditModal = ({
+  marketId,
+  open,
   product,
+  productId,
+  variant,
+  onClose,
+  onSubmit,
+}: ProductEditModalProps) => {
+  const toast = useToast();
+  const productDetailQuery = useProductDetailQuery({ marketId, productId });
+  const productUpdateFlow = useProductUpdateFlow();
+
+  useEffect(() => {
+    if (!productDetailQuery.isError) {
+      return;
+    }
+
+    toast.error(PRODUCT_DETAIL_LOAD_ERROR_MESSAGE);
+    onClose();
+  }, [onClose, productDetailQuery.isError, toast]);
+
+  if (productDetailQuery.isPending || productDetailQuery.isError) {
+    return null;
+  }
+
+  const detail = productDetailQuery.data.data;
+
+  const submitProductUpdate = async (values: ProductEditFormValues) => {
+    const didUpdate = await productUpdateFlow.submitProductUpdate({
+      currentThumbnailUrl: detail.thumbnailUrl ?? null,
+      dealType: detail.dealType,
+      imageFile: values.imageFile,
+      marketId,
+      productId,
+      values,
+    });
+
+    if (didUpdate) {
+      onSubmit?.(createUpdatedProductCard({ product, values, variant }));
+    }
+
+    return didUpdate;
+  };
+
+  return (
+    <ProductEditModalForm
+      detail={detail}
+      isSubmitting={productUpdateFlow.isPending}
+      open={open}
+      variant={variant}
+      onClose={onClose}
+      onSubmit={submitProductUpdate}
+    />
+  );
+};
+
+export const openProductEditModal = ({
+  marketId,
+  product,
+  productId,
   variant,
   onClose,
   onSubmit,
@@ -364,8 +473,10 @@ export const openProductEditModal = ({
   openProductEditOverlay({
     render: ({ closeOverlay, isOpen }) => (
       <ProductEditModal
+        marketId={marketId}
         open={isOpen}
         product={product}
+        productId={productId}
         variant={variant}
         onClose={() => {
           closeOverlay();

@@ -25,9 +25,13 @@ export const ownerLoginResponseSchema = createOwnerAuthSuccessResponseSchema(
 
 export const ownerSignupResponseSchema = createOwnerAuthSuccessResponseSchema(
   z.object({
+    accessToken: z.string(),
     ownerId: z.number(),
     email: z.string(),
-  }) satisfies z.ZodType<OwnerApiTypes.OwnerSignupResponse>,
+    marketId: z.number().nullable().optional(),
+    marketName: z.string().nullable().optional(),
+    marketThumbnailUrl: z.string().nullable().optional(),
+  }) satisfies z.ZodType<OwnerApiTypes.OwnerLoginResponse>,
 ) satisfies z.ZodType<OwnerApiTypes.SignupData>;
 
 export type OwnerLoginResponseTypes = z.infer<typeof ownerLoginResponseSchema>;

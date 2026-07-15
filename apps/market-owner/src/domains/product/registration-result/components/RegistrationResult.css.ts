@@ -229,14 +229,17 @@ export const emptyStateClassName = style({
 });
 
 export const productPreviewClassName = style({
-  ...typography['caption-1-medium'],
   display: 'inline-flex',
   width: '100%',
   height: '100%',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: semantic.primary.light,
-  color: semantic.primary.strong,
+});
+
+export const productReplaceImageClassName = style({
+  display: 'block',
+  width: '100%',
+  height: '100%',
 });
 
 export const uploadedImageButtonClassName = style({
