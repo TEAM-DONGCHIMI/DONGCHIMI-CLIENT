@@ -19,7 +19,8 @@ type MarketProductsPageProps = Readonly<{
 }>;
 
 export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
-  const { eventDiscount, market, share, todaySpecial } = marketProductsFixture;
+  const { market, share, todaySpecial } = marketProductsFixture;
+  const marketSlug = marketId;
   const shareUrl = getShareUrl(share.slug);
 
   return (
@@ -33,18 +34,18 @@ export const MarketProductsPage = ({ marketId }: MarketProductsPageProps) => {
         <MarketOverviewSection market={market} shareUrl={shareUrl} />
 
         <div className={S.productSectionsFrameClassName}>
-          <PopularProductsSection marketId={marketId} products={market.top3} />
+          <PopularProductsSection marketId={marketSlug} products={market.top3} />
 
           <TodaySpecialProductsSection
             initialVisibleCount={DEFAULT_TODAY_SPECIAL_VISIBLE_COUNT}
-            marketId={marketId}
+            marketId={marketSlug}
             products={todaySpecial.products}
             totalCount={todaySpecial.totalCount}
           />
 
           <EventDiscountProductsSection
-            eventDiscount={eventDiscount}
-            marketId={marketId}
+            marketId={market.marketId}
+            marketSlug={marketSlug}
             visibleCategoryCount={DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT}
           />
         </div>

@@ -1,7 +1,13 @@
+import { API_ENDPOINTS } from '@dongchimi/shared/api';
+import { HttpResponse, http } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { act, renderWithProviders, screen, userEvent, waitFor, within } from '@/test';
+import { act, renderWithProviders, screen, server, userEvent, waitFor, within } from '@/test';
 
+import {
+  PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE,
+  PERIODIC_PRODUCTS_LAST_PAGE_RESPONSE_FIXTURE,
+} from '../api/periodic-products-api.mock';
 import { MarketProductsPage } from './MarketProductsPage';
 import { marketProductsFixture, type BusinessHourTypes } from './fixtures/market-products.fixture';
 import { calculateFirstRowCategoryCount } from './hooks/useEventDiscountCategoryLayout';
@@ -12,6 +18,57 @@ import { getCurrentBusinessCloseTime } from './utils/market-actions';
 const router = {
   back: vi.fn(),
   push: vi.fn(),
+};
+
+const API_BASE_URL = 'https://api.test';
+const PERIODIC_PRODUCTS_ENDPOINT = `${API_BASE_URL}${API_ENDPOINTS.user.products.periodic(1)}`;
+
+const categoryProducts = {
+  SEAFOOD: [
+    {
+      discountedPrice: 6900,
+      name: '손질 고등어 1팩',
+      productId: 401,
+      thumbnailUrl: null,
+    },
+  ],
+  MEAT_EGG: [
+    {
+      discountedPrice: 4900,
+      name: '삼겹살 500G',
+      productId: 402,
+      thumbnailUrl: null,
+    },
+  ],
+} as const;
+
+const useDefaultPeriodicProductsHandler = () => {
+  server.use(
+    http.get(PERIODIC_PRODUCTS_ENDPOINT, ({ request }) => {
+      const requestUrl = new URL(request.url);
+      const category = requestUrl.searchParams.get('category');
+      const cursor = requestUrl.searchParams.get('cursor');
+
+      if (cursor != null) {
+        return HttpResponse.json(PERIODIC_PRODUCTS_LAST_PAGE_RESPONSE_FIXTURE);
+      }
+
+      if (category === 'MEAT_EGG' || category === 'SEAFOOD') {
+        return HttpResponse.json({
+          code: 'SUCCESS',
+          data: {
+            content: categoryProducts[category],
+            hasNext: false,
+            nextCursor: null,
+          },
+          message: '요청에 성공했습니다.',
+          success: true,
+        });
+      }
+
+      return HttpResponse.json(PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE);
+    }),
+  );
 };
 
 let intersectionObserverCallback: IntersectionObserverCallback | undefined;
@@ -61,14 +118,17 @@ const getSectionQueries = (headingName: string) => {
 
 describe('MarketProductsPage', () => {
   beforeEach(() => {
+    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', API_BASE_URL);
     router.back.mockClear();
     router.push.mockClear();
     intersectionObserverCallback = undefined;
     intersectionObserverOptions = undefined;
     vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
+    useDefaultPeriodicProductsHandler();
   });
 
   afterEach(() => {
+    vi.unstubAllEnvs();
     vi.unstubAllGlobals();
   });
 
@@ -165,7 +225,8 @@ describe('MarketProductsPage', () => {
 
     await user.click(eventSection.getByRole('button', { name: '정육·달걀' }));
 
-    expect(eventSection.getAllByRole('link')).toHaveLength(3);
+    expect(await eventSection.findByText('삼겹살 500G')).toBeInTheDocument();
+    expect(eventSection.getAllByRole('link')).toHaveLength(1);
     expect(eventSection.queryByText('대추방울토마토 500G')).not.toBeInTheDocument();
 
     const moreButton = eventSection.getByRole('button', { name: '더보기' });
@@ -177,10 +238,53 @@ describe('MarketProductsPage', () => {
     expect(moreButton).toHaveAttribute('aria-expanded', 'true');
     expect(eventSection.queryByRole('button', { name: '접기' })).not.toBeInTheDocument();
 
-    await user.click(eventSection.getByRole('button', { name: '수산' }));
+    await user.click(eventSection.getByRole('button', { name: '수산물' }));
 
+    expect(await eventSection.findByText('손질 고등어 1팩')).toBeInTheDocument();
     expect(eventSection.getAllByRole('link')).toHaveLength(1);
-    expect(eventSection.getByText('손질 고등어 1팩')).toBeInTheDocument();
+  });
+
+  it('sends the server ProductCategory enum for every event discount category', async () => {
+    const user = userEvent.setup();
+    const requestedCategories: (string | null)[] = [];
+    const categories = [
+      ['채소·과일', 'VEGETABLE_FRUIT'],
+      ['정육·달걀', 'MEAT_EGG'],
+      ['수산물', 'SEAFOOD'],
+      ['유제품', 'DAIRY'],
+      ['간편식', 'CONVENIENCE_FOOD'],
+      ['가공식품', 'PROCESSED_FOOD'],
+      ['음료·주류', 'BEVERAGE_ALCOHOL'],
+      ['생활용품', 'HOUSEHOLD_GOODS'],
+      ['기타', 'ETC'],
+    ] as const;
+
+    server.use(
+      http.get(PERIODIC_PRODUCTS_ENDPOINT, ({ request }) => {
+        requestedCategories.push(new URL(request.url).searchParams.get('category'));
+
+        return HttpResponse.json({
+          code: 'SUCCESS',
+          data: { content: [], hasNext: false, nextCursor: null },
+          message: '요청에 성공했습니다.',
+          success: true,
+        });
+      }),
+    );
+
+    renderMarketProductsPage();
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+
+    await user.click(eventSection.getByRole('button', { name: '더보기' }));
+
+    for (const [label, apiCategory] of categories) {
+      await user.click(eventSection.getByRole('button', { name: label }));
+
+      await waitFor(() => {
+        expect(requestedCategories.at(-1)).toBe(apiCategory);
+      });
+    }
   });
 
   it('appends the next event discount page when the load-more sentinel intersects', async () => {
@@ -188,7 +292,8 @@ describe('MarketProductsPage', () => {
 
     const eventSection = getSectionQueries('행사 할인 상품');
 
-    expect(eventSection.getAllByRole('link')).toHaveLength(9);
+    expect(await eventSection.findByText('대추방울토마토 500G')).toBeInTheDocument();
+    expect(eventSection.getAllByRole('link')).toHaveLength(2);
 
     await waitFor(() => {
       expect(intersectionObserverCallback).toBeTypeOf('function');
@@ -210,11 +315,10 @@ describe('MarketProductsPage', () => {
     });
 
     await waitFor(() => {
-      expect(eventSection.getAllByRole('link')).toHaveLength(18);
+      expect(eventSection.getAllByRole('link')).toHaveLength(3);
     });
 
     expect(eventSection.getByText('양배추 1통')).toBeInTheDocument();
-    expect(eventSection.getByText('주방 수세미')).toBeInTheDocument();
   });
 
   it('resets event discount pagination when the category changes', async () => {
@@ -223,6 +327,8 @@ describe('MarketProductsPage', () => {
     renderMarketProductsPage();
 
     const eventSection = getSectionQueries('행사 할인 상품');
+
+    expect(await eventSection.findByText('대추방울토마토 500G')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(intersectionObserverCallback).toBeTypeOf('function');
@@ -236,13 +342,98 @@ describe('MarketProductsPage', () => {
     });
 
     await waitFor(() => {
-      expect(eventSection.getAllByRole('link')).toHaveLength(18);
+      expect(eventSection.getAllByRole('link')).toHaveLength(3);
     });
 
     await user.click(eventSection.getByRole('button', { name: '정육·달걀' }));
 
+    expect(await eventSection.findByText('삼겹살 500G')).toBeInTheDocument();
+    expect(eventSection.getAllByRole('link')).toHaveLength(1);
+    expect(eventSection.queryByText('양배추 1통')).not.toBeInTheDocument();
+  });
+
+  it('shows an empty state when the API returns no event discount products', async () => {
+    server.use(
+      http.get(PERIODIC_PRODUCTS_ENDPOINT, () => {
+        return HttpResponse.json({
+          code: 'SUCCESS',
+          data: { content: [], hasNext: false, nextCursor: null },
+          message: '요청에 성공했습니다.',
+          success: true,
+        });
+      }),
+    );
+
+    renderMarketProductsPage();
+
+    expect(await screen.findByText('해당 카테고리에 등록된 상품이 없어요.')).toBeInTheDocument();
+  });
+
+  it('retries the initial event discount request after an auth error', async () => {
+    const user = userEvent.setup();
+    let shouldFail = true;
+
+    server.use(
+      http.get(PERIODIC_PRODUCTS_ENDPOINT, () => {
+        if (shouldFail) {
+          shouldFail = false;
+          return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 });
+        }
+
+        return HttpResponse.json(PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE);
+      }),
+    );
+
+    renderMarketProductsPage();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('행사 상품을 불러오지 못했어요.');
+
+    await user.click(screen.getByRole('button', { name: '다시 시도' }));
+
+    expect(await screen.findByText('대추방울토마토 500G')).toBeInTheDocument();
+  });
+
+  it('keeps loaded products and retries when the next page request fails', async () => {
+    const user = userEvent.setup();
+    let shouldFailNextPage = true;
+
+    server.use(
+      http.get(PERIODIC_PRODUCTS_ENDPOINT, ({ request }) => {
+        const cursor = new URL(request.url).searchParams.get('cursor');
+
+        if (cursor != null && shouldFailNextPage) {
+          shouldFailNextPage = false;
+          return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 });
+        }
+
+        return HttpResponse.json(
+          cursor == null
+            ? PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE
+            : PERIODIC_PRODUCTS_LAST_PAGE_RESPONSE_FIXTURE,
+        );
+      }),
+    );
+
+    renderMarketProductsPage();
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+
+    expect(await eventSection.findByText('대추방울토마토 500G')).toBeInTheDocument();
+
+    act(() => {
+      intersectionObserverCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+
+    expect(await eventSection.findByText('상품을 더 불러오지 못했어요.')).toBeInTheDocument();
+    expect(eventSection.getByText('삼겹살 500G')).toBeInTheDocument();
+
+    await user.click(eventSection.getByRole('button', { name: '다시 시도' }));
+
+    expect(await eventSection.findByText('양배추 1통')).toBeInTheDocument();
     expect(eventSection.getAllByRole('link')).toHaveLength(3);
-    expect(eventSection.queryByText('특란 30구')).not.toBeInTheDocument();
   });
 });
 
