@@ -79,10 +79,16 @@ describe('useLoginMutation', () => {
     await submitLogin(false);
 
     expect(useAuthStore.getState().accessToken).toBe('access-token');
+    expect(useAuthStore.getState().account).toEqual({
+      email: 'owner@example.com',
+      marketName: '동치미 마트',
+      marketThumbnailUrl: 'https://static.dongchimi.kr/market.png',
+    });
     expect(useAuthStore.getState().marketId).toBe(10);
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBeNull();
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('access-token');
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"isLoggedIn":true');
+    expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"email":"owner@example.com"');
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"marketId":10');
   });
 
@@ -90,9 +96,11 @@ describe('useLoginMutation', () => {
     await submitLogin(true);
 
     expect(useAuthStore.getState().accessToken).toBe('access-token');
+    expect(useAuthStore.getState().account?.email).toBe('owner@example.com');
     expect(useAuthStore.getState().marketId).toBe(10);
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).not.toContain('access-token');
     expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"isLoggedIn":true');
+    expect(localStorage.getItem(AUTH_STORE_STORAGE_KEY)).toContain('"email":"owner@example.com"');
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBeNull();
   });
 
