@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import dongchimiLogo from '@/shared/assets/images/Img_pavicon.svg';
+import dongchimiLogo from '@/shared/assets/images/img_pavicon.svg';
 import { MobileHeader } from '@/shared/components/ui/mobile-header';
 
 import { NearbyMarketsClientProvider } from './NearbyMarketsClientProvider';
