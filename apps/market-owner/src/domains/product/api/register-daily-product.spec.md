@@ -50,7 +50,7 @@
 - Hook: `useDailyProductRegistrationMutation`
 - Variables: `{ marketId, request }`
 - Retry: 공통 mutation 기본값 사용
-- Cache: 등록 성공 시 `productQueryKeys.list` prefix를 invalidate하여 `DAILY`, `PERIODIC`
+- Cache: 등록 성공 시 `productQueryKeys.listRoot` prefix를 invalidate하여 `DAILY`, `PERIODIC`
   목록 cache를 모두 stale 상태로 변경합니다. 목록 query가 다시 성공하면 `dataUpdatedAt`을
   기준으로 화면의 로컬 상품 state도 최신 응답으로 초기화합니다.
 

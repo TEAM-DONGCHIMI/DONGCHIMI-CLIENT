@@ -77,11 +77,11 @@ describe('useDailyProductRegistrationMutation', () => {
     };
     const queryClient = createQueryClient();
     const dailyListQueryKey = [
-      ...productQueryKeys.list,
+      ...productQueryKeys.listRoot,
       { marketId: 1, sort: 'CATEGORY', type: 'DAILY' },
     ] as const;
     const periodicListQueryKey = [
-      ...productQueryKeys.list,
+      ...productQueryKeys.listRoot,
       { marketId: 1, sort: 'CATEGORY', type: 'PERIODIC' },
     ] as const;
 

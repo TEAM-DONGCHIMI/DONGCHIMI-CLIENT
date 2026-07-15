@@ -13,9 +13,9 @@
 
 ## Cache
 
-- static key: `productQueryKeys.detail`
-- query options에서 `marketId`, `productId`를 결합해 상품별 cache를 분리합니다.
-- query key factory는 사용하지 않습니다.
+- root key: `productQueryKeys.detailRoot`
+- query key factory: `productQueryKeys.detail({ marketId, productId })`
+- query options에서 `marketId`, `productId`를 factory에 전달해 상품별 cache를 분리합니다.
 
 ## Usage
 

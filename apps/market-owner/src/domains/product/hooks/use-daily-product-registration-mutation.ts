@@ -12,7 +12,7 @@ export const useDailyProductRegistrationMutation = () => {
   return useMutation({
     mutationFn: (params: RegisterDailyProductParams) => registerDailyProduct(params),
     onSuccess: () => {
-      return queryClient.invalidateQueries({ queryKey: productQueryKeys.list });
+      return queryClient.invalidateQueries({ queryKey: productQueryKeys.listRoot });
     },
   });
 };
