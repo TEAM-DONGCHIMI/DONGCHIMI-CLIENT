@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { type ReactNode } from 'react';
 import { MemoryRouter } from 'react-router';
@@ -12,6 +12,7 @@ import { useAuthStore } from '@/shared/stores/auth-store';
 
 import { getPeriodicPreview, issueQrCode, publishLeaflet } from './api';
 import { LeafletSharePage } from './LeafletSharePage';
+import { leafletShareQueryKeys } from './query-keys';
 
 vi.mock('./api', () => ({
   getPeriodicPreview: vi.fn(),
@@ -65,15 +66,20 @@ const periodicPreviewFixture = {
   ],
 };
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
+const createTestQueryClient = () => {
+  return new QueryClient({
     defaultOptions: {
       mutations: {
         retry: false,
       },
+      queries: {
+        retry: false,
+      },
     },
   });
+};
 
+const createWrapper = (queryClient = createTestQueryClient()) => {
   const LeafletSharePageTestWrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
@@ -113,9 +119,11 @@ describe('LeafletSharePage', () => {
 
     expect(mockedPublishLeaflet).not.toHaveBeenCalled();
 
-    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
-
+    const shareButton = await screen.findByRole('button', { name: '전단 공유하기' });
     expect(mockedGetPeriodicPreview).toHaveBeenCalledWith(12);
+
+    await user.click(shareButton);
+
     expect(mockedPublishLeaflet).toHaveBeenCalledOnce();
     expect(mockedPublishLeaflet.mock.calls[0]?.[0]).toBe(12);
     expect(
@@ -154,6 +162,26 @@ describe('LeafletSharePage', () => {
       '해당 마트에 대한 접근 권한이 없습니다.',
     );
     expect(screen.getByRole('heading', { name: '오늘의 전단 최종 확인' })).toBeInTheDocument();
+  });
+
+  it('keeps the loaded preview visible when refetch fails', async () => {
+    const queryClient = createTestQueryClient();
+
+    mockedGetPeriodicPreview.mockResolvedValueOnce(periodicPreviewFixture);
+    mockedGetPeriodicPreview.mockRejectedValueOnce(new Error('Periodic preview refetch failed.'));
+    render(<LeafletSharePage />, { wrapper: createWrapper(queryClient) });
+
+    expect(await screen.findByRole('button', { name: '전단 공유하기' })).toBeInTheDocument();
+
+    await queryClient.invalidateQueries({
+      queryKey: leafletShareQueryKeys.periodicPreview(12),
+    });
+
+    await waitFor(() => {
+      expect(mockedGetPeriodicPreview).toHaveBeenCalledTimes(2);
+    });
+    expect(screen.getByRole('button', { name: '다시 불러오기' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '전단 공유하기' })).toBeInTheDocument();
   });
 
   it('keeps the QR issue flow connected to the shared QR modal', async () => {

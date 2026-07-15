@@ -167,7 +167,7 @@ export const LeafletSharePage = () => {
       {isConfirmView ? (
         <LeafletConfirmSection
           isPreviewError={periodicPreviewQuery.isError}
-          isPreviewPending={periodicPreviewQuery.isPending}
+          isPreviewPending={periodicPreviewQuery.isLoading}
           isPublishing={publishLeafletMutation.isPending}
           leafletPreview={leafletPreview}
           onPreviewRetry={() => void periodicPreviewQuery.refetch()}

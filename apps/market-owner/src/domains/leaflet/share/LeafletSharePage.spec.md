@@ -7,10 +7,7 @@
 - Page: `share`
 - Route: `/leaflets/share`
 - Path: `apps/market-owner/src/domains/leaflet/share/LeafletSharePage.tsx`
-  <<<<<<< HEAD
-- # Jira: DCMSM-29, DCMSM-67, DCMSM-71, DCMSM-77
-- Jira: DCMSM-29, DCMSM-67, DCMSM-71, DCMSM-86
-  > > > > > > > cd14db79eb618e442f50110618e585a7358c0993
+- Jira: DCMSM-29, DCMSM-67, DCMSM-71, DCMSM-77, DCMSM-86
 - Status: Implemented
 
 ## Purpose

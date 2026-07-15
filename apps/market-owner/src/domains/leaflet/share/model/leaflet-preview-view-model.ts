@@ -1,7 +1,11 @@
 import { formatBusinessHour } from '@dongchimi/shared';
 
 import type { FlyerPreviewResponseTypes } from '../api';
-import type { LeafletSummaryFixture } from '../fixtures/leaflet-share.fixture';
+
+export interface LeafletSummaryViewModel {
+  eventDiscountProductCount: number;
+  todaySpecialProductCount: number;
+}
 
 export interface PhonePreviewProductViewModel {
   id: number;
@@ -33,7 +37,7 @@ export interface PhonePreviewViewModel {
 
 export interface LeafletPreviewViewModel {
   phonePreview: PhonePreviewViewModel;
-  summary: LeafletSummaryFixture;
+  summary: LeafletSummaryViewModel;
 }
 
 const formatPrice = (price: number) => price.toLocaleString('ko-KR');

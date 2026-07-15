@@ -35,7 +35,7 @@ export const contentClassName = style({
 });
 
 export const stateClassName = style({
-  minHeight: '36rem',
+  minHeight: '61rem',
   borderRadius: '1.2rem',
   backgroundColor: atomic.common[0],
   color: atomic.neutral[70],

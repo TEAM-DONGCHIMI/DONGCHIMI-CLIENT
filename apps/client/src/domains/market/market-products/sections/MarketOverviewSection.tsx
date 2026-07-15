@@ -1,11 +1,10 @@
 import Image from 'next/image';
 
 import { IcCalendar, IcLocation, IcPhone } from '@dongchimi/design-system/icons';
-import { formatBusinessHour } from '@dongchimi/shared/business-hours';
+import { formatBusinessHour, type BusinessHourTypes } from '@dongchimi/shared/business-hours';
 
 import { MarketOverviewActions } from '../components/MarketOverviewActions';
 import { MarketStatusChip } from '../components/MarketStatusChip';
-import type { BusinessHourTypes } from '../fixtures/market-products.fixture';
 import * as S from '../MarketProductsPage.css';
 
 interface MarketOverviewSectionProps {

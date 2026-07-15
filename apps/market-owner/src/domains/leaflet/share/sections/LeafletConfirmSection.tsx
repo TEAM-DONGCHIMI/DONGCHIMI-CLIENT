@@ -21,7 +21,7 @@ export const LeafletConfirmSection = ({
   onPreviewRetry,
   onShare,
 }: LeafletConfirmSectionProps) => {
-  const shouldRenderPreview = leafletPreview != null && !isPreviewPending && !isPreviewError;
+  const shouldRenderPreview = leafletPreview != null && !isPreviewPending;
 
   return (
     <Grid aria-labelledby='leaflet-confirm-title' as='section' className={S.sectionClassName}>
