@@ -93,7 +93,7 @@ describe('useLoginMutation', () => {
     expect(sessionStorage.getItem(AUTH_STORE_STORAGE_KEY)).toBeNull();
   });
 
-  it('stores the authenticated market id when login succeeds', async () => {
+  it('stores the market context returned by login', async () => {
     mockLoginMarketOwner.mockResolvedValueOnce({
       ...LOGIN_SUCCESS_RESPONSE,
       data: {

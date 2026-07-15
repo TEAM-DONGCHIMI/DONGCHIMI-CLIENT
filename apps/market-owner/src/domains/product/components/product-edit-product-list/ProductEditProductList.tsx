@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { ProductEditCardDesktop } from '@/shared/components';
+import { formatProductCategoryDisplayName } from '@/shared/utils/product-category.utils';
 
 import * as S from './ProductEditProductList.css';
 import { openProductEditConfirmModal, openProductEditModal } from '../product-edit-modal';
@@ -16,6 +17,7 @@ interface ProductEditProductListProps {
   editModalVariant: ProductEditCardVariantTypes;
   autoOpenProductId?: string | null;
   groups: ProductEditProductGroup[];
+  marketId: number;
   registrationHref: string;
   selectedProductNames?: string[];
   selectionMode?: boolean;
@@ -34,6 +36,7 @@ export const ProductEditProductList = ({
   editModalVariant,
   autoOpenProductId,
   groups,
+  marketId,
   selectedProductNames = [],
   selectionMode = false,
   registrationHref,
@@ -69,7 +72,9 @@ export const ProductEditProductList = ({
     }
 
     openProductEditModal({
+      marketId,
       product: targetProduct,
+      productId: Number(targetProduct.productId),
       variant: editModalVariant,
       onClose: onAutoOpenProductModalClose,
       onSubmit: (updatedProduct) => onUpdateProduct?.(targetProduct.productName, updatedProduct),
@@ -78,6 +83,7 @@ export const ProductEditProductList = ({
     autoOpenProductId,
     editModalVariant,
     groups,
+    marketId,
     onAutoOpenProductMissing,
     onAutoOpenProductModalClose,
     onUpdateProduct,
@@ -94,13 +100,26 @@ export const ProductEditProductList = ({
       onConfirm: () => onDeleteProduct?.(product),
     });
   };
+  const editProduct = (product: ProductEditCardProps) => {
+    if (product.productId == null) {
+      return;
+    }
+
+    openProductEditModal({
+      marketId,
+      product,
+      productId: Number(product.productId),
+      variant: editModalVariant,
+      onSubmit: (updatedProduct) => onUpdateProduct?.(product.productName, updatedProduct),
+    });
+  };
   const selectedProductNameSet = new Set(selectedProductNames);
 
   return (
     <section aria-label={ariaLabel} className={S.sectionListClassName}>
       {groups.map(({ products, title }) => (
         <section key={title} className={S.categorySectionClassName}>
-          <h2 className={S.categoryTitleClassName}>{title}</h2>
+          <h2 className={S.categoryTitleClassName}>{formatProductCategoryDisplayName(title)}</h2>
 
           <div className={S.productGridClassName}>
             {products.map((product) => {
@@ -116,17 +135,7 @@ export const ProductEditProductList = ({
                     selectionMode ? (isSelected ? 'selected' : 'selectable') : 'default'
                   }
                   onDeleteClick={selectionMode ? undefined : () => deleteProduct(product)}
-                  onEditClick={
-                    selectionMode
-                      ? undefined
-                      : () =>
-                          openProductEditModal({
-                            product,
-                            variant: editModalVariant,
-                            onSubmit: (updatedProduct) =>
-                              onUpdateProduct?.(product.productName, updatedProduct),
-                          })
-                  }
+                  onEditClick={selectionMode ? undefined : () => editProduct(product)}
                   onSelectClick={
                     selectionMode ? () => onToggleProductSelection?.(product) : undefined
                   }
@@ -137,5 +146,13 @@ export const ProductEditProductList = ({
         </section>
       ))}
     </section>
+  );
+};
+
+export const ProductEditProductListLoading = () => {
+  return (
+    <p aria-live='polite' className={S.loadingClassName} role='status'>
+      상품 목록을 불러오는 중이에요.
+    </p>
   );
 };

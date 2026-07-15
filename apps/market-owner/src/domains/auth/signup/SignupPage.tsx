@@ -1,4 +1,4 @@
-import { Button, Flex, TextInput, Toast } from '@dongchimi/design-system/components';
+import { Button, Flex, TextInput } from '@dongchimi/design-system/components';
 import { IcCircleCheckFill } from '@dongchimi/design-system/icons';
 
 import { useSignupForm } from './hooks/use-signup-form';
@@ -24,7 +24,6 @@ export const SignupPage = () => {
       passwordConfirm,
       passwordConfirmStatusProps,
       passwordStatusProps,
-      submitErrorMessage,
     },
   } = useSignupForm();
 
@@ -79,12 +78,6 @@ export const SignupPage = () => {
             {...passwordConfirmStatusProps}
           />
         </Flex>
-
-        {submitErrorMessage !== undefined && (
-          <div className={S.submitToastClassName}>
-            <Toast status='error'>{submitErrorMessage}</Toast>
-          </div>
-        )}
 
         <Button
           className={S.submitButtonClassName}

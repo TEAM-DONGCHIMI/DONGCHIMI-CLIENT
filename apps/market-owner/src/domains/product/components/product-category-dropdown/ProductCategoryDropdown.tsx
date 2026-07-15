@@ -2,6 +2,8 @@ import type { CSSProperties } from 'react';
 
 import { Dropdown } from '@dongchimi/design-system/components';
 
+import { formatProductCategoryDisplayName } from '@/shared/utils/product-category.utils';
+
 import * as S from './ProductCategoryDropdown.css';
 
 interface ProductCategoryDropdownProps<CategoryTypes extends string> {
@@ -35,7 +37,7 @@ export const ProductCategoryDropdown = <CategoryTypes extends string>({
           onClick={() => onSelect(category)}
           selected={isSelected?.(category) ?? category === selectedCategory}
         >
-          {category}
+          {formatProductCategoryDisplayName(category)}
         </Dropdown.Item>
       ))}
     </Dropdown>

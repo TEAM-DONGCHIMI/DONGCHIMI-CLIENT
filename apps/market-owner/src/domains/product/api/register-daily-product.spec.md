@@ -13,7 +13,7 @@
 ## Request
 
 - Generated type: `OwnerApiTypes.DailyProductRegisterRequest`
-- `thumbnailUrl`: 선택 이미지가 있으면 Presigned 업로드 결과 `objectKey`, 이미지가 없으면 임시 기본 이미지 `/images/product-empty.png`
+- `thumbnailUrl`: 선택 이미지가 있으면 `VITE_PUBLIC_S3_BASE_URL`과 Presigned 업로드 결과 `objectKey`를 결합한 절대 URL, 이미지가 없으면 기본 이미지 `/images/product-replace.svg`
 - `name`: 앞뒤 공백을 제거한 상품명
 - `category`: 화면의 한글 카테고리를 서버 enum code로 변환
 - `promotionalPhrase`: 앞뒤 공백을 제거하고, 빈 값이면 생략
@@ -50,21 +50,26 @@
 - Hook: `useDailyProductRegistrationMutation`
 - Variables: `{ marketId, request }`
 - Retry: 공통 mutation 기본값 사용
-- Cache: 등록 성공 후 Home으로 이동하므로 현재 범위에서는 직접 cache update/invalidation을 추가하지 않습니다.
+- Cache: 등록 성공 시 `productQueryKeys.list` prefix를 invalidate하여 `DAILY`, `PERIODIC`
+  목록 cache를 모두 stale 상태로 변경합니다. 목록 query가 다시 성공하면 `dataUpdatedAt`을
+  기준으로 화면의 로컬 상품 state도 최신 응답으로 초기화합니다.
 
 ## Integration Gate
 
 - `marketId`는 최종적으로 로그인 응답의 `OwnerLoginResponse.marketId`를 session에서 제공해야 합니다.
 - 현재 로그인/session이 fixture이므로 page 호출부는 임시 `marketId = 1`을 사용하고 교체 위치에 TODO를 남깁니다.
-- 이미지가 있으면 기존 Presigned API와 S3 PUT 흐름을 재사용하고, OpenAPI `PresignedUploadResponse.objectKey`를 `thumbnailUrl`에 전달합니다.
-- 이미지가 없으면 Presigned 요청을 생략하고 저장소의 기본 상품 이미지 `/images/product-empty.png`를 `thumbnailUrl`에 전달합니다.
+- 이미지가 있으면 기존 Presigned API와 S3 PUT 흐름을 재사용하고, `VITE_PUBLIC_S3_BASE_URL`과 OpenAPI `PresignedUploadResponse.objectKey`를 결합한 절대 URL을 `thumbnailUrl`에 전달합니다.
+- S3 base URL이나 object key 경계의 중복 slash는 제거하며, S3 base URL이 없으면 상대경로를 등록하지 않고 실패합니다.
+- 이미지가 없으면 Presigned 요청을 생략하고 저장소의 기본 상품 이미지 `/images/product-replace.svg`를 `thumbnailUrl`에 전달합니다.
 
 ## Verification
 
 - [x] API helper request/response test
 - [x] mutation hook test
+- [x] 등록 성공 후 `DAILY`, `PERIODIC` 상품 목록 query invalidation test
 - [x] form-to-request mapper test
-- [x] Presigned `objectKey`가 상품 등록 `thumbnailUrl`에 연결되는 page test
+- [x] Presigned `objectKey`가 S3 절대 URL 형태로 상품 등록 `thumbnailUrl`에 연결되는 mapper/page test
+- [x] S3 base URL 누락 시 상대경로를 등록하지 않는 mapper test
 - [x] 이미지 미선택 시 기본 상품 이미지가 `thumbnailUrl`에 연결되는 mapper/page test
 - [x] 임시 `marketId = 1`로 page submit 연결
 - [ ] 실제 session의 `marketId`로 임시값 교체
