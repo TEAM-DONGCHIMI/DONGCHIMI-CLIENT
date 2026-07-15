@@ -19,7 +19,7 @@
 
 - [x] `apps/client/src/shared/components/ui` 하위 app shared component로 둡니다.
 - [x] API, analytics, route 생성 side effect를 직접 가지지 않습니다.
-- [x] public props는 상품 이미지, 상품명, 가격, 선택적 상세 링크, 선택적 링크 클릭 핸들러로 제한합니다.
+- [x] public props는 상품 이미지, 상품명, 가격, 선택적 상세 링크, 링크 prefetch 정책, 선택적 링크 클릭 핸들러로 제한합니다.
 - [x] 상품명은 최대 2줄까지 노출하고 초과하면 말줄임 처리합니다.
 - [x] 이미지가 없으면 정해진 이미지 영역 안에 fallback surface를 표시합니다.
 - [x] `href`가 있으면 상세 이동 의미에 맞게 Next `Link`로 렌더링합니다.
@@ -33,6 +33,7 @@
 - `imageAlt?: string`: 상품 이미지 대체 텍스트입니다. 없으면 `${productName} 상품 이미지`를 사용합니다.
 - `imageSizes?: ImageProps['sizes']`: 호출부의 반응형 카드 폭이 기본 `9.4rem`과 다를 때 Next `Image`의 `sizes` 힌트를 보정합니다. 생략하면 `9.4rem`을 사용합니다.
 - `href?: LinkProps['href']`: 상품 상세 URL입니다. 전달되면 root를 Next `Link`로 렌더링합니다.
+- `prefetch?: LinkProps['prefetch']`: 링크 route의 사전 로딩 정책입니다. 대량 목록처럼 viewport 진입만으로 많은 route 요청이 발생할 수 있는 호출부는 `false`를 전달합니다.
 - `onClick?: MouseEventHandler<HTMLAnchorElement>`: analytics 같은 호출부 책임 동작이 필요할 때 링크 클릭 핸들러로 사용합니다.
 - `className?: string`: 호출부의 배치 조정을 위해 root에 추가 class를 병합합니다.
 - `id?: string`: root 식별자가 필요할 때 사용합니다.

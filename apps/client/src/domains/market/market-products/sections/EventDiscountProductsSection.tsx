@@ -1,141 +1,222 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useState } from 'react';
 
-import { PillButton } from '@dongchimi/design-system';
+import { Button, PillButton } from '@dongchimi/design-system';
 import { IcChevronDown, IcChevronUp } from '@dongchimi/design-system/icons';
+
+import { usePeriodicProductsInfiniteQuery } from '@/domains/market/hooks/use-periodic-products-infinite-query';
+import type {
+  PeriodicProductCategoryTypes,
+  PeriodicProductsPageTypes,
+} from '@/domains/market/model/periodic-products-schema';
 import { PeriodProductCard } from '@/shared/components/ui/period-product-card';
 import { CLIENT_ROUTES } from '@/shared/constants';
+import { useIntersectionObserver } from '@/shared/hooks';
 
 import { useEventDiscountCategoryLayout } from '../hooks/useEventDiscountCategoryLayout';
-import type { EventDiscountProductsFixtureTypes } from '../fixtures/market-products.fixture';
 import * as S from '../MarketProductsPage.css';
 import { formatPrice } from '../utils/format-price';
 
 interface EventDiscountProductsSectionProps {
-  eventDiscount: EventDiscountProductsFixtureTypes;
+  marketId: number;
   marketSlug: string;
   visibleCategoryCount: number;
+}
+
+interface EventDiscountCategoryTypes {
+  apiCategory: PeriodicProductCategoryTypes;
+  categoryId: string;
+  label: string;
+}
+
+interface AvailableCategorySnapshotTypes {
+  marketId: number;
+  values: PeriodicProductCategoryTypes[];
 }
 
 export const EVENT_DISCOUNT_ALL_CATEGORY_ID = 'all';
 
 const EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES = 'calc((100vw - 10rem) / 3)';
-
-const INITIAL_EVENT_DISCOUNT_PAGE_COUNT = 1;
-
 const EVENT_DISCOUNT_PRELOAD_ROOT_MARGIN = '0px 0px 240px';
 
-type UseEventDiscountInfiniteScrollTypes = Readonly<{
+const EVENT_DISCOUNT_CATEGORIES = [
+  { apiCategory: 'VEGETABLE_FRUIT', categoryId: 'vegetable-fruit', label: '채소·과일' },
+  { apiCategory: 'MEAT_EGG', categoryId: 'meat-egg', label: '정육·달걀' },
+  { apiCategory: 'SEAFOOD', categoryId: 'seafood', label: '수산물' },
+  { apiCategory: 'DAIRY', categoryId: 'dairy', label: '유제품' },
+  { apiCategory: 'CONVENIENCE_FOOD', categoryId: 'convenience-food', label: '간편식' },
+  { apiCategory: 'PROCESSED_FOOD', categoryId: 'processed-food', label: '가공식품' },
+  { apiCategory: 'BEVERAGE_ALCOHOL', categoryId: 'beverage-alcohol', label: '음료·주류' },
+  { apiCategory: 'HOUSEHOLD_GOODS', categoryId: 'household-goods', label: '생활용품' },
+  { apiCategory: 'ETC', categoryId: 'etc', label: '기타' },
+] satisfies EventDiscountCategoryTypes[];
+
+interface EventDiscountProductsContentProps {
   hasNextPage: boolean;
-  nextCursor: number | null;
-  onLoadNextPage: () => void;
-}>;
+  isError: boolean;
+  isFetchNextPageError: boolean;
+  isPending: boolean;
+  marketSlug: string;
+  onRetry: () => void;
+  pageParams: (number | undefined)[];
+  productPages: PeriodicProductsPageTypes[];
+}
 
-const useEventDiscountInfiniteScroll = ({
+interface EventDiscountProductPageProps {
+  marketSlug: string;
+  page: PeriodicProductsPageTypes;
+}
+
+const EventDiscountProductPage = memo(function EventDiscountProductPage({
+  marketSlug,
+  page,
+}: EventDiscountProductPageProps) {
+  return (
+    <div className={S.eventProductGridClassName}>
+      {page.content.map((product) => (
+        <PeriodProductCard
+          key={product.productId}
+          className={S.eventProductCardClassName}
+          href={CLIENT_ROUTES.marketProduct(marketSlug, String(product.productId))}
+          imageSizes={EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES}
+          imageSrc={product.thumbnailUrl ?? undefined}
+          prefetch={false}
+          priceText={formatPrice(product.discountedPrice)}
+          productName={product.name}
+        />
+      ))}
+    </div>
+  );
+});
+
+const EventDiscountProductsContent = ({
   hasNextPage,
-  nextCursor,
-  onLoadNextPage,
-}: UseEventDiscountInfiniteScrollTypes) => {
-  const loadMoreSentinelRef = useRef<HTMLDivElement>(null);
-  const hasRequestedNextPageRef = useRef(false);
+  isError,
+  isFetchNextPageError,
+  isPending,
+  marketSlug,
+  onRetry,
+  pageParams,
+  productPages,
+}: EventDiscountProductsContentProps) => {
+  const hasProducts = productPages.some((page) => page.content.length > 0);
 
-  useEffect(() => {
-    hasRequestedNextPageRef.current = false;
-  }, [nextCursor]);
+  if (isPending) {
+    return (
+      <p className={S.emptyTextClassName} role='status'>
+        행사 상품을 불러오는 중이에요.
+      </p>
+    );
+  }
 
-  useEffect(() => {
-    const loadMoreSentinelElement = loadMoreSentinelRef.current;
+  if (isError && !isFetchNextPageError && !hasProducts) {
+    return (
+      <div className={S.eventDiscountStateClassName}>
+        <p className={S.emptyTextClassName} role='alert'>
+          행사 상품을 불러오지 못했어요.
+        </p>
+        <Button onClick={onRetry} size='mobile'>
+          다시 시도
+        </Button>
+      </div>
+    );
+  }
 
-    if (
-      !hasNextPage ||
-      loadMoreSentinelElement == null ||
-      typeof IntersectionObserver === 'undefined'
-    ) {
-      return;
-    }
+  if (!hasProducts && hasNextPage) {
+    return (
+      <p className={S.emptyTextClassName} role='status'>
+        행사 상품을 더 찾고 있어요.
+      </p>
+    );
+  }
 
-    const intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        const isLoadMoreSentinelVisible = entries.some((entry) => entry.isIntersecting);
+  if (!hasProducts) {
+    return <p className={S.emptyTextClassName}>해당 카테고리에 등록된 상품이 없어요.</p>;
+  }
 
-        if (!isLoadMoreSentinelVisible || hasRequestedNextPageRef.current) {
-          return;
+  return (
+    <div className={S.eventProductPagesClassName}>
+      {productPages.map((page, pageIndex) => {
+        if (page.content.length === 0) {
+          return null;
         }
 
-        hasRequestedNextPageRef.current = true;
-        onLoadNextPage();
-      },
-      {
-        rootMargin: EVENT_DISCOUNT_PRELOAD_ROOT_MARGIN,
-      },
-    );
+        const pageKey = pageParams[pageIndex] ?? 'initial';
 
-    intersectionObserver.observe(loadMoreSentinelElement);
-
-    return () => {
-      intersectionObserver.disconnect();
-    };
-  }, [hasNextPage, nextCursor, onLoadNextPage]);
-
-  return loadMoreSentinelRef;
+        return <EventDiscountProductPage key={pageKey} marketSlug={marketSlug} page={page} />;
+      })}
+    </div>
+  );
 };
 
 export const EventDiscountProductsSection = ({
-  eventDiscount,
+  marketId,
   marketSlug,
   visibleCategoryCount,
 }: EventDiscountProductsSectionProps) => {
+  const [availableCategorySnapshot, setAvailableCategorySnapshot] =
+    useState<AvailableCategorySnapshotTypes | null>(null);
   const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(EVENT_DISCOUNT_ALL_CATEGORY_ID);
-  const [loadedEventDiscountPageCount, setLoadedEventDiscountPageCount] = useState(
-    INITIAL_EVENT_DISCOUNT_PAGE_COUNT,
+  const selectedCategory = EVENT_DISCOUNT_CATEGORIES.find(
+    (category) => category.categoryId === selectedCategoryId,
   );
-  const { categories, pages } = eventDiscount;
-  const lastLoadedEventDiscountPage = pages[loadedEventDiscountPageCount - 1];
-  const hasNextPage =
-    lastLoadedEventDiscountPage?.hasNext === true && lastLoadedEventDiscountPage.nextCursor != null;
-  const nextCursor = hasNextPage ? lastLoadedEventDiscountPage.nextCursor : null;
-  const products = useMemo(() => {
-    const loadedProducts = pages
-      .slice(0, loadedEventDiscountPageCount)
-      .flatMap((page) => page.products);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isError,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    isPending,
+    refetch,
+  } = usePeriodicProductsInfiniteQuery({
+    category: selectedCategory?.apiCategory,
+    marketId,
+  });
+  const pageParams = data?.pageParams ?? [];
+  const productPages = data?.pages ?? [];
+  const responseAvailableCategories = productPages[0]?.availableCategories;
+  const snapshotAvailableCategories =
+    availableCategorySnapshot?.marketId === marketId ? availableCategorySnapshot.values : [];
+  const availableCategorySet = new Set(responseAvailableCategories ?? snapshotAvailableCategories);
+  const availableCategories = EVENT_DISCOUNT_CATEGORIES.filter((category) => {
+    return (
+      availableCategorySet.has(category.apiCategory) || category.categoryId === selectedCategoryId
+    );
+  });
 
-    if (selectedCategoryId === EVENT_DISCOUNT_ALL_CATEGORY_ID) {
-      return loadedProducts;
+  const handleSelectCategory = (categoryId: string) => {
+    if (categoryId === selectedCategoryId) {
+      return;
     }
 
-    return loadedProducts.filter((product) => product.categoryId === selectedCategoryId);
-  }, [loadedEventDiscountPageCount, pages, selectedCategoryId]);
-  const handleLoadNextPage = useCallback(() => {
-    setLoadedEventDiscountPageCount((currentPageCount) => {
-      return Math.min(currentPageCount + 1, pages.length);
-    });
-  }, [pages.length]);
-  const handleSelectCategory = useCallback(
-    (categoryId: string) => {
-      if (categoryId === selectedCategoryId) {
-        return;
-      }
+    if (responseAvailableCategories != null) {
+      setAvailableCategorySnapshot({
+        marketId,
+        values: responseAvailableCategories,
+      });
+    }
 
-      setSelectedCategoryId(categoryId);
-      setLoadedEventDiscountPageCount(INITIAL_EVENT_DISCOUNT_PAGE_COUNT);
-    },
-    [selectedCategoryId],
-  );
-  const loadMoreSentinelRef = useEventDiscountInfiniteScroll({
-    hasNextPage,
-    nextCursor,
-    onLoadNextPage: handleLoadNextPage,
+    setSelectedCategoryId(categoryId);
+  };
+  const handleLoadNextPage = () => {
+    void fetchNextPage({ cancelRefetch: false });
+  };
+  const loadMoreSentinelRef = useIntersectionObserver<HTMLDivElement>({
+    enabled: Boolean(hasNextPage) && !isFetchingNextPage && !isFetchNextPageError,
+    onIntersect: handleLoadNextPage,
+    rootMargin: EVENT_DISCOUNT_PRELOAD_ROOT_MARGIN,
   });
   const { categoryMeasureRowRef, categoryPrimaryRowRef, firstRowCategoryCount } =
     useEventDiscountCategoryLayout({
-      categories,
+      categories: availableCategories,
       visibleCategoryCount,
     });
 
-  const defaultVisibleCategories = categories.slice(0, firstRowCategoryCount);
-  const hiddenCategories = categories.slice(firstRowCategoryCount);
+  const defaultVisibleCategories = availableCategories.slice(0, firstRowCategoryCount);
+  const hiddenCategories = availableCategories.slice(firstRowCategoryCount);
   const hasHiddenCategories = hiddenCategories.length > 0;
   const hasExpandedCategories = isCategoryExpanded && hasHiddenCategories;
   const MoreButtonIcon = isCategoryExpanded ? IcChevronUp : IcChevronDown;
@@ -155,7 +236,7 @@ export const EventDiscountProductsSection = ({
           <PillButton platform='mobile' tabIndex={-1} variant='outlined-light'>
             전체
           </PillButton>
-          {categories.map((category) => (
+          {availableCategories.map((category) => (
             <PillButton
               key={category.categoryId}
               platform='mobile'
@@ -226,29 +307,38 @@ export const EventDiscountProductsSection = ({
         )}
       </div>
 
-      {products.length > 0 ? (
-        <div className={S.eventProductGridClassName}>
-          {products.map((product) => (
-            <PeriodProductCard
-              key={product.productId}
-              className={S.eventProductCardClassName}
-              href={CLIENT_ROUTES.marketProduct(marketSlug, String(product.productId))}
-              imageSizes={EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES}
-              imageSrc={product.thumbnailUrl ?? undefined}
-              priceText={formatPrice(product.discountedPrice)}
-              productName={product.name}
-            />
-          ))}
-        </div>
-      ) : hasNextPage ? null : (
-        <p className={S.emptyTextClassName}>해당 카테고리에 등록된 상품이 없어요.</p>
-      )}
-      {hasNextPage && (
+      <EventDiscountProductsContent
+        hasNextPage={Boolean(hasNextPage)}
+        isError={isError}
+        isFetchNextPageError={isFetchNextPageError}
+        isPending={isPending}
+        marketSlug={marketSlug}
+        onRetry={() => void refetch()}
+        pageParams={pageParams}
+        productPages={productPages}
+      />
+
+      {hasNextPage && !isFetchNextPageError && (
         <div
+          ref={loadMoreSentinelRef}
           aria-hidden='true'
           className={S.eventDiscountLoadMoreSentinelClassName}
-          ref={loadMoreSentinelRef}
         />
+      )}
+      {isFetchingNextPage && (
+        <p className={S.emptyTextClassName} role='status'>
+          행사 상품을 더 불러오는 중이에요.
+        </p>
+      )}
+      {isFetchNextPageError && (
+        <div className={S.eventDiscountStateClassName}>
+          <p className={S.emptyTextClassName} role='alert'>
+            상품을 더 불러오지 못했어요.
+          </p>
+          <Button onClick={handleLoadNextPage} size='mobile'>
+            다시 시도
+          </Button>
+        </div>
       )}
     </section>
   );

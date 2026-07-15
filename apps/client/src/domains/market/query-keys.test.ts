@@ -63,6 +63,21 @@ describe('marketQueryKeys', () => {
     ]);
   });
 
+  it('행사 상품의 기본 size를 정규화해 같은 query key를 만든다', () => {
+    expect(marketQueryKeys.periodicProducts({ marketId: 1 })).toEqual(
+      marketQueryKeys.periodicProducts({ marketId: 1, size: 12 }),
+    );
+  });
+
+  it('행사 상품 category와 marketId를 query key에서 구분한다', () => {
+    expect(marketQueryKeys.periodicProducts({ category: 'MEAT_EGG', marketId: 1 })).not.toEqual(
+      marketQueryKeys.periodicProducts({ category: 'SEAFOOD', marketId: 1 }),
+    );
+    expect(marketQueryKeys.periodicProducts({ marketId: 1 })).not.toEqual(
+      marketQueryKeys.periodicProducts({ marketId: 2 }),
+    );
+  });
+
   it('상품 상세 응답을 바꾸는 marketId와 productId를 key에 포함한다', () => {
     expect(marketQueryKeys.productDetail({ marketId: 1, productId: '10' })).toEqual([
       'market',
