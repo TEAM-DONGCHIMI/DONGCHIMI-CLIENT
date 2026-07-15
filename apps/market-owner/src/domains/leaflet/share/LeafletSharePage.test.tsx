@@ -163,7 +163,7 @@ describe('LeafletSharePage', () => {
     mockedIssueQrCode.mockResolvedValueOnce({ qrCode: 'base64-qr-code' });
     render(<LeafletSharePage />, { wrapper: createWrapper() });
 
-    await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
     await user.click(await screen.findByRole('button', { name: '매장 고유 QR코드 보기' }));
 
     expect(mockedIssueQrCode.mock.calls[0]?.[0]).toBe(12);
@@ -187,7 +187,7 @@ describe('LeafletSharePage', () => {
       mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
       render(<LeafletSharePage />, { wrapper: createWrapper() });
 
-      await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+      await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
       await user.click(await screen.findByRole('button', { name: copyButtonName }));
 
       expect(writeText).toHaveBeenCalledWith(
@@ -207,7 +207,7 @@ describe('LeafletSharePage', () => {
     mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
     render(<LeafletSharePage />, { wrapper: createWrapper() });
 
-    await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
     await user.click(await screen.findByRole('button', { name: '전단 공유 링크 복사' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
