@@ -34,6 +34,8 @@ export interface UserMarketLocationSearchParamsTypes extends ApiSearchParamsType
 
 export interface UserPeriodicProductsSearchParamsTypes extends ApiSearchParamsTypes {
   category?: string;
+  cursor?: number;
+  size?: number;
 }
 
 const encodePathParam = (value: ApiPathParamTypes) => {

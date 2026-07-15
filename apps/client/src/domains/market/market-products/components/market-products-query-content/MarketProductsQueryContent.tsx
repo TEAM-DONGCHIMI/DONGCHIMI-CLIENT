@@ -7,10 +7,6 @@ import { Button } from '@dongchimi/design-system';
 import { useDailyProductsQuery } from '@/domains/market/hooks/use-daily-products-query';
 import { useMarketDetailQuery } from '@/domains/market/hooks/use-market-detail-query';
 
-import {
-  DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT,
-  marketProductsFixture,
-} from '../../fixtures/market-products.fixture';
 import * as S from '../../MarketProductsPage.css';
 import { EventDiscountProductsSection } from '../../sections/EventDiscountProductsSection';
 import { MarketOverviewSection } from '../../sections/MarketOverviewSection';
@@ -21,6 +17,8 @@ import { getShareUrl } from '../../utils/market-actions';
 export type MarketProductsQueryContentProps = Readonly<{
   marketSlug: string;
 }>;
+
+const DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT = 2;
 
 type TodaySpecialProductsQuerySectionProps = Readonly<{
   marketId: number;
@@ -96,7 +94,6 @@ export const MarketProductsQueryContent = ({ marketSlug }: MarketProductsQueryCo
     );
   }
 
-  const { eventDiscount } = marketProductsFixture;
   const shareUrl = getShareUrl(marketSlug);
 
   return (
@@ -109,7 +106,7 @@ export const MarketProductsQueryContent = ({ marketSlug }: MarketProductsQueryCo
         <TodaySpecialProductsQuerySection marketId={market.marketId} marketSlug={marketSlug} />
 
         <EventDiscountProductsSection
-          eventDiscount={eventDiscount}
+          marketId={market.marketId}
           marketSlug={marketSlug}
           visibleCategoryCount={DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT}
         />

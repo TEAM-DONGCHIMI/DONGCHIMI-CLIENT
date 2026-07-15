@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import type { EventDiscountCategoryFixtureTypes } from '../fixtures/market-products.fixture';
-
 type CategoryRowMeasurementTypes = Readonly<{
   allCategoryWidth: number;
   categoryWidths: readonly number[];
@@ -11,7 +9,10 @@ type CategoryRowMeasurementTypes = Readonly<{
 }>;
 
 type UseEventDiscountCategoryLayoutTypes = Readonly<{
-  categories: readonly EventDiscountCategoryFixtureTypes[];
+  categories: readonly {
+    categoryId: string;
+    label: string;
+  }[];
   visibleCategoryCount: number;
 }>;
 
