@@ -2,7 +2,7 @@ import { HttpResponse, http } from 'msw';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { server } from '@/test';
-import { API_ENDPOINTS } from '@dongchimi/shared/api';
+import { API_ENDPOINTS, ApiResponseValidationError } from '@dongchimi/shared/api';
 
 import { getMarketDetail } from './market-detail-api';
 import { MARKET_DETAIL_API_RESPONSE_FIXTURE } from './market-detail-api.mock';
@@ -56,7 +56,7 @@ describe('getMarketDetail', () => {
     });
   });
 
-  it('요일 값은 Swagger의 string[] 계약을 그대로 보존한다', () => {
+  it('MONDAY부터 SUNDAY까지의 요일 값만 허용한다', () => {
     const response = {
       ...MARKET_DETAIL_API_RESPONSE_FIXTURE,
       data: {
@@ -72,6 +72,44 @@ describe('getMarketDetail', () => {
       },
     };
 
-    expect(resolveMarketDetailResponse(response).businessHours[0]?.days).toEqual(['HOLIDAY']);
+    expect(() => resolveMarketDetailResponse(response)).toThrow(ApiResponseValidationError);
+  });
+
+  it('영업일의 open과 close는 HH:mm 형식만 허용한다', () => {
+    const response = {
+      ...MARKET_DETAIL_API_RESPONSE_FIXTURE,
+      data: {
+        ...MARKET_DETAIL_API_RESPONSE_FIXTURE.data,
+        businessHours: [
+          {
+            close: '24:00',
+            days: ['MONDAY'],
+            isOpen: true,
+            open: '오전 10시',
+          },
+        ],
+      },
+    };
+
+    expect(() => resolveMarketDetailResponse(response)).toThrow(ApiResponseValidationError);
+  });
+
+  it('휴무일에는 open과 close를 허용하지 않는다', () => {
+    const response = {
+      ...MARKET_DETAIL_API_RESPONSE_FIXTURE,
+      data: {
+        ...MARKET_DETAIL_API_RESPONSE_FIXTURE.data,
+        businessHours: [
+          {
+            close: '20:00',
+            days: ['SUNDAY'],
+            isOpen: false,
+            open: '10:00',
+          },
+        ],
+      },
+    };
+
+    expect(() => resolveMarketDetailResponse(response)).toThrow(ApiResponseValidationError);
   });
 });

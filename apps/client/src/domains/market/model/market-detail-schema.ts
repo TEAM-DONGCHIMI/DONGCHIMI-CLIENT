@@ -12,20 +12,34 @@ export const resolveMarketDetailParams = (rawParams: unknown): MarketDetailParam
   return marketDetailParamsSchema.parse(rawParams);
 };
 
-export const businessDaySchema = z.string();
+export const businessDaySchema = z.enum([
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+  'SUNDAY',
+]);
 
 export type BusinessDayTypes = z.infer<typeof businessDaySchema>;
 
+const businessTimeSchema = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, '영업시간은 HH:mm 형식이어야 합니다.');
+
 export const businessHourSchema = z.discriminatedUnion('isOpen', [
   z.object({
-    close: z.string(),
+    close: businessTimeSchema,
     days: z.array(businessDaySchema),
     isOpen: z.literal(true),
-    open: z.string(),
+    open: businessTimeSchema,
   }),
   z.object({
+    close: z.never().optional(),
     days: z.array(businessDaySchema),
     isOpen: z.literal(false),
+    open: z.never().optional(),
   }),
 ]);
 

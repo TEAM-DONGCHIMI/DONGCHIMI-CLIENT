@@ -11,7 +11,7 @@ import type {
   MarketDetailTypes,
 } from '../../model/market-detail-schema';
 
-const DAY_LABELS: Partial<Record<BusinessDayTypes, string>> = {
+const DAY_LABELS: Record<BusinessDayTypes, string> = {
   FRIDAY: '금',
   MONDAY: '월',
   SATURDAY: '토',
@@ -40,7 +40,7 @@ const getBusinessDaySortIndex = (businessDay: BusinessDayTypes) => {
 };
 
 const getBusinessDayLabel = (businessDay: BusinessDayTypes) => {
-  return DAY_LABELS[businessDay] ?? businessDay;
+  return DAY_LABELS[businessDay];
 };
 
 interface MarketOverviewSectionProps {
@@ -90,9 +90,7 @@ const formatBusinessDayGroup = (days: readonly BusinessDayTypes[]) => {
   }
 
   if (days.length === 1) {
-    const dayLabel = DAY_LABELS[firstDay];
-
-    return dayLabel == null ? getBusinessDayLabel(firstDay) : `${dayLabel}요일`;
+    return `${getBusinessDayLabel(firstDay)}요일`;
   }
 
   return `${getBusinessDayLabel(firstDay)}-${getBusinessDayLabel(lastDay)}`;
