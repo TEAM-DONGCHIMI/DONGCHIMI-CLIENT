@@ -1,5 +1,5 @@
-import { type ReactNode } from 'react';
-import { Link } from 'react-router';
+import { type ReactNode, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 
 import { Button, PillButton, TabNav } from '@dongchimi/design-system/components';
 import {
@@ -12,9 +12,16 @@ import {
   IcTrashSizeSmallColorNegative,
 } from '@dongchimi/design-system/icons';
 
-import { DesktopHeader } from '@/shared/components';
+import {
+  DesktopHeader,
+  ProductHeaderSearch,
+  type ProductHeaderSearchProductTypes,
+} from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
+import { createProductEditTargetPath } from '@/shared/utils/product-edit-target-path.utils';
 import { type ProductCategoryTypes } from '../../constants';
+import { useProductSearchQuery } from '../../hooks';
 import { type ProductEditCardProps } from '../product-edit-product-list';
 
 import {
@@ -30,6 +37,8 @@ import {
   useProductEditBulkSelection,
   useProductEditFilter,
 } from './hooks';
+
+const PRODUCT_SEARCH_RESULT_SIZE = 10;
 
 export interface ProductEditPageShellProps {
   activeType: ProductEditTypeTypes;
@@ -61,6 +70,15 @@ export const ProductEditPageShell = ({
   periodBaseProduct,
   productCounts,
 }: ProductEditPageShellProps) => {
+  const navigate = useNavigate();
+  const [productSearchKeyword, setProductSearchKeyword] = useState('');
+  const marketId = useAuthStore((state) => state.marketId);
+  const productSearchQuery = useProductSearchQuery({
+    keyword: productSearchKeyword,
+    marketId,
+    size: PRODUCT_SEARCH_RESULT_SIZE,
+  });
+  const productSearchProducts = productSearchQuery.data?.data?.products ?? [];
   const pageCopy = editPageCopyByType[activeType];
 
   // 필터/드롭다운 상태
@@ -94,6 +112,9 @@ export const ProductEditPageShell = ({
   });
   const isDeleteButtonEmphasized = bulkAction === 'delete' && selectedProductCount > 0;
   const isPeriodButtonEmphasized = bulkAction === 'period' && selectedProductCount > 0;
+  const handleSelectHeaderProduct = (product: ProductHeaderSearchProductTypes) => {
+    navigate(createProductEditTargetPath(product));
+  };
   const periodButtonProps = isPeriodButtonEmphasized
     ? {
         className: S.actionButtonClassNames.primarySolid,
@@ -141,7 +162,15 @@ export const ProductEditPageShell = ({
         <DesktopHeader
           currentLabel={pageCopy.currentLabel}
           parentLabel='홈'
-          showSearchBar={false}
+          searchSlot={
+            <ProductHeaderSearch
+              isPending={productSearchQuery.isFetching}
+              onQueryChange={setProductSearchKeyword}
+              onSelectProduct={handleSelectHeaderProduct}
+              products={productSearchProducts}
+              status={productSearchQuery.isError ? 'error' : 'default'}
+            />
+          }
         />
 
         <div className={S.controlClassName}>

@@ -1,4 +1,5 @@
 import { type PresignedUploadResponseTypes, uploadFileToPresignedUrl } from '@/shared/api';
+import { PRESIGNED_UPLOAD_PURPOSE } from '@/shared/constants/presigned-upload-purpose';
 
 import { usePresignedUploadMutation } from '../../hooks';
 import type { TodaySpecialProductFormTypes } from '../model';
@@ -18,7 +19,7 @@ export const useTodaySpecialImageUpload = () => {
     const uploadContract = await presignedUploadMutation.mutateAsync({
       contentLength: product.imageFile.size,
       contentType: product.imageFile.type,
-      purpose: 'PRODUCT_THUMBNAIL',
+      purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_THUMBNAIL,
     });
 
     await uploadFileToPresignedUrl({

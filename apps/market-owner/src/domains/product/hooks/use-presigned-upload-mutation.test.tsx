@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createPresignedUploadUrl } from '@/shared/api';
+import { PRESIGNED_UPLOAD_PURPOSE } from '@/shared/constants/presigned-upload-purpose';
 
 import { usePresignedUploadMutation } from './use-presigned-upload-mutation';
 
@@ -39,7 +40,7 @@ describe('usePresignedUploadMutation', () => {
 
   it('passes the file metadata to the API helper and returns the upload contract', async () => {
     const request = {
-      purpose: 'PRODUCT_THUMBNAIL',
+      purpose: PRESIGNED_UPLOAD_PURPOSE.PRODUCT_THUMBNAIL,
       contentType: 'image/png',
       contentLength: 1024,
     };

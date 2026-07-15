@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { render, screen, userEvent } from '@/test';
+import { render, screen, userEvent, waitFor } from '@/test';
 
 import {
   ProductHeaderSearch,
@@ -22,6 +22,7 @@ const products = [
 ] satisfies ProductHeaderSearchProductTypes[];
 
 const defaultProps = {
+  onQueryChange: vi.fn(),
   onSelectProduct: vi.fn(),
   products,
 } satisfies ProductHeaderSearchProps;
@@ -43,13 +44,47 @@ describe('ProductHeaderSearch', () => {
     expect(handleSelectProduct).toHaveBeenCalledWith(products[1]);
   });
 
-  it('matches the query against the product name only', async () => {
+  it('passes the trimmed query to the API call site after debounce', async () => {
+    const handleQueryChange = vi.fn();
     const user = userEvent.setup();
 
-    renderProductHeaderSearch();
+    renderProductHeaderSearch({ onQueryChange: handleQueryChange });
+
+    await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '  햇감자  ');
+
+    await waitFor(() => expect(handleQueryChange).toHaveBeenLastCalledWith('햇감자'));
+  });
+
+  it('shows the API error state without filtering results locally', async () => {
+    const user = userEvent.setup();
+
+    renderProductHeaderSearch({ products: [], status: 'error' });
 
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '행사 할인');
 
-    expect(await screen.findByText('검색 결과가 없어요. 상품을 등록해보세요.')).toBeInTheDocument();
+    expect(await screen.findByRole('alert')).toHaveTextContent('상품 정보를 불러오지 못했어요.');
+  });
+
+  it('shows pending feedback instead of a stale API error while the next query is debouncing', async () => {
+    const handleQueryChange = vi.fn();
+    const user = userEvent.setup();
+
+    renderProductHeaderSearch({
+      onQueryChange: handleQueryChange,
+      products: [],
+      status: 'error',
+    });
+
+    const searchbox = screen.getByRole('searchbox', { name: '상품 검색' });
+
+    await user.type(searchbox, '이전 검색');
+    await waitFor(() => expect(handleQueryChange).toHaveBeenLastCalledWith('이전 검색'));
+    expect(screen.getByRole('alert')).toHaveTextContent('상품 정보를 불러오지 못했어요.');
+
+    await user.clear(searchbox);
+    await user.type(searchbox, '새 검색');
+
+    expect(screen.getByRole('status')).toHaveTextContent('검색 중...');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });

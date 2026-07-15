@@ -34,7 +34,7 @@
 ## Out Of Scope
 
 - 위치 기반 마트 목록 조회 (지도 중심은 geolocation 연동되었으나, 현재 mock API는 위치 파라미터 없이 keyword 필터만 지원합니다)
-- 실제 백엔드 주변 마트 API 연동 (현재 `nearby-markets-api`는 mock 데이터를 반환하며, 백엔드 endpoint가 나오면 `httpClient.get` 호출로 교체합니다)
+- 실제 백엔드 주변 마트 API 연동 (현재 `nearby-markets-api`는 mock 데이터를 반환하며, 백엔드 endpoint가 나오면 BFF Route Handler와 `browserApi.get` 호출로 교체합니다)
 - bottom sheet (마커 터치 시에는 간단한 정보창만 노출하며, 별도 bottom sheet UI는 이후 작업에서 연결합니다)
 - 권한 허용 시 검색 input에 실제 현재 위치의 행정동 주소(reverse geocoding)를 표시하는 것: 현재는 "서울시 마포구 망원동" 고정 텍스트를 기본 값으로 채우며, 실제 주소 조회는 외부 reverse geocoding 소스 확정 후 이후 작업에서 연결합니다.
 - 권한 미허용 시 Container 클릭 → 우편번호 찾기 모달을 통한 행정동 검색 플로우: 현재는 빈 값 + placeholder만 노출하며, 모달을 통한 행정동 검색은 외부 주소 검색 서비스 선정 후 이후 작업에서 연결합니다.

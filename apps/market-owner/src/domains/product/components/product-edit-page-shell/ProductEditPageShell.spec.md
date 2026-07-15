@@ -5,7 +5,7 @@
 `ProductEditPageShell`은 사장님 상품 수정 페이지의 공통 상단 영역을 담당합니다.
 오늘의 특가 수정과 행사 할인 수정 페이지가 같은 헤더, route tab, 일괄 작업 버튼, 정렬 필터를 공유하되, 실제 상품 목록 영역은 각 페이지가 children으로 소유합니다.
 행사 할인 수정 페이지는 추가로 카테고리 필터를 제공합니다.
-상품 검색 API 또는 실데이터 source가 연결되기 전까지 헤더 검색 영역은 노출하지 않습니다.
+헤더 검색 영역은 상품 검색 API 결과를 표시하고, 선택한 상품의 할인 유형에 맞는 수정 route로 이동합니다.
 각 page는 외부에서 전달된 `productId` search param을 소비해 개별 수정 modal을 엽니다.
 
 ## Ownership
@@ -14,6 +14,11 @@
 - 사용처: `TodaySpecialEditPage`, `EventDiscountEditPage`
 - product domain route/copy에 묶인 컴포넌트이므로 `packages/design-system`이나 app shared component로 승격하지 않습니다.
 - route/copy/sort option 상수는 `ProductEditPageShell.constants.ts`가 소유합니다.
+- header search UI는 app shared `ProductHeaderSearch`가 소유하고, product domain의
+  `useProductSearchQuery` 결과를 전달받아 pending/empty/error 상태를 표시합니다.
+- `ProductEditPageShell`은 debounce 검색어와 query 상태 조합, 선택 결과의 route 이동을 소유합니다.
+- `dealType`별 수정 route와 `productId` search param 조립은 `shared/utils/product-edit-target-path.utils.ts`가
+  소유합니다. 이 utility는 React navigation을 수행하지 않습니다.
 - product category option 상수는 `domains/product/constants/product-category.ts`가 소유합니다.
 - product category dropdown hook은 등록/수정 화면에서 함께 쓸 수 있도록 `domains/product/hooks/use-product-category-dropdown.tsx`가 소유합니다.
 - category dropdown open/close 상태는 행사 할인 수정 페이지에서만 `overlay-kit`의 overlay data에서 파생합니다.
@@ -33,7 +38,12 @@
 ## Behavior
 
 - `activeType`에 따라 heading, breadcrumb current label, selected tab을 바꿉니다.
-- 헤더 상품 검색은 API endpoint 또는 실데이터 source가 연결되기 전까지 숨깁니다.
+- 헤더 상품 검색은 trim된 검색어가 비어 있지 않을 때
+  `GET /v1/owners/markets/{marketId}/products/search?keyword={keyword}&size=10`을 호출합니다.
+- 검색 결과는 서버 응답 순서를 유지하고, 200 `products: []`는 empty 상태로 표시합니다.
+- 검색 API 오류는 현재 route를 유지하고 검색 패널 error 상태로 표시합니다.
+- 헤더 검색에서 상품을 선택하면 `DAILY`는 오늘의 특가 수정 route, `PERIODIC`은 행사 할인 수정 route로
+  `productId` search param을 붙여 이동합니다.
 - tab은 상품이 있는 경우 `TabNav.Item as={Link}`로 렌더링해 `/products/today-special/edit`, `/products/event-discount/edit` 사이를 route 이동합니다.
 - 등록 상품 수가 0인 tab은 disabled item으로 렌더링해 route 이동을 막습니다.
 - `카테고리별` filter는 행사 할인 수정 페이지에만 노출되며, trigger 아래에 category dropdown을 엽니다.
@@ -74,4 +84,7 @@
 
 ## Verification
 
-- [x] 상품 수정 shell은 fixture 기반 검색 결과를 노출하지 않습니다.
+- [x] 현재 수정 페이지의 header search에서 다른 `dealType` 상품을 선택하면 해당 수정 route와
+      `productId` search param으로 이동하고 개별 수정 modal을 엽니다.
+- [x] 빈 검색어에서는 검색 API를 호출하지 않습니다.
+- [x] header search API 오류는 현재 route를 유지하고 error 상태를 표시합니다.

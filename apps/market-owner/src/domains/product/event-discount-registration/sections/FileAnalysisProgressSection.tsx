@@ -7,6 +7,7 @@ import { ProcessingStep, type ProcessingStepProps } from '@/shared/components';
 import * as S from './FileAnalysisProgressSection.css';
 
 export interface FileAnalysisProgressSectionProps {
+  isCancelPending?: boolean;
   onCancel: () => void;
   progressPercentage: number;
   steps: ProcessingStepProps['steps'];
@@ -72,11 +73,13 @@ const getCardShadowVariant = ({
 };
 
 export const FileAnalysisProgressSection = ({
+  isCancelPending = false,
   onCancel,
   progressPercentage,
   steps,
 }: FileAnalysisProgressSectionProps) => {
   const normalizedProgressPercentage = clampProgressPercentage(progressPercentage);
+  const normalizedProgressRatio = normalizedProgressPercentage / MAX_PROGRESS_PERCENTAGE;
   const isAnalysisComplete = hasCompletedAnalysis({ progressPercentage, steps });
   const cardShadowVariant = getCardShadowVariant({ progressPercentage, steps });
 
@@ -112,7 +115,7 @@ export const FileAnalysisProgressSection = ({
         >
           <span
             className={S.progressFillClassName}
-            style={{ width: `${normalizedProgressPercentage}%` }}
+            style={{ transform: `scaleX(${normalizedProgressRatio})` }}
           />
         </div>
         <span className={S.progressValueClassName}>{normalizedProgressPercentage}%</span>
@@ -122,12 +125,12 @@ export const FileAnalysisProgressSection = ({
         <Button
           className={S.actionButtonClassName}
           color='assistive'
-          disabled={isAnalysisComplete}
+          disabled={isAnalysisComplete || isCancelPending}
           onClick={onCancel}
           size='small'
           variant='outlined'
         >
-          취소
+          {isCancelPending ? '취소 중' : '취소'}
         </Button>
       </Flex>
     </Flex>

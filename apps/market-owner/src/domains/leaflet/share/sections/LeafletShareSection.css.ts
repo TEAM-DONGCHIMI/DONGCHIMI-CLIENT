@@ -9,10 +9,10 @@ export const sectionClassName = style({
   boxSizing: 'border-box',
   padding: '3.2rem 4rem 6rem',
   backgroundColor: atomic.common[0],
-  backgroundImage:
-    'linear-gradient(45deg, rgba(25, 31, 40, 0.05) 25%, transparent 25%), linear-gradient(-45deg, rgba(25, 31, 40, 0.05) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(25, 31, 40, 0.05) 75%), linear-gradient(-45deg, transparent 75%, rgba(25, 31, 40, 0.05) 75%)',
-  backgroundPosition: '0 0, 0 4rem, 4rem -4rem, -4rem 0',
-  backgroundSize: '8rem 8rem',
+  backgroundImage: "url('/images/Img_background.svg')",
+  backgroundPosition: 'center top',
+  backgroundRepeat: 'no-repeat',
+  backgroundSize: 'cover',
 });
 
 export const headingGroupClassName = style({

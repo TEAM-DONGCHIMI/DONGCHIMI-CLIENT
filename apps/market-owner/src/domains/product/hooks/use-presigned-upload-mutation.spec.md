@@ -16,7 +16,7 @@
 ## Inputs
 
 - `mutate` 또는 `mutateAsync` payload:
-  - `purpose`
+  - `purpose: PresignedUploadPurposeTypes`
   - `contentType`
   - `contentLength`
 
@@ -43,6 +43,7 @@
 ## Constraints
 
 - 이 hook은 Presigned URL 발급까지만 담당합니다.
+- `purpose`는 `PRESIGNED_UPLOAD_PURPOSE` 상수에서 가져온 값만 전달합니다.
 - 실제 S3 PUT, 이미지 preview, 상품 등록 API 호출은 해당 화면의 업로드 flow hook이 조합합니다.
 - 현재 사용 범위가 상품 이미지이므로 product domain에 두며, 다른 도메인의 실제 재사용이 생기면 shared 승격을 검토합니다.
 
