@@ -1,6 +1,9 @@
-import { browserApi, type UserApiTypes } from '@/shared/api';
+import { browserApi } from '@/shared/api';
 
-export type KakaoLoginPayloadTypes = UserApiTypes.OAuthLoginRequest;
+export interface KakaoLoginPayload {
+  code: string;
+  state: string;
+}
 
 export interface KakaoLoginResponse {
   code: string;
@@ -8,7 +11,7 @@ export interface KakaoLoginResponse {
   success: boolean;
 }
 
-export const postKakaoLogin = async (payload: KakaoLoginPayloadTypes) => {
+export const postKakaoLogin = (payload: KakaoLoginPayload) => {
   return browserApi.post<KakaoLoginResponse>('auth/kakao/login', {
     json: payload,
   });

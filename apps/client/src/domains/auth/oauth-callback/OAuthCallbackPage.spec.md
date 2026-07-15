@@ -2,19 +2,19 @@
 
 ## Metadata
 
-- Jira: DCMCL-17
+- Jira: DCMCL-17, DCMCL-22
 - Route: `/oauth/callback`
 - Owner: `apps/client/src/domains/auth/oauth-callback`
 - Status: Implemented
 
 ## Purpose
 
-- 카카오가 전달한 authorization code를 동치미 로그인 BFF로 한 번만 전송합니다.
+- 카카오가 전달한 authorization code와 `state`를 동치미 로그인 BFF로 한 번만 전송합니다.
 - 로그인 성공 시 token을 직접 저장하지 않고 `/markets`로 이동합니다.
 
 ## Scope
 
-- `code`, `error` search param 처리
+- `code`, `state`, `error` search param 처리
 - 카카오 로그인 mutation의 loading, success, error 상태 안내
 - 동일 code의 Strict Mode 재실행 및 새로고침 재전송 방지
 - HttpOnly cookie 기반 로그인 성공과 replace navigation
@@ -28,14 +28,14 @@
 ## Routing And Access
 
 - route path: `/oauth/callback`
-- search params: `code`, `error`
+- search params: `code`, `state`, `error`
 - access rule: 카카오 인증 redirect를 통해 진입
 - after action navigation: 성공 시 `/markets`, 실패 시 `/login` 링크 제공
 
 ## States
 
 - loading: 로그인 정보를 확인하고 있다는 live region을 표시합니다.
-- error: 인증 취소, code 누락, API 오류, 인증 token 누락을 구분해 안내합니다.
+- error: 인증 취소, callback 정보 누락, 정규화된 로그인 오류를 안내합니다.
 - success: BFF가 인증 token을 HttpOnly cookie로 설정한 뒤 `/markets`로 replace 이동합니다.
 
 ## Accessibility
@@ -44,11 +44,18 @@
 - 오류 메시지는 `role="alert"`를 사용합니다.
 - 실패 시 키보드로 접근 가능한 로그인 화면 링크를 제공합니다.
 
+## Error Boundary
+
+- callback page는 백엔드/BFF error code를 직접 분기하지 않습니다.
+- 인증 API helper는 공통 HTTP client의 `ApiError`를 그대로 전달합니다.
+- auth/validation 오류는 서버 메시지를 사용하고, network/server/unknown 오류는 auth domain의 안전한 fallback 메시지를 렌더링합니다.
+- provider callback 오류와 callback parameter 누락 메시지는 auth domain model에서 결정합니다.
+
 ## Verification
 
-- [ ] `git diff --check`
-- [ ] `pnpm --filter client lint`
-- [ ] `pnpm --filter client typecheck`
-- [ ] `pnpm --filter client test`
-- [ ] `pnpm --filter client build`
-- [ ] browser route: `/oauth/callback`
+- [x] `git diff --check`
+- [x] `pnpm --filter client lint`
+- [x] `pnpm --filter client typecheck`
+- [x] `pnpm --filter client test`
+- [x] `pnpm --filter client build`
+- [x] browser route: `/oauth/callback`

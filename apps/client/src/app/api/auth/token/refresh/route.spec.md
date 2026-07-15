@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-17
+- Jira: DCMCL-17, DCMCL-22
 - Route: `POST /api/auth/token/refresh`
 - Upstream: `POST /v1/auth/token/refresh`
 - Status: Implemented
@@ -26,6 +26,7 @@
 - `access_token`: `HttpOnly`, production `Secure`, `SameSite=Lax`, `Path=/`
 - `refreshToken`: `HttpOnly`, production `Secure`, `SameSite=Lax`, `Path=/api/auth/token/refresh`
 - upstream cookie의 `Expires`, `Max-Age` 등 수명 속성은 유지합니다.
+- 로그인 Route Handler와 동일한 auth cookie helper를 사용합니다.
 - client component는 두 token을 읽거나 저장하지 않습니다.
 
 ## Error
@@ -39,5 +40,5 @@
 
 - [x] Route Handler integration test
 - [x] lint
-- [ ] typecheck
-- [ ] build
+- [x] typecheck
+- [x] build
