@@ -23,7 +23,16 @@ const nextConfig = {
         : undefined,
     });
     config.module.rules.push({
-      test: /\.svg$/i,
+      // Use a function (not a RegExp) for `test` here. Next.js scans
+      // `module.rules` for any rule whose `test` is a RegExp matching
+      // '.svg' to detect "custom SVG handling" (e.g. @svgr/webpack) and,
+      // when found, strips `svg` out of its own built-in next-image-loader
+      // rule entirely (see next/dist/build/webpack-config.js, `customSvgRule`).
+      // That would break plain `import x from '*.svg'` used with next/image
+      // everywhere else in the app. Keeping `test` as a function avoids
+      // tripping that `instanceof RegExp` check while still matching the
+      // same files.
+      test: (resourcePath) => /\.svg$/i.test(resourcePath),
       type: 'asset/resource',
       issuer: /\.css\.ts$/,
     });
