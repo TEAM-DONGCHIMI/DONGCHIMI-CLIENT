@@ -142,6 +142,13 @@ export const imageFallbackClassName = style({
   backgroundSize: '2.4rem 2.4rem',
 });
 
+export const imageClassName = style({
+  display: 'block',
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+});
+
 export const marketMetaListClassName = style({
   ...typography['caption-1-medium'],
   display: 'flex',
@@ -273,11 +280,12 @@ export const topProductCardClassName = style({
   color: atomic.common[0],
 });
 
-export const topProductImageFallbackClassName = style([
+export const topProductImageClassName = style([
   imageFallbackClassName,
   {
     position: 'absolute',
     inset: 0,
+    objectFit: 'cover',
   },
 ]);
 

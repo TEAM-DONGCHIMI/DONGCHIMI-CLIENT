@@ -33,3 +33,18 @@ export const contentClassName = style({
   justifyContent: 'center',
   gap: '8rem',
 });
+
+export const stateClassName = style({
+  minHeight: '36rem',
+  borderRadius: '1.2rem',
+  backgroundColor: atomic.common[0],
+  color: atomic.neutral[70],
+  textAlign: 'center',
+});
+
+export const stateMessageClassName = style({
+  ...typography['body-2-medium'],
+  margin: 0,
+  color: atomic.neutral[70],
+  letterSpacing: 0,
+});

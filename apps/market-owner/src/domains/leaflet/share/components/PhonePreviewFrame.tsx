@@ -1,38 +1,34 @@
 import { Box, PointChip } from '@dongchimi/design-system/components';
 import { IcCalendar, IcChevronDown, IcLocation, IcPhone } from '@dongchimi/design-system/icons';
 
+import type { PhonePreviewViewModel } from '../model/leaflet-preview-view-model';
 import phoneFrameUrl from '../assets/phone-frame.svg';
 import phoneStatusBarUrl from '../assets/phone-status-bar.svg';
 import * as S from './PhonePreviewFrame.css';
 
-const topProducts = [
-  { discountRate: 10, name: '일계란 500g', price: '6,900' },
-  { discountRate: 10, name: '제주 감귤 1kg', price: '6,900' },
-  { discountRate: 10, name: '대파 1단', price: '6,900' },
-] as const;
+interface PhonePreviewFrameProps {
+  preview: PhonePreviewViewModel;
+}
 
-const todaySpecialProducts = [
-  { discountRate: 10, name: '국산 콩나물 500g', originalPrice: '5,000', price: '4,500' },
-  { discountRate: 10, name: '찰토마토 500g', originalPrice: '5,000', price: '4,500' },
-] as const;
+const ProductImage = ({
+  alt,
+  className,
+  src,
+}: {
+  alt: string;
+  className?: string;
+  src?: string | null;
+}) => {
+  if (!src) {
+    return <span aria-hidden='true' className={className ?? S.imageFallbackClassName} />;
+  }
 
-const eventDiscountCategories = ['전체', '채소·과일', '정육·계란', '수산', '유제품'] as const;
-const visibleEventDiscountCategories = eventDiscountCategories.slice(0, 3);
+  return <img alt={alt} className={className ?? S.imageClassName} src={src} />;
+};
 
-const eventDiscountProducts = [
-  { name: '일계란 500g', price: '4,900' },
-  { name: '찰토마토 500g', price: '4,900' },
-  { name: '제주 감귤 1kg', price: '4,900' },
-  { name: '국산 콩나물', price: '3,900' },
-  { name: '대파 1단', price: '5,900' },
-  { name: '우유 900ml', price: '2,800' },
-] as const;
+export const PhonePreviewFrame = ({ preview }: PhonePreviewFrameProps) => {
+  const marketStatusLabel = preview.isOpenNow ? '영업중' : '영업종료';
 
-const ProductImageFallback = ({ className }: { className?: string }) => (
-  <span aria-hidden='true' className={className ?? S.imageFallbackClassName} />
-);
-
-export const PhonePreviewFrame = () => {
   return (
     <Box aria-label='모바일 전단 미리보기' as='section' className={S.previewClassName}>
       <Box className={S.previewContentClassName}>
@@ -46,34 +42,38 @@ export const PhonePreviewFrame = () => {
             <div className={S.contentClassName}>
               <section className={S.overviewClassName}>
                 <div className={S.marketTitleRowClassName}>
-                  <h2 className={S.marketTitleClassName}>망원 신선마트</h2>
-                  <span className={S.marketStatusChipClassName}>영업중</span>
+                  <h2 className={S.marketTitleClassName}>{preview.marketName}</h2>
+                  <span className={S.marketStatusChipClassName}>{marketStatusLabel}</span>
                 </div>
 
                 <div className={S.marketInfoClassName}>
                   <div className={S.marketImageFrameClassName}>
-                    <ProductImageFallback />
+                    <ProductImage
+                      alt={`${preview.marketName} 마트 이미지`}
+                      src={preview.marketThumbnailUrl}
+                    />
                   </div>
                   <dl className={S.marketMetaListClassName}>
                     <div className={S.marketMetaItemClassName}>
                       <dt className={S.marketMetaIconClassName}>
                         <IcLocation aria-hidden='true' />
                       </dt>
-                      <dd className={S.marketMetaTextClassName}>서울 마포구 망원동</dd>
+                      <dd className={S.marketMetaTextClassName}>{preview.address}</dd>
                     </div>
                     <div className={S.marketMetaItemClassName}>
                       <dt className={S.marketMetaIconClassName}>
                         <IcPhone aria-hidden='true' />
                       </dt>
-                      <dd className={S.marketMetaTextClassName}>02-123-4567</dd>
+                      <dd className={S.marketMetaTextClassName}>{preview.marketPhone}</dd>
                     </div>
                     <div className={S.marketMetaItemClassName}>
                       <dt className={S.marketMetaIconClassName}>
                         <IcCalendar aria-hidden='true' />
                       </dt>
                       <dd className={S.businessHourLinesClassName}>
-                        <span>화-금 10:00 - 20:00</span>
-                        <span>토-일 12:00 - 20:00</span>
+                        {preview.businessHourLines.map((businessHourLine) => (
+                          <span key={businessHourLine}>{businessHourLine}</span>
+                        ))}
                       </dd>
                     </div>
                   </dl>
@@ -89,9 +89,13 @@ export const PhonePreviewFrame = () => {
                 <section className={S.sectionClassName}>
                   <h3 className={S.sectionTitleClassName}>지금 가장 인기 있는 상품 TOP 3</h3>
                   <div className={S.popularListClassName}>
-                    {topProducts.map((product) => (
-                      <article key={product.name} className={S.topProductCardClassName}>
-                        <ProductImageFallback className={S.topProductImageFallbackClassName} />
+                    {preview.topProducts.map((product) => (
+                      <article key={product.id} className={S.topProductCardClassName}>
+                        <ProductImage
+                          alt={`${product.name} 상품 이미지`}
+                          className={S.topProductImageClassName}
+                          src={product.thumbnailUrl}
+                        />
                         <span className={S.topProductScrimClassName} />
                         <PointChip className={S.discountBadgeClassName} size='mobile'>
                           {product.discountRate}%
@@ -108,13 +112,16 @@ export const PhonePreviewFrame = () => {
                 <section className={S.todaySpecialCardClassName}>
                   <div className={S.sectionHeaderClassName}>
                     <h3 className={S.sectionTitleClassName}>오늘의 특가 상품</h3>
-                    <span className={S.sectionCountClassName}>9건</span>
+                    <span className={S.sectionCountClassName}>{preview.dailyTotalCount}건</span>
                   </div>
                   <div className={S.todayProductListClassName}>
-                    {todaySpecialProducts.map((product) => (
-                      <article key={product.name} className={S.todayProductCardClassName}>
+                    {preview.dailyProducts.map((product) => (
+                      <article key={product.id} className={S.todayProductCardClassName}>
                         <span className={S.todayProductImageClassName}>
-                          <ProductImageFallback />
+                          <ProductImage
+                            alt={`${product.name} 상품 이미지`}
+                            src={product.thumbnailUrl}
+                          />
                         </span>
                         <span className={S.todayProductContentClassName}>
                           <span className={S.todayProductNameClassName}>{product.name}</span>
@@ -134,34 +141,26 @@ export const PhonePreviewFrame = () => {
                     ))}
                   </div>
                   <span className={S.inlineToggleClassName}>
-                    등록된 상품 전체보기
+                    등록한 상품 전체보기
                     <IcChevronDown aria-hidden='true' />
                   </span>
                 </section>
 
                 <section className={S.cardSectionClassName}>
-                  <h3 className={S.sectionTitleClassName}>행사 할인 상품</h3>
-                  <div className={S.categoryListClassName}>
-                    {visibleEventDiscountCategories.map((category, index) => (
-                      <span
-                        key={category}
-                        className={
-                          index === 0 ? S.categoryChipSelectedClassName : S.categoryChipClassName
-                        }
-                      >
-                        {category}
-                      </span>
-                    ))}
-                    <span className={S.categoryChipClassName}>
-                      더보기
-                      <IcChevronDown aria-hidden='true' />
+                  <div className={S.sectionHeaderClassName}>
+                    <h3 className={S.sectionTitleClassName}>행사 할인 상품</h3>
+                    <span className={S.sectionCountClassName}>
+                      {preview.eventProducts.length}건
                     </span>
                   </div>
                   <div className={S.eventProductGridClassName}>
-                    {eventDiscountProducts.map((product) => (
-                      <article key={product.name} className={S.eventProductCardClassName}>
+                    {preview.eventProducts.map((product) => (
+                      <article key={product.id} className={S.eventProductCardClassName}>
                         <span className={S.eventProductImageFrameClassName}>
-                          <ProductImageFallback />
+                          <ProductImage
+                            alt={`${product.name} 상품 이미지`}
+                            src={product.thumbnailUrl}
+                          />
                         </span>
                         <span className={S.eventProductNameClassName}>{product.name}</span>
                         <strong className={S.eventProductPriceClassName}>{product.price}원</strong>
