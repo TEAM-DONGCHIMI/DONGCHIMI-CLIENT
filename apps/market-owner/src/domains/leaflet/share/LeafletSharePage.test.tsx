@@ -126,4 +126,45 @@ describe('LeafletSharePage', () => {
       'data:image/png;base64,base64-qr-code',
     );
   });
+
+  it.each(['전단 공유 링크 복사', '링크 복사'])(
+    '%s copies the published share URL and shows the completed toast',
+    async (copyButtonName) => {
+      const user = userEvent.setup();
+      const writeText = vi.fn().mockResolvedValue(undefined);
+
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText },
+      });
+      mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
+      render(<LeafletSharePage />, { wrapper: createWrapper() });
+
+      await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+      await user.click(await screen.findByRole('button', { name: copyButtonName }));
+
+      expect(writeText).toHaveBeenCalledWith(
+        'https://app.dongchiimi.com/markets/VQ6EAOKbQdSnFkRlVUQAAA',
+      );
+      expect(await screen.findByRole('status')).toHaveTextContent('전단 링크가 복사되었습니다.');
+    },
+  );
+
+  it('shows an error toast when the share link icon cannot use the clipboard', async () => {
+    const user = userEvent.setup();
+
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: undefined,
+    });
+    mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
+    render(<LeafletSharePage />, { wrapper: createWrapper() });
+
+    await user.click(screen.getByRole('button', { name: '전단 공유하기' }));
+    await user.click(await screen.findByRole('button', { name: '전단 공유 링크 복사' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /링크를 복사하지 못했습니다\.\s*다시 시도해주세요\./,
+    );
+  });
 });
