@@ -55,6 +55,7 @@
 - TanStack Query의 abort signal을 browser request와 upstream request에 전달합니다.
 - 내용이 없는 중간 페이지라도 `hasNext`가 true이면 최종 빈 상태로 확정하지 않습니다.
 - 각 페이지 grid는 `content-visibility: auto`로 화면 밖 렌더링 비용을 줄입니다.
+- 무한 목록 상품 링크는 viewport 진입만으로 상세 route를 대량 요청하지 않도록 prefetch를 비활성화합니다.
 
 ## Accessibility
 

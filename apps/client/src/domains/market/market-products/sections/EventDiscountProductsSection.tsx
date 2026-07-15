@@ -80,6 +80,7 @@ const EventDiscountProductPage = memo(function EventDiscountProductPage({
           href={CLIENT_ROUTES.marketProduct(marketSlug, String(product.productId))}
           imageSizes={EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES}
           imageSrc={product.thumbnailUrl ?? undefined}
+          prefetch={false}
           priceText={formatPrice(product.discountedPrice)}
           productName={product.name}
         />
