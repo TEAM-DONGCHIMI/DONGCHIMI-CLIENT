@@ -1,4 +1,5 @@
 import { QueryClient, type DefaultOptions } from '@tanstack/react-query';
+import { isApiResponseValidationError } from '@dongchimi/shared/api';
 
 import { isApiError } from '@/shared/api';
 
@@ -11,6 +12,10 @@ const shouldRetryQuery = (failureCount: number, error: Error) => {
   }
 
   if (isApiError(error) && (error.type === 'auth' || error.type === 'validation')) {
+    return false;
+  }
+
+  if (isApiResponseValidationError(error)) {
     return false;
   }
 
