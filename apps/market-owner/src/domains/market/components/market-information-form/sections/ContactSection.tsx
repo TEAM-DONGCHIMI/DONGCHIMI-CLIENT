@@ -2,13 +2,7 @@ import { type ChangeEvent } from 'react';
 
 import { type UseFormRegisterReturn } from 'react-hook-form';
 
-import {
-  AddableField,
-  Chip,
-  RequiredMark,
-  Stack,
-  TextInput,
-} from '@dongchimi/design-system/components';
+import { AddableField, Chip, RequiredMark, TextInput } from '@dongchimi/design-system/components';
 import {
   IcCircleExclamationSizeSmallColorNegative,
   IcLineHorizontalSizeSmall,
@@ -71,7 +65,7 @@ export const ContactSection = ({
     : {};
 
   return (
-    <Stack gap='2xl'>
+    <div className={S.sectionGridClassName}>
       <div className={S.inlineFieldClassName}>
         <span className={S.inlineLabelClassName}>
           <span className={S.phoneLabelClassName}>
@@ -85,36 +79,40 @@ export const ContactSection = ({
           </span>
         </span>
         <div className={S.marketPhoneRowsClassName}>
-          <AddableField
-            aria-label='마트 대표 번호'
-            className={S.addableFieldClassName}
-            leadingIcon={<IcPhoneSizeSmallColor60 />}
-            placeholder='마트 번호를 입력해주세요.'
-            required
-            trailingActionLabel='마트 번호 추가'
-            trailingIcon={<IcPlusSizeSmallColor60 />}
-            type='tel'
-            {...marketPhone1Field}
-            value={marketPhone1}
-            onChange={onInputChange}
-            onTrailingAction={onAdditionalMarketPhoneAdd}
-            {...marketPhone1StatusProps}
-          />
-          {isAdditionalMarketPhoneVisible && (
+          <div className={S.fieldSlotClassName}>
             <AddableField
-              aria-label='추가 마트 번호'
+              aria-label='마트 대표 번호'
               className={S.addableFieldClassName}
               leadingIcon={<IcPhoneSizeSmallColor60 />}
               placeholder='마트 번호를 입력해주세요.'
-              trailingActionLabel='추가 마트 번호 제거'
-              trailingIcon={<IcLineHorizontalSizeSmall />}
+              required
+              trailingActionLabel='마트 번호 추가'
+              trailingIcon={<IcPlusSizeSmallColor60 />}
               type='tel'
-              {...additionalMarketPhoneField}
-              value={additionalMarketPhone}
+              {...marketPhone1Field}
+              value={marketPhone1}
               onChange={onInputChange}
-              onTrailingAction={onAdditionalMarketPhoneRemove}
-              {...additionalMarketPhoneStatusProps}
+              onTrailingAction={onAdditionalMarketPhoneAdd}
+              {...marketPhone1StatusProps}
             />
+          </div>
+          {isAdditionalMarketPhoneVisible && (
+            <div className={S.fieldSlotClassName}>
+              <AddableField
+                aria-label='추가 마트 번호'
+                className={S.addableFieldClassName}
+                leadingIcon={<IcPhoneSizeSmallColor60 />}
+                placeholder='마트 번호를 입력해주세요.'
+                trailingActionLabel='추가 마트 번호 제거'
+                trailingIcon={<IcLineHorizontalSizeSmall />}
+                type='tel'
+                {...additionalMarketPhoneField}
+                value={additionalMarketPhone}
+                onChange={onInputChange}
+                onTrailingAction={onAdditionalMarketPhoneRemove}
+                {...additionalMarketPhoneStatusProps}
+              />
+            </div>
           )}
         </div>
       </div>
@@ -139,6 +137,6 @@ export const ContactSection = ({
           />
         </div>
       </div>
-    </Stack>
+    </div>
   );
 };
