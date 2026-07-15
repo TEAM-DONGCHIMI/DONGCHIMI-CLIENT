@@ -11,9 +11,9 @@ export const previewClassName = style({
 
 export const previewContentClassName = style({
   position: 'absolute',
-  inset: '1.1rem 1.4rem 1rem',
+  inset: '3.2rem 1.4rem 1rem',
   overflow: 'hidden',
-  borderRadius: '4rem',
+  borderRadius: '0 0 4rem 4rem',
   backgroundColor: atomic.common[0],
 });
 
@@ -41,31 +41,36 @@ export const marketPreviewScaleClassName = style({
 export const mobileHeaderClassName = style({
   position: 'sticky',
   top: 0,
-  zIndex: 1,
+  zIndex: 10,
   display: 'grid',
-  height: '6.8rem',
-  gridTemplateColumns: '3.6rem minmax(0, 1fr) 3.6rem',
-  alignItems: 'end',
-  borderBottom: `0.1rem solid ${atomic.neutral[10]}`,
-  padding: '2.7rem 1.4rem 1.2rem',
+  width: '100%',
+  minHeight: '4.8rem',
+  gridTemplateColumns: '4.8rem minmax(0, 1fr) 4.8rem',
+  alignItems: 'center',
+  padding: '0.4rem 1.2rem',
   backgroundColor: atomic.common[0],
+  color: atomic.neutral[90],
 });
 
 export const backIconClassName = style({
-  ...typography['heading-3-semibold'],
   display: 'inline-flex',
-  width: '3.6rem',
-  height: '2.8rem',
+  width: '4.8rem',
+  height: '4rem',
   alignItems: 'center',
+  justifyContent: 'center',
   color: atomic.neutral[90],
 });
 
 export const mobileHeaderTitleClassName = style({
-  ...typography['body-1-semibold'],
+  ...typography['body-2-semibold'],
+  gridColumn: 2,
   minWidth: 0,
+  overflow: 'hidden',
   color: atomic.neutral[90],
   letterSpacing: 0,
   textAlign: 'center',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 });
 
 export const contentClassName = style({

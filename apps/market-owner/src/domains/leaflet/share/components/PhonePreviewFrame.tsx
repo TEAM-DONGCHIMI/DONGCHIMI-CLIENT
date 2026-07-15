@@ -1,5 +1,11 @@
 import { Box, PointChip } from '@dongchimi/design-system/components';
-import { IcCalendar, IcChevronDown, IcLocation, IcPhone } from '@dongchimi/design-system/icons';
+import {
+  IcCalendar,
+  IcChevronDown,
+  IcChevronLeft,
+  IcLocation,
+  IcPhone,
+} from '@dongchimi/design-system/icons';
 
 import type { PhonePreviewViewModel } from '../model/leaflet-preview-view-model';
 import phoneFrameUrl from '../assets/phone-frame.svg';
@@ -43,7 +49,9 @@ export const PhonePreviewFrame = ({ preview }: PhonePreviewFrameProps) => {
         <div aria-hidden='true' className={S.marketPreviewClassName}>
           <div className={S.marketPreviewScaleClassName}>
             <header className={S.mobileHeaderClassName}>
-              <span className={S.backIconClassName}>‹</span>
+              <span className={S.backIconClassName}>
+                <IcChevronLeft aria-hidden='true' />
+              </span>
               <strong className={S.mobileHeaderTitleClassName}>전단보기</strong>
             </header>
 
