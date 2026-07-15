@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useDebouncedValue } from '@/shared/hooks';
 
@@ -14,33 +14,17 @@ export interface ProductHeaderSearchProductTypes {
 }
 
 export interface ProductHeaderSearchProps {
-  getProductsByQuery?: (
-    query: string,
-    products: readonly ProductHeaderSearchProductTypes[],
-  ) => ProductHeaderSearchProductTypes[];
+  isPending?: boolean;
+  onQueryChange?: (query: string) => void;
   onSelectProduct: (product: ProductHeaderSearchProductTypes) => void;
   products: readonly ProductHeaderSearchProductTypes[];
+  status?: 'default' | 'error';
 }
 
 const productSearchLabelByDealType = {
   DAILY: '오늘의 특가',
   PERIODIC: '행사 할인',
 } satisfies Record<ProductHeaderSearchDealTypes, string>;
-
-const normalizeSearchText = (value: string) => value.toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
-
-const getDefaultProductsByQuery = (
-  query: string,
-  products: readonly ProductHeaderSearchProductTypes[],
-) => {
-  const normalizedQuery = normalizeSearchText(query);
-
-  if (normalizedQuery.length === 0) {
-    return [];
-  }
-
-  return products.filter((product) => normalizeSearchText(product.name).includes(normalizedQuery));
-};
 
 const createProductSearchPanelItem = (
   product: ProductHeaderSearchProductTypes,
@@ -53,21 +37,28 @@ const createProductSearchPanelItem = (
 };
 
 export const ProductHeaderSearch = ({
-  getProductsByQuery = getDefaultProductsByQuery,
+  isPending = false,
+  onQueryChange,
   onSelectProduct,
   products,
+  status = 'default',
 }: ProductHeaderSearchProps) => {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query);
-  const isSearchPending = query.trim().length > 0 && query !== debouncedQuery;
+  const normalizedDebouncedQuery = debouncedQuery.trim();
+  const isSearchPending = query.trim().length > 0 && (query !== debouncedQuery || isPending);
   const searchProducts = useMemo(
-    () => getProductsByQuery(debouncedQuery, products),
-    [debouncedQuery, getProductsByQuery, products],
+    () => (normalizedDebouncedQuery.length > 0 ? products : []),
+    [normalizedDebouncedQuery, products],
   );
   const searchPanelItems = useMemo(
     () => searchProducts.map(createProductSearchPanelItem),
     [searchProducts],
   );
+
+  useEffect(() => {
+    onQueryChange?.(normalizedDebouncedQuery);
+  }, [normalizedDebouncedQuery, onQueryChange]);
 
   const handleSelectProduct = (item: ProductSearchPanelItemTypes) => {
     const selectedProduct = searchProducts.find((product) => String(product.productId) === item.id);
@@ -85,6 +76,7 @@ export const ProductHeaderSearch = ({
       items={searchPanelItems}
       onQueryChange={(nextQuery) => setQuery(nextQuery)}
       onSelectProduct={handleSelectProduct}
+      status={status}
     />
   );
 };
