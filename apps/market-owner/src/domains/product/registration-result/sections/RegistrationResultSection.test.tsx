@@ -82,6 +82,49 @@ describe('RegistrationResultSection', () => {
     expect(screen.getByRole('button', { name: '등록 완료' })).toBeDisabled();
   });
 
+  it('renders four blank product rows whenever the selected segment is empty', async () => {
+    const user = userEvent.setup();
+
+    renderSection({
+      products: [],
+      summary: { completedCount: 0, needsEditCount: 0, totalCount: 0 },
+    });
+
+    const expectBlankRows = (segmentLabel: string) => {
+      const productList = screen.getByLabelText(`${segmentLabel} 상품 목록`);
+
+      expect(productList.children).toHaveLength(4);
+      expect(productList.querySelectorAll('[aria-hidden="true"]')).toHaveLength(4);
+      expect(productList).toHaveTextContent('');
+    };
+
+    expectBlankRows('수정 필요');
+
+    await user.click(screen.getByRole('button', { name: '총 상품 0' }));
+    expectBlankRows('총 상품');
+
+    await user.click(screen.getByRole('button', { name: '등록 완료 0' }));
+    expectBlankRows('등록 완료');
+  });
+
+  it('renders the completed status chip when no product needs editing', () => {
+    const completedProducts = registrationResultFixture.products.filter(
+      (product) => product.status === 'completed',
+    );
+
+    renderSection({
+      products: completedProducts,
+      summary: {
+        completedCount: completedProducts.length,
+        needsEditCount: 0,
+        totalCount: completedProducts.length,
+      },
+    });
+
+    expect(screen.getByText('모든 상품의 확인이 완료되었어요')).toBeVisible();
+    expect(screen.queryByText(/확인이 필요한 상품이 있어요/)).not.toBeInTheDocument();
+  });
+
   it('shows the existing image for a completed product', async () => {
     const user = userEvent.setup();
 

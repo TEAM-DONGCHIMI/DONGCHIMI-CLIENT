@@ -30,14 +30,39 @@ const PREPARED_PRODUCT_DRAFTS_RESPONSE = {
   success: true,
 };
 
-const mockPreparedProductDrafts = async (page: Page) => {
+const COMPLETED_PREPARED_PRODUCT_DRAFTS_RESPONSE = {
+  ...PREPARED_PRODUCT_DRAFTS_RESPONSE,
+  data: {
+    failCount: 0,
+    preparedProducts: [
+      {
+        ...PREPARED_PRODUCT_DRAFTS_RESPONSE.data.preparedProducts[0],
+        category: 'SEAFOOD',
+        discountedPrice: 4000,
+        discountEndDate: '2026-07-21',
+        discountStartDate: '2026-07-15',
+        draftStatus: 'SUCCESS',
+        failReason: null,
+        name: '고등어',
+        thumbnailUrl: 'https://static.dongchimi.kr/product.png',
+      },
+    ],
+    successCount: 1,
+    totalCount: 1,
+  },
+};
+
+const mockPreparedProductDrafts = async (
+  page: Page,
+  response = PREPARED_PRODUCT_DRAFTS_RESPONSE,
+) => {
   await page.route(PREPARED_PRODUCT_DRAFT_ENDPOINT_PATTERN, async (route) => {
     const requestMethod = route.request().method();
 
     if (requestMethod === 'GET') {
       await route.fulfill({
         contentType: 'application/json',
-        json: PREPARED_PRODUCT_DRAFTS_RESPONSE,
+        json: response,
         status: 200,
       });
       return;
@@ -112,6 +137,39 @@ test('registration result table keeps fixed columns while the viewport resizes',
 
   expect(narrowHeaderCellWidths).toEqual(desktopHeaderCellWidths);
   expect(scrollMetrics.scrollWidth).toBeGreaterThan(scrollMetrics.clientWidth);
+});
+
+test('empty needs-edit segment keeps four blank rows and shows the completed status chip', async ({
+  page,
+}) => {
+  await page.unroute(PREPARED_PRODUCT_DRAFT_ENDPOINT_PATTERN);
+  await mockPreparedProductDrafts(page, COMPLETED_PREPARED_PRODUCT_DRAFTS_RESPONSE);
+  await signInMarketOwner(page);
+  await page.goto('/products/registration-result');
+
+  await expect(page.getByRole('button', { name: '수정 필요 0' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
+
+  const emptyProductRows = page
+    .getByLabel('수정 필요 상품 목록')
+    .locator(':scope > [aria-hidden="true"]');
+
+  await expect(emptyProductRows).toHaveCount(4);
+  expect(
+    await emptyProductRows.evaluateAll((rows) =>
+      rows.map((row) => row.getBoundingClientRect().height),
+    ),
+  ).toEqual([98, 98, 98, 98]);
+
+  const completedStatusText = page.getByText('모든 상품의 확인이 완료되었어요', {
+    exact: true,
+  });
+  const completedStatusChip = completedStatusText.locator('..');
+
+  await expect(completedStatusChip).toHaveCSS('background-color', 'rgb(230, 250, 242)');
+  await expect(completedStatusText).toHaveCSS('color', 'rgb(21, 196, 126)');
 });
 
 test('registration result fields normalize input and expose validation messages', async ({
