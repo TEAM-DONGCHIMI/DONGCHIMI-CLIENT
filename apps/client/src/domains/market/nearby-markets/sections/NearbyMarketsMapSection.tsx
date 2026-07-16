@@ -12,7 +12,6 @@ import { useKakaoAddressGeocoder } from '../hooks/use-kakao-address-geocoder';
 import {
   ADDRESS_SEARCH_ERROR_MESSAGE,
   CURRENT_LOCATION_ARIA_LABEL,
-  CURRENT_LOCATION_MARKER_IMAGE,
   DEFAULT_CENTER,
   KAKAO_MAP_APP_KEY,
   LOAD_ERROR_MESSAGE,
@@ -107,14 +106,8 @@ export const NearbyMarketsMapSection = () => {
             title={SELECTED_LOCATION_ARIA_LABEL}
           />
         )}
-        {/* 현재 위치 마커입니다. 검색 주소 마커와 다른 이미지를 사용합니다. */}
-        {coordinates && (
-          <MapMarker
-            image={CURRENT_LOCATION_MARKER_IMAGE}
-            position={coordinates}
-            title={CURRENT_LOCATION_ARIA_LABEL}
-          />
-        )}
+        {/* 현재 위치 마커입니다. Kakao Maps 기본 마커를 사용합니다. */}
+        {coordinates && <MapMarker position={coordinates} title={CURRENT_LOCATION_ARIA_LABEL} />}
 
         {/* 주변 마트 마커입니다. 현재 위치/검색 위치 마커와 다른 이미지를 사용합니다. */}
         {markets.map((market) => (

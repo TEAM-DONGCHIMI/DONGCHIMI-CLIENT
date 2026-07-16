@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { render, screen, userEvent } from '../../../../test';
 import { DesktopUploadHeader } from './DesktopUploadHeader';
+import * as S from './DesktopUploadHeader.css';
 
 const defaultProps = {
   completedCount: 112,
@@ -91,5 +92,28 @@ describe('DesktopUploadHeader', () => {
 
     expect(handleSortClick).toHaveBeenCalledTimes(1);
     expect(handleSearch).toHaveBeenCalledWith('감자', expect.any(Object));
+  });
+
+  it('turns the neutral 70 16px sort chevron upward while the dropdown is open', () => {
+    const { rerender } = render(
+      <DesktopUploadHeader {...defaultProps} sortDropdownId='category-filter' sortOpen={false} />,
+    );
+    const sortButton = screen.getByRole('button', { name: '정렬' });
+    const leadingIcon = sortButton.firstElementChild;
+    const trailingIcon = sortButton.lastElementChild;
+
+    expect(leadingIcon).toHaveClass(S.iconClassName);
+    expect(leadingIcon?.querySelector('svg')).toHaveAttribute('viewBox', '0 0 16 16');
+    expect(leadingIcon?.querySelector('g')).toHaveAttribute('fill', '#4E5968');
+    expect(trailingIcon).toHaveClass(S.iconClassName, S.sortTrailingIconRecipe({ open: false }));
+    expect(trailingIcon?.querySelector('svg')).toHaveAttribute('viewBox', '0 0 16 16');
+    expect(trailingIcon?.querySelector('path')).toHaveAttribute('fill', 'var(--fill-0, #4E5968)');
+
+    rerender(<DesktopUploadHeader {...defaultProps} sortDropdownId='category-filter' sortOpen />);
+
+    expect(screen.getByRole('button', { name: '정렬' }).lastElementChild).toHaveClass(
+      S.iconClassName,
+      S.sortTrailingIconRecipe({ open: true }),
+    );
   });
 });

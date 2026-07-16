@@ -33,6 +33,7 @@ const ownerMarketDetailResponse = {
         close: '20:00',
       },
     ],
+    isHolidayClosed: false,
     marketPhone1: '0212345678',
     marketPhone2: null,
     marketPhonePrimary: 1,

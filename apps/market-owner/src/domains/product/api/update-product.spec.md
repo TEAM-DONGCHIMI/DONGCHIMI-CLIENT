@@ -20,8 +20,9 @@
 ## Flow
 
 1. 모달은 상품 상세 조회 결과를 초기값으로 사용합니다.
-2. 새 이미지가 선택되면 Presigned URL 발급과 S3 PUT을 완료한 뒤 public S3 URL을
-   `thumbnailUrl`로 사용합니다.
+2. 새 이미지가 선택되면 Presigned URL 발급과 S3 PUT을 완료한 뒤 `objectKey`를
+   요청의 `thumbnailUrl`로 사용합니다. 화면 카드에는 `VITE_PUBLIC_S3_BASE_URL`과
+   `objectKey`를 결합한 공개 URL을 사용합니다.
 3. 이미지가 변경되지 않으면 상세 응답의 기존 `thumbnailUrl`을 유지합니다.
 4. 기존 상세 응답의 `dealType`을 요청 `type`으로 사용합니다.
 5. PUT 성공 후 상품 목록과 해당 상품 상세 query를 invalidate합니다.

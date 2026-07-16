@@ -85,7 +85,6 @@ export const useRegistrationResultProductSearch = ({
     },
     state: {
       filteredProducts,
-      hasActiveFilter: searchValue.trim().length > 0 || selectedCategories.size > 0,
       searchValue,
       selectedCategories,
     },

@@ -48,6 +48,10 @@ export const createMarketInformationForm = (
   );
   const [primaryBusinessHours, additionalBusinessHours] = openBusinessHours;
   const closedBusinessHours = market.businessHours.find((businessHour) => !businessHour.isOpen);
+  const weeklyHoliday = closedBusinessHours ? toBusinessDay(closedBusinessHours.days) : '';
+  const holidays = [...(market.isHolidayClosed ? ['공휴일'] : []), weeklyHoliday].filter(
+    (holiday) => holiday.length > 0,
+  );
   const marketPhone2 = market.marketPhone2 ? formatMarketPhoneNumber(market.marketPhone2) : null;
   const address = splitAddress(market.address);
 
@@ -67,7 +71,7 @@ export const createMarketInformationForm = (
     detailAddress: address.detailAddress,
     hasAdditionalBusinessHours: additionalBusinessHours !== undefined,
     hasAdditionalMarketPhone: marketPhone2 !== null,
-    holiday: closedBusinessHours ? toBusinessDay(closedBusinessHours.days) : '',
+    holiday: holidays.join(', '),
     latitude: market.latitude,
     longitude: market.longitude,
     marketPhone1: formatMarketPhoneNumber(market.marketPhone1),

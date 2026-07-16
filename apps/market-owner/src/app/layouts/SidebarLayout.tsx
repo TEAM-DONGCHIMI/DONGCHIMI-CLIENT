@@ -160,6 +160,10 @@ const SidebarHelp = () => (
 
 const profileAvatarImageSrc = '/images/product-replace.svg';
 
+const getProfileAvatarImageSrc = (marketThumbnailUrl?: string) => {
+  return marketThumbnailUrl?.trim() ? marketThumbnailUrl : profileAvatarImageSrc;
+};
+
 export const SidebarLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -183,7 +187,11 @@ export const SidebarLayout = () => {
         ? {
             avatar: (
               <span aria-hidden='true' className={S.profileAvatarClassName}>
-                <img alt='' className={S.profileAvatarImageClassName} src={profileAvatarImageSrc} />
+                <img
+                  alt=''
+                  className={S.profileAvatarImageClassName}
+                  src={getProfileAvatarImageSrc(account.marketThumbnailUrl)}
+                />
               </span>
             ),
             description: account.marketName ? account.email : undefined,

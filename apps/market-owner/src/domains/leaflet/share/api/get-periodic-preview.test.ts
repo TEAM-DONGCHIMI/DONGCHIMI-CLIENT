@@ -29,8 +29,8 @@ const periodicPreviewResponse = {
     thumbnailUrl: 'https://cdn.example.com/market.png',
     address: '서울 마포구 망원동',
     isOpenNow: true,
-    isHolidayClosed: false,
     businessHours: [{ days: ['MONDAY', 'TUESDAY'], isOpen: true, open: '10:00', close: '20:00' }],
+    isHolidayClosed: false,
     marketPhone1: '02-123-4567',
     marketPhone2: null,
     ownerPhone: '010-0000-0000',
@@ -87,6 +87,7 @@ describe('getPeriodicPreview', () => {
       data: {
         ...periodicPreviewResponse.data,
         marketId: 3,
+        isHolidayClosed: true,
         isOpenNow: false,
         businessHours: [
           {

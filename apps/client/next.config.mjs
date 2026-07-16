@@ -22,6 +22,18 @@ const withSerwist = withSerwistInit({
 });
 
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
+    ],
+  },
   transpilePackages: ['@dongchimi/design-system'],
   async headers() {
     return [

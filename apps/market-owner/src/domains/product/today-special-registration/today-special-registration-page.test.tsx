@@ -118,9 +118,10 @@ describe('TodaySpecialRegistrationPage', () => {
     uploadProductImage.mockReset();
     uploadProductImage.mockResolvedValue(null);
     uploadProductThumbnail.mockReset();
-    uploadProductThumbnail.mockResolvedValue(
-      'https://static.example.com/tmp/PRODUCT_THUMBNAIL/updated.png',
-    );
+    uploadProductThumbnail.mockResolvedValue({
+      objectKey: 'tmp/PRODUCT_THUMBNAIL/updated.png',
+      publicUrl: 'https://static.example.com/tmp/PRODUCT_THUMBNAIL/updated.png',
+    });
   });
 
   afterEach(() => {
@@ -211,17 +212,19 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(registerDailyProduct).toHaveBeenCalledWith({
       marketId: 12,
       request: expect.objectContaining({
-        thumbnailUrl: 'https://static.example.com/tmp/PRODUCT_THUMBNAIL/product.png',
+        thumbnailUrl: 'tmp/PRODUCT_THUMBNAIL/product.png',
       }),
     });
     expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
   });
 
-  it('does not upload an image when the S3 base URL is missing', async () => {
+  it('registers an uploaded image object key without requiring an S3 base URL', async () => {
     const user = userEvent.setup();
     const imageFile = new File(['image'], 'product.png', { type: 'image/png' });
+    const uploadedImageObjectKey = 'tmp/PRODUCT_THUMBNAIL/product.png';
 
     vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', '');
+    uploadProductImage.mockResolvedValueOnce(uploadedImageObjectKey);
     renderTodaySpecialRegistrationPage();
 
     await user.upload(screen.getByLabelText('상품 이미지'), imageFile);
@@ -232,11 +235,12 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
-    expect(uploadProductImage).not.toHaveBeenCalled();
-    expect(registerDailyProduct).not.toHaveBeenCalled();
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      '상품을 등록하지 못했습니다. 다시 시도해주세요.',
-    );
+    expect(uploadProductImage).toHaveBeenCalledWith(expect.objectContaining({ imageFile }));
+    expect(registerDailyProduct).toHaveBeenCalledWith({
+      marketId: 12,
+      request: expect.objectContaining({ thumbnailUrl: uploadedImageObjectKey }),
+    });
+    expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
   });
 
   it('keeps the page open and shows an error toast when image upload fails', async () => {
@@ -524,7 +528,7 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(screen.getByLabelText('상품명')).toHaveValue('수정 후 상품');
   });
 
-  it('uploads a changed registered image while keeping its local preview in the snapshot', async () => {
+  it('sends a changed image object key while keeping its local preview in the snapshot', async () => {
     const user = userEvent.setup();
     const updatedImage = new File(['updated'], 'updated.png', { type: 'image/png' });
 
@@ -546,7 +550,7 @@ describe('TodaySpecialRegistrationPage', () => {
         marketId: 12,
         productId: 101,
         request: expect.objectContaining({
-          thumbnailUrl: 'https://static.example.com/tmp/PRODUCT_THUMBNAIL/updated.png',
+          thumbnailUrl: 'tmp/PRODUCT_THUMBNAIL/updated.png',
         }),
       }),
     );

@@ -3,6 +3,7 @@
 ## Contract
 
 - Endpoint: `PUT /v1/owners/markets/{marketId}`
+- 공휴일 휴무 여부는 `isHolidayClosed` boolean으로 명시하고, 정기 휴무 요일은 `businessHours`의 비영업 슬롯으로 전송합니다.
 - Input: `marketId` and generated `MarketUpdateRequest`
 - Output: `{ success, code, message }`, validated at the API boundary
 - Cache: invalidate the matching owner market detail query after success
