@@ -14,7 +14,6 @@ const DEFAULT_PRODUCT_THUMBNAIL_URL = '/images/product-replace.svg';
 
 interface CreateDailyProductRequestParams {
   product: TodaySpecialProductFormTypes;
-  s3BaseUrl: string | undefined;
   uploadedImageObjectKey: PresignedUploadResponseTypes['objectKey'] | null;
 }
 
@@ -26,25 +25,14 @@ const getProductCategoryCode = (category: string) => {
   return PRODUCT_CATEGORY_CODE_BY_NAME[category];
 };
 
-const getUploadedProductImageUrl = (objectKey: string, s3BaseUrl: string | undefined) => {
-  if (!s3BaseUrl) {
-    throw new Error('VITE_PUBLIC_S3_BASE_URL is not configured.');
-  }
-
-  return `${s3BaseUrl.replace(/\/+$/, '')}/${objectKey.replace(/^\/+/, '')}`;
-};
-
 export const createDailyProductRequest = ({
   product,
-  s3BaseUrl,
   uploadedImageObjectKey,
 }: CreateDailyProductRequestParams): RegisterDailyProductRequestTypes => {
   const promotionalPhrase = sanitizeProductDescription(product.description);
 
   return {
-    thumbnailUrl: uploadedImageObjectKey
-      ? getUploadedProductImageUrl(uploadedImageObjectKey, s3BaseUrl)
-      : DEFAULT_PRODUCT_THUMBNAIL_URL,
+    thumbnailUrl: uploadedImageObjectKey ?? DEFAULT_PRODUCT_THUMBNAIL_URL,
     name: sanitizeProductName(product.name),
     category: getProductCategoryCode(product.category),
     ...(promotionalPhrase ? { promotionalPhrase } : {}),
