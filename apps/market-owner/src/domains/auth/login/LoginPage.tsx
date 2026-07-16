@@ -1,6 +1,6 @@
 import { Flex } from '@dongchimi/design-system/components';
 
-import loginBrandImageUrl from '@/shared/assets/images/Img_login_pavicon.svg';
+import loginBrandImageUrl from '@/shared/assets/images/Img_pavicon.svg';
 
 import { LoginForm, SignupPrompt } from './sections';
 import * as S from './LoginPage.css';
@@ -19,7 +19,14 @@ export const LoginPage = () => {
         justify='start'
       >
         <Flex align='center' className={S.headerClassName} direction='column'>
-          <img alt='' aria-hidden='true' className={S.logoClassName} src={loginBrandImageUrl} />
+          <img
+            alt=''
+            aria-hidden='true'
+            className={S.logoClassName}
+            height={32}
+            src={loginBrandImageUrl}
+            width={92}
+          />
           <h1 className={S.titleClassName} id={TITLE_ID}>
             마트 관리자 로그인
           </h1>

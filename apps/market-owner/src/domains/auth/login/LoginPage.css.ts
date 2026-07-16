@@ -21,9 +21,9 @@ export const headerClassName = style({
 
 export const logoClassName = style({
   display: 'block',
-  width: '15.7rem',
+  width: '9.2rem',
   maxWidth: '100%',
-  height: '6rem',
+  height: '3.2rem',
   objectFit: 'contain',
 });
 
