@@ -13,7 +13,7 @@ export const filterVisibleNearbyMarkets = (
 export const getPrioritizedVisibleNearbyMarkets = (
   markets: NearbyMarketDtoTypes[],
 ): NearbyMarketDtoTypes[] => {
-  return [...filterVisibleNearbyMarkets(markets)].sort((currentMarket, nextMarket) => {
+  return filterVisibleNearbyMarkets(markets).sort((currentMarket, nextMarket) => {
     if (currentMarket.isOpen === nextMarket.isOpen) {
       return 0;
     }
