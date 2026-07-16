@@ -52,13 +52,13 @@ const COMPLETED_PREPARED_PRODUCT_DRAFTS_RESPONSE = {
   },
 };
 
-type PreparedProductDraftsResponse =
+type PreparedProductDraftsResponseTypes =
   | typeof PREPARED_PRODUCT_DRAFTS_RESPONSE
   | typeof COMPLETED_PREPARED_PRODUCT_DRAFTS_RESPONSE;
 
 const mockPreparedProductDrafts = async (
   page: Page,
-  response: PreparedProductDraftsResponse = PREPARED_PRODUCT_DRAFTS_RESPONSE,
+  response: PreparedProductDraftsResponseTypes = PREPARED_PRODUCT_DRAFTS_RESPONSE,
 ) => {
   await page.route(PREPARED_PRODUCT_DRAFT_ENDPOINT_PATTERN, async (route) => {
     const requestMethod = route.request().method();
