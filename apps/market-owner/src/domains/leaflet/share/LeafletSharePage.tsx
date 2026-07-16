@@ -188,10 +188,11 @@ export const LeafletSharePage = () => {
     }
   };
   const goHome = () => navigate(MARKET_OWNER_ROUTES.home);
+  const editLeafletProducts = () => navigate(MARKET_OWNER_ROUTES.registrationResult);
 
   return (
     <main className={S.pageRootClassName}>
-      <DesktopHeader currentLabel='오늘의 전단 최종 확인' parentLabel='홈' />
+      <DesktopHeader currentLabel='오늘의 전단 최종 확인' parentLabel='홈' showSearchBar={false} />
 
       {isConfirmView ? (
         <LeafletConfirmSection
@@ -199,6 +200,7 @@ export const LeafletSharePage = () => {
           isPreviewPending={periodicPreviewQuery.isLoading}
           isPublishing={isShareFlowPending}
           leafletPreview={leafletPreview}
+          onEdit={editLeafletProducts}
           onPreviewRetry={() => void periodicPreviewQuery.refetch()}
           onShare={() => void finalizeProductsAndPublishLeaflet()}
         />

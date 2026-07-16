@@ -2,13 +2,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { type ReactNode } from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, RouterProvider, createMemoryRouter } from 'react-router';
 import { OverlayProvider } from 'overlay-kit';
 import { ToastProvider } from '@dongchimi/shared/toast';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { confirmPreparedProductDrafts } from '@/domains/product/api/confirm-prepared-product-drafts';
 import { ApiError } from '@/shared/api';
+import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/auth-store';
 
 import { getPeriodicPreview, issueQrCode, publishLeaflet } from './api';
@@ -100,6 +101,34 @@ const createWrapper = (queryClient = createTestQueryClient()) => {
   return LeafletSharePageTestWrapper;
 };
 
+const renderRoutedPage = () => {
+  const router = createMemoryRouter(
+    [
+      {
+        path: MARKET_OWNER_ROUTES.leafletShare,
+        element: <LeafletSharePage />,
+      },
+      {
+        path: MARKET_OWNER_ROUTES.registrationResult,
+        element: <h1>파일 등록 상품 수정 확인</h1>,
+      },
+    ],
+    { initialEntries: [MARKET_OWNER_ROUTES.leafletShare] },
+  );
+
+  render(
+    <QueryClientProvider client={createTestQueryClient()}>
+      <ToastProvider>
+        <OverlayProvider>
+          <RouterProvider router={router} />
+        </OverlayProvider>
+      </ToastProvider>
+    </QueryClientProvider>,
+  );
+
+  return router;
+};
+
 describe('LeafletSharePage', () => {
   beforeEach(() => {
     vi.stubEnv('VITE_PUBLIC_CLIENT_BASE_URL', 'https://app.dongchiimi.com');
@@ -132,6 +161,7 @@ describe('LeafletSharePage', () => {
 
     const shareButton = await screen.findByRole('button', { name: '전단 공유하기' });
     expect(mockedGetPeriodicPreview).toHaveBeenCalledWith(12);
+    expect(screen.queryByRole('searchbox', { name: '상품 검색' })).not.toBeInTheDocument();
 
     await user.click(shareButton);
 
@@ -161,6 +191,18 @@ describe('LeafletSharePage', () => {
     expect(
       await screen.findByText(`${window.location.origin}/markets/VQ6EAOKbQdSnFkRlVUQAAA`),
     ).toBeInTheDocument();
+  });
+
+  it('routes back to the product registration result when editing the leaflet', async () => {
+    const user = userEvent.setup();
+    const router = renderRoutedPage();
+
+    await user.click(await screen.findByRole('button', { name: '전단 수정하기' }));
+
+    expect(
+      await screen.findByRole('heading', { name: '파일 등록 상품 수정 확인' }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.registrationResult);
   });
 
   it('disables the share action while product confirmation is pending', async () => {
