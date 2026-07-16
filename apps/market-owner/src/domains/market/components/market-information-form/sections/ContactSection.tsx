@@ -7,6 +7,7 @@ import {
   IcCircleExclamationSizeSmallColorNegative,
   IcLineHorizontalSizeSmall,
   IcPhoneSizeSmallColor60,
+  IcPlusSizeSmall,
   IcPlusSizeSmallColor60,
 } from '@dongchimi/design-system/icons';
 
@@ -86,8 +87,11 @@ export const ContactSection = ({
               leadingIcon={<IcPhoneSizeSmallColor60 />}
               placeholder='마트 번호를 입력해주세요.'
               required
+              trailingActionDisabled={isAdditionalMarketPhoneVisible}
               trailingActionLabel='마트 번호 추가'
-              trailingIcon={<IcPlusSizeSmallColor60 />}
+              trailingIcon={
+                marketPhone1.length > 0 ? <IcPlusSizeSmall /> : <IcPlusSizeSmallColor60 />
+              }
               type='tel'
               {...marketPhone1Field}
               value={marketPhone1}

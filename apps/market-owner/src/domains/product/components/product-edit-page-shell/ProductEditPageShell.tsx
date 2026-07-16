@@ -99,7 +99,6 @@ export const ProductEditPageShell = ({
     bulkAction,
     selectedProductCount,
     selectionControls,
-    selectionMode,
     openDeleteBulkAction,
     openPeriodBulkAction,
     openResetConfirm,
@@ -197,7 +196,7 @@ export const ProductEditPageShell = ({
             </TabNav>
 
             <div aria-label='상품 관리 작업' className={S.actionGroupClassName} role='group'>
-              {selectionMode && (
+              {selectedProductCount > 0 && (
                 <span
                   aria-label={`선택된 상품 (${selectedProductCount})`}
                   className={S.selectedProductCountClassName}

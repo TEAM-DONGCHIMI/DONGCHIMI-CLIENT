@@ -24,9 +24,7 @@ export const actionButtonClassName = style({
 });
 
 export const actionAreaClassName = style({
-  right: 'max(2.4rem, calc((100vw - 115.6rem) / 2))',
-  bottom: '9.9rem',
-  left: 'auto',
+  justifyContent: 'flex-end',
   padding: 0,
   gap: '1.4rem',
 });

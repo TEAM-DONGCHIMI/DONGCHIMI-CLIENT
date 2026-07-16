@@ -2,10 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { overlay } from 'overlay-kit';
 import { useToast, type ToastStatusTypes } from '@dongchimi/shared/toast';
-import {
-  IcCircleCheckFillSizeSmall,
-  IcCircleExclamationFillColor0,
-} from '@dongchimi/design-system/icons';
+import { IcCircleCheckFillSizeSmall } from '@dongchimi/design-system/icons';
 
 import {
   DesktopHeader,
@@ -33,7 +30,7 @@ const PRODUCT_SEARCH_RESULT_SIZE = 10;
 
 const getHomeToastIcon = (status: ToastStatusTypes) => {
   if (status === 'error') {
-    return <IcCircleExclamationFillColor0 className={S.homeToastIconClassName} />;
+    return undefined;
   }
 
   return <IcCircleCheckFillSizeSmall className={S.homeToastIconClassName} />;

@@ -81,11 +81,14 @@ export const resultButtonClassName = style({
   cursor: 'pointer',
   textAlign: 'left',
   selectors: {
-    '&:hover, &:focus': {
+    '&:hover': {
       backgroundColor: atomic.neutral[10],
+    },
+    '&:focus': {
       outline: 0,
     },
     '&:focus-visible': {
+      backgroundColor: atomic.neutral[10],
       outline: `3px solid ${focusOutlineColor}`,
       outlineOffset: 1,
     },

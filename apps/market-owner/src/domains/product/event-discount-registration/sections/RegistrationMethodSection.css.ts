@@ -6,7 +6,7 @@ const guideLineButtonActionStyle = {
   ...typography['body-3-semibold'],
   color: atomic.neutral[60],
   textDecorationLine: 'underline',
-  textUnderlineOffset: '0.2rem',
+  textUnderlineOffset: '0.4rem',
 };
 
 export const sectionClassName = style({
@@ -15,9 +15,9 @@ export const sectionClassName = style({
   flex: 1,
   alignItems: 'center',
   boxSizing: 'border-box',
-  gap: '6.8rem',
+  gap: 0,
   justifyContent: 'flex-start',
-  paddingTop: '9rem',
+  padding: '9rem 0 5.6rem',
   '@media': {
     'screen and (max-width: 1280px)': {
       gap: '4rem',
@@ -31,14 +31,13 @@ export const sectionClassName = style({
 });
 
 export const headerClassName = style({
-  gap: '1.2rem',
+  gap: '0.4rem',
 });
 
 export const titleClassName = style({
   ...typography['title-2-semibold'],
   margin: 0,
   color: atomic.neutral[90],
-  letterSpacing: 0,
   textAlign: 'center',
 });
 
@@ -46,19 +45,24 @@ export const descriptionClassName = style({
   ...typography['body-1-medium'],
   margin: 0,
   color: atomic.neutral[60],
-  letterSpacing: 0,
   textAlign: 'center',
 });
 
 export const contentClassName = style({
   width: '100%',
+  height: '55rem',
   minWidth: 0,
-  columnGap: '5.2rem',
+  flexShrink: 0,
+  boxSizing: 'border-box',
+  columnGap: '3.6rem',
   rowGap: '2.4rem',
+  paddingBottom: '1.4rem',
   '@media': {
     'screen and (max-width: 1280px)': {
+      height: 'auto',
       flexDirection: 'column',
       gap: '2.4rem',
+      paddingBottom: 0,
     },
   },
 });
@@ -66,10 +70,10 @@ export const contentClassName = style({
 export const methodCardClassName = style({
   position: 'relative',
   boxSizing: 'border-box',
-  width: 'min(35.6rem, 100%)',
-  maxWidth: '35.6rem',
-  minHeight: '43.6rem',
-  flex: '0 1 35.6rem',
+  width: 'min(35.5rem, 100%)',
+  maxWidth: '35.5rem',
+  minHeight: '43.4rem',
+  flex: '0 1 35.5rem',
   alignItems: 'center',
   padding: '3.6rem',
   borderRadius: '2.4rem',
@@ -102,7 +106,6 @@ export const cardTitleClassName = style({
   ...typography['heading-3-semibold'],
   margin: 0,
   color: atomic.neutral[90],
-  letterSpacing: 0,
   textAlign: 'center',
 });
 
@@ -111,7 +114,6 @@ export const cardDescriptionClassName = style({
   width: '100%',
   margin: 0,
   color: atomic.neutral[60],
-  letterSpacing: 0,
   textAlign: 'center',
 });
 
@@ -121,7 +123,7 @@ export const descriptionLineClassName = style({
 
 export const actionSlotClassName = style({
   width: '100%',
-  minHeight: '12.4rem',
+  minHeight: '12.6rem',
   alignItems: 'stretch',
   marginTop: '2.4rem',
 });
@@ -165,20 +167,19 @@ export const guideLineButtonClassName = style({
 export const supportGroupClassName = style({
   minHeight: '3.4rem',
   gap: 0,
-  marginTop: '2.4rem',
+  justifyContent: 'flex-end',
+  marginTop: 'auto',
 });
 
 export const supportTextClassName = style({
-  ...typography['caption-2-medium'],
+  ...typography['caption-1-medium'],
   color: atomic.neutral[90],
-  letterSpacing: 0,
   textAlign: 'center',
 });
 
 export const helperTextClassName = style({
-  ...typography['caption-2-medium'],
+  ...typography['caption-1-medium'],
   color: semantic.status.negativeLight,
-  letterSpacing: 0,
   textAlign: 'center',
 });
 
@@ -186,5 +187,4 @@ export const dividerTextClassName = style({
   ...typography['caption-1-medium'],
   flexShrink: 0,
   color: atomic.neutral[70],
-  letterSpacing: 0,
 });

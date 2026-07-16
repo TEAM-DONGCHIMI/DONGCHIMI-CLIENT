@@ -1,6 +1,6 @@
 import { type ComponentPropsWithRef, type ReactNode } from 'react';
 
-import { IcCircleCheckColor0, IcCircleCheckFill } from '../../../icons';
+import { IcCircleCheckFill, IcCircleExclamation } from '../../../icons';
 import { cn } from '../../../styles/class-name';
 import * as S from './Toast.css';
 
@@ -24,7 +24,7 @@ const getDefaultAriaLive = (status: ToastStatusTypes) => {
 
 const getDefaultIcon = (status: ToastStatusTypes) => {
   return status === 'error' ? (
-    <IcCircleCheckColor0 data-testid='toast-error-icon' />
+    <IcCircleExclamation className={S.toastErrorIconClassName} data-testid='toast-error-icon' />
   ) : (
     <IcCircleCheckFill data-testid='toast-completed-icon' />
   );

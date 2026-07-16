@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   createProductEditListItem,
-  createProductEditListStateKey,
+  createProductEditListItems,
   getProductListSort,
 } from './product-list';
 
@@ -44,7 +44,7 @@ describe('product list model', () => {
     expect(getProductListSort('views')).toBe('VIEW_COUNT');
   });
 
-  it('changes the list state key when a refetched product period changes', () => {
+  it('merges pages in order and removes duplicate product ids', () => {
     const product = createProductEditListItem({
       productId: 101,
       name: '삼겹살 500g',
@@ -60,9 +60,39 @@ describe('product list model', () => {
       createdAt: '2026-07-15T10:00:00',
     });
 
-    const previousKey = createProductEditListStateKey([product]);
-    const updatedKey = createProductEditListStateKey([{ ...product, endDate: '2026-07-16' }]);
+    const serverProduct = {
+      category: 'MEAT_EGG' as const,
+      categoryName: '정육/달걀',
+      createdAt: '2026-07-15T10:00:00',
+      discountEndDate: '2026-07-15',
+      discountedPrice: 4500,
+      discountStartDate: '2026-07-15',
+      name: product.productName,
+      originalPrice: 5000,
+      productId: product.productId,
+      promotionalPhrase: null,
+      thumbnailUrl: null,
+      viewCount: 162,
+    };
+    const pages = [
+      {
+        code: 'SUCCESS',
+        data: { content: [serverProduct], hasNext: true, nextCursor: 101 },
+        message: '요청에 성공했습니다.',
+        success: true,
+      },
+      {
+        code: 'SUCCESS',
+        data: {
+          content: [serverProduct, { ...serverProduct, name: '목살 500g', productId: 102 }],
+          hasNext: false,
+          nextCursor: null,
+        },
+        message: '요청에 성공했습니다.',
+        success: true,
+      },
+    ];
 
-    expect(updatedKey).not.toBe(previousKey);
+    expect(createProductEditListItems(pages).map(({ productId }) => productId)).toEqual([101, 102]);
   });
 });

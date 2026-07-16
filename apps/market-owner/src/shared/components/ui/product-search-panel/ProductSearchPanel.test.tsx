@@ -56,6 +56,27 @@ describe('ProductSearchPanel', () => {
     expect(resultButtons[1]).toHaveTextContent('풀무원 콩나물 100g');
   });
 
+  it('does not move keyboard focus when a result is hovered', async () => {
+    const user = userEvent.setup();
+
+    renderPanel();
+
+    const searchbox = screen.getByRole('searchbox', { name: '상품 검색' });
+
+    await user.type(searchbox, '풀');
+
+    const resultButton = screen.getByRole('button', { name: /풀무원 두부 1팩/ });
+
+    await user.hover(resultButton);
+
+    expect(searchbox).toHaveFocus();
+    expect(resultButton).not.toHaveFocus();
+
+    await user.unhover(resultButton);
+
+    expect(searchbox).toHaveFocus();
+  });
+
   it('renders at most 10 results', async () => {
     const user = userEvent.setup();
     const manyProducts = Array.from({ length: 12 }, (_, index) => ({

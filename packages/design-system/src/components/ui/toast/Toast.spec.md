@@ -21,6 +21,7 @@
 - Figma: APPJAM Toast `419:6992`
 - Variants: `Status=Completed`, `Status=Error`
 - Related Jira: DCMDS-4
+- Error icon QA reference: `Circle Exclamation.svg` (24 x 24)
 
 ## Category
 
@@ -83,7 +84,7 @@ Toast
 1. `children`을 message 영역에 렌더링합니다.
 2. `icon`이 `undefined`면 Figma 기준 상태별 기본 아이콘을 장식용 slot으로 렌더링합니다.
    - `completed`: `Icon/Normal/Circle Check`의 `Name=circleCheckFill, Fill=True, color=primary, size=default`에 대응하는 `IcCircleCheckFill`
-   - `error`: `Icon/Normal/Circle Check`의 `Name=circleCheck, Fill=False, color=default, size=default`에 대응하는 `IcCircleCheckColor0`
+   - `error`: `Icon/Normal/Circle Exclamation` 24 x 24에 대응하는 `IcCircleExclamation`; 오류 배경 위에서 흰색으로 노출합니다.
 3. `icon`에 ReactNode가 전달되면 해당 icon을 장식용 slot으로 렌더링합니다.
 4. `icon={null}`이면 icon slot을 렌더링하지 않습니다.
 5. `status`가 `completed`면 기본 `role='status'`, `aria-live='polite'`를 사용합니다.
@@ -99,7 +100,7 @@ Toast
 - responsive: viewport보다 넓어지지 않게 `max-width`를 `min(33.4rem, calc(100vw - 3.2rem))`로 제한합니다.
 - overflow: message는 한 줄 말줄임 처리합니다.
 - color: completed `atomic.neutral[90]`, error `semantic.status.negativeLight`, text `atomic.common[0]`
-- icon: `2.4rem` slot 안에 Figma Toast 노드의 상태별 `24 x 24` circle check 아이콘을 렌더링합니다.
+- icon: `2.4rem` slot 안에 완료 상태는 기존 circle check, 오류 상태는 흰색 circle exclamation 아이콘을 렌더링합니다.
 - typography: `typography['body-3-regular']`
 
 ## Accessibility

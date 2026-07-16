@@ -1,4 +1,4 @@
-import { type FocusEvent, type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { type FocusEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 import { type SearchBarProps } from '../search-bar';
 import { type ProductSearchPanelItemTypes } from './ProductSearchPanel';
@@ -61,10 +61,6 @@ export const useProductSearchPanel = ({
     }
   };
 
-  const handleResultMouseEnter = (event: MouseEvent<HTMLButtonElement>) => {
-    event.currentTarget.focus();
-  };
-
   const handleResultFocus = (event: FocusEvent<HTMLButtonElement>) => {
     event.currentTarget.scrollIntoView?.({ block: 'nearest' });
   };
@@ -76,7 +72,6 @@ export const useProductSearchPanel = ({
 
   return {
     handleResultFocus,
-    handleResultMouseEnter,
     handleResultSelect,
     handleSearchFocus,
     handleValueChange,

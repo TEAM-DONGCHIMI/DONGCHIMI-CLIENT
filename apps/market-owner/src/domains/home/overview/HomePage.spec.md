@@ -160,8 +160,9 @@ HomePage(main)
   대시보드 안에 `role="alert"` message와 재시도 button을 표시합니다.
 - QR unavailable: 전단은 있지만 `flyer.qrCode`가 없거나 빈 값이면 모달을 열지 않고 error toast를 표시합니다.
 - selected / active: sidebar `홈` item은 현재 route에 `aria-current="page"`를 적용합니다.
-- hover/focus: 검색 입력의 focus-visible 상태를 유지합니다. 검색 결과 item hover 시 해당 item button에
-  focus를 이동합니다.
+- hover/focus: 검색 입력의 focus-visible 상태를 유지합니다. 검색 결과 item hover는 keyboard focus를
+  이동시키지 않고 pointer가 머무는 동안에만 배경을 강조합니다. keyboard focus는 focus-visible 상태와
+  scroll 영역 보정을 유지합니다.
 
 ## Data
 

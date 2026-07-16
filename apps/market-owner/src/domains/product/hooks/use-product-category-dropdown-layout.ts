@@ -2,7 +2,7 @@ import { type CSSProperties, type RefObject, useCallback, useLayoutEffect, useSt
 
 const dropdownGapPx = 8;
 const dropdownBottomMarginPx = 40;
-const dropdownMinHeightPx = 40;
+const dropdownFallbackMaxHeightPx = 40;
 
 interface UseProductCategoryDropdownLayoutParams {
   containerRef: RefObject<HTMLElement | null>;
@@ -21,9 +21,9 @@ export const useProductCategoryDropdownLayout = ({
     const triggerRect = triggerRef.current?.getBoundingClientRect();
     const maxHeight =
       triggerRect == null
-        ? dropdownMinHeightPx
+        ? dropdownFallbackMaxHeightPx
         : Math.max(
-            dropdownMinHeightPx,
+            0,
             window.innerHeight - triggerRect.bottom - dropdownGapPx - dropdownBottomMarginPx,
           );
 

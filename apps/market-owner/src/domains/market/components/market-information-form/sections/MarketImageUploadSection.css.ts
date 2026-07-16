@@ -48,8 +48,16 @@ export const imagePreviewClassName = style({
   objectFit: 'cover',
 });
 
+export const imagePreviewDimmerClassName = style({
+  position: 'absolute',
+  inset: 0,
+  backgroundColor: semantic.status.dimmer.hover,
+  pointerEvents: 'none',
+});
+
 export const imageUploadCameraButtonClassName = style({
   position: 'absolute',
+  zIndex: 1,
   top: '1.2rem',
   right: '1.2rem',
   width: '4rem',

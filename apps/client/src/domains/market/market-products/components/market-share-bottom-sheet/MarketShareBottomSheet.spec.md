@@ -53,7 +53,7 @@
 - title은 `heading-3-semibold`, description/link는 `body-3`, action은 `body-2-semibold` 토큰을 사용합니다.
 - 링크 복사, 카카오톡 공유, QR 코드 보기는 각각 아이콘과 라벨을 함께 표시합니다.
 - 색상은 디자인시스템 `atomic`, `semantic` token을 사용합니다.
-- toast icon은 디자인시스템 `IcCircleCheckFillSizeSmall`, `IcCircleExclamationFillColor0`를 사용합니다.
+- 완료 toast icon은 기존 `IcCircleCheckFillSizeSmall`을 유지하고, 오류 toast는 디자인시스템 `Toast`의 기본 `IcCircleExclamation`을 사용합니다.
 
 ## Accessibility
 

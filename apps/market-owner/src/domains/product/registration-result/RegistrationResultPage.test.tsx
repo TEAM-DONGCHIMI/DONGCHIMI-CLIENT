@@ -1,4 +1,4 @@
-import { RouterProvider, createMemoryRouter } from 'react-router';
+import { RouterProvider, createMemoryRouter, useLocation } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppProviders } from '@/app/AppProviders';
@@ -7,6 +7,10 @@ import {
   usePresignedUploadMutation,
   useSavePreparedProductDraftsMutation,
 } from '@/domains/product/hooks';
+import {
+  createProductImportRouteState,
+  getProductImportFileConfirmation,
+} from '@/domains/product/model/product-import-route-state';
 import { useAuthStore } from '@/shared/stores/auth-store';
 import { render, screen, userEvent, within } from '@/test';
 import { RegistrationResultPage } from './RegistrationResultPage';
@@ -21,6 +25,20 @@ const mockedUsePreparedProductDraftsQuery = vi.mocked(usePreparedProductDraftsQu
 const mockedUsePresignedUploadMutation = vi.mocked(usePresignedUploadMutation);
 const mockedUseSavePreparedProductDraftsMutation = vi.mocked(useSavePreparedProductDraftsMutation);
 const mockedSavePreparedProductDrafts = vi.fn();
+
+const FileAnalysisRouteStateProbe = () => {
+  const location = useLocation();
+  const fileConfirmation = getProductImportFileConfirmation(location.state);
+
+  return fileConfirmation == null ? (
+    <h1>상품 등록</h1>
+  ) : (
+    <>
+      <h1>등록한 파일을 확인해주세요</h1>
+      <p>{fileConfirmation.fileName}</p>
+    </>
+  );
+};
 
 const preparedDraftsQueryData = {
   success: true,
@@ -64,12 +82,12 @@ const completedPreparedDraftsQueryData = {
   },
 } as const;
 
-const renderPage = () => {
+const renderPage = (initialState?: unknown) => {
   const router = createMemoryRouter(
     [
       {
         path: '/products/event-discount/new',
-        element: <h1>등록 파일 분석</h1>,
+        element: <FileAnalysisRouteStateProbe />,
       },
       {
         path: '/products/registration-result',
@@ -81,7 +99,7 @@ const renderPage = () => {
       },
     ],
     {
-      initialEntries: ['/products/registration-result'],
+      initialEntries: [{ pathname: '/products/registration-result', state: initialState }],
     },
   );
 
@@ -90,6 +108,8 @@ const renderPage = () => {
       <RouterProvider router={router} />
     </AppProviders>,
   );
+
+  return router;
 };
 
 describe('RegistrationResultPage', () => {
@@ -123,6 +143,12 @@ describe('RegistrationResultPage', () => {
       'page',
     );
     expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: '동치미' })).toHaveAttribute(
+      'src',
+      expect.stringContaining('Img_pavicon.svg'),
+    );
+    expect(screen.getByRole('img', { name: '동치미' })).toHaveAttribute('width', '92');
+    expect(screen.getByRole('img', { name: '동치미' })).toHaveAttribute('height', '32');
     expect(screen.getByLabelText('고등어 등록 결과')).toBeInTheDocument();
     expect(screen.getByText('이미지 누락')).toBeInTheDocument();
     expect(screen.queryByText('이미지 미등록')).not.toBeInTheDocument();
@@ -138,12 +164,20 @@ describe('RegistrationResultPage', () => {
 
   it('routes to file analysis page when previous action is clicked', async () => {
     const user = userEvent.setup();
+    const fileConfirmationState = createProductImportRouteState({
+      fileName: '상품목록_202607.xlsx',
+      fileUrl: 'https://static.dongchimi.kr/test/상품목록_202607.xlsx',
+    });
 
-    renderPage();
+    const router = renderPage(fileConfirmationState);
 
     await user.click(screen.getByRole('button', { name: '이전' }));
 
-    expect(await screen.findByRole('heading', { name: '등록 파일 분석' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: '등록한 파일을 확인해주세요' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('상품목록_202607.xlsx')).toBeInTheDocument();
+    expect(router.state.location.state).toEqual(fileConfirmationState);
   });
 
   it('saves the final drafts and routes to the leaflet confirmation page', async () => {
@@ -180,5 +214,27 @@ describe('RegistrationResultPage', () => {
     expect(
       await screen.findByRole('heading', { name: '오늘의 전단 최종 확인' }),
     ).toBeInTheDocument();
+  });
+
+  it('keeps a failed final save on the page and shows the toast at top center', async () => {
+    const user = userEvent.setup();
+
+    mockedUsePreparedProductDraftsQuery.mockReturnValue({
+      data: completedPreparedDraftsQueryData,
+      isError: false,
+      isPending: false,
+    } as unknown as ReturnType<typeof usePreparedProductDraftsQuery>);
+    mockedSavePreparedProductDrafts.mockRejectedValueOnce(new Error('save failed'));
+
+    renderPage();
+
+    await user.click(screen.getByRole('button', { name: /^등록 완료$/ }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('임시 저장에 실패했습니다.');
+    expect(screen.getByRole('region', { name: '토스트 알림' })).toHaveAttribute(
+      'data-placement',
+      'top-center',
+    );
+    expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
   });
 });

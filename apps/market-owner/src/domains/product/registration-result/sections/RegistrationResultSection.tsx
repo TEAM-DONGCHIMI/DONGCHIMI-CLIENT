@@ -138,6 +138,7 @@ export const RegistrationResultSection = ({
   const uploadedImageUrlRef = useRef<ReadonlyMap<string, { file: File; imageUrl: string }>>(
     new Map(),
   );
+  const isLeavingRef = useRef(false);
   const lastSavedDraftKeyRef = useRef<string | null>(null);
   const [removedIds, setRemovedIds] = useState<ReadonlySet<string>>(new Set());
   const [selectedSegment, setSelectedSegment] = useState<UploadSegmentTypes>('needsEdit');
@@ -333,6 +334,10 @@ export const RegistrationResultSection = ({
 
   const saveCurrentDrafts = useCallback(
     async ({ force = false }: SaveCurrentDraftsOptions = {}) => {
+      if (isLeavingRef.current) {
+        return true;
+      }
+
       if (onSaveDrafts == null) {
         return true;
       }
@@ -399,12 +404,16 @@ export const RegistrationResultSection = ({
       onRegister();
     }
   };
+  const handlePrevious = () => {
+    isLeavingRef.current = true;
+    onPrevious();
+  };
 
   return (
     <RegistrationResultSectionLayout
       needsEditCount={needsEditCount}
       registerDisabled={registerDisabled || isSavingDrafts}
-      onPrevious={onPrevious}
+      onPrevious={handlePrevious}
       onRegister={handleRegister}
     >
       <DesktopUploadHeader

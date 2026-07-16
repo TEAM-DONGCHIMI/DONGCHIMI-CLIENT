@@ -93,33 +93,8 @@ export const categoryDropdownClassName = style({
   right: 0,
   zIndex: 1,
   width: categoryFieldWidth,
-  maxHeight: 'var(--product-category-dropdown-max-height)',
   backgroundColor: atomic.common[0],
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  overscrollBehaviorY: 'none',
 });
 
-export const dateRowClassName = style({
-  display: 'grid',
-  width: '100%',
-  minWidth: 0,
-  alignItems: 'center',
-  gridTemplateColumns: 'minmax(0, 1fr) max-content',
-  columnGap: '0.8rem',
-});
-
-export const dateRangeClassName = Content.dateRangeClassName;
-export const dateDividerClassName = Content.dateDividerClassName;
-
-export const dateFieldClassName = style([
-  Content.dateFieldLabelClassName,
-  {
-    width: '100%',
-    minWidth: 0,
-  },
-]);
-
-export const periodToggleButtonClassName = Content.periodToggleButtonClassName;
 export const footerClassName = Content.footerClassName;
 export const footerButtonClassName = Content.footerButtonClassName;

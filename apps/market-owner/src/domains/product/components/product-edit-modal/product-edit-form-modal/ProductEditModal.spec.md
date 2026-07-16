@@ -10,6 +10,11 @@
 - 위치: `apps/market-owner/src/domains/product/components/product-edit-modal/product-edit-form-modal`
 - 사용처: `ProductEditProductList`
 - product edit page 전용 form이므로 design-system이나 shared component로 승격하지 않습니다.
+- `ProductEditModal.tsx`는 상세 조회, 수정 요청, modal 조립과 닫기 흐름을 담당합니다.
+- `use-product-edit-form.ts`는 입력값, 카테고리 dropdown, 이미지 미리보기, 기간 변경과 validation 상태를 담당합니다.
+- `product-edit-form.utils.ts`는 상세 응답의 초기값 변환과 수정 완료 카드 변환을 담당합니다.
+- `ProductInfoSection.tsx`와 `ProductPriceAndPeriodSection.tsx`는 form controller에서 필요한 값과 action만 받아 상품 정보와 가격 section을 렌더링합니다.
+- 기간 section은 개별 수정과 일괄 기간 수정이 같은 날짜 필드와 오늘의 특가 toggle 규칙을 사용하도록 상위 `ProductPeriodSection.tsx`를 공유합니다.
 
 ## Public API
 
@@ -43,11 +48,13 @@
 - 취소는 modal을 닫고 form state를 버립니다.
 - 행사 할인 variant는 판매가, 시작일, 종료일을 표시합니다.
 - 오늘의 특가 variant는 원가, 오늘의 특가, 시작일, 종료일, `하루 더 늘리기` 버튼을 표시합니다.
-- 오늘의 특가 variant는 현재 시작일을 회색 비활성 필드로 표시합니다.
+- 오늘의 특가 variant는 시작일을 회색 `readOnly` field로 표시합니다.
+- 오늘의 특가 variant의 종료일은 일반 field visual을 유지하고 date picker만 열지 않으며, 기간은 `하루 더 늘리기`와 `오늘만 특가로`로만 변경합니다.
 - `하루 더 늘리기`는 종료일을 하루 증가시키고 버튼을 `오늘만 특가로`로 전환합니다.
 - `오늘만 특가로`는 종료일을 시작일로 되돌립니다.
 - 카드의 dotted date label은 modal input용 `YYYY-MM-DD` 형식으로 변환합니다.
 - 편집 가능한 시작일 field는 오늘부터 선택할 수 있습니다.
+- 행사 할인 상품의 기존 시작일이 과거인 경우 기존 값을 유지한 다른 필드 수정은 허용하고, 시작일 자체를 변경할 때만 오늘 이후인지 검증합니다.
 - 종료일 field의 최소 날짜는 시작일과 오늘 중 더 늦은 날짜이며, 종료일이 시작일보다 이전이면 `변경하기`를 비활성화합니다.
 - 상품명은 공백을 포함해 최대 15자, 상품 한줄 홍보글은 공백을 포함해 최대 25자까지 입력할 수 있습니다.
 - 원가, 오늘의 특가, 판매가는 숫자만 입력할 수 있고 천 단위 콤마를 표시합니다.

@@ -1,6 +1,7 @@
 import { type OwnerProductSortTypes } from '@dongchimi/shared/api';
 
 import { type OwnerApiTypes } from '@/shared/api';
+import { type GetProductListResponseTypes } from '../api/get-product-list';
 import { PRODUCT_CATEGORY_NAME_BY_CODE } from '@/shared/constants/product-categories';
 import { type ProductEditFilterTypes } from '../components/product-edit-page-shell';
 
@@ -55,19 +56,20 @@ export const createProductEditListItem = (product: OwnerApiTypes.OwnerProductLis
 
 export type ProductEditListItemTypes = ReturnType<typeof createProductEditListItem>;
 
-export const createProductEditListStateKey = (products: readonly ProductEditListItemTypes[]) =>
-  JSON.stringify(
-    products.map((product) => [
-      product.productId,
-      product.productName,
-      product.categoryName,
-      product.originalPrice,
-      product.salePrice,
-      product.salePercent,
-      product.startDate,
-      product.endDate,
-      product.registeredAt,
-      product.registeredDateLabel,
-      product.viewCount,
-    ]),
+export const createProductEditListItems = (
+  pages: readonly GetProductListResponseTypes[],
+): ProductEditListItemTypes[] => {
+  const productIds = new Set<number>();
+
+  return pages.flatMap((page) =>
+    (page.data?.content ?? []).flatMap((product) => {
+      if (productIds.has(product.productId)) {
+        return [];
+      }
+
+      productIds.add(product.productId);
+
+      return [createProductEditListItem(product)];
+    }),
   );
+};

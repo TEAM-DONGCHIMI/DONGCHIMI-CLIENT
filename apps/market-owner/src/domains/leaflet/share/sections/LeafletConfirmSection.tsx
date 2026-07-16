@@ -9,6 +9,7 @@ export interface LeafletConfirmSectionProps {
   isPreviewPending?: boolean;
   isPublishing?: boolean;
   leafletPreview?: LeafletPreviewViewModel;
+  onEdit: () => void;
   onPreviewRetry: () => void;
   onShare: () => void;
 }
@@ -18,6 +19,7 @@ export const LeafletConfirmSection = ({
   isPreviewPending = false,
   isPublishing = false,
   leafletPreview,
+  onEdit,
   onPreviewRetry,
   onShare,
 }: LeafletConfirmSectionProps) => {
@@ -52,6 +54,7 @@ export const LeafletConfirmSection = ({
           <LeafletSummaryCard
             isPublishing={isPublishing}
             leafletSummary={leafletPreview.summary}
+            onEdit={onEdit}
             onShare={onShare}
           />
           <PhonePreviewFrame preview={leafletPreview.phonePreview} />

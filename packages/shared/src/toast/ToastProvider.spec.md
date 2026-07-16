@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMFE-56
+- Jira: DCMFE-56, DCMSM-99
 - Hook: `useToast`
 - Provider: `ToastProvider`
 - Owner: packages/shared
@@ -52,6 +52,7 @@
 - persistent: `durationMs`가 `null`이면 자동 제거하지 않습니다.
 - manual dismiss: 반환된 id를 `dismiss(id)`에 전달하면 위로 이동하며 fade-out 된 뒤 제거합니다.
 - viewport offset: 문자열 offset은 x/y 안전 여백을 동일하게 적용합니다.
+- top layer: `document.body` portal viewport는 Popover API가 있으면 manual popover로 browser top layer에 진입해 native dialog backdrop보다 위에 표시됩니다. custom portal container는 호출부의 local stacking context를 유지합니다.
 - center correction: 객체 offset의 `x`는 `top-center`/`bottom-center` placement에서 중앙 기준 보정값으로도
   사용합니다. 특정 overlay surface처럼 viewport 중앙에서 의도적으로 이동해야 하는 경우에만 object offset을
   사용합니다.
@@ -74,6 +75,7 @@
 - cancellation: provider unmount 또는 toast dismiss 시 timer를 정리합니다.
 - accessibility impact: DS `Toast`의 `role`과 `aria-live` 기본값을 유지합니다.
 - viewport accessibility: viewport는 `role='region'`과 `aria-label`로 영역 이름을 제공합니다.
+- fallback: Popover API를 사용할 수 없거나 top layer 진입이 거부되면 기존 fixed body portal과 z-index 정책을 유지합니다.
 - app wiring: `apps/market-owner`와 `apps/client`는 각 app provider에서 placement 정책을 지정합니다.
 
 ## Verification

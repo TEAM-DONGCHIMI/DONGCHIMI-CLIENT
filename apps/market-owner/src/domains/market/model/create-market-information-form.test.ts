@@ -24,7 +24,7 @@ const marketDetail = {
       close: '18:00',
     },
     {
-      days: ['SUNDAY'],
+      days: ['THURSDAY', 'SUNDAY'],
       isOpen: false,
       open: null,
       close: null,
@@ -59,7 +59,7 @@ describe('createMarketInformationForm', () => {
       detailAddress: '',
       hasAdditionalBusinessHours: true,
       hasAdditionalMarketPhone: true,
-      holiday: '일요일',
+      holiday: '목요일, 일요일',
       latitude: 37.5895,
       longitude: 127.0576,
       marketPhone1: '02-1234-5678',

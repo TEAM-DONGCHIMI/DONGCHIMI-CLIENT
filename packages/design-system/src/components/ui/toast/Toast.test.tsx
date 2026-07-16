@@ -1,7 +1,9 @@
 import { createRef } from 'react';
 import { describe, expect, it } from 'vitest';
 
+import { IcCircleExclamation } from '../../../icons';
 import { render, screen } from '../../../test';
+import * as S from './Toast.css';
 import { Toast } from './Toast';
 
 describe('Toast', () => {
@@ -16,11 +18,21 @@ describe('Toast', () => {
   });
 
   it('renders error feedback with assertive alert semantics', () => {
-    render(<Toast status='error'>링크가 복사되지 않았어요</Toast>);
+    render(
+      <>
+        <Toast status='error'>링크가 복사되지 않았어요</Toast>
+        <IcCircleExclamation data-testid='expected-error-icon' />
+      </>,
+    );
 
     const toast = screen.getByRole('alert');
+    const errorIcon = screen.getByTestId('toast-error-icon');
+    const expectedErrorIcon = screen.getByTestId('expected-error-icon');
+
     expect(toast).toHaveAttribute('aria-live', 'assertive');
-    expect(screen.getByTestId('toast-error-icon')).toBeInTheDocument();
+    expect(errorIcon).toBeInTheDocument();
+    expect(errorIcon).toHaveClass(S.toastErrorIconClassName);
+    expect(errorIcon.innerHTML).toBe(expectedErrorIcon.innerHTML);
     expect(screen.queryByTestId('toast-completed-icon')).not.toBeInTheDocument();
     expect(toast).toHaveTextContent('링크가 복사되지 않았어요');
   });

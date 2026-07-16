@@ -227,26 +227,28 @@ export const ProductEditCardDesktop = ({
         </header>
 
         <div className={S.productContentClassName}>
-          <h3 className={S.productNameClassName}>{productName}</h3>
+          <div className={S.productClassName}>
+            <h3 className={S.productNameClassName}>{productName}</h3>
 
-          <div className={S.priceContentClassName}>
-            {shouldShowOriginalPrice && (
-              <span className={S.originalPriceClassName}>
-                {originalPrice}
-                {priceUnit}
-              </span>
-            )}
-            <div className={S.salePriceRowClassName}>
-              {shouldShowSalePercent && (
-                <span className={S.salePercentClassName}>
-                  {salePercent}
-                  {salePercentUnit}
+            <div className={S.priceContentClassName}>
+              {shouldShowOriginalPrice && (
+                <span className={S.originalPriceClassName}>
+                  {originalPrice}
+                  {priceUnit}
                 </span>
               )}
-              <span className={S.salePriceClassName}>
-                {salePrice}
-                {priceUnit}
-              </span>
+              <div className={S.salePriceRowClassName}>
+                {shouldShowSalePercent && (
+                  <span className={S.salePercentClassName}>
+                    {salePercent}
+                    {salePercentUnit}
+                  </span>
+                )}
+                <span className={S.salePriceClassName}>
+                  {salePrice}
+                  {priceUnit}
+                </span>
+              </div>
             </div>
           </div>
 

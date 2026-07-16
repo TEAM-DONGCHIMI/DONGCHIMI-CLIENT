@@ -125,6 +125,52 @@ describe('ProductEditPeriodModal', () => {
     expect(handleClose).toHaveBeenCalledOnce();
   });
 
+  it('enables submit when the end date changes with an unchanged past start date', () => {
+    render(
+      <ProductEditPeriodModal
+        initialPeriod={{
+          endDate: '2026. 8. 16',
+          startDate: '2020. 8. 12',
+        }}
+        open
+        variant='eventDiscount'
+        onClose={vi.fn()}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('행사 종료일'), {
+      target: { value: '2026-08-17' },
+    });
+
+    expect(screen.getByRole('button', { name: '변경하기' })).toBeEnabled();
+  });
+
+  it('disables only the today special date pickers and changes the period with the toggle', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ProductEditPeriodModal
+        initialPeriod={{
+          endDate: '2026. 8. 16',
+          startDate: '2026. 8. 16',
+        }}
+        open
+        variant='todaySpecial'
+        onClose={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText('행사 시작일')).toHaveAttribute('readonly');
+    expect(screen.getByLabelText('행사 종료일')).not.toHaveAttribute('readonly');
+    expect(screen.getByLabelText('행사 시작일')).toHaveAttribute('type', 'date');
+    expect(screen.getByLabelText('행사 종료일')).toHaveAttribute('type', 'text');
+
+    await user.click(screen.getByRole('button', { name: '하루 더 늘리기' }));
+
+    expect(screen.getByLabelText('행사 종료일')).toHaveValue('2026-08-17');
+    expect(screen.getByRole('button', { name: '변경하기' })).toBeEnabled();
+  });
+
   it('keeps the modal open with entered dates when the request fails', async () => {
     const user = userEvent.setup();
     const handleSubmit = vi.fn().mockResolvedValue(false);

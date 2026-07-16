@@ -1,6 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react';
 
-import { useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import { useToast } from '@dongchimi/shared/toast';
 
 import {
@@ -8,8 +8,9 @@ import {
   MarketInformationFormToastProvider,
 } from '@/domains/market/components/market-information-form';
 import type { MarketInformationRegistrationRequestTypes } from '@/domains/market/model';
-import { isApiError } from '@/shared/api';
+import { isApiError } from '@/shared/api/api-error';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
+import { useAuthStore } from '@/shared/stores/auth-store';
 
 import { useMarketThumbnailUploadMutation, useRegisterMarketMutation } from '../hooks';
 import { marketInformationRegistrationFixture } from './fixtures';
@@ -102,8 +103,16 @@ const MarketInformationRegistrationPageContent = ({
 
 export const MarketInformationRegistrationPage = (
   props: MarketInformationRegistrationPageProps,
-) => (
-  <MarketInformationFormToastProvider offset='2.4rem' placement='top-center'>
-    <MarketInformationRegistrationPageContent {...props} />
-  </MarketInformationFormToastProvider>
-);
+) => {
+  const marketId = useAuthStore((state) => state.marketId);
+
+  if (marketId != null) {
+    return <Navigate replace to={MARKET_OWNER_ROUTES.marketInformationManagement} />;
+  }
+
+  return (
+    <MarketInformationFormToastProvider offset='2.4rem' placement='top-center'>
+      <MarketInformationRegistrationPageContent {...props} />
+    </MarketInformationFormToastProvider>
+  );
+};

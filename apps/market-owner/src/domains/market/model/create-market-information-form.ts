@@ -67,9 +67,7 @@ export const createMarketInformationForm = (
     detailAddress: address.detailAddress,
     hasAdditionalBusinessHours: additionalBusinessHours !== undefined,
     hasAdditionalMarketPhone: marketPhone2 !== null,
-    holiday: closedBusinessHours
-      ? (apiDayToBusinessDayMap[closedBusinessHours.days[0] ?? ''] ?? '')
-      : '',
+    holiday: closedBusinessHours ? toBusinessDay(closedBusinessHours.days) : '',
     latitude: market.latitude,
     longitude: market.longitude,
     marketPhone1: formatMarketPhoneNumber(market.marketPhone1),
