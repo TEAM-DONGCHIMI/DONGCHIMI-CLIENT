@@ -83,13 +83,7 @@ export const ProductInfoSection = ({
           onImageChange={onImageChange}
         />
 
-        <div
-          className={cn(
-            S.productInfoFieldRowsClassName,
-            (productErrorMessages.name || productErrorMessages.category) &&
-              S.productInfoFieldRowsErrorClassName,
-          )}
-        >
+        <div className={S.productInfoFieldRowsClassName}>
           <div className={S.twoColumnRowClassName}>
             <FieldGroup
               errorMessage={productErrorMessages.name}
@@ -104,54 +98,59 @@ export const ProductInfoSection = ({
             />
 
             <FieldGroup label='상품 구분'>
-              <div ref={categoryFieldRef} className={S.categoryWrapperClassName}>
-                <ProductCategoryTrigger
-                  aria-describedby={productErrorMessages.category ? categoryErrorId : undefined}
-                  aria-controls={isCategoryDropdownOpen ? categoryDropdownId : undefined}
-                  aria-expanded={isCategoryDropdownOpen}
-                  className={cn(productErrorMessages.category && S.categoryTriggerErrorClassName)}
-                  data-today-special-category-trigger
-                  label={product.category || '카테고리'}
-                  onClick={onCategoryTriggerClick}
-                  placeholder={!product.category}
-                  ref={categoryTriggerRef}
-                />
-
-                {isCategoryDropdownOpen && (
-                  <ProductCategoryDropdown
-                    ariaLabel='상품 구분 선택'
-                    className={S.categoryDropdownClassName}
-                    id={categoryDropdownId}
-                    options={productSelectableCategoryOptions}
-                    onSelect={onCategorySelect}
-                    selectedCategory={product.category}
-                    style={categoryDropdownStyle}
+              <div className={S.categoryFieldControlClassName}>
+                <div ref={categoryFieldRef} className={S.categoryWrapperClassName}>
+                  <ProductCategoryTrigger
+                    aria-describedby={productErrorMessages.category ? categoryErrorId : undefined}
+                    aria-controls={isCategoryDropdownOpen ? categoryDropdownId : undefined}
+                    aria-expanded={isCategoryDropdownOpen}
+                    className={cn(productErrorMessages.category && S.categoryTriggerErrorClassName)}
+                    data-today-special-category-trigger
+                    label={product.category || '카테고리'}
+                    onClick={onCategoryTriggerClick}
+                    placeholder={!product.category}
+                    ref={categoryTriggerRef}
                   />
+
+                  {isCategoryDropdownOpen && (
+                    <ProductCategoryDropdown
+                      ariaLabel='상품 구분 선택'
+                      className={S.categoryDropdownClassName}
+                      id={categoryDropdownId}
+                      options={productSelectableCategoryOptions}
+                      onSelect={onCategorySelect}
+                      selectedCategory={product.category}
+                      style={categoryDropdownStyle}
+                    />
+                  )}
+                </div>
+                {productErrorMessages.category && (
+                  <p className={S.fieldErrorMessageClassName} id={categoryErrorId}>
+                    <IcCircleExclamationSizeSmallColorNegative
+                      className={S.fieldErrorIconClassName}
+                      aria-hidden='true'
+                    />
+                    <span>{productErrorMessages.category}</span>
+                  </p>
                 )}
               </div>
-              {productErrorMessages.category && (
-                <p className={S.fieldErrorMessageClassName} id={categoryErrorId}>
-                  <IcCircleExclamationSizeSmallColorNegative
-                    className={S.fieldErrorIconClassName}
-                    aria-hidden='true'
-                  />
-                  <span>{productErrorMessages.category}</span>
-                </p>
-              )}
             </FieldGroup>
           </div>
 
-          <FieldGroup
-            errorMessage={productErrorMessages.description}
-            id='today-special-product-description'
-            label='상품 한줄 홍보문구'
-            maxLength={productPromotionTextMaxLength}
-            onBlur={onDescriptionBlur}
-            onChange={onDescriptionChange}
-            placeholder='홍보문구를 입력하세요.'
-            status={productErrorMessages.description ? 'error' : 'default'}
-            value={product.description}
-          />
+          <div className={S.productPromotionFieldSlotClassName}>
+            <FieldGroup
+              errorMessage={productErrorMessages.description}
+              id='today-special-product-description'
+              label='상품 한줄 홍보글'
+              maxLength={productPromotionTextMaxLength}
+              onBlur={onDescriptionBlur}
+              onChange={onDescriptionChange}
+              optional
+              placeholder='홍보문구를 입력하세요.'
+              status={productErrorMessages.description ? 'error' : 'default'}
+              value={product.description}
+            />
+          </div>
         </div>
       </div>
     </section>

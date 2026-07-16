@@ -7,7 +7,7 @@
 - Page: `event-discount-registration`
 - Route: `/products/event-discount/new`
 - Path: `apps/market-owner/src/domains/product/event-discount-registration/EventDiscountRegistrationPage.tsx`
-- Jira: DCMSM-18, DCMSM-19, DCMSM-25, DCMSM-33, DCMSM-34, DCMSM-52, DCMSM-62, DCMSM-95, DCMSM-98
+- Jira: DCMSM-18, DCMSM-19, DCMSM-25, DCMSM-33, DCMSM-34, DCMSM-52, DCMSM-62, DCMSM-95, DCMSM-98, DCMSM-99
 - Figma:
   - APPJAM registration method home node 3799:102468
   - APPJAM excel upload image node 3799:102479
@@ -22,7 +22,7 @@
 
 행사 할인 상품 등록 flow의 첫 진입 화면에서 등록 방식을 선택하고, 엑셀 파일 업로드 UI 상태를 거쳐 AI 분석 진행 화면으로 이어집니다.
 사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, 다운로드 API와 분석 결과 확인 API는 후속 이슈에서 연결합니다.
-엑셀 파일 선택 또는 드롭 시 presigned URL 발급과 storage PUT을 완료하고, 모달의 `파일 업로드` CTA 또는 취소 후 confirmation의 `분석 시작` CTA에서 파일 분석 시작 API를 호출합니다. 파일 분석 시작 API로 발급받은 `jobId`를 이용해 실제 분석 진행 SSE를 구독하고, 완료 이벤트 수신 시 상품 결과 등록 확인 route로 이동합니다.
+엑셀 파일 선택 또는 드롭 시 presigned URL 발급과 storage PUT을 완료하고, 모달의 `파일 업로드` CTA는 등록 파일 확인 단계로만 이동합니다. 확인 단계의 `분석 시작` CTA에서 파일 분석 시작 API를 호출하고, 발급받은 `jobId`로 실제 분석 진행 SSE를 구독한 뒤 완료 이벤트 수신 시 상품 결과 등록 확인 route로 이동합니다.
 
 ## Ownership
 
@@ -73,9 +73,9 @@
 - modal/default: clicking `엑셀 업로드` opens `UploadModal` with two-line guidance copy, a file format tooltip, and a disabled upload button.
 - modal/upload: selecting or dropping a `.xlsx` or `.csv` file starts the presigned upload, shows the selected file name, and keeps the upload button disabled until the upload handoff value is ready.
 - modal/error: selecting or dropping a file outside `.xlsx` or `.csv` shows the upload modal error state and keeps the upload button disabled.
-- success/progress: clicking the enabled upload button calls the product import start API, closes the modal, and renders `FileAnalysisProgressSection`.
+- success/confirm: clicking the enabled upload button closes the modal without starting product import and renders `FileAnalysisConfirmSection` with the uploaded file name.
 - cancel/confirm: canceling analysis progress renders `FileAnalysisConfirmSection` with the uploaded file name so the owner can restart analysis or return to the method view.
-- loading/progress: product import start success from `파일 업로드` or confirmation `분석 시작` renders `FileAnalysisProgressSection` with pending steps, then applies each `progress` SSE event to the ordered step list and derives the progressbar value from completed steps.
+- loading/progress: product import start success from confirmation `분석 시작` renders `FileAnalysisProgressSection` with pending steps, then applies each `progress` SSE event to the ordered step list and derives the progressbar value from completed steps.
 - loading/progress motion: progressbar fill changes animate smoothly between progress increments; users with `prefers-reduced-motion: reduce` receive immediate fill updates.
 - loading/icon: only the current `processing` step replaces the default progress icon with the autoplaying, looping spinner Lottie.
 - completed: a `completed` SSE event sets progress to 100%, marks the visible steps complete, and navigates to the result route once.
@@ -129,21 +129,21 @@
 - Upload success stores the selected file name and a public S3 URL built from `VITE_PUBLIC_S3_BASE_URL` plus the returned `objectKey` while keeping the modal open.
 - The modal `파일 업로드` action stays disabled until the presigned upload handoff value is ready.
 - Confirmation `취소` clears the uploaded file state and returns to the method view.
-- The modal `파일 업로드` action calls `POST /v1/owners/markets/{marketId}/products/import` with `excelFileUrl` set to the uploaded file's public S3 URL.
-- Confirmation `분석 시작` uses the same product import start API when the owner returns from canceled progress.
+- The modal `파일 업로드` action closes the modal and moves to file confirmation without calling the product import start API.
+- Confirmation `분석 시작` calls `POST /v1/owners/markets/{marketId}/products/import` with `excelFileUrl` set to the uploaded file's public S3 URL.
 - If `marketId` or `excelFileUrl` is missing, the page keeps the current modal or confirmation view and shows the same file-analysis start failure toast instead of sending a guessed request.
 - Import start success stores the returned `jobId`, closes the modal, switches to progress view, and subscribes to the matching progress endpoint.
-- Import start failure keeps the current modal or confirmation view and shows the normalized server message for `ApiError`; non-API failures use `파일 분석을 시작하지 못했습니다. 다시 시도해주세요.` as fallback toast feedback.
+- Import start failure keeps the confirmation view and shows the normalized server message for `ApiError`; non-API failures use `파일 분석을 시작하지 못했습니다. 다시 시도해주세요.` as fallback toast feedback.
 - Progress events map backend step codes and statuses to the existing `ProcessingStep` labels and UI statuses. The visible progress value is derived from completed step count in 20% increments across the five analysis steps instead of trusting the backend `progress` number.
 - The SSE request uses `Accept: text/event-stream`, keeps the app's Authorization/401 refresh policy, disables the normal request timeout, and aborts on unmount.
 - If the stream ends with a network error before a terminal event, the hook reconnects at most three total attempts with a one-second delay. Auth, validation, and other non-network errors are surfaced immediately without reconnecting or silently starting a new import job.
 - Unknown SSE event names and comment heartbeat frames are ignored. Malformed known event data is treated as a validation error.
-- A `completed` terminal event navigates once to `/products/registration-result`; `failed` and `canceled` terminal events do not navigate to the result route.
+- A `completed` terminal event first replaces the current `/products/event-discount/new` history entry with the uploaded file name/URL route state, then navigates once to `/products/registration-result` with the same state. Both browser back and the result page `이전` action therefore restore the file confirmation step; `failed` and `canceled` terminal events do not navigate to the result route.
 - Progress `취소` posts the current `marketId` and string `jobId` to the cancel endpoint. API success returns to confirmation and shows completed feedback immediately; a later SSE `canceled` event must not duplicate the return behavior.
 - Cancel API failure keeps the progress stream active, unlocks cancel, and shows the normalized server message when available.
 - `엑셀 양식 다운로드` opens the provided static `.xlsx` URL in a new tab with `noopener`; browser download behavior follows the static server response and the current registration screen remains unchanged.
 - `전단지 업로드` shows the Figma toast feedback. Actual leaflet image upload/API is out of scope.
-- Toast feedback uses the shared toast runtime. The page passes the Figma status icon through the toast `icon` slot and uses a stable toast id for registration action feedback so triggering a new toast replaces the visible toast and resets the runtime timer.
+- Toast feedback uses the shared toast runtime. Body-portal toast viewports use the browser top layer when available, so upload failures remain visible above the native dialog dim layer. The page passes the Figma status icon through the toast `icon` slot and uses a stable toast id for registration action feedback so triggering a new toast replaces the visible toast and resets the runtime timer.
 - The page does not own toast viewport positioning or sidebar-width correction.
 - The POS guide panel behaves as a modal dialog through `usePosGuideModalBehavior`: Escape and backdrop click close it, focus moves to the close button on open and returns to the previously focused trigger on close, Tab focus is kept inside the panel, and body scroll is locked while open.
 - The POS guide panel uses a CSS-only open animation from `translateX(100%)` to `translateX(0)` and disables the animation for `prefers-reduced-motion: reduce`.
@@ -176,14 +176,18 @@
 - [x] `.xlsx` or `.csv` file selection starts presigned upload and enables upload action after upload completion
 - [x] dropping a file on the upload modal starts presigned upload and enables upload action after upload completion
 - [x] unsupported file selection or drop renders upload modal error state
-- [x] clicking enabled upload action posts the resolved excel file URL to the product import endpoint
-- [x] product import success closes the upload modal and switches to the AI analysis progress section
+- [x] clicking enabled upload action closes the modal and renders file confirmation without starting product import
+- [x] clicking confirmation `분석 시작` posts the resolved excel file URL to the product import endpoint
+- [x] product import success switches to the AI analysis progress section
 - [x] canceling analysis progress renders file confirmation with selected file name and analysis items
 - [x] AI analysis progress section renders step status labels and progressbar value
 - [x] the current processing step renders the supplied spinner Lottie with autoplay and loop enabled
 - [x] completed AI analysis progress disables cancel action
 - [x] progress SSE updates progress and ordered step status from the current `jobId`
 - [x] completed SSE analysis navigates to `/products/registration-result`
+- [x] route state restores the uploaded file confirmation after returning from the result page
+- [x] browser back from the result page restores the uploaded file confirmation step
+- [x] upload failure toast viewport enters the top layer above the upload dialog dim
 - [x] failed SSE analysis shows the server message and returns to confirmation
 - [x] cancel posts the current `marketId` and `jobId`, locks duplicate actions, and returns to confirmation after API success
 - [x] canceled SSE analysis returns to confirmation without duplicating cancel completion behavior

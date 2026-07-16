@@ -21,10 +21,8 @@ export const tabItemClassName = style({
   alignItems: 'center',
   justifyContent: 'center',
   boxSizing: 'border-box',
-  minHeight: '5.1rem',
-  padding: '1.2rem 0.2rem 0.8rem',
+  padding: '1.2rem 0.2rem',
   border: 0,
-  borderBottom: `0.2rem solid transparent`,
   backgroundColor: 'transparent',
   color: atomic.neutral[50],
   cursor: 'pointer',
@@ -36,7 +34,8 @@ export const tabItemClassName = style({
   selectors: {
     '&[aria-current], &[aria-selected="true"], &[data-selected="true"]': {
       ...typography['body-1-semibold'],
-      borderBottomColor: atomic.common[100],
+      paddingBottom: '0.6rem',
+      borderBottom: `0.2rem solid ${atomic.common[100]}`,
       color: atomic.neutral[90],
     },
     '&:focus-visible': {

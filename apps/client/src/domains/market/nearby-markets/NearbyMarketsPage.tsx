@@ -1,3 +1,6 @@
+import Image from 'next/image';
+
+import dongchimiLogo from '@/shared/assets/images/img_pavicon.svg';
 import { MobileHeader } from '@/shared/components/ui/mobile-header';
 
 import { NearbyMarketsClientProvider } from './NearbyMarketsClientProvider';
@@ -13,7 +16,13 @@ export const NearbyMarketsPage = () => {
     <main className={S.pageClassName}>
       <MobileHeader aria-label='주변 마트 헤더'>
         <MobileHeader.Logo>
-          <div aria-label='동치미 로고' className={S.logoPlaceholderClassName} role='img' />
+          <Image
+            alt='동치미'
+            className={S.logoClassName}
+            height={32}
+            src={dongchimiLogo}
+            width={92}
+          />
         </MobileHeader.Logo>
       </MobileHeader>
 

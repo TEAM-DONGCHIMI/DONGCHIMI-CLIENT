@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { BottomSheet } from '@dongchimi/design-system';
 import {
   IcCircleCheckFillSizeSmall,
-  IcCircleExclamationFillColor0,
   IcCopySizeSmall,
   IcCopySizeXsmallColor50,
   IcLoginSizeSmall,
@@ -40,7 +39,7 @@ const SHARE_KAKAO_PENDING_MESSAGE = '아직 준비중인 기능이에요.';
 
 const getShareToastIcon = (status: ToastStatusTypes) => {
   if (status === 'error') {
-    return <IcCircleExclamationFillColor0 className={S.toastIconClassName} />;
+    return undefined;
   }
 
   return <IcCircleCheckFillSizeSmall className={S.toastIconClassName} />;

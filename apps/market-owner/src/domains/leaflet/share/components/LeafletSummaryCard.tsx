@@ -6,12 +6,14 @@ import * as S from './LeafletSummaryCard.css';
 export interface LeafletSummaryCardProps {
   isPublishing?: boolean;
   leafletSummary: LeafletSummaryViewModel;
+  onEdit: () => void;
   onShare: () => void;
 }
 
 export const LeafletSummaryCard = ({
   isPublishing = false,
   leafletSummary,
+  onEdit,
   onShare,
 }: LeafletSummaryCardProps) => {
   return (
@@ -41,7 +43,7 @@ export const LeafletSummaryCard = ({
       </Stack>
 
       <Stack className={S.actionGroupClassName}>
-        <Button color='assistiveLight' size='medium' variant='outlined'>
+        <Button color='assistiveLight' onClick={onEdit} size='medium' variant='outlined'>
           전단 수정하기
         </Button>
         <Button disabled={isPublishing} onClick={onShare} size='medium'>

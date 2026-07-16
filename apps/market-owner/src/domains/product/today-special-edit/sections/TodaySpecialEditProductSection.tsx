@@ -1,17 +1,20 @@
+import { useMemo } from 'react';
+
 import {
   createProductEditCardProps,
   createProductEditDisplayGroups,
   ProductEditProductList,
   ProductEditProductListLoading,
+  type ProductEditListPagination,
+  useProductEditListActions,
 } from '@/domains/product/components/product-edit-product-list';
 import {
   type ProductEditFilterTypes,
   type ProductEditPageSelectionControls,
 } from '@/domains/product/components/product-edit-page-shell';
-import { useProductEditProducts, useProductListQuery } from '@/domains/product/hooks';
+import { useProductEditProducts, useProductListInfiniteQuery } from '@/domains/product/hooks';
 import {
-  createProductEditListItem,
-  createProductEditListStateKey,
+  createProductEditListItems,
   getProductListSort,
   type ProductEditListItemTypes,
 } from '@/domains/product/model/product-list';
@@ -30,6 +33,7 @@ interface TodaySpecialEditProductSectionProps {
 
 interface TodaySpecialEditProductListProps extends TodaySpecialEditProductSectionProps {
   initialProducts: ProductEditListItemTypes[];
+  pagination: ProductEditListPagination;
 }
 
 const TodaySpecialEditProductList = ({
@@ -37,6 +41,7 @@ const TodaySpecialEditProductList = ({
   deletePending,
   initialProducts,
   marketId,
+  pagination,
   selection,
   selectedFilter,
   onAutoOpenProductMissing,
@@ -57,51 +62,77 @@ const TodaySpecialEditProductList = ({
     selectedFilter,
     supportsCategoryFilter: false,
   });
+  const productActions = useProductEditListActions({
+    autoOpenProductId,
+    groups: productGroups,
+    marketId,
+    selectionMode: selection.selectionMode,
+    variant: 'todaySpecial',
+    onAutoOpenProductMissing,
+    onAutoOpenProductModalClose,
+    onDeleteProduct: (product) => void deleteProduct(Number(product.productId)),
+    onUpdateProduct: updateProduct,
+  });
 
   return (
     <ProductEditProductList
+      actions={{
+        ...productActions,
+        disabled: deletePending,
+      }}
       ariaLabel='오늘의 특가 상품 수정 목록'
-      autoOpenProductId={autoOpenProductId}
-      deletePending={deletePending}
-      editModalVariant='todaySpecial'
       groups={productGroups}
-      marketId={marketId}
+      pagination={pagination}
       registrationHref={MARKET_OWNER_ROUTES.todaySpecialRegistration}
-      selectedProductIds={selection.selectedProductIds}
-      selectionMode={selection.selectionMode}
-      onAutoOpenProductMissing={onAutoOpenProductMissing}
-      onAutoOpenProductModalClose={onAutoOpenProductModalClose}
-      onDeleteProduct={(product) => void deleteProduct(Number(product.productId))}
-      onToggleProductSelection={selection.onToggleProductSelection}
-      onUpdateProduct={updateProduct}
+      selection={{
+        enabled: selection.selectionMode,
+        selectedProductIds: selection.selectedProductIds,
+        onToggleProduct: selection.onToggleProductSelection,
+      }}
     />
   );
 };
 
 export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSectionProps) => {
-  const productListQuery = useProductListQuery({
+  const productListQuery = useProductListInfiniteQuery({
     marketId: props.marketId,
     sort: getProductListSort(props.selectedFilter),
     type: 'DAILY',
   });
 
+  const products = useMemo(
+    () => createProductEditListItems(productListQuery.data?.pages ?? []),
+    [productListQuery.data?.pages],
+  );
+
   if (productListQuery.isPending) {
     return <ProductEditProductListLoading />;
   }
 
-  if (productListQuery.isError) {
+  if (productListQuery.isError && productListQuery.data == null) {
     throw productListQuery.error;
   }
 
-  const products = (productListQuery.data?.data?.content ?? []).map(createProductEditListItem);
-  const productListStateKey = createProductEditListStateKey(products);
+  let paginationStatus: ProductEditListPagination['status'] = 'idle';
+
+  if (productListQuery.isFetchNextPageError) {
+    paginationStatus = 'error';
+  } else if (productListQuery.isFetchingNextPage) {
+    paginationStatus = 'loading';
+  }
 
   return (
     <TodaySpecialEditProductList
-      key={`${props.selectedFilter}-${productListStateKey}`}
       {...props}
       initialProducts={products}
       marketId={props.marketId}
+      pagination={{
+        hasNextPage: Boolean(productListQuery.hasNextPage),
+        status: paginationStatus,
+        onLoadNextPage: () => {
+          void productListQuery.fetchNextPage({ cancelRefetch: false });
+        },
+      }}
     />
   );
 };

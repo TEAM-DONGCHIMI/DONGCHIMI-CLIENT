@@ -27,8 +27,22 @@ export const ProductCategoryDropdown = <CategoryTypes extends string>({
   selectedCategory,
   style,
 }: ProductCategoryDropdownProps<CategoryTypes>) => {
+  const dropdownStyle: CSSProperties = {
+    ...style,
+    maxHeight: 'var(--product-category-dropdown-max-height)',
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    overscrollBehaviorY: 'none',
+  };
+
   return (
-    <Dropdown aria-label={ariaLabel} className={className} id={id} role='group' style={style}>
+    <Dropdown
+      aria-label={ariaLabel}
+      className={className}
+      id={id}
+      role='group'
+      style={dropdownStyle}
+    >
       {options.map((category) => (
         <Dropdown.Item
           className={S.itemClassName}

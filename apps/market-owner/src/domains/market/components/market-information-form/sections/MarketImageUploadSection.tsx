@@ -89,6 +89,11 @@ export const MarketImageUploadSection = ({
             src={previewImageUrl}
             onError={() => setPreviewImageUrl(undefined)}
           />
+          <span
+            aria-hidden='true'
+            className={S.imagePreviewDimmerClassName}
+            data-testid='market-image-preview-dimmer'
+          />
           <Button
             aria-label='마트 이미지 변경'
             className={S.imageUploadCameraButtonClassName}

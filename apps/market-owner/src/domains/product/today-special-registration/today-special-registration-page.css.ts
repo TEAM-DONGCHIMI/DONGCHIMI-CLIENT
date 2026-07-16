@@ -16,7 +16,7 @@ export const formContentClassName = style({
   gap: '4rem',
   width: '90rem',
   marginLeft: '4rem',
-  padding: '3.2rem 0 0',
+  padding: '3.2rem 0 7.2rem',
 });
 
 export const titleSectionClassName = style({
@@ -116,13 +116,19 @@ export const productInfoFieldRowsClassName = style({
   minWidth: 0,
 });
 
-export const productInfoFieldRowsErrorClassName = style({
-  gap: '0.9rem',
+export const productPromotionFieldSlotClassName = style({
+  boxSizing: 'border-box',
+  height: '6.8rem',
+  paddingTop: '0.9rem',
 });
 
 export const fieldLabelClassName = style({
   ...typography['body-3-medium'],
   color: atomic.neutral[70],
+});
+
+export const optionalLabelClassName = style({
+  color: atomic.neutral[50],
 });
 
 export const twoColumnRowClassName = style({
@@ -135,8 +141,9 @@ export const twoColumnRowClassName = style({
 export const fieldGroupClassName = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '0.2rem',
+  gap: '0.8rem',
   minWidth: 0,
+  height: '6.8rem',
 });
 
 export const fieldErrorMessageClassName = style({
@@ -157,6 +164,12 @@ export const fieldErrorIconClassName = style({
 export const categoryWrapperClassName = style({
   position: 'relative',
   width: '20.6rem',
+});
+
+export const categoryFieldControlClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.2rem',
 });
 
 export const categoryTriggerErrorClassName = style({
@@ -180,11 +193,7 @@ export const categoryDropdownClassName = style({
   left: 0,
   zIndex: 1,
   width: '20.6rem',
-  maxHeight: 'var(--product-category-dropdown-max-height)',
   backgroundColor: atomic.common[0],
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  overscrollBehaviorY: 'none',
 });
 
 export const dateSingleFieldClassName = style({

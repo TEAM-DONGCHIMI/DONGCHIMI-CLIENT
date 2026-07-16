@@ -5,7 +5,7 @@ import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
 export const triggerClassName = style({
-  ...typography['body-2-medium'],
+  ...typography['body-3-medium'],
   appearance: 'none',
   display: 'flex',
   alignItems: 'center',

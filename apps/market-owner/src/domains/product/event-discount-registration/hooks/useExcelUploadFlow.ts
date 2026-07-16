@@ -3,6 +3,7 @@ import { useReducer, useRef, type ChangeEventHandler } from 'react';
 import { isApiError } from '@/shared/api';
 
 import { useFileDrop } from '../../hooks';
+import type { ProductImportFileConfirmationState } from '../../model/product-import-route-state';
 import {
   resolvePresignedExcelFileUrl,
   type ResolveExcelFileUrlTypes,
@@ -29,11 +30,13 @@ type ExcelUploadFlowActionTypes =
   | { fileName: string; type: 'SELECT_EXCEL_FILE' }
   | { errorMessage: string; type: 'REJECT_EXCEL_FILE' }
   | { excelFileUrl: string; type: 'UPLOAD_EXCEL_FILE_SUCCESS' }
+  | { type: 'CONFIRM_EXCEL_UPLOAD' }
   | { type: 'CANCEL_FILE_ANALYSIS_CONFIRMATION' }
   | { jobId: string; type: 'START_FILE_ANALYSIS' }
   | { type: 'CANCEL_FILE_ANALYSIS_PROGRESS' };
 
 interface UseExcelUploadFlowParams {
+  initialFileConfirmation?: ProductImportFileConfirmationState;
   onExcelUploadError?: (message: string) => void;
   resolveExcelFileUrl?: ResolveExcelFileUrlTypes;
 }
@@ -47,6 +50,22 @@ const initialExcelUploadFlowState: ExcelUploadFlowState = {
   isExcelUploadModalOpen: false,
   isUploading: false,
   registrationView: 'method',
+};
+
+const createInitialExcelUploadFlowState = (
+  fileConfirmation?: ProductImportFileConfirmationState,
+): ExcelUploadFlowState => {
+  if (fileConfirmation == null) {
+    return initialExcelUploadFlowState;
+  }
+
+  return {
+    isExcelUploadModalOpen: false,
+    isUploading: false,
+    registrationView: 'confirm',
+    uploadedExcelFileName: fileConfirmation.fileName,
+    uploadedExcelFileUrl: fileConfirmation.fileUrl,
+  };
 };
 
 const resetExcelUploadModal = (state: ExcelUploadFlowState): ExcelUploadFlowState => {
@@ -142,6 +161,16 @@ const excelUploadFlowReducer = (
         uploadedExcelFileUrl: action.excelFileUrl,
         uploadedExcelFileName: state.selectedExcelFileName,
       };
+    case 'CONFIRM_EXCEL_UPLOAD':
+      return state.uploadedExcelFileName == null || state.uploadedExcelFileUrl == null
+        ? state
+        : {
+            ...state,
+            excelUploadErrorMessage: undefined,
+            isExcelUploadModalOpen: false,
+            selectedExcelFileName: undefined,
+            registrationView: 'confirm',
+          };
     case 'CANCEL_FILE_ANALYSIS_CONFIRMATION':
       return initialExcelUploadFlowState;
     case 'START_FILE_ANALYSIS':
@@ -167,10 +196,15 @@ const excelUploadFlowReducer = (
 };
 
 export const useExcelUploadFlow = ({
+  initialFileConfirmation,
   onExcelUploadError,
   resolveExcelFileUrl = resolvePresignedExcelFileUrl(),
 }: UseExcelUploadFlowParams = {}) => {
-  const [state, dispatch] = useReducer(excelUploadFlowReducer, initialExcelUploadFlowState);
+  const [state, dispatch] = useReducer(
+    excelUploadFlowReducer,
+    initialFileConfirmation,
+    createInitialExcelUploadFlowState,
+  );
   const uploadRequestIdRef = useRef(0);
 
   const invalidatePendingExcelUpload = () => {
@@ -242,6 +276,9 @@ export const useExcelUploadFlow = ({
   return {
     cancelFileAnalysisConfirmation: () => {
       dispatch({ type: 'CANCEL_FILE_ANALYSIS_CONFIRMATION' });
+    },
+    confirmExcelUpload: () => {
+      dispatch({ type: 'CONFIRM_EXCEL_UPLOAD' });
     },
     excelUploadModal: {
       errorMessage: state.excelUploadErrorMessage,

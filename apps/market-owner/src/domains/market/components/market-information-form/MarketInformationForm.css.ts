@@ -16,7 +16,7 @@ export const logoClassName = style({
 
 export const mainClassName = style({
   width: '100%',
-  padding: '3.6rem 2.4rem 13.4rem',
+  padding: '3.6rem 2.4rem 6.2rem',
 });
 
 export const pageContainerClassName = style({
@@ -67,20 +67,19 @@ export const fieldsClassName = style({
 export const fieldPairGridClassName = style({
   display: 'grid',
   gridTemplateColumns: 'minmax(0, 39.4rem) minmax(0, 43.7rem)',
+  gridTemplateRows: 'auto auto',
   gap: '3.5rem',
   '@media': {
     'screen and (max-width: 860px)': {
       gridTemplateColumns: 'repeat(1, minmax(0, 1fr))',
+      gridTemplateRows: 'none',
       gap: '3.2rem',
     },
   },
 });
 
 export const submitAreaClassName = style({
-  position: 'fixed',
-  right: 0,
-  bottom: '6.2rem',
-  left: 0,
+  marginTop: '5.1rem',
   padding: '0 2.4rem',
   gap: '1.2rem',
 });

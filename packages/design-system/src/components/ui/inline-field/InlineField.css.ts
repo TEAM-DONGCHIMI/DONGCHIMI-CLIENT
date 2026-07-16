@@ -125,7 +125,7 @@ export const input = recipe({
 export const unit = recipe({
   base: {
     flexShrink: 0,
-    color: atomic.neutral[90],
+    color: atomic.neutral[60],
     whiteSpace: 'nowrap',
   },
   variants: {
@@ -137,7 +137,7 @@ export const unit = recipe({
     },
     size: {
       small: typography['caption-1-medium'],
-      medium: typography['body-3-medium'],
+      medium: typography['caption-1-medium'],
     },
   },
   defaultVariants: {

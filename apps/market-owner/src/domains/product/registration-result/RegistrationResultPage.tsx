@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
+import { ToastProvider } from '@dongchimi/shared/toast';
 
+import dongchimiLogo from '@/shared/assets/images/Img_pavicon.svg';
 import { DesktopHeader } from '@/shared/components';
 import {
   PRODUCT_CATEGORY_CODE_BY_NAME,
@@ -13,6 +15,10 @@ import {
   usePresignedUploadMutation,
   useSavePreparedProductDraftsMutation,
 } from '@/domains/product/hooks';
+import {
+  createProductImportRouteState,
+  getProductImportFileConfirmation,
+} from '@/domains/product/model/product-import-route-state';
 
 import { MAX_PREPARED_PRODUCT_DRAFT_QUERY_SIZE } from '../api/get-prepared-product-drafts';
 import type { PreparedProductDraftCategoryCodeTypes } from '../api/prepared-product-draft.schema';
@@ -31,6 +37,7 @@ const getPreparedProductDraftCategoryCodes = (categories: readonly ProductCatego
 };
 
 export const RegistrationResultPage = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const marketId = useAuthStore((state) => state.marketId);
   const presignedUploadMutation = usePresignedUploadMutation();
@@ -89,29 +96,45 @@ export const RegistrationResultPage = () => {
     () => resolvePresignedProductImageFileUrl(presignedUploadMutation.mutateAsync),
     [presignedUploadMutation.mutateAsync],
   );
+  const fileConfirmation = getProductImportFileConfirmation(location.state);
+  const handlePrevious = () => {
+    navigate(MARKET_OWNER_ROUTES.eventDiscountRegistration, {
+      state: fileConfirmation == null ? undefined : createProductImportRouteState(fileConfirmation),
+    });
+  };
 
   return (
-    <main className={S.pageRootClassName}>
-      <DesktopHeader
-        className={S.pageHeaderClassName}
-        currentLabel='상품 결과 등록 확인'
-        logo={<span aria-hidden='true' className={S.logoPlaceholderClassName} />}
-        parentLabel='행사 할인 상품 등록'
-        showSearchBar={false}
-      />
+    <ToastProvider offset='2.4rem' placement='top-center'>
+      <main className={S.pageRootClassName}>
+        <DesktopHeader
+          className={S.pageHeaderClassName}
+          currentLabel='상품 결과 등록 확인'
+          logo={
+            <img
+              alt='동치미'
+              className={S.logoClassName}
+              height={32}
+              src={dongchimiLogo}
+              width={92}
+            />
+          }
+          parentLabel='행사 할인 상품 등록'
+          showSearchBar={false}
+        />
 
-      <RegistrationResultSection
-        emptyMessage={emptyMessage}
-        isSavingDrafts={savePreparedProductDraftsMutation.isPending}
-        pageSize={REGISTRATION_RESULT_PAGE_SIZE}
-        products={products}
-        summary={summary}
-        onDraftQueryChange={setDraftQueryParams}
-        onPrevious={() => navigate(MARKET_OWNER_ROUTES.eventDiscountRegistration)}
-        onRegister={() => navigate(MARKET_OWNER_ROUTES.leafletShare)}
-        resolveProductImageFileUrl={resolveProductImageFileUrl}
-        onSaveDrafts={handleSaveDrafts}
-      />
-    </main>
+        <RegistrationResultSection
+          emptyMessage={emptyMessage}
+          isSavingDrafts={savePreparedProductDraftsMutation.isPending}
+          pageSize={REGISTRATION_RESULT_PAGE_SIZE}
+          products={products}
+          summary={summary}
+          onDraftQueryChange={setDraftQueryParams}
+          onPrevious={handlePrevious}
+          onRegister={() => navigate(MARKET_OWNER_ROUTES.leafletShare)}
+          resolveProductImageFileUrl={resolveProductImageFileUrl}
+          onSaveDrafts={handleSaveDrafts}
+        />
+      </main>
+    </ToastProvider>
   );
 };

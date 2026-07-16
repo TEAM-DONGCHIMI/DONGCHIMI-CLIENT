@@ -3,13 +3,14 @@ import { useCallback, useEffect, useId, useRef, type ChangeEvent, type FocusEven
 import { overlay, useOverlayData } from 'overlay-kit';
 import { type UseFormRegisterReturn } from 'react-hook-form';
 
-import { AddableField, Dropdown, RequiredMark, Stack } from '@dongchimi/design-system/components';
+import { AddableField, Dropdown, RequiredMark } from '@dongchimi/design-system/components';
 import {
   IcChevronDown,
   IcChevronUp,
   IcCircleExclamationSizeSmallColorNegative,
   IcClockSizeSmallColor60,
   IcLineHorizontalSizeSmall,
+  IcPlusSizeSmall,
   IcPlusSizeSmallColor60,
 } from '@dongchimi/design-system/icons';
 
@@ -24,6 +25,14 @@ const getBusinessDayDisplayLabel = (businessDay: string) => {
 
 const getBusinessDaysDisplayLabel = (businessDays: string[]) => {
   return businessDays.map(getBusinessDayDisplayLabel).join(', ');
+};
+
+const toggleBusinessDaySelection = (businessDay: string, selectedBusinessDays: string[]) => {
+  const nextSelectedBusinessDays = selectedBusinessDays.includes(businessDay)
+    ? selectedBusinessDays.filter((selectedDay) => selectedDay !== businessDay)
+    : [...selectedBusinessDays, businessDay];
+
+  return nextSelectedBusinessDays.join(', ');
 };
 
 interface BusinessHoursProps<TFieldName extends 'businessTime' | 'additionalBusinessTime'> {
@@ -111,11 +120,15 @@ export const BusinessOperationSection = ({
     additionalBusinessDay.length > 0 ||
     additionalBusinessTime.length > 0;
   const selectedBusinessDays = businessDay.length > 0 ? businessDay.split(', ') : [];
+  const selectedAdditionalBusinessDays =
+    additionalBusinessDay.length > 0 ? additionalBusinessDay.split(', ') : [];
+  const selectedHolidays = holiday.length > 0 ? holiday.split(', ') : [];
   const businessDayTriggerLabel =
     selectedBusinessDays.length > 0 ? getBusinessDaysDisplayLabel(selectedBusinessDays) : '요일';
-  const additionalBusinessDayTriggerLabel = additionalBusinessDay
-    ? getBusinessDayDisplayLabel(additionalBusinessDay)
-    : '요일';
+  const additionalBusinessDayTriggerLabel =
+    selectedAdditionalBusinessDays.length > 0
+      ? getBusinessDaysDisplayLabel(selectedAdditionalBusinessDays)
+      : '요일';
 
   const openOverlay = useCallback((overlayId: string) => {
     overlay.open(() => null, { overlayId });
@@ -196,29 +209,17 @@ export const BusinessOperationSection = ({
   ]);
 
   const handleBusinessDayOptionClick = (businessDay: string) => {
-    if (selectedBusinessDays.includes(businessDay)) {
-      const nextSelectedBusinessDays = selectedBusinessDays.filter(
-        (selectedDay) => selectedDay !== businessDay,
-      );
-
-      onBusinessDayChange(nextSelectedBusinessDays.join(', '));
-
-      return;
-    }
-
-    const nextSelectedBusinessDays = [...selectedBusinessDays, businessDay];
-
-    onBusinessDayChange(nextSelectedBusinessDays.join(', '));
+    onBusinessDayChange(toggleBusinessDaySelection(businessDay, selectedBusinessDays));
   };
 
   const handleHolidayOptionClick = (holiday: string) => {
-    onHolidayChange(holiday);
-    closeOverlay(holidayDropdownId);
+    onHolidayChange(toggleBusinessDaySelection(holiday, selectedHolidays));
   };
 
   const handleAdditionalBusinessDayOptionClick = (businessDay: string) => {
-    onAdditionalBusinessDayChange(businessDay);
-    closeOverlay(additionalBusinessDayMenuId);
+    onAdditionalBusinessDayChange(
+      toggleBusinessDaySelection(businessDay, selectedAdditionalBusinessDays),
+    );
   };
 
   const handleRemoveAdditionalBusinessTime = () => {
@@ -228,6 +229,10 @@ export const BusinessOperationSection = ({
   };
 
   const handleAddAdditionalBusinessTime = () => {
+    if (shouldShowAdditionalBusinessTime) {
+      return;
+    }
+
     onAdditionalBusinessTimeAdd();
     openOverlay(additionalBusinessTimeId);
   };
@@ -243,7 +248,7 @@ export const BusinessOperationSection = ({
   };
 
   return (
-    <Stack gap='2xl'>
+    <div className={S.sectionGridClassName}>
       <div className={S.inlineFieldClassName}>
         <span className={S.inlineLabelClassName}>
           영업 시간
@@ -255,6 +260,7 @@ export const BusinessOperationSection = ({
             <div className={S.businessHourControlClassName}>
               <div ref={businessDayDropdownRef} className={S.dropdownFieldClassName}>
                 <button
+                  aria-label='영업 요일'
                   aria-controls={isBusinessDayMenuOpen ? businessDayMenuId : undefined}
                   aria-expanded={isBusinessDayMenuOpen}
                   aria-haspopup='true'
@@ -293,8 +299,11 @@ export const BusinessOperationSection = ({
                 placeholder='00:00 - 00:00'
                 required
                 type='tel'
+                trailingActionDisabled={shouldShowAdditionalBusinessTime}
                 trailingActionLabel='영업 시간 추가'
-                trailingIcon={<IcPlusSizeSmallColor60 />}
+                trailingIcon={
+                  businessTime.length > 0 ? <IcPlusSizeSmall /> : <IcPlusSizeSmallColor60 />
+                }
                 {...businessTimeField}
                 value={businessTime}
                 onChange={onBusinessTimeChange}
@@ -311,6 +320,7 @@ export const BusinessOperationSection = ({
               <div className={S.businessHourControlClassName}>
                 <div ref={additionalBusinessDayDropdownRef} className={S.dropdownFieldClassName}>
                   <button
+                    aria-label='추가 영업 요일'
                     aria-controls={
                       isAdditionalBusinessDayMenuOpen ? additionalBusinessDayMenuId : undefined
                     }
@@ -343,7 +353,7 @@ export const BusinessOperationSection = ({
                           <Dropdown.Item
                             checkbox
                             key={businessDay}
-                            selected={additionalBusinessDay === businessDay}
+                            selected={selectedAdditionalBusinessDays.includes(businessDay)}
                             onClick={() => handleAdditionalBusinessDayOptionClick(businessDay)}
                           >
                             {businessDay}
@@ -404,7 +414,7 @@ export const BusinessOperationSection = ({
                   <Dropdown.Item
                     checkbox
                     key={holidayOption}
-                    selected={holiday === holidayOption}
+                    selected={selectedHolidays.includes(holidayOption)}
                     onClick={() => handleHolidayOptionClick(holidayOption)}
                   >
                     {holidayOption}
@@ -415,6 +425,6 @@ export const BusinessOperationSection = ({
           )}
         </div>
       </div>
-    </Stack>
+    </div>
   );
 };
