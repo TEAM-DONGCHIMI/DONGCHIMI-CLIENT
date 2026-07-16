@@ -62,6 +62,7 @@
 - title은 `heading-3-semibold`, description/link는 `body-3`, action은 `body-2-semibold` 토큰을 사용합니다.
 - 링크 복사, 카카오톡 공유, 앱으로 전단보기는 각각 아이콘과 라벨을 함께 표시합니다.
 - 설치 안내 view는 Figma `263 x 177` illustration, 중앙 안내 문구, `263 x 44` primary action, secondary close action 순서를 유지합니다.
+- 페이지가 스크롤된 상태에서 열어도 디자인시스템 `BottomSheet`의 scroll lock을 통해 sheet 하단과 기존 문서 위치를 유지합니다.
 - 색상은 디자인시스템 `atomic`, `semantic` token을 사용합니다.
 - 완료 toast icon은 기존 `IcCircleCheckFillSizeSmall`을 유지하고, 오류 toast는 디자인시스템 `Toast`의 기본 `IcCircleExclamation`을 사용합니다.
 
@@ -83,3 +84,4 @@
 - [x] `pnpm --filter client build-storybook`
 - [x] Figma nodes `342:10904`, `4190:55134` spacing/typography reference checked
 - [x] Playwright 375px exact sheet geometry and 320px overflow checked
+- [x] Playwright WebKit 375px scrolled-page open/close에서 viewport bottom 고정과 scroll 위치 복원 확인
