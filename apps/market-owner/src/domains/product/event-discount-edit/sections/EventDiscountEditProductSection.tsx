@@ -5,6 +5,8 @@ import {
   createProductEditDisplayGroups,
   ProductEditProductList,
   ProductEditProductListLoading,
+  type ProductEditListPagination,
+  useProductEditListActions,
 } from '@/domains/product/components/product-edit-product-list';
 import {
   type ProductEditFilterTypes,
@@ -33,27 +35,21 @@ interface EventDiscountEditProductSectionProps {
 
 interface EventDiscountEditProductListProps extends EventDiscountEditProductSectionProps {
   initialProducts: ProductEditListItemTypes[];
-  hasNextPage: boolean;
-  isFetchNextPageError: boolean;
-  isFetchingNextPage: boolean;
-  onLoadNextPage: () => void;
+  pagination: ProductEditListPagination;
 }
 
 const EventDiscountEditProductList = ({
   autoOpenProductId,
   deletePending,
   initialProducts,
-  hasNextPage,
-  isFetchNextPageError,
-  isFetchingNextPage,
   marketId,
+  pagination,
   selection,
   selectedCategory,
   selectedFilter,
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
   onDeleteProduct,
-  onLoadNextPage,
 }: EventDiscountEditProductListProps) => {
   const { deleteProduct, products, updateProduct } = useProductEditProducts(
     initialProducts,
@@ -70,27 +66,33 @@ const EventDiscountEditProductList = ({
     selectedFilter,
     supportsCategoryFilter: true,
   });
+  const productActions = useProductEditListActions({
+    autoOpenProductId,
+    groups: productGroups,
+    marketId,
+    selectionMode: selection.selectionMode,
+    variant: 'eventDiscount',
+    onAutoOpenProductMissing,
+    onAutoOpenProductModalClose,
+    onDeleteProduct: (product) => void deleteProduct(Number(product.productId)),
+    onUpdateProduct: updateProduct,
+  });
 
   return (
     <ProductEditProductList
+      actions={{
+        ...productActions,
+        disabled: deletePending,
+      }}
       ariaLabel='행사 할인 상품 수정 목록'
-      autoOpenProductId={autoOpenProductId}
-      deletePending={deletePending}
-      editModalVariant='eventDiscount'
       groups={productGroups}
-      hasNextPage={hasNextPage}
-      isFetchNextPageError={isFetchNextPageError}
-      isFetchingNextPage={isFetchingNextPage}
-      marketId={marketId}
+      pagination={pagination}
       registrationHref={MARKET_OWNER_ROUTES.eventDiscountRegistration}
-      selectedProductIds={selection.selectedProductIds}
-      selectionMode={selection.selectionMode}
-      onAutoOpenProductMissing={onAutoOpenProductMissing}
-      onAutoOpenProductModalClose={onAutoOpenProductModalClose}
-      onDeleteProduct={(product) => void deleteProduct(Number(product.productId))}
-      onLoadNextPage={onLoadNextPage}
-      onToggleProductSelection={selection.onToggleProductSelection}
-      onUpdateProduct={updateProduct}
+      selection={{
+        enabled: selection.selectionMode,
+        selectedProductIds: selection.selectedProductIds,
+        onToggleProduct: selection.onToggleProductSelection,
+      }}
     />
   );
 };
@@ -115,19 +117,26 @@ export const EventDiscountEditProductSection = (props: EventDiscountEditProductS
     throw productListQuery.error;
   }
 
-  const loadNextPage = () => {
-    void productListQuery.fetchNextPage({ cancelRefetch: false });
-  };
+  let paginationStatus: ProductEditListPagination['status'] = 'idle';
+
+  if (productListQuery.isFetchNextPageError) {
+    paginationStatus = 'error';
+  } else if (productListQuery.isFetchingNextPage) {
+    paginationStatus = 'loading';
+  }
 
   return (
     <EventDiscountEditProductList
       {...props}
-      hasNextPage={Boolean(productListQuery.hasNextPage)}
       initialProducts={products}
-      isFetchNextPageError={productListQuery.isFetchNextPageError}
-      isFetchingNextPage={productListQuery.isFetchingNextPage}
       marketId={props.marketId}
-      onLoadNextPage={loadNextPage}
+      pagination={{
+        hasNextPage: Boolean(productListQuery.hasNextPage),
+        status: paginationStatus,
+        onLoadNextPage: () => {
+          void productListQuery.fetchNextPage({ cancelRefetch: false });
+        },
+      }}
     />
   );
 };

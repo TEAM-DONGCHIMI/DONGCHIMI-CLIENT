@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, userEvent } from '@/test';
 
 import { ProductEditProductList } from './ProductEditProductList';
+import { useProductEditListActions } from './use-product-edit-list-actions';
 import {
   type ProductEditCardProps,
   type ProductEditCardVariantTypes,
@@ -66,6 +67,44 @@ mockUseProductDetailQuery.mockImplementation(({ productId }: { productId: number
   };
 });
 
+interface ProductEditProductListWithActionsProps {
+  autoOpenProductId?: string | null;
+  editModalVariant?: ProductEditCardVariantTypes;
+  groups: ProductEditProductGroup[];
+  onAutoOpenProductMissing?: (productId: string) => void;
+  onDeleteProduct?: (product: ProductEditCardProps) => void;
+  onUpdateProduct?: (productId: number, product: ProductEditCardProps) => void;
+}
+
+const ProductEditProductListWithActions = ({
+  autoOpenProductId,
+  editModalVariant = 'todaySpecial',
+  groups,
+  onAutoOpenProductMissing,
+  onDeleteProduct,
+  onUpdateProduct,
+}: ProductEditProductListWithActionsProps) => {
+  const actions = useProductEditListActions({
+    autoOpenProductId,
+    groups,
+    marketId: 1,
+    selectionMode: false,
+    variant: editModalVariant,
+    onAutoOpenProductMissing,
+    onDeleteProduct,
+    onUpdateProduct,
+  });
+
+  return (
+    <ProductEditProductList
+      actions={actions}
+      ariaLabel='오늘의 특가 상품 수정 목록'
+      groups={groups}
+      registrationHref='/products/today-special/new'
+    />
+  );
+};
+
 const renderProductList = (
   groups: ProductEditProductGroup[] = [],
   editModalVariant: ProductEditCardVariantTypes = 'todaySpecial',
@@ -79,12 +118,9 @@ const renderProductList = (
           <Routes>
             <Route
               element={
-                <ProductEditProductList
-                  ariaLabel='오늘의 특가 상품 수정 목록'
+                <ProductEditProductListWithActions
                   editModalVariant={editModalVariant}
                   groups={groups}
-                  marketId={1}
-                  registrationHref='/products/today-special/new'
                   onDeleteProduct={onDeleteProduct}
                   onUpdateProduct={onUpdateProduct}
                 />
@@ -119,8 +155,8 @@ describe('ProductEditProductList', () => {
       <MemoryRouter>
         <OverlayProvider>
           <ProductEditProductList
+            actions={{}}
             ariaLabel='오늘의 특가 상품 수정 목록'
-            editModalVariant='todaySpecial'
             groups={[
               {
                 title: '2026년 8월 15일',
@@ -133,10 +169,12 @@ describe('ProductEditProductList', () => {
                 ],
               },
             ]}
-            hasNextPage
-            marketId={1}
+            pagination={{
+              hasNextPage: true,
+              status: 'idle',
+              onLoadNextPage: handleLoadNextPage,
+            }}
             registrationHref='/products/today-special/new'
-            onLoadNextPage={handleLoadNextPage}
           />
         </OverlayProvider>
       </MemoryRouter>,
@@ -165,11 +203,14 @@ describe('ProductEditProductList', () => {
       <MemoryRouter>
         <OverlayProvider>
           <ProductEditProductList
+            actions={{}}
             ariaLabel='오늘의 특가 상품 수정 목록'
-            editModalVariant='todaySpecial'
             groups={groups}
-            isFetchingNextPage
-            marketId={1}
+            pagination={{
+              hasNextPage: true,
+              status: 'loading',
+              onLoadNextPage: handleLoadNextPage,
+            }}
             registrationHref='/products/today-special/new'
           />
         </OverlayProvider>
@@ -183,13 +224,15 @@ describe('ProductEditProductList', () => {
       <MemoryRouter>
         <OverlayProvider>
           <ProductEditProductList
+            actions={{}}
             ariaLabel='오늘의 특가 상품 수정 목록'
-            editModalVariant='todaySpecial'
             groups={groups}
-            isFetchNextPageError
-            marketId={1}
+            pagination={{
+              hasNextPage: true,
+              status: 'error',
+              onLoadNextPage: handleLoadNextPage,
+            }}
             registrationHref='/products/today-special/new'
-            onLoadNextPage={handleLoadNextPage}
           />
         </OverlayProvider>
       </MemoryRouter>,
@@ -230,8 +273,8 @@ describe('ProductEditProductList', () => {
       <MemoryRouter>
         <OverlayProvider>
           <ProductEditProductList
+            actions={{}}
             ariaLabel='오늘의 특가 상품 수정 목록'
-            editModalVariant='todaySpecial'
             groups={[
               {
                 title: '2026년 8월 15일',
@@ -249,10 +292,11 @@ describe('ProductEditProductList', () => {
               },
             ]}
             registrationHref='/products/today-special/new'
-            marketId={1}
-            selectedProductIds={[101]}
-            selectionMode
-            onToggleProductSelection={handleToggleProductSelection}
+            selection={{
+              enabled: true,
+              selectedProductIds: [101],
+              onToggleProduct: handleToggleProductSelection,
+            }}
           />
         </OverlayProvider>
       </MemoryRouter>,
@@ -349,8 +393,7 @@ describe('ProductEditProductList', () => {
     render(
       <MemoryRouter>
         <OverlayProvider>
-          <ProductEditProductList
-            ariaLabel='오늘의 특가 상품 수정 목록'
+          <ProductEditProductListWithActions
             autoOpenProductId=''
             editModalVariant='todaySpecial'
             groups={[
@@ -366,8 +409,6 @@ describe('ProductEditProductList', () => {
                 ],
               },
             ]}
-            marketId={1}
-            registrationHref='/products/today-special/new'
             onAutoOpenProductMissing={handleAutoOpenProductMissing}
           />
         </OverlayProvider>

@@ -5,6 +5,8 @@ import {
   createProductEditDisplayGroups,
   ProductEditProductList,
   ProductEditProductListLoading,
+  type ProductEditListPagination,
+  useProductEditListActions,
 } from '@/domains/product/components/product-edit-product-list';
 import {
   type ProductEditFilterTypes,
@@ -31,26 +33,20 @@ interface TodaySpecialEditProductSectionProps {
 
 interface TodaySpecialEditProductListProps extends TodaySpecialEditProductSectionProps {
   initialProducts: ProductEditListItemTypes[];
-  hasNextPage: boolean;
-  isFetchNextPageError: boolean;
-  isFetchingNextPage: boolean;
-  onLoadNextPage: () => void;
+  pagination: ProductEditListPagination;
 }
 
 const TodaySpecialEditProductList = ({
   autoOpenProductId,
   deletePending,
   initialProducts,
-  hasNextPage,
-  isFetchNextPageError,
-  isFetchingNextPage,
   marketId,
+  pagination,
   selection,
   selectedFilter,
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
   onDeleteProduct,
-  onLoadNextPage,
 }: TodaySpecialEditProductListProps) => {
   const { deleteProduct, products, updateProduct } = useProductEditProducts(
     initialProducts,
@@ -66,27 +62,33 @@ const TodaySpecialEditProductList = ({
     selectedFilter,
     supportsCategoryFilter: false,
   });
+  const productActions = useProductEditListActions({
+    autoOpenProductId,
+    groups: productGroups,
+    marketId,
+    selectionMode: selection.selectionMode,
+    variant: 'todaySpecial',
+    onAutoOpenProductMissing,
+    onAutoOpenProductModalClose,
+    onDeleteProduct: (product) => void deleteProduct(Number(product.productId)),
+    onUpdateProduct: updateProduct,
+  });
 
   return (
     <ProductEditProductList
+      actions={{
+        ...productActions,
+        disabled: deletePending,
+      }}
       ariaLabel='오늘의 특가 상품 수정 목록'
-      autoOpenProductId={autoOpenProductId}
-      deletePending={deletePending}
-      editModalVariant='todaySpecial'
       groups={productGroups}
-      hasNextPage={hasNextPage}
-      isFetchNextPageError={isFetchNextPageError}
-      isFetchingNextPage={isFetchingNextPage}
-      marketId={marketId}
+      pagination={pagination}
       registrationHref={MARKET_OWNER_ROUTES.todaySpecialRegistration}
-      selectedProductIds={selection.selectedProductIds}
-      selectionMode={selection.selectionMode}
-      onAutoOpenProductMissing={onAutoOpenProductMissing}
-      onAutoOpenProductModalClose={onAutoOpenProductModalClose}
-      onDeleteProduct={(product) => void deleteProduct(Number(product.productId))}
-      onLoadNextPage={onLoadNextPage}
-      onToggleProductSelection={selection.onToggleProductSelection}
-      onUpdateProduct={updateProduct}
+      selection={{
+        enabled: selection.selectionMode,
+        selectedProductIds: selection.selectedProductIds,
+        onToggleProduct: selection.onToggleProductSelection,
+      }}
     />
   );
 };
@@ -111,19 +113,26 @@ export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSec
     throw productListQuery.error;
   }
 
-  const loadNextPage = () => {
-    void productListQuery.fetchNextPage({ cancelRefetch: false });
-  };
+  let paginationStatus: ProductEditListPagination['status'] = 'idle';
+
+  if (productListQuery.isFetchNextPageError) {
+    paginationStatus = 'error';
+  } else if (productListQuery.isFetchingNextPage) {
+    paginationStatus = 'loading';
+  }
 
   return (
     <TodaySpecialEditProductList
       {...props}
-      hasNextPage={Boolean(productListQuery.hasNextPage)}
       initialProducts={products}
-      isFetchNextPageError={productListQuery.isFetchNextPageError}
-      isFetchingNextPage={productListQuery.isFetchingNextPage}
       marketId={props.marketId}
-      onLoadNextPage={loadNextPage}
+      pagination={{
+        hasNextPage: Boolean(productListQuery.hasNextPage),
+        status: paginationStatus,
+        onLoadNextPage: () => {
+          void productListQuery.fetchNextPage({ cancelRefetch: false });
+        },
+      }}
     />
   );
 };
