@@ -226,7 +226,7 @@ describe('ProductEditProductList', () => {
     );
 
     expect(screen.getByText('딸기 2팩')).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('상품을 더 불러오는 중이에요.');
+    expect(screen.getByRole('status')).toHaveTextContent('상품을 더 불러오는 중입니다.');
 
     rerender(
       <MemoryRouter>

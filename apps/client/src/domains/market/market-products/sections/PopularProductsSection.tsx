@@ -4,6 +4,11 @@ import Link from 'next/link';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
 import { PopularProductDiscountChip } from '../components/PopularProductDiscountChip';
+import {
+  getMarketProductAnchorId,
+  isPrimaryProductLinkClick,
+  saveMarketProductsScrollRestoration,
+} from '../hooks/market-products-scroll-restoration';
 import * as S from '../MarketProductsPage.css';
 import type { PopularProductTypes } from '../../model/market-detail-schema';
 import { formatPrice } from '../utils/format-price';
@@ -27,6 +32,21 @@ export const PopularProductsSection = ({ marketSlug, products }: PopularProducts
             aria-label={`${product.name} ${formatPrice(product.discountedPrice)}원 상품 보기`}
             className={S.topProductLinkClassName}
             href={CLIENT_ROUTES.marketProduct(marketSlug, String(product.productId))}
+            id={getMarketProductAnchorId('popular', product.productId)}
+            onClick={(event) => {
+              if (!isPrimaryProductLinkClick(event)) {
+                return;
+              }
+
+              saveMarketProductsScrollRestoration({
+                anchorId: event.currentTarget.id,
+                marketSlug,
+                productId: String(product.productId),
+                scrollY: window.scrollY,
+                section: 'popular',
+                viewportTop: event.currentTarget.getBoundingClientRect().top,
+              });
+            }}
           >
             <article className={S.topProductCardClassName}>
               {product.thumbnailUrl != null ? (

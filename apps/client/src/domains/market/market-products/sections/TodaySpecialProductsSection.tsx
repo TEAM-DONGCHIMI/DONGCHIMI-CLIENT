@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,6 +11,12 @@ import { IcChevronDown, IcChevronUp } from '@dongchimi/design-system/icons';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
 import type { DailyProductTypes } from '../../model/daily-products-schema';
+import {
+  getMarketProductAnchorId,
+  isPrimaryProductLinkClick,
+  saveMarketProductsScrollRestoration,
+  type TodaySpecialScrollRestorationTypes,
+} from '../hooks/market-products-scroll-restoration';
 import * as S from '../MarketProductsPage.css';
 import { formatPrice } from '../utils/format-price';
 
@@ -20,19 +26,34 @@ const DEFAULT_VISIBLE_COUNT = 2;
 interface TodaySpecialProductsSectionProps {
   marketSlug: string;
   products: DailyProductTypes[];
+  restorationState?: TodaySpecialScrollRestorationTypes;
   totalCount: number;
 }
 
 export const TodaySpecialProductsSection = ({
   marketSlug,
   products,
+  restorationState,
   totalCount,
 }: TodaySpecialProductsSectionProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const appliedRestorationIdRef = useRef(restorationState?.restorationId);
+  const [isExpanded, setIsExpanded] = useState(restorationState?.isExpanded ?? false);
   const visibleProducts = isExpanded ? products : products.slice(0, DEFAULT_VISIBLE_COUNT);
   const canToggle = products.length > DEFAULT_VISIBLE_COUNT;
   const toggleLabel = isExpanded ? '접기' : '등록한 상품 전체보기';
   const ToggleIcon = isExpanded ? IcChevronUp : IcChevronDown;
+
+  useEffect(() => {
+    if (
+      restorationState == null ||
+      restorationState.restorationId === appliedRestorationIdRef.current
+    ) {
+      return;
+    }
+
+    appliedRestorationIdRef.current = restorationState.restorationId;
+    setIsExpanded(restorationState.isExpanded);
+  }, [restorationState]);
 
   return (
     <section aria-labelledby='today-special-products-title' className={S.todaySpecialCardClassName}>
@@ -53,6 +74,22 @@ export const TodaySpecialProductsSection = ({
               aria-label={`${product.name} ${formatPrice(product.discountedPrice)}원 상품 보기`}
               className={S.todayProductLinkClassName}
               href={CLIENT_ROUTES.marketProduct(marketSlug, String(product.productId))}
+              id={getMarketProductAnchorId('today-special', product.productId)}
+              onClick={(event) => {
+                if (!isPrimaryProductLinkClick(event)) {
+                  return;
+                }
+
+                saveMarketProductsScrollRestoration({
+                  anchorId: event.currentTarget.id,
+                  isExpanded,
+                  marketSlug,
+                  productId: String(product.productId),
+                  scrollY: window.scrollY,
+                  section: 'today-special',
+                  viewportTop: event.currentTarget.getBoundingClientRect().top,
+                });
+              }}
             >
               <span className={S.todayProductImageClassName}>
                 {product.thumbnailUrl != null ? (

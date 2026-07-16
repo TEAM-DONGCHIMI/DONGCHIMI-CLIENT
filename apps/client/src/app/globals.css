@@ -17,14 +17,18 @@
 html,
 body {
   min-height: 100%;
-  overflow-x: hidden;
   background-color: var(--client-page-background);
   color: var(--client-foreground);
+}
+
+html {
+  overflow-x: hidden;
 }
 
 body {
   min-width: 0;
   min-height: 100dvh;
+  overflow-x: clip;
   overscroll-behavior-x: none;
 }
 
