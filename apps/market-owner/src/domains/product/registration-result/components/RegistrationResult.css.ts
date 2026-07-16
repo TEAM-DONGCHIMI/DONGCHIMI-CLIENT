@@ -83,6 +83,7 @@ export const tableHeaderClassName = style({
   gridTemplateColumns: tableColumnTemplate,
   alignItems: 'stretch',
   border: `1px solid ${atomic.neutral[30]}`,
+  borderTopRightRadius: '1.2rem',
   backgroundColor: atomic.common[0],
 });
 
@@ -179,19 +180,8 @@ export const selectionBoxRecipe = recipe({
           },
         },
       },
-      mixed: {
-        borderColor: semantic.primary.normal,
-        backgroundColor: semantic.primary.normal,
-      },
     },
   },
-});
-
-export const selectionMixedMarkClassName = style({
-  width: '0.9rem',
-  height: '0.2rem',
-  borderRadius: '999px',
-  backgroundColor: atomic.common[0],
 });
 
 export const listClassName = style({
@@ -226,6 +216,15 @@ export const emptyStateClassName = style({
   borderLeft: `1px solid ${atomic.neutral[30]}`,
   backgroundColor: atomic.common[0],
   color: atomic.neutral[60],
+});
+
+export const emptyProductRowClassName = style({
+  boxSizing: 'border-box',
+  height: '9.8rem',
+  borderRight: `1px solid ${atomic.neutral[30]}`,
+  borderBottom: `1px solid ${atomic.neutral[30]}`,
+  borderLeft: `1px solid ${atomic.neutral[30]}`,
+  backgroundColor: atomic.common[0],
 });
 
 export const uploadedImageButtonClassName = style({
@@ -279,29 +278,31 @@ export const bottomBarClassName = style({
   backgroundColor: atomic.neutral[5],
 });
 
-export const statusNoticeRecipe = recipe({
-  base: {
-    ...typography['body-3-semibold'],
-    boxSizing: 'border-box',
-    display: 'inline-flex',
-    height: '3.6rem',
-    alignItems: 'center',
-    gap: '0.8rem',
-    margin: 0,
-    border: `0.2rem solid ${semantic.status.negativeLight}`,
-    borderRadius: '2.8rem',
-    padding: '0.8rem 1.6rem',
-    color: semantic.status.negative,
-    whiteSpace: 'nowrap',
-  },
-  variants: {
-    visible: {
-      false: {
-        visibility: 'hidden',
-      },
-      true: {},
-    },
-  },
+export const statusNoticeClassName = style({
+  ...typography['body-3-semibold'],
+  boxSizing: 'border-box',
+  display: 'inline-flex',
+  height: '3.6rem',
+  alignItems: 'center',
+  gap: '0.8rem',
+  margin: 0,
+  border: `0.2rem solid ${semantic.status.negativeLight}`,
+  borderRadius: '2.8rem',
+  padding: '0.8rem 1.6rem',
+  color: semantic.status.negative,
+  whiteSpace: 'nowrap',
+});
+
+export const successStatusNoticeClassName = style({
+  ...typography['body-3-semibold'],
+  gap: '0.8rem',
+  padding: '0.8rem 1.6rem',
+  color: semantic.primary.normal,
+});
+
+globalStyle(`${successStatusNoticeClassName} > span:first-child`, {
+  width: '1.6rem',
+  height: '1.6rem',
 });
 
 export const actionGroupClassName = style({

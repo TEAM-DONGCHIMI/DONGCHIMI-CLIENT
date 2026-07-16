@@ -1,7 +1,10 @@
 import { type ReactNode } from 'react';
 
-import { Flex } from '@dongchimi/design-system/components';
-import { IcCircleExclamationFillSizeXsmallColorNegative } from '@dongchimi/design-system/icons';
+import { Flex, StatusChip } from '@dongchimi/design-system/components';
+import {
+  IcCircleCheckFillSizeSmall,
+  IcCircleExclamationFillSizeXsmallColorNegative,
+} from '@dongchimi/design-system/icons';
 
 import * as S from './RegistrationResult.css';
 
@@ -20,6 +23,8 @@ export const RegistrationResultSectionLayout = ({
   onPrevious,
   onRegister,
 }: RegistrationResultSectionLayoutProps) => {
+  const hasNeedsEditProducts = needsEditCount > 0;
+
   return (
     <Flex
       aria-labelledby='registration-result-title'
@@ -42,10 +47,23 @@ export const RegistrationResultSectionLayout = ({
       </Flex>
 
       <Flex align='center' className={S.bottomBarClassName} justify='between'>
-        <p aria-live='polite' className={S.statusNoticeRecipe({ visible: registerDisabled })}>
-          <IcCircleExclamationFillSizeXsmallColorNegative aria-hidden='true' />
-          <span>확인이 필요한 상품이 있어요 ({needsEditCount})</span>
-        </p>
+        {hasNeedsEditProducts ? (
+          <p aria-live='polite' className={S.statusNoticeClassName}>
+            <IcCircleExclamationFillSizeXsmallColorNegative aria-hidden='true' />
+            <span>확인이 필요한 상품이 있어요 ({needsEditCount})</span>
+          </p>
+        ) : (
+          <StatusChip
+            aria-live='polite'
+            className={S.successStatusNoticeClassName}
+            leftIcon={
+              <IcCircleCheckFillSizeSmall aria-hidden='true' height='1.6rem' width='1.6rem' />
+            }
+            status='success'
+          >
+            모든 상품의 확인이 완료되었어요
+          </StatusChip>
+        )}
 
         <Flex align='center' className={S.actionGroupClassName}>
           <button className={S.previousButtonClassName} onClick={onPrevious} type='button'>

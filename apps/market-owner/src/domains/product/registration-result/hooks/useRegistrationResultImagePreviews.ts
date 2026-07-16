@@ -43,7 +43,7 @@ export const useRegistrationResultImagePreviews = ({
     } catch (error) {
       onPreviewCreateError?.(error);
 
-      return;
+      return false;
     }
 
     const previousPreviewUrl = imagePreviewsRef.current.get(productId)?.src ?? null;
@@ -52,6 +52,8 @@ export const useRegistrationResultImagePreviews = ({
     revokeImagePreviewUrl(previousPreviewUrl);
     nextImagePreviews.set(productId, { alt: file.name, file, src: previewUrl });
     replaceImagePreviews(nextImagePreviews);
+
+    return true;
   };
 
   const deleteImagePreviews = (productIds: Iterable<string>) => {
