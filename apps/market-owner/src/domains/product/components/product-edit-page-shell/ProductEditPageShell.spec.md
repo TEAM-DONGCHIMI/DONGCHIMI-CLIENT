@@ -49,10 +49,13 @@
 - tab은 상품이 있는 경우 `TabNav.Item as={Link}`로 렌더링해 `/products/today-special/edit`, `/products/event-discount/edit` 사이를 route 이동합니다.
 - 등록 상품 수가 0인 tab은 disabled item으로 렌더링해 route 이동을 막습니다.
 - `카테고리별` filter는 행사 할인 수정 페이지에만 노출되며, trigger 아래에 category dropdown을 엽니다.
+- category dropdown은 trigger 하단 8px부터 viewport 하단 40px 전까지를 최대 높이로 사용하고, option이 넘치면 dropdown 내부만 세로 스크롤합니다.
+- dropdown 내부 스크롤이 끝에 닿아도 뒤쪽 상품 목록 scroll container로 스크롤을 전달하지 않습니다.
 - category dropdown이 열려 있으면 trigger icon은 chevron up, 닫혀 있으면 chevron down을 표시합니다.
 - dropdown open/close는 `overlay.open`, `overlay.close`, `overlay.unmount`로 처리하고, 바깥 클릭 또는 Escape 입력 시 닫습니다.
 - 카테고리 trigger를 클릭하는 것만으로는 상품 목록 grouping을 바꾸지 않고, dropdown option을 선택한 뒤 `카테고리별` selected 상태와 카테고리별 목록을 표시합니다.
 - 카테고리 trigger label은 카테고리 선택 전에는 `카테고리별`, 선택 후에는 선택된 카테고리 이름을 표시합니다.
+- 카테고리를 선택한 뒤 `상품 등록 순` 또는 `조회수 순`을 선택하면 선택 카테고리를 초기화하고 category trigger label을 `카테고리별`로 되돌립니다.
 - 행사 할인 filter pill button은 `카테고리별`, `상품 등록 순`, `조회수 순` 중 하나만 selected 상태로 표시합니다.
 - 오늘의 특가 filter pill button은 `상품 등록 순`, `조회수 순` 중 하나만 selected 상태로 표시합니다.
 - 기본 selected 상태는 행사 할인 수정 페이지에서는 `카테고리별`, 오늘의 특가 수정 페이지에서는 `상품 등록 순`이며, 사용자가 선택한 항목을 filled 상태와 `aria-pressed`로 표시합니다.

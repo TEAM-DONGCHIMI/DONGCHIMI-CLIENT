@@ -25,13 +25,7 @@ import {
 } from './sections';
 import * as S from './today-special-registration-page.css';
 
-const getSubmitButtonLabel = (isRegisteredProduct: boolean, isPending: boolean) => {
-  if (isRegisteredProduct) {
-    return isPending ? '수정 중' : '수정 완료';
-  }
-
-  return isPending ? '등록 중' : '등록 완료';
-};
+const getSubmitButtonLabel = (isPending: boolean) => (isPending ? '등록 중' : '등록 완료');
 
 interface TodaySpecialRegistrationPageContentProps {
   marketId: number;
@@ -77,7 +71,7 @@ const TodaySpecialRegistrationPageContent = ({
   const handleFormSubmit = form.createCurrentProductSubmitHandler(async (product) => {
     if (product.productId != null) {
       const result = await productUpdateFlow.submitProductUpdate({
-        currentThumbnailUrl: product.imagePreviewUrl,
+        currentThumbnailUrl: product.thumbnailUrl ?? product.imagePreviewUrl,
         dealType: 'DAILY',
         imageFile: product.imageFile,
         marketId,
@@ -86,7 +80,6 @@ const TodaySpecialRegistrationPageContent = ({
       });
 
       if (result.success) {
-        imagePreview.revokeCurrentPreviewUrl();
         categoryDropdown.closeCategoryDropdown();
         form.updateRegisteredProduct({
           product,
@@ -108,9 +101,9 @@ const TodaySpecialRegistrationPageContent = ({
     const result = await registerProduct(product);
 
     if (result.success) {
-      imagePreview.revokeCurrentPreviewUrl();
       categoryDropdown.closeCategoryDropdown();
       form.resetForNextProduct({
+        previewUrl: product.imagePreviewUrl,
         productId: result.productId,
         thumbnailUrl: result.thumbnailUrl,
       });
@@ -148,7 +141,7 @@ const TodaySpecialRegistrationPageContent = ({
   };
   const isProductSubmitPending = form.isSubmitting || productUpdateFlow.isPending;
   const isActionPending = isProductSubmitPending || isDeletePending;
-  const submitButtonLabel = getSubmitButtonLabel(form.isRegisteredProduct, isProductSubmitPending);
+  const submitButtonLabel = getSubmitButtonLabel(isProductSubmitPending);
 
   return (
     <main className={S.pageRootClassName}>

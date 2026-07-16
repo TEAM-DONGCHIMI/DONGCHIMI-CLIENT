@@ -531,14 +531,37 @@ describe('ProductEditProductList', () => {
     expect(screen.getByLabelText('행사 시작일')).toHaveValue('2026-08-12');
     expect(screen.getByLabelText('행사 종료일')).toHaveValue('2026-08-16');
 
-    await user.click(screen.getByRole('button', { name: '채소･과일' }));
+    const dialog = screen.getByRole('dialog', { name: '판매 정보를 수정해주세요' });
+    const categoryTrigger = screen.getByRole('button', { name: '채소･과일' });
+    vi.stubGlobal('innerHeight', 1000);
+    vi.spyOn(dialog, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 0, 1008, 600));
+    vi.spyOn(categoryTrigger, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(0, 460, 206, 40),
+    );
+
+    await user.click(categoryTrigger);
 
     const categoryDropdown = await screen.findByRole('group', { name: '상품 구분 선택' });
 
-    expect(
-      categoryDropdown.style.getPropertyValue('--product-category-dropdown-max-height'),
-    ).toMatch(/px$/);
+    expect(categoryDropdown.style.position).toBe('fixed');
+    expect(categoryDropdown.style.top).toBe('508px');
+    expect(categoryDropdown.style.getPropertyValue('--product-category-dropdown-max-height')).toBe(
+      '452px',
+    );
     expect(getComputedStyle(categoryDropdown).overflowY).toBe('auto');
+
+    vi.stubGlobal('innerHeight', 800);
+    vi.spyOn(categoryTrigger, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(0, 360, 206, 40),
+    );
+    fireEvent.resize(window);
+
+    await waitFor(() => {
+      expect(categoryDropdown.style.top).toBe('408px');
+      expect(
+        categoryDropdown.style.getPropertyValue('--product-category-dropdown-max-height'),
+      ).toBe('352px');
+    });
 
     fireEvent.scroll(categoryDropdown);
     fireEvent.scroll(document);

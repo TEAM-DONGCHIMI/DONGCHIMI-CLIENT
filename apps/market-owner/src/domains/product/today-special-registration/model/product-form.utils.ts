@@ -41,6 +41,7 @@ export const createEmptyTodaySpecialProductForm = (): TodaySpecialProductFormTyp
   salePrice: '',
   specialPrice: '',
   startDate: getTodayDateInputValue(),
+  thumbnailUrl: null,
 });
 
 export const formatPriceInput = formatProductPriceInput;

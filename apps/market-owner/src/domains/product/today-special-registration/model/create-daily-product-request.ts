@@ -10,7 +10,7 @@ import {
 } from './product-form.utils';
 import type { TodaySpecialProductFormTypes } from './product-form.types';
 
-const DEFAULT_PRODUCT_THUMBNAIL_URL = '/images/product-replace.svg';
+export const DEFAULT_PRODUCT_THUMBNAIL_URL = '/images/product-replace.svg';
 
 interface CreateDailyProductRequestParams {
   product: TodaySpecialProductFormTypes;

@@ -58,7 +58,9 @@
 - 종료일 field의 최소 날짜는 시작일과 오늘 중 더 늦은 날짜이며, 종료일이 시작일보다 이전이면 `변경하기`를 비활성화합니다.
 - 상품명은 공백을 포함해 최대 15자, 상품 한줄 홍보글은 공백을 포함해 최대 25자까지 입력할 수 있습니다.
 - 원가, 오늘의 특가, 판매가는 숫자만 입력할 수 있고 천 단위 콤마를 표시합니다.
-- 카테고리 dropdown은 viewport 하단과 40px 간격을 유지하고, modal scroll 시 현재 trigger 위치를 기준으로 최대 높이를 다시 계산합니다.
+- 카테고리 dropdown은 native popover top layer에 fixed 배치해 modal content의 `overflow-y: auto` 경계에 잘리지 않습니다.
+- dropdown은 trigger 하단 8px에 배치하고 viewport 하단 40px 여백을 떼어 놓으며, 옵션이 가용 높이를 넘으면 dropdown 내부를 스크롤합니다.
+- modal scroll과 viewport resize 시 현재 trigger의 viewport 좌표를 기준으로 fixed 위치와 최대 높이를 다시 계산합니다.
 - 텍스트/가격 입력은 design-system `InlineField`를 사용하고, 날짜 입력은 product domain 공용 `DateField`를 사용합니다.
 - 상품 이미지 영역은 product domain 공용 `ProductImageUploadField`를 사용합니다.
 
