@@ -26,7 +26,7 @@
 ## Scope
 
 - 상단 로고 header, 페이지 제목/설명, 마트 이미지 업로드 placeholder를 렌더링합니다.
-- 마트 이미지 파일을 선택하면 선택한 이미지를 업로드 영역에 preview로 표시하고 오른쪽 위에 design-system `Button`의 `outlined / assistive / large` 조합을 사용하는 40px 원형 camera 버튼을 표시합니다.
+- 마트 이미지 파일을 선택하면 선택한 이미지를 업로드 영역에 preview로 표시하고 오른쪽 위에 design-system `IconButton`의 `outlined / assistive / large / rounded` 조합과 `IcCameraDefault`를 사용하는 40px 원형 camera 버튼을 표시합니다.
 - 마트 이미지 preview에는 상품 등록 이미지와 동일한 `semantic.status.dimmer.hover` 딤 처리를 적용하고 camera 버튼은 딤 레이어 위에 표시합니다.
 - 마트 이미지는 JPG/JPEG/PNG 형식과 최대 10MB 파일만 허용하고, 형식 오류·크기 초과·업로드 실패·네트워크 오류를 error Toast로 안내합니다.
 - 마트명, 사업자 등록 번호, 주소, 상세주소, 영업 시간, 휴무일, 마트 번호, 점주 번호 입력 UI를 렌더링합니다.
