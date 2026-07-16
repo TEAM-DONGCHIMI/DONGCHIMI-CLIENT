@@ -1,3 +1,7 @@
+import Image from 'next/image';
+
+import mobileOnboardingImage from '@/shared/assets/images/img_mobile_onboarding.svg';
+
 import * as S from './LoginPage.css';
 import { KakaoLoginLink } from './components/KakaoLoginLink';
 
@@ -6,7 +10,13 @@ export const LoginPage = () => {
     <main className={S.pageClassName}>
       <h1 className={S.visuallyHiddenClassName}>동치미 로그인</h1>
 
-      <div aria-hidden='true' className={S.onboardingImageClassName} />
+      <Image
+        alt=''
+        aria-hidden='true'
+        className={S.onboardingImageClassName}
+        priority
+        src={mobileOnboardingImage}
+      />
 
       <section aria-label='로그인' className={S.loginSectionClassName}>
         <KakaoLoginLink />
