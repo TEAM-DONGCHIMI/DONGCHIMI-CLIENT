@@ -74,17 +74,8 @@ const HeaderSelectionButton = ({
   mixed: boolean;
   onClick: () => void;
 }) => {
-  let ariaChecked: boolean | 'mixed' = checked;
-  let selectionState: 'checked' | 'mixed' | 'unchecked' = 'unchecked';
-  let mixedMark = null;
-
-  if (mixed) {
-    ariaChecked = 'mixed';
-    selectionState = 'mixed';
-    mixedMark = <span className={S.selectionMixedMarkClassName} />;
-  } else if (checked) {
-    selectionState = 'checked';
-  }
+  const ariaChecked: boolean | 'mixed' = mixed ? 'mixed' : checked;
+  const selectionState = checked ? 'checked' : 'unchecked';
 
   return (
     <button
@@ -95,7 +86,7 @@ const HeaderSelectionButton = ({
       role='checkbox'
       type='button'
     >
-      <span className={S.selectionBoxRecipe({ state: selectionState })}>{mixedMark}</span>
+      <span className={S.selectionBoxRecipe({ state: selectionState })} />
     </button>
   );
 };

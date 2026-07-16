@@ -146,7 +146,7 @@ const SortButton = ({
         {sortLeadingIcon}
       </span>
       <span className={S.sortButtonTextClassName}>정렬</span>
-      <span aria-hidden='true' className={S.iconClassName}>
+      <span aria-hidden='true' className={cn(S.iconClassName, S.sortTrailingIconRecipe({ open }))}>
         {sortTrailingIcon}
       </span>
     </button>

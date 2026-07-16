@@ -159,3 +159,16 @@ export const iconClassName = style({
   flexShrink: 0,
   color: atomic.neutral[70],
 });
+
+export const sortTrailingIconRecipe = recipe({
+  variants: {
+    open: {
+      false: {
+        transform: 'rotate(0deg)',
+      },
+      true: {
+        transform: 'rotate(180deg)',
+      },
+    },
+  },
+});

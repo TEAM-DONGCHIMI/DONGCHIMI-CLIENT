@@ -83,6 +83,7 @@ export const tableHeaderClassName = style({
   gridTemplateColumns: tableColumnTemplate,
   alignItems: 'stretch',
   border: `1px solid ${atomic.neutral[30]}`,
+  borderTopRightRadius: '1.2rem',
   backgroundColor: atomic.common[0],
 });
 
@@ -179,19 +180,8 @@ export const selectionBoxRecipe = recipe({
           },
         },
       },
-      mixed: {
-        borderColor: semantic.primary.normal,
-        backgroundColor: semantic.primary.normal,
-      },
     },
   },
-});
-
-export const selectionMixedMarkClassName = style({
-  width: '0.9rem',
-  height: '0.2rem',
-  borderRadius: '999px',
-  backgroundColor: atomic.common[0],
 });
 
 export const listClassName = style({
