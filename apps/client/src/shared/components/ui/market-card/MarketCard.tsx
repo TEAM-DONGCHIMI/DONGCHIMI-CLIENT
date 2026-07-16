@@ -3,7 +3,7 @@ import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 import { PointChip } from '@dongchimi/design-system';
 import { cn } from '@dongchimi/design-system/styles';
 import type { RecipeVariantProps } from '@dongchimi/design-system/styles';
-import Image from 'next/image';
+import Image, { type ImageProps } from 'next/image';
 
 import * as S from './MarketCard.css';
 
@@ -13,7 +13,7 @@ type MarketCardVariantProps = RecipeVariantProps<typeof S.marketCard>;
 export interface MarketCardProps extends NativeMarketCardProps, MarketCardVariantProps {
   hasSaleChip?: boolean;
   imageAlt: string;
-  imageSrc: string;
+  imageSrc?: ImageProps['src'] | null;
   price: string;
   productName: string;
   saleChipLabel?: string;
@@ -35,16 +35,19 @@ export const MarketCard = forwardRef<HTMLElement, MarketCardProps>(
     ref,
   ) => {
     const shouldShowSaleChip = hasSaleChip && saleChipLabel != null && saleChipLabel.length > 0;
+    const hasImage = imageSrc != null && (typeof imageSrc !== 'string' || imageSrc.length > 0);
 
     return (
       <article ref={ref} className={cn(S.marketCard({ size }), className)} {...props}>
-        <Image
-          alt={imageAlt}
-          className={S.imageClassName}
-          width={120}
-          height={120}
-          src={imageSrc}
-        />
+        {hasImage && (
+          <Image
+            alt={imageAlt}
+            className={S.imageClassName}
+            width={120}
+            height={120}
+            src={imageSrc}
+          />
+        )}
         <div aria-hidden='true' className={S.scrimClassName} />
         <div className={S.contentClassName({ size })}>
           <span className={S.productNameClassName}>{productName}</span>

@@ -77,4 +77,60 @@ describe('NearbyMarketsMarketListSection', () => {
 
     expect(router.push).toHaveBeenCalledWith('/markets/mangwon-fresh');
   });
+
+  it('등록된 마트가 없으면 APPJAM 빈 상태 이미지와 안내 문구를 표시한다', () => {
+    useNearbyMarketsMarketList.mockReturnValue({
+      error: null,
+      fetchNextPage: vi.fn(),
+      hasNextPage: false,
+      isError: false,
+      isFetchingNextPage: false,
+      isPending: false,
+      keyword: undefined,
+      markets: [],
+    });
+
+    render(<NearbyMarketsMarketListSection />);
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '주변에 제휴 마트가 없어요. 더 많은 마트를 만나보실 수 있도록 준비중이에요!',
+    );
+    expect(screen.getByRole('status').querySelector('img')).toBeInTheDocument();
+  });
+
+  it('검색 결과가 없으면 기존 검색 결과 없음 문구를 표시한다', () => {
+    useNearbyMarketsMarketList.mockReturnValue({
+      error: null,
+      fetchNextPage: vi.fn(),
+      hasNextPage: false,
+      isError: false,
+      isFetchingNextPage: false,
+      isPending: false,
+      keyword: '망원',
+      markets: [],
+    });
+
+    render(<NearbyMarketsMarketListSection />);
+
+    expect(screen.getByRole('status')).toHaveTextContent("'망원'에 대한 검색 결과가 없어요");
+    expect(screen.getByRole('status').querySelector('img')).not.toBeInTheDocument();
+  });
+
+  it('노출 가능한 마트를 더 불러오는 중이면 빈 상태 대신 로딩 상태를 표시한다', () => {
+    useNearbyMarketsMarketList.mockReturnValue({
+      error: null,
+      fetchNextPage: vi.fn(),
+      hasNextPage: true,
+      isError: false,
+      isFetchingNextPage: true,
+      isPending: false,
+      keyword: undefined,
+      markets: [],
+    });
+
+    render(<NearbyMarketsMarketListSection />);
+
+    expect(screen.getByRole('status')).toHaveTextContent('마트를 더 불러오는 중이에요.');
+    expect(screen.getByRole('status').querySelector('img')).not.toBeInTheDocument();
+  });
 });

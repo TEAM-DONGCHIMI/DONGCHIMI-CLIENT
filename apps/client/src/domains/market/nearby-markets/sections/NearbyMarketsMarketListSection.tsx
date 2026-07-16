@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { useToast } from '@dongchimi/shared/toast';
+import emptyImage from '@/shared/assets/images/img_empty.svg';
 import { MartSummaryCard } from '@/shared/components';
 import { CLIENT_ROUTES } from '@/shared/constants';
 import { useIntersectionObserver } from '@/shared/hooks';
@@ -13,7 +15,12 @@ import { useNearbyMarketsMarketList } from '../NearbyMarketsClientProvider';
 import * as S from '../NearbyMarketsPage.css';
 
 const NEARBY_MARKETS_LOAD_ERROR_TOAST_ID = 'nearby-markets-load-error';
-const NEARBY_MARKETS_LOAD_ERROR_MESSAGE = '마트를 불러올 수 없어요';
+const NEARBY_MARKETS_LIST_ARIA_LABEL = '주변 마트 목록';
+const NEARBY_MARKETS_INITIAL_LOADING_MESSAGE = '주변 마트를 불러오는 중이에요.';
+const NEARBY_MARKETS_LOADING_MESSAGE = '마트를 더 불러오는 중이에요.';
+const NEARBY_MARKETS_LOAD_ERROR_MESSAGE = '마트를 불러올 수 없어요.';
+const NEARBY_MARKETS_EMPTY_MESSAGE =
+  '주변에 제휴 마트가 없어요.\n더 많은 마트를 만나보실 수 있도록 준비중이에요!';
 
 export const NearbyMarketsMarketListSection = () => {
   const {
@@ -46,9 +53,9 @@ export const NearbyMarketsMarketListSection = () => {
 
   if (isPending) {
     return (
-      <section aria-label='주변 마트 목록' className={S.marketListSectionClassName}>
+      <section aria-label={NEARBY_MARKETS_LIST_ARIA_LABEL} className={S.marketListSectionClassName}>
         <p className={S.marketListStatusClassName} role='status'>
-          주변 마트를 불러오는 중이에요.
+          {NEARBY_MARKETS_INITIAL_LOADING_MESSAGE}
         </p>
       </section>
     );
@@ -56,26 +63,50 @@ export const NearbyMarketsMarketListSection = () => {
 
   if (isError) {
     return (
-      <section aria-label='주변 마트 목록' className={S.marketListSectionClassName}>
+      <section aria-label={NEARBY_MARKETS_LIST_ARIA_LABEL} className={S.marketListSectionClassName}>
         <p className={S.marketListStatusClassName} role='alert'>
-          {error?.message ?? '주변 마트를 불러오지 못했어요.'}
+          {error?.message ?? NEARBY_MARKETS_LOAD_ERROR_MESSAGE}
+        </p>
+      </section>
+    );
+  }
+
+  if (markets.length === 0 && isFetchingNextPage) {
+    return (
+      <section aria-label={NEARBY_MARKETS_LIST_ARIA_LABEL} className={S.marketListSectionClassName}>
+        <p className={S.marketListStatusClassName} role='status'>
+          {NEARBY_MARKETS_LOADING_MESSAGE}
         </p>
       </section>
     );
   }
 
   if (markets.length === 0) {
+    const emptyMessage = keyword
+      ? `'${keyword}'에 대한 검색 결과가 없어요`
+      : NEARBY_MARKETS_EMPTY_MESSAGE;
+
     return (
-      <section aria-label='주변 마트 목록' className={S.marketListSectionClassName}>
-        <p className={S.marketListStatusClassName}>
-          {keyword ? `'${keyword}'에 대한 검색 결과가 없어요.` : '주변에 등록된 마트가 없어요.'}
-        </p>
+      <section aria-label={NEARBY_MARKETS_LIST_ARIA_LABEL} className={S.marketListSectionClassName}>
+        <div className={S.marketListEmptyStateClassName} role='status'>
+          {!keyword && (
+            <Image
+              alt=''
+              aria-hidden
+              className={S.marketListEmptyImageClassName}
+              height={91}
+              src={emptyImage}
+              width={91}
+            />
+          )}
+          <p className={S.marketListEmptyTextClassName}>{emptyMessage}</p>
+        </div>
       </section>
     );
   }
 
   return (
-    <section aria-label='주변 마트 목록' className={S.marketListSectionClassName}>
+    <section aria-label={NEARBY_MARKETS_LIST_ARIA_LABEL} className={S.marketListSectionClassName}>
       {markets.map((market) => (
         <MartSummaryCard
           key={market.marketId}
@@ -104,7 +135,7 @@ export const NearbyMarketsMarketListSection = () => {
       )}
       {isFetchingNextPage && (
         <p className={S.marketListStatusClassName} role='status'>
-          마트를 더 불러오는 중이에요.
+          {NEARBY_MARKETS_LOADING_MESSAGE}
         </p>
       )}
     </section>

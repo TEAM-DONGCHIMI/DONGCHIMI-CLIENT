@@ -2,7 +2,7 @@ import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 
 import { Button, Chip } from '@dongchimi/design-system';
 import { cn } from '@dongchimi/design-system/styles';
-import Image from 'next/image';
+import Image, { type ImageProps } from 'next/image';
 
 import { MarketCard, type MarketCardProps } from '../market-card';
 import * as S from './MartSummaryCard.css';
@@ -21,7 +21,7 @@ export interface MartSummaryCardProps extends NativeMartSummaryCardProps {
   martName: string;
   onActionClick?: () => void;
   profileImageAlt: string;
-  profileImageSrc: string;
+  profileImageSrc?: ImageProps['src'] | null;
   products: MartSummaryProductTypes[];
 }
 
@@ -41,18 +41,24 @@ export const MartSummaryCard = forwardRef<HTMLElement, MartSummaryCardProps>(
     },
     ref,
   ) => {
+    const hasProfileImage =
+      profileImageSrc != null &&
+      (typeof profileImageSrc !== 'string' || profileImageSrc.length > 0);
+
     return (
       <article ref={ref} className={cn(S.martSummaryCardClassName, className)} {...props}>
         <header className={S.headerClassName}>
           <div className={S.profileGroupClassName}>
             <div className={S.profileImageWrapperClassName}>
-              <Image
-                alt={profileImageAlt}
-                className={S.profileImageClassName}
-                height={41}
-                src={profileImageSrc}
-                width={41}
-              />
+              {hasProfileImage && (
+                <Image
+                  alt={profileImageAlt}
+                  className={S.profileImageClassName}
+                  height={41}
+                  src={profileImageSrc}
+                  width={41}
+                />
+              )}
             </div>
             <div className={S.titleGroupClassName}>
               <h2 className={S.martNameClassName}>{martName}</h2>
