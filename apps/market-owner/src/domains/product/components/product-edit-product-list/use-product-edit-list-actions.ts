@@ -100,7 +100,6 @@ export const useProductEditListActions = ({
     onAutoOpenProductMissing,
     onAutoOpenProductModalClose,
     openEditProductById,
-    selectionMode,
   ]);
 
   const requestDeleteProduct = useCallback(
