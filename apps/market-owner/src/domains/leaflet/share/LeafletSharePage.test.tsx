@@ -128,6 +128,10 @@ describe('LeafletSharePage', () => {
     mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
     render(<LeafletSharePage />, { wrapper: createWrapper() });
 
+    expect(screen.getByRole('navigation', { name: '현재 위치' })).toHaveTextContent(
+      '행사 할인 상품 등록/오늘의 전단 최종 확인',
+    );
+    expect(screen.queryByRole('searchbox', { name: '상품 검색' })).not.toBeInTheDocument();
     expect(mockedPublishLeaflet).not.toHaveBeenCalled();
 
     const shareButton = await screen.findByRole('button', { name: '전단 공유하기' });

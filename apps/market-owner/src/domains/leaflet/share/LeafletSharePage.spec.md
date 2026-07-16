@@ -47,6 +47,7 @@
 
 ## Behavior
 
+- header breadcrumb는 `행사 할인 상품 등록 / 오늘의 전단 최종 확인`을 표시하고 상품 검색 영역은 렌더링하지 않는다.
 - confirm view는 auth store의 현재 `marketId`로 기간 할인 전단 미리보기를 조회한다.
 - query key는 `marketId`를 포함한다.
 - 조회 성공 시 `daily.totalCount`는 오늘의 특가 요약 개수로, `preparedProducts.length`는 행사 할인 상품 요약 개수로 사용한다.
