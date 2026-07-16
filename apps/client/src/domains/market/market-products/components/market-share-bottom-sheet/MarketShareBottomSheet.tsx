@@ -176,65 +176,15 @@ interface PwaInstallGuideContentProps {
   onClose: () => void;
 }
 
-interface GetPwaInstallGuideCopyOptions {
-  installed: boolean;
-  manualInstructionsVisible: boolean;
-  requesting: boolean;
-}
-
-const getPwaInstallGuideCopy = ({
-  installed,
-  manualInstructionsVisible,
-  requesting,
-}: GetPwaInstallGuideCopyOptions) => {
-  if (installed) {
-    return {
-      buttonLabel: '확인',
-      description: '동치미가 이미 홈 화면에 추가되어 있어요.',
-    };
-  }
-
-  if (manualInstructionsVisible) {
-    return {
-      buttonLabel: '확인',
-      description: '브라우저의 공유 버튼을 누른 뒤\n홈 화면에 추가를 선택해주세요.',
-    };
-  }
-
-  return {
-    buttonLabel: requesting ? '설치 요청 중' : '홈 화면에 추가하기',
-    description: '홈 화면에 추가하기 버튼을 누르면\n마트 할인 정보를 빠르게 확인할 수 있어요.',
-  };
-};
-
 const PwaInstallGuideContent = ({ onClose }: PwaInstallGuideContentProps) => {
-  const { availability, requestInstall } = usePwaInstall();
-  const [manualInstructionsVisible, setManualInstructionsVisible] = useState(false);
-  const [requesting, setRequesting] = useState(false);
-  const installed = availability === 'installed';
-  const confirmationMode = installed || manualInstructionsVisible;
-  const { buttonLabel, description } = getPwaInstallGuideCopy({
-    installed,
-    manualInstructionsVisible,
-    requesting,
-  });
+  const { requestInstall } = usePwaInstall();
 
   const handleInstall = async () => {
-    if (confirmationMode) {
-      onClose();
-      return;
-    }
-
-    setRequesting(true);
     const result = await requestInstall();
-    setRequesting(false);
 
-    if (result === 'manual') {
-      setManualInstructionsVisible(true);
-      return;
+    if (result === 'accepted' || result === 'dismissed') {
+      onClose();
     }
-
-    onClose();
   };
 
   return (
@@ -251,20 +201,20 @@ const PwaInstallGuideContent = ({ onClose }: PwaInstallGuideContentProps) => {
           src={installGuideImage}
           width={263}
         />
-        <BottomSheet.Description aria-live='polite' className={S.installDescriptionClassName}>
-          {description}
+        <BottomSheet.Description className={S.installDescriptionClassName}>
+          홈 화면에 추가하기 버튼을 누르면
+          <br />
+          마트 할인 정보를 빠르게 확인할 수 있어요.
         </BottomSheet.Description>
         <button
-          aria-busy={requesting}
           autoFocus
           className={S.installButtonClassName}
-          disabled={requesting}
           onClick={() => {
             void handleInstall();
           }}
           type='button'
         >
-          {buttonLabel}
+          홈 화면에 추가하기
         </button>
       </BottomSheet.Body>
       <BottomSheet.Close className={S.installLaterButtonClassName}>다음에 하기</BottomSheet.Close>

@@ -15,7 +15,7 @@ describe('PWA manifest', () => {
       scope: '/',
       short_name: '동치미',
       start_url: '/',
-      theme_color: '#15C47E',
+      theme_color: '#FFFFFF',
     });
     expect(result.icons).toEqual(
       expect.arrayContaining([
