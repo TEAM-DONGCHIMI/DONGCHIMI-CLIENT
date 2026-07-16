@@ -6,7 +6,6 @@ import type {
   RegistrationResultEditableProductFieldTypes,
   RegistrationResultProduct,
   RegistrationResultProductDraftMapTypes,
-  RegistrationResultProductDraftTypes,
   RegistrationResultProductFieldValues,
 } from '../model';
 import { getRegistrationResultProductFieldValues } from '../model';
@@ -44,28 +43,11 @@ const RequiredMark = () => {
   return <span className={S.requiredMarkClassName}>*</span>;
 };
 
-const validatedFields = [
-  'productName',
-  'price',
-  'promotionText',
-  'discountPeriod',
-] as const satisfies readonly RegistrationResultEditableProductFieldTypes[];
-
 const getVisibleFieldErrors = (
   fieldErrors: RegistrationResultProductFieldErrorTypes,
-  productDraft: RegistrationResultProductDraftTypes | undefined,
+  hasLocalChanges: boolean,
 ) => {
-  const visibleFieldErrors: RegistrationResultProductFieldErrorTypes = {};
-
-  validatedFields.forEach((field) => {
-    const errorMessage = fieldErrors[field];
-
-    if (productDraft?.[field] !== undefined && errorMessage != null) {
-      visibleFieldErrors[field] = errorMessage;
-    }
-  });
-
-  return visibleFieldErrors;
+  return hasLocalChanges ? fieldErrors : {};
 };
 
 const getProductFieldValues = (
@@ -185,7 +167,7 @@ export const RegistrationResultTable = ({
       const fieldValues = getProductFieldValues(product, productDrafts);
       const fieldErrors = getVisibleFieldErrors(
         validateRegistrationResultProductFields(fieldValues),
-        productDrafts.get(product.id),
+        productDrafts.has(product.id) || imagePreviews.has(product.id),
       );
 
       return (

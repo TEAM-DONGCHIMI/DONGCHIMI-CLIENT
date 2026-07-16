@@ -1,5 +1,5 @@
 export { RegistrationResultSection } from './RegistrationResultSection';
 export type {
-  RegistrationResultDraftQueryParams,
+  RegistrationResultDraftSyncResult,
   RegistrationResultSectionProps,
 } from './RegistrationResultSection';
