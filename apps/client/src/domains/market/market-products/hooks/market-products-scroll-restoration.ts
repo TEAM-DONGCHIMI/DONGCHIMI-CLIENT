@@ -1,13 +1,20 @@
 export const MARKET_PRODUCTS_SCROLL_RESTORATION_TTL_MS = 30 * 60 * 1000;
 
-const MARKET_PRODUCTS_SCROLL_RESTORATION_VERSION = 1;
+const MARKET_PRODUCTS_SCROLL_RESTORATION_VERSION = 2;
 const MARKET_PRODUCTS_SCROLL_RESTORATION_KEY_PREFIX = 'market-products-scroll-restoration';
 const MARKET_PRODUCTS_HISTORY_ENTRY_KEY = '__dongchimiMarketProductsScrollRestoration';
+
+const createRuntimeToken = () => {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+};
+
+const marketProductsExecutionEpoch = typeof window === 'undefined' ? null : createRuntimeToken();
 
 export type MarketProductSectionTypes = 'event-discount' | 'popular' | 'today-special';
 
 interface MarketProductsScrollRestorationBaseTypes {
   anchorId: string;
+  executionEpoch: string;
   marketSlug: string;
   productId: string;
   restorationId: string;
@@ -38,9 +45,15 @@ export type MarketProductsScrollRestorationTypes =
   | TodaySpecialScrollRestorationTypes;
 
 export type SaveMarketProductsScrollRestorationTypes =
-  | Omit<EventDiscountScrollRestorationTypes, 'restorationId' | 'savedAt' | 'version'>
-  | Omit<PopularScrollRestorationTypes, 'restorationId' | 'savedAt' | 'version'>
-  | Omit<TodaySpecialScrollRestorationTypes, 'restorationId' | 'savedAt' | 'version'>;
+  | Omit<
+      EventDiscountScrollRestorationTypes,
+      'executionEpoch' | 'restorationId' | 'savedAt' | 'version'
+    >
+  | Omit<PopularScrollRestorationTypes, 'executionEpoch' | 'restorationId' | 'savedAt' | 'version'>
+  | Omit<
+      TodaySpecialScrollRestorationTypes,
+      'executionEpoch' | 'restorationId' | 'savedAt' | 'version'
+    >;
 
 interface ProductLinkClickTypes {
   altKey: boolean;
@@ -51,6 +64,7 @@ interface ProductLinkClickTypes {
 }
 
 interface MarketProductsHistoryEntryTypes {
+  executionEpoch: string;
   marketSlug: string;
   restorationId: string;
 }
@@ -68,6 +82,8 @@ const hasValidBaseState = (value: Record<string, unknown>) => {
     value.version === MARKET_PRODUCTS_SCROLL_RESTORATION_VERSION &&
     typeof value.anchorId === 'string' &&
     value.anchorId.length > 0 &&
+    typeof value.executionEpoch === 'string' &&
+    value.executionEpoch.length > 0 &&
     typeof value.marketSlug === 'string' &&
     value.marketSlug.length > 0 &&
     typeof value.productId === 'string' &&
@@ -122,8 +138,17 @@ const removeStoredState = (marketSlug: string) => {
   }
 };
 
-const readStoredState = (marketSlug: string): MarketProductsScrollRestorationTypes | null => {
+const readStoredState = (
+  marketSlug: string,
+  removeInvalidState: boolean,
+): MarketProductsScrollRestorationTypes | null => {
   if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const executionEpoch = marketProductsExecutionEpoch;
+
+  if (executionEpoch == null) {
     return null;
   }
 
@@ -138,16 +163,23 @@ const readStoredState = (marketSlug: string): MarketProductsScrollRestorationTyp
 
     if (
       !isMarketProductsScrollRestorationState(state) ||
+      state.executionEpoch !== executionEpoch ||
       state.marketSlug !== marketSlug ||
       Date.now() - state.savedAt > MARKET_PRODUCTS_SCROLL_RESTORATION_TTL_MS
     ) {
-      removeStoredState(marketSlug);
+      if (removeInvalidState) {
+        removeStoredState(marketSlug);
+      }
+
       return null;
     }
 
     return state;
   } catch {
-    removeStoredState(marketSlug);
+    if (removeInvalidState) {
+      removeStoredState(marketSlug);
+    }
+
     return null;
   }
 };
@@ -155,6 +187,8 @@ const readStoredState = (marketSlug: string): MarketProductsScrollRestorationTyp
 const isMarketProductsHistoryEntry = (value: unknown): value is MarketProductsHistoryEntryTypes => {
   return (
     isRecord(value) &&
+    typeof value.executionEpoch === 'string' &&
+    value.executionEpoch.length > 0 &&
     typeof value.marketSlug === 'string' &&
     value.marketSlug.length > 0 &&
     typeof value.restorationId === 'string' &&
@@ -172,13 +206,17 @@ const readCurrentHistoryEntry = (): MarketProductsHistoryEntryTypes | null => {
   return isMarketProductsHistoryEntry(historyEntry) ? historyEntry : null;
 };
 
-const markCurrentHistoryEntry = (marketSlug: string, restorationId: string) => {
+const markCurrentHistoryEntry = (
+  executionEpoch: string,
+  marketSlug: string,
+  restorationId: string,
+) => {
   const currentHistoryState = isRecord(window.history.state) ? window.history.state : {};
 
   window.history.replaceState(
     {
       ...currentHistoryState,
-      [MARKET_PRODUCTS_HISTORY_ENTRY_KEY]: { marketSlug, restorationId },
+      [MARKET_PRODUCTS_HISTORY_ENTRY_KEY]: { executionEpoch, marketSlug, restorationId },
     },
     '',
   );
@@ -199,10 +237,6 @@ const removeCurrentHistoryEntry = (marketSlug: string) => {
   } catch {
     return;
   }
-};
-
-const createRestorationId = () => {
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 };
 
 export const getMarketProductAnchorId = (
@@ -229,28 +263,42 @@ export const saveMarketProductsScrollRestoration = (
     return;
   }
 
-  const restorationId = createRestorationId();
+  const executionEpoch = marketProductsExecutionEpoch;
+
+  if (executionEpoch == null) {
+    return;
+  }
+
+  const restorationId = createRuntimeToken();
   const nextState = {
     ...state,
+    executionEpoch,
     restorationId,
     savedAt: Date.now(),
     version: MARKET_PRODUCTS_SCROLL_RESTORATION_VERSION,
   } satisfies MarketProductsScrollRestorationTypes;
 
   try {
-    markCurrentHistoryEntry(state.marketSlug, restorationId);
+    markCurrentHistoryEntry(executionEpoch, state.marketSlug, restorationId);
     window.sessionStorage.setItem(getStorageKey(state.marketSlug), JSON.stringify(nextState));
   } catch {
     return;
   }
 };
 
-export const consumePendingMarketProductsScrollRestoration = (marketSlug: string) => {
-  const storedState = readStoredState(marketSlug);
+const getPendingMarketProductsScrollRestoration = (
+  marketSlug: string,
+  removeInvalidState: boolean,
+) => {
+  const executionEpoch = marketProductsExecutionEpoch;
+  const storedState = readStoredState(marketSlug, removeInvalidState);
   const historyEntry = readCurrentHistoryEntry();
 
   if (
+    executionEpoch == null ||
     storedState == null ||
+    storedState.executionEpoch !== executionEpoch ||
+    historyEntry?.executionEpoch !== executionEpoch ||
     historyEntry?.marketSlug !== marketSlug ||
     historyEntry.restorationId !== storedState.restorationId
   ) {
@@ -258,6 +306,14 @@ export const consumePendingMarketProductsScrollRestoration = (marketSlug: string
   }
 
   return storedState;
+};
+
+export const peekPendingMarketProductsScrollRestoration = (marketSlug: string) => {
+  return getPendingMarketProductsScrollRestoration(marketSlug, false);
+};
+
+export const consumePendingMarketProductsScrollRestoration = (marketSlug: string) => {
+  return getPendingMarketProductsScrollRestoration(marketSlug, true);
 };
 
 export const clearMarketProductsScrollRestoration = (marketSlug: string) => {

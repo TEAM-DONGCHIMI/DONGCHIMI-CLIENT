@@ -9,7 +9,7 @@ import { useMarketDetailQuery } from '@/domains/market/hooks/use-market-detail-q
 
 import * as S from '../../MarketProductsPage.css';
 import type { TodaySpecialScrollRestorationTypes } from '../../hooks/market-products-scroll-restoration';
-import { useMarketProductsScrollRestoration } from '../../hooks/useMarketProductsScrollRestoration';
+import { useMarketProductsScrollRestoration } from '../../hooks/use-market-products-scroll-restoration';
 import { EventDiscountProductsSection } from '../../sections/EventDiscountProductsSection';
 import { MarketOverviewSection } from '../../sections/MarketOverviewSection';
 import { PopularProductsSection } from '../../sections/PopularProductsSection';
