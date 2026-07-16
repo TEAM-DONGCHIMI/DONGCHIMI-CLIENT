@@ -1,3 +1,5 @@
+import mapMarkerImage from '@/shared/assets/images/img_map.svg';
+
 export const KAKAO_MAP_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY;
 
 export const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
@@ -14,7 +16,6 @@ export const LOAD_ERROR_MESSAGE = '마트를 불러올 수 없어요';
 export const PERMISSION_DENIED_MESSAGE = '위치 검색 결과를 기준으로 마트를 보여드릴게요';
 
 const SELECTED_LOCATION_MARKER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M12 22s7-6.04 7-12a7 7 0 1 0-14 0c0 5.96 7 12 7 12Z" fill="#2563EB" stroke="#FFFFFF" stroke-width="2"/><circle cx="12" cy="10" r="2.6" fill="#FFFFFF"/></svg>`;
-const MARKET_MARKER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="32"><path d="M14 31s10-8.63 10-18A10 10 0 1 0 4 13c0 9.37 10 18 10 18Z" fill="#FF6B35" stroke="#FFFFFF" stroke-width="2"/><path d="M9 13h10v7H9v-7Z" fill="#FFFFFF"/><path d="M8 10h12l-1.5 4h-9L8 10Z" fill="#FFE0D2"/></svg>`;
 
 export const SELECTED_LOCATION_MARKER_IMAGE = {
   src: `data:image/svg+xml;utf8,${encodeURIComponent(SELECTED_LOCATION_MARKER_SVG)}`,
@@ -22,6 +23,9 @@ export const SELECTED_LOCATION_MARKER_IMAGE = {
 };
 
 export const MARKET_MARKER_IMAGE = {
-  src: `data:image/svg+xml;utf8,${encodeURIComponent(MARKET_MARKER_SVG)}`,
-  size: { width: 28, height: 32 },
+  src: mapMarkerImage,
+  size: { width: 71, height: 71 },
+  options: {
+    offset: { x: 35.5, y: 35.5 },
+  },
 };
