@@ -198,6 +198,7 @@ const createClosedBusinessHourSlot = (holiday: string) => {
 export const createMarketInformationRegistrationRequest = (
   form: MarketInformationFormTypes,
 ): MarketInformationRegistrationRequestTypes => {
+  const isHolidayClosed = form.holiday.split(', ').includes('공휴일');
   const businessHours = [
     createBusinessHourSlot({
       businessDay: form.businessDay,
@@ -215,6 +216,7 @@ export const createMarketInformationRegistrationRequest = (
     brn: form.brn || null,
     businessHours,
     detailAddress: form.detailAddress || null,
+    isHolidayClosed,
     latitude: form.latitude,
     longitude: form.longitude,
     marketPhone1: form.marketPhone1,

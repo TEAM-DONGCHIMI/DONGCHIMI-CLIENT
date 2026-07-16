@@ -17,7 +17,7 @@
 - params: `marketId?: number`
 - query key: `marketQueryKeys.detail(marketId)`
 - enabled: `marketId`가 있을 때만 요청합니다.
-- response: API boundary의 Zod schema를 통과한 마켓 상세 `data`
+- response: API boundary의 Zod schema를 통과한 마켓 상세 `data`. `isHolidayClosed`는 수정 폼의 공휴일 선택 상태를 복원하는 데 사용합니다.
 - error: HTTP/validation 오류를 query error 상태로 전달하며 페이지가 `MARKET_ACCESS_DENIED`와 `MARKET_NOT_FOUND`를 구분합니다.
 
 ## Cache

@@ -57,6 +57,7 @@ const flyerPreviewResponseSchema = z.object({
     address: z.string(),
     isOpenNow: z.boolean(),
     businessHours: z.array(flyerPreviewBusinessHourResponseSchema),
+    isHolidayClosed: z.boolean(),
     marketPhone1: z.string(),
     marketPhone2: z.string().nullable().optional(),
     ownerPhone: z.string(),

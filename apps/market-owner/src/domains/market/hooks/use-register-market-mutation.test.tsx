@@ -40,7 +40,21 @@ describe('useRegisterMarketMutation', () => {
       success: true,
       code: 'SUCCESS',
       message: '등록되었습니다.',
-      data: { marketId: 24 },
+      data: {
+        address: '서울특별시 마포구 월드컵로 123|101호',
+        brn: null,
+        businessHours: [],
+        isHolidayClosed: false,
+        latitude: 37.5665,
+        longitude: 126.978,
+        marketId: 24,
+        marketPhone1: '02-1234-5678',
+        marketPhone2: null,
+        marketPhonePrimary: 1,
+        name: '동치미마트',
+        ownerPhone: '010-1234-5678',
+        thumbnailUrl: null,
+      },
     });
     const { result } = renderHook(() => useRegisterMarketMutation(), {
       wrapper: createWrapper(),

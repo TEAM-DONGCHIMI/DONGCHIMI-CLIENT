@@ -40,6 +40,7 @@
 ## Data
 
 - query: `GET /v1/owners/markets/{marketId}/flyers/preview/periodic`
+- preview response의 `isHolidayClosed`를 API boundary에서 검증하고, 영업 상태 표시는 서버가 공휴일을 반영해 계산한 `isOpenNow`를 사용합니다.
 - mutation: `POST /v1/owners/markets/{marketId}/products`
 - mutation: `POST /v1/owners/markets/{marketId}/flyers/qr`
 - mutation: `POST /v1/owners/markets/{marketId}/flyers`
