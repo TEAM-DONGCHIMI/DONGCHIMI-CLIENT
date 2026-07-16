@@ -2,8 +2,10 @@ import { type ProductCardItemTypes, type ProductCardProps } from '@dongchimi/sha
 
 import { type OwnerHomeResponseTypes } from '@/domains/home/model/owner-home-schema';
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
+import { type ProductEditTargetDealTypes } from '@/shared/utils/product-edit-target-path.utils';
 
 export interface HomeProductSectionTypes {
+  dealType: ProductEditTargetDealTypes;
   editRoute: MarketOwnerRouteTypes;
   id: string;
   itemVariant: NonNullable<ProductCardProps['itemVariant']>;
@@ -64,6 +66,7 @@ export const createHomeDashboardViewModel = (data: OwnerHomeResponseTypes) => {
   return {
     sections: [
       {
+        dealType: 'DAILY',
         editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
         id: 'daily',
         itemVariant: 'today',
@@ -72,6 +75,7 @@ export const createHomeDashboardViewModel = (data: OwnerHomeResponseTypes) => {
         totalCount: data.dailyCount,
       },
       {
+        dealType: 'PERIODIC',
         editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
         id: 'periodic',
         itemVariant: 'period',

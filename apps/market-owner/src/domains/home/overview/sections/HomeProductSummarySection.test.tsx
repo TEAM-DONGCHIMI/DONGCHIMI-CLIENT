@@ -1,8 +1,8 @@
-import { MemoryRouter } from 'react-router';
+import { RouterProvider, createMemoryRouter } from 'react-router';
 import { within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { render, screen } from '@/test';
+import { render, screen, userEvent } from '@/test';
 
 import { homeProductSections } from '../fixtures';
 
@@ -22,11 +22,19 @@ const renderHomeProductSummarySection = (emptySectionIds: readonly string[] = []
       : (registeredProductCounts[section.id] ?? section.totalCount),
   }));
 
-  return render(
-    <MemoryRouter>
-      <HomeProductSummarySection sections={sections} />
-    </MemoryRouter>,
+  const router = createMemoryRouter(
+    [
+      {
+        path: '*',
+        element: <HomeProductSummarySection sections={sections} />,
+      },
+    ],
+    { initialEntries: ['/'] },
   );
+
+  render(<RouterProvider router={router} />);
+
+  return router;
 };
 
 describe('HomeProductSummarySection', () => {
@@ -38,6 +46,33 @@ describe('HomeProductSummarySection', () => {
     expect(screen.getByLabelText('총 20건')).toBeInTheDocument();
     expect(screen.getByLabelText('총 35건')).toBeInTheDocument();
   });
+
+  it.each([
+    {
+      expectedPathname: '/products/today-special/edit',
+      expectedSearch: '?productId=101',
+      productName: '상품 보기: 풀무원 콩나물 500g, 10% 할인',
+      sectionName: '오늘의 특가 상품',
+    },
+    {
+      expectedPathname: '/products/event-discount/edit',
+      expectedSearch: '?productId=201',
+      productName: '1위 상품 보기: 풀무원 콩나물 500g',
+      sectionName: '행사 할인 상품',
+    },
+  ])(
+    '$sectionName 상품 선택 시 productId와 함께 해당 수정 페이지로 이동한다',
+    async ({ expectedPathname, expectedSearch, productName, sectionName }) => {
+      const user = userEvent.setup();
+      const router = renderHomeProductSummarySection();
+      const productSection = screen.getByRole('region', { name: sectionName });
+
+      await user.click(within(productSection).getAllByRole('button', { name: productName })[0]);
+
+      expect(router.state.location.pathname).toBe(expectedPathname);
+      expect(router.state.location.search).toBe(expectedSearch);
+    },
+  );
 
   it('dims only the today-special card and disables its product actions when its count is zero', () => {
     renderHomeProductSummarySection(['daily']);

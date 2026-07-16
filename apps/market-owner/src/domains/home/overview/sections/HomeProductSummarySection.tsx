@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router';
 import { TextButton } from '@dongchimi/design-system/components';
 import { ProductCard, type ProductCardProps } from '@dongchimi/shared';
 
+import { createProductEditTargetPath } from '@/shared/utils/product-edit-target-path.utils';
+
 import { type HomeProductSectionTypes } from '../model/home-dashboard-view-model';
 import * as S from '../HomePage.css';
 
@@ -18,7 +20,12 @@ export const HomeProductSummarySection = ({ sections }: HomeProductSummarySectio
 
   const handleProductClick = (section: HomeProductSectionTypes) => {
     const onProductClick: ProductCardProps['onProductClick'] = (item) => {
-      navigate(section.editRoute, { state: { productId: item.id } });
+      navigate(
+        createProductEditTargetPath({
+          dealType: section.dealType,
+          productId: item.id,
+        }),
+      );
     };
 
     return onProductClick;

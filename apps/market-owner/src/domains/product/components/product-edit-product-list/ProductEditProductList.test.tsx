@@ -404,6 +404,41 @@ describe('ProductEditProductList', () => {
     expect(screen.getByRole('button', { name: '변경하기' })).toBeDisabled();
   });
 
+  it('opens a route-target edit modal when the product is outside the loaded groups', async () => {
+    const handleAutoOpenProductMissing = vi.fn();
+
+    render(
+      <MemoryRouter>
+        <ToastProvider defaultDurationMs={null}>
+          <OverlayProvider>
+            <ProductEditProductListWithActions
+              autoOpenProductId='999'
+              groups={[
+                {
+                  title: '2026년 8월 15일',
+                  products: [
+                    {
+                      productId: 101,
+                      productName: '딸기 2팩',
+                      salePrice: '4,500',
+                    },
+                  ],
+                },
+              ]}
+              onAutoOpenProductMissing={handleAutoOpenProductMissing}
+            />
+          </OverlayProvider>
+        </ToastProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).toBeInTheDocument();
+    expect(mockUseProductDetailQuery).toHaveBeenCalledWith({ marketId: 1, productId: 999 });
+    expect(handleAutoOpenProductMissing).not.toHaveBeenCalled();
+  });
+
   it('does not open edit modal when the product id is empty', async () => {
     const user = userEvent.setup();
     const handleAutoOpenProductMissing = vi.fn();
