@@ -4,6 +4,19 @@ import { atomic, typography } from '@dongchimi/design-system/tokens';
 
 const contactLabelColumnWidth = '10.8rem';
 
+export const sectionGridClassName = style({
+  display: 'grid',
+  gridRow: 'span 2',
+  gridTemplateRows: 'subgrid',
+  rowGap: '3.2rem',
+  '@media': {
+    'screen and (max-width: 860px)': {
+      gridRow: 'auto',
+      gridTemplateRows: 'none',
+    },
+  },
+});
+
 export const inlineFieldClassName = style({
   display: 'grid',
   gridTemplateColumns: `${contactLabelColumnWidth} minmax(0, 1fr)`,
@@ -37,9 +50,13 @@ export const addableFieldClassName = style({
   minWidth: 0,
 });
 
+export const fieldSlotClassName = style({
+  height: '7rem',
+  overflow: 'hidden',
+});
+
 export const marketPhoneRowsClassName = style({
   display: 'grid',
-  minHeight: '10.8rem',
   alignContent: 'start',
   gap: '1.2rem',
 });
@@ -47,5 +64,7 @@ export const marketPhoneRowsClassName = style({
 export const ownerPhoneRowsClassName = style({
   display: 'grid',
   minWidth: 0,
+  height: '7rem',
+  overflow: 'hidden',
   gap: '1.2rem',
 });

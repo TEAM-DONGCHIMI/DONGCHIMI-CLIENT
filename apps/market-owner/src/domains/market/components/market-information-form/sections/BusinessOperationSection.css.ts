@@ -2,6 +2,19 @@ import { style } from '@vanilla-extract/css';
 
 import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 
+export const sectionGridClassName = style({
+  display: 'grid',
+  gridRow: 'span 2',
+  gridTemplateRows: 'subgrid',
+  rowGap: '3.2rem',
+  '@media': {
+    'screen and (max-width: 860px)': {
+      gridRow: 'auto',
+      gridTemplateRows: 'none',
+    },
+  },
+});
+
 export const inlineFieldClassName = style({
   display: 'grid',
   gridTemplateColumns: '7.6rem minmax(0, 1fr)',
@@ -28,22 +41,26 @@ export const businessHourControlClassName = style({
 
 export const businessHourRowsClassName = style({
   display: 'grid',
-  minHeight: '10.8rem',
   alignContent: 'start',
   gap: '1.2rem',
 });
 
 export const businessHourRowGroupClassName = style({
   display: 'grid',
+  height: '7rem',
+  alignContent: 'start',
   gap: '0.4rem',
 });
 
 export const businessTimeErrorMessageClassName = style({
   display: 'inline-flex',
   minWidth: 0,
+  height: '1.8rem',
   alignItems: 'center',
   gap: '0.4rem',
+  overflow: 'hidden',
   color: semantic.status.negative,
+  whiteSpace: 'nowrap',
   ...typography['caption-1-medium'],
 });
 

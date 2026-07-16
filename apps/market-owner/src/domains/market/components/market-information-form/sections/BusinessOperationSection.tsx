@@ -3,7 +3,7 @@ import { useCallback, useEffect, useId, useRef, type ChangeEvent, type FocusEven
 import { overlay, useOverlayData } from 'overlay-kit';
 import { type UseFormRegisterReturn } from 'react-hook-form';
 
-import { AddableField, Dropdown, RequiredMark, Stack } from '@dongchimi/design-system/components';
+import { AddableField, Dropdown, RequiredMark } from '@dongchimi/design-system/components';
 import {
   IcChevronDown,
   IcChevronUp,
@@ -243,7 +243,7 @@ export const BusinessOperationSection = ({
   };
 
   return (
-    <Stack gap='2xl'>
+    <div className={S.sectionGridClassName}>
       <div className={S.inlineFieldClassName}>
         <span className={S.inlineLabelClassName}>
           영업 시간
@@ -415,6 +415,6 @@ export const BusinessOperationSection = ({
           )}
         </div>
       </div>
-    </Stack>
+    </div>
   );
 };
