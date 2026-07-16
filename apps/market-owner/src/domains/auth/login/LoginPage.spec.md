@@ -7,7 +7,7 @@
 - Page: `login`
 - Route: `/login`
 - Path: `apps/market-owner/src/domains/auth/login/LoginPage.tsx`
-- Jira: DCMSM-15, DCMSM-23, DCMSM-99
+- Jira: DCMSM-15, DCMSM-23
 - Status: Implemented
 
 ## Purpose
@@ -44,7 +44,6 @@ auth 작업에서 연결합니다.
 
 ## Behavior
 
-- 로그인 상단 브랜드 이미지는 기존 app-shared `Img_pavicon.svg`를 재사용하고 92×32로 표시합니다.
 - 이메일과 비밀번호 입력창은 디자인 시스템 `TextInput`을 사용합니다.
 - 로그인 버튼은 디자인 시스템 `Button`을 사용하며, API 연동 전까지 disabled 상태로 둡니다.
 - 로그인 상태 유지 선택지는 native checkbox와 디자인 시스템 체크박스 아이콘을 함께 사용합니다.
@@ -60,6 +59,5 @@ auth 작업에서 연결합니다.
 ## Verification
 
 - [ ] `/login` route renders `마트 관리자 로그인`
-- [ ] login renders the app-shared brand logo at 92×32
 - [ ] `/login` route does not render sidebar complementary landmark
 - [ ] signup link routes to `/signup`
