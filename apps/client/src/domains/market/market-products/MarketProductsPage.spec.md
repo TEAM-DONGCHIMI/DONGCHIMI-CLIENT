@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21
+- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21, DCMCL-28
 - Figma: APPJAM, mobile web market leaflet flow
 - Route: `/markets/[slug]`
 - Owner: `apps/client`
@@ -18,7 +18,8 @@
 - 마트 상세 응답의 `marketId`로 오늘의 특가와 행사 할인 상품을 조회합니다.
 - 행사 상품은 전체 또는 서버 `ProductCategory` enum별 cursor pagination을 사용합니다.
 - 상품 카드는 `/markets/[slug]/products/[productId]`로 이동합니다.
-- 공유하기는 `MarketShareBottomSheet`를 재사용하고, 전화걸기는 확인 modal 후 `tel:` URL로 이동합니다.
+- 공유하기는 `MarketShareBottomSheet`를 재사용하고, 공유 시트의 `앱으로 전단보기`는 PWA 설치 안내 시트로 전환합니다.
+- 전화걸기는 확인 modal 후 `tel:` URL로 이동합니다.
 
 ## Layout And Sections
 
@@ -74,6 +75,8 @@
 - 이미 사용한 `nextCursor`가 반환되면 반복 요청을 중단합니다.
 - observer의 연속 intersection은 진행 중인 다음 페이지 요청을 중복 실행하지 않습니다.
 - TanStack Query의 abort signal을 browser request와 upstream request에 전달합니다.
+- 설치 가능한 브라우저의 `홈 화면에 추가하기`는 사용자 제스처 안에서 네이티브 설치 prompt를 호출합니다.
+- 직접 설치 prompt를 지원하지 않는 브라우저는 공유 메뉴를 통한 수동 설치 절차를 안내합니다.
 - 내용이 없는 중간 페이지라도 `hasNext`가 true이면 최종 빈 상태로 확정하지 않습니다.
 - 각 페이지 grid는 `content-visibility: auto`로 화면 밖 렌더링 비용을 줄입니다.
 - 무한 목록 상품 link는 viewport 진입만으로 상세 route를 대량 요청하지 않도록 prefetch를 비활성화합니다.
@@ -87,12 +90,12 @@
 
 ## Verification
 
-- [ ] `git diff --check`
-- [ ] `pnpm --filter client test`
-- [ ] `pnpm --filter client lint`
-- [ ] `pnpm --filter client typecheck`
-- [ ] `pnpm --filter client build`
-- [ ] browser route: `/markets/mangwon-fresh`, mobile viewport 375px
+- [x] `git diff --check`
+- [x] `pnpm --filter client test`
+- [x] `pnpm --filter client lint`
+- [x] `pnpm --filter client typecheck`
+- [x] `pnpm --filter client build`
+- [x] browser route: `/markets/mangwon-fresh`, mobile viewport 375px with fixed API responses
 
 ## Out Of Scope
 

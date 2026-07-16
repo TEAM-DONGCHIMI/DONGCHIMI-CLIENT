@@ -3,6 +3,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ToastProvider } from '@dongchimi/shared/toast';
 import { fn, userEvent, within } from 'storybook/test';
 
+import { PwaInstallProvider } from '@/shared/pwa';
+
 import { MarketShareBottomSheet } from './MarketShareBottomSheet';
 
 const meta = {
@@ -10,9 +12,11 @@ const meta = {
   component: MarketShareBottomSheet,
   decorators: [
     (Story) => (
-      <ToastProvider placement='bottom-center'>
-        <Story />
-      </ToastProvider>
+      <PwaInstallProvider>
+        <ToastProvider placement='bottom-center'>
+          <Story />
+        </ToastProvider>
+      </PwaInstallProvider>
     ),
   ],
   parameters: {
@@ -24,9 +28,6 @@ const meta = {
       control: 'text',
     },
     onCopyLink: {
-      control: false,
-    },
-    onOpenQrCode: {
       control: false,
     },
     onShareKakao: {
@@ -45,7 +46,6 @@ const meta = {
   args: {
     marketName: '망원 신선마트',
     onCopyLink: fn(),
-    onOpenQrCode: fn(),
     onShareKakao: fn(),
     shareUrl: 'dongchimi.kr/mangwon-fresh',
     triggerLabel: '전단 공유하기',
@@ -65,8 +65,16 @@ export const Opened: StoryTypes = {
   },
 };
 
-export const WithoutQrAction: StoryTypes = {
-  args: {
-    onOpenQrCode: undefined,
+export const InstallGuide: StoryTypes = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: '전단 공유하기' }));
+
+    const dialog = within(canvasElement.ownerDocument.body).getByRole('dialog', {
+      name: '전단 공유하기',
+    });
+
+    await userEvent.click(within(dialog).getByRole('button', { name: '앱으로 전단보기' }));
   },
 };
