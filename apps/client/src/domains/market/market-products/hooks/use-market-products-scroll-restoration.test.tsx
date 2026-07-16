@@ -6,7 +6,7 @@ import {
   getMarketProductAnchorId,
   saveMarketProductsScrollRestoration,
 } from './market-products-scroll-restoration';
-import { useMarketProductsScrollRestoration } from './useMarketProductsScrollRestoration';
+import { useMarketProductsScrollRestoration } from './use-market-products-scroll-restoration';
 
 const MARKET_SLUG = 'mangwon-fresh';
 const MARKET_LIST_PATH = `/markets/${MARKET_SLUG}`;

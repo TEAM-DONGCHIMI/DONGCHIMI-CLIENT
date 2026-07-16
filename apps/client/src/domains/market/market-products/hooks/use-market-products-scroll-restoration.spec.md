@@ -2,8 +2,9 @@
 
 ## Metadata
 
-- Jira: DCMCL-24
+- Jira: DCMCL-31
 - Hook: `useMarketProductsScrollRestoration`
+- File: `use-market-products-scroll-restoration.ts`
 - Owner: `apps/client/domains/market/market-products`
 - Status: Ready
 
@@ -15,12 +16,12 @@
 ## Source Of Truth
 
 - Related page/component: `MarketProductsQueryContent`, `PopularProductsSection`, `TodaySpecialProductsSection`, `EventDiscountProductsSection`
-- Related Jira: DCMCL-24
+- Related Jira: DCMCL-31, DCMCL-24
 
 ## Inputs
 
 - params: market route의 `marketSlug`
-- external state: route 단위 sessionStorage snapshot, 목록 history entry 복원 token, 브라우저 `popstate`, 상품 anchor DOM
+- external state: route 단위 sessionStorage snapshot, 목록 history entry 복원 token, 현재 앱 실행 epoch, 브라우저 `popstate`, 상품 anchor DOM
 
 ## Returns
 
@@ -31,8 +32,8 @@
 
 ## Behavior
 
-- initial state: 현재 history entry의 복원 token과 sessionStorage snapshot이 일치할 때만 저장 상태를 읽습니다.
-- save: 일반적인 primary link click에서 상품/section/anchor/상대 위치/`scrollY`와 section 상태를 저장하고 현재 목록 history entry에 일회성 복원 token을 표시합니다.
+- initial state: 현재 history entry, sessionStorage snapshot과 앱 실행 epoch가 모두 일치할 때만 저장 상태를 읽습니다.
+- save: 일반적인 primary link click에서 상품/section/anchor/상대 위치/`scrollY`와 section 상태를 저장하고 snapshot과 현재 목록 history entry에 동일한 실행 epoch와 일회성 복원 token을 표시합니다.
 - reused route: Next App Router가 목록 컴포넌트를 재사용하면 마운트된 hook이 `popstate`를 구독해 현재 history entry의 snapshot을 다시 읽습니다.
 - restore state: 오늘의 특가는 전체보기, 행사 할인은 category와 category 더보기를 초기값으로 적용합니다.
 - late restore state: 목록 component가 이미 마운트된 뒤 snapshot이 도착해도 `restorationId`별로 한 번만 section 상태에 적용합니다.
@@ -41,7 +42,8 @@
 - anchor pending: 비동기 목록 렌더링 동안 제한된 시간 내에서 animation frame으로 anchor를 기다립니다.
 - fallback: 제한 시간 내 anchor를 찾지 못하면 저장된 절대 `scrollY`를 사용하고 snapshot을 제거합니다.
 - navigation scope: 브라우저 뒤로가기와 상세 헤더 `router.back()`으로 저장한 목록 history entry가 다시 활성화된 경우만 복원 대상으로 봅니다.
-- stale state: TTL을 초과했거나 형식이 잘못된 snapshot은 제거하고 사용하지 않습니다.
+- stale state: TTL을 초과했거나 형식이 잘못됐거나 현재 실행 epoch와 다른 snapshot은 제거하고 사용하지 않습니다.
+- reload: 상세 페이지를 새로고침해 앱 실행 epoch가 갱신되면 이전 목록 history entry와 snapshot을 복원하지 않습니다.
 - side effects: focus를 변경하지 않고 기본 link navigation을 막지 않습니다.
 
 ## Constraints
@@ -63,6 +65,7 @@
 - [ ] anchor 미발견 `scrollY` fallback
 - [ ] sessionStorage 실패와 stale snapshot 처리
 - [ ] 신규 route 진입에서 과거 snapshot 미적용
+- [ ] 상세 새로고침 이후 이전 실행 snapshot 미적용
 - [ ] 목록 컴포넌트 재사용 후 `popstate` 복원
 - [ ] TOP3 상품 snapshot과 anchor 복원
 - [ ] 실제 Next route에서 category, infinite pages, `window.scrollY`, anchor 상대 위치 복원
