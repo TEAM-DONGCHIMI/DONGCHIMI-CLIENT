@@ -769,4 +769,39 @@ describe('RegistrationResultSection', () => {
       ],
     });
   });
+
+  it('stops scheduled draft saves as soon as the previous action starts route exit', async () => {
+    vi.useFakeTimers();
+    const handlePrevious = vi.fn();
+    const handleSaveDrafts = vi.fn().mockResolvedValue(undefined);
+    const product: RegistrationResultProduct = {
+      category: '수산물',
+      discountPeriod: '2026-07-15 ~ 2026-07-21',
+      id: '12',
+      imageUrl: 'https://static.dongchimi.kr/product.png',
+      price: '4000',
+      productName: '고등어',
+      promotionText: '',
+      status: 'completed',
+    };
+
+    renderSection({
+      products: [product],
+      saveIntervalMs: 1_000,
+      summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
+      onPrevious: handlePrevious,
+      onSaveDrafts: handleSaveDrafts,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '등록 완료 1' }));
+    fireEvent.change(screen.getByPlaceholderText('가격을 입력하세요'), {
+      target: { value: '5000' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '이전' }));
+
+    await vi.advanceTimersByTimeAsync(2_000);
+
+    expect(handlePrevious).toHaveBeenCalledTimes(1);
+    expect(handleSaveDrafts).not.toHaveBeenCalled();
+  });
 });

@@ -53,12 +53,21 @@ const toastExitToBottom = keyframes({
 
 const toastViewportBaseClassName = style({
   position: 'fixed',
+  top: 'auto',
+  right: 'auto',
+  bottom: 'auto',
+  left: 'auto',
   zIndex: 1100,
   display: 'flex',
   flexDirection: 'column',
   gap: '0.8rem',
   width: 'fit-content',
   maxWidth: `calc(100vw - ${viewportOffsetXVar} - ${viewportOffsetXVar})`,
+  margin: 0,
+  padding: 0,
+  overflow: 'visible',
+  border: 0,
+  background: 'transparent',
   pointerEvents: 'none',
 });
 

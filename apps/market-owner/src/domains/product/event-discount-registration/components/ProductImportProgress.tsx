@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { IcCircleCheckFill, IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
+import { IcCircleCheckFill } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
 import { isApiError } from '@/shared/api';
@@ -53,7 +53,6 @@ export const ProductImportProgress = ({
     (message: string) => {
       toast.error(message, {
         id: FILE_ANALYSIS_ERROR_TOAST_ID,
-        icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
       });
     },
     [toast],

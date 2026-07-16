@@ -5,19 +5,20 @@ import { overlay } from 'overlay-kit';
 import { IcCircleCheckFill, IcCircleExclamation } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
 
-import { useConfirmPreparedProductDraftsMutation } from '@/domains/product/hooks/use-confirm-prepared-product-drafts-mutation';
-import { isApiError } from '@/shared/api/api-error';
-import { DesktopHeader } from '@/shared/components/ui/desktop-header';
-import { QrDownloadModal } from '@/shared/components/ui/qr-download-modal';
-import { getMarketOwnerEnv } from '@/shared/config/env';
+import { useConfirmPreparedProductDraftsMutation } from '@/domains/product/hooks';
+import { isApiError } from '@/shared/api';
+import { DesktopHeader, QrDownloadModal } from '@/shared/components';
+import { getMarketOwnerEnv } from '@/shared/config';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/auth-store';
 import { downloadQrCodeImage, getQrCodeImageSource } from '@/shared/utils/qr-code-image.utils';
 
 import { leafletShareFixture } from './fixtures/leaflet-share.fixture';
-import { useIssueQrCodeMutation } from './hooks/use-issue-qr-code-mutation';
-import { usePeriodicPreviewQuery } from './hooks/use-periodic-preview-query';
-import { usePublishLeafletMutation } from './hooks/use-publish-leaflet-mutation';
+import {
+  useIssueQrCodeMutation,
+  usePeriodicPreviewQuery,
+  usePublishLeafletMutation,
+} from './hooks';
 import { createLeafletPreviewViewModel } from './model/leaflet-preview-view-model';
 import { LeafletConfirmSection, LeafletShareSection } from './sections';
 import * as S from './LeafletSharePage.css';
@@ -187,6 +188,7 @@ export const LeafletSharePage = () => {
     }
   };
   const goHome = () => navigate(MARKET_OWNER_ROUTES.home);
+  const editLeafletProducts = () => navigate(MARKET_OWNER_ROUTES.registrationResult);
 
   return (
     <main className={S.pageRootClassName}>
@@ -202,6 +204,7 @@ export const LeafletSharePage = () => {
           isPreviewPending={periodicPreviewQuery.isLoading}
           isPublishing={isShareFlowPending}
           leafletPreview={leafletPreview}
+          onEdit={editLeafletProducts}
           onPreviewRetry={() => void periodicPreviewQuery.refetch()}
           onShare={() => void finalizeProductsAndPublishLeaflet()}
         />

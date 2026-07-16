@@ -128,10 +128,46 @@ describe('ToastProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: '완료 토스트 열기' }));
 
     const toast = screen.getByRole('status');
+    const viewport = screen.getByRole('region', { name: '토스트 알림' });
 
-    expect(screen.getByRole('region', { name: '토스트 알림' })).toBeInTheDocument();
+    expect(viewport).toBeInTheDocument();
+    expect(viewport).toHaveAttribute('data-placement', 'bottom-center');
     expect(toast).toHaveAttribute('aria-live', 'polite');
     expect(toast).toHaveTextContent('저장되었어요');
+  });
+
+  it('uses the browser top layer when the Popover API is available', () => {
+    const originalShowPopover = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      'showPopover',
+    );
+    const showPopover = vi.fn();
+
+    Object.defineProperty(HTMLElement.prototype, 'showPopover', {
+      configurable: true,
+      value: showPopover,
+    });
+
+    try {
+      render(
+        <ToastProvider>
+          <CompletedToastLauncher />
+        </ToastProvider>,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: '완료 토스트 열기' }));
+
+      const viewport = document.querySelector('[aria-label="토스트 알림"]');
+
+      expect(viewport).toHaveAttribute('popover', 'manual');
+      expect(showPopover).toHaveBeenCalledOnce();
+    } finally {
+      if (originalShowPopover === undefined) {
+        Reflect.deleteProperty(HTMLElement.prototype, 'showPopover');
+      } else {
+        Object.defineProperty(HTMLElement.prototype, 'showPopover', originalShowPopover);
+      }
+    }
   });
 
   it('applies string viewport offset without center correction', () => {
@@ -188,6 +224,9 @@ describe('ToastProvider', () => {
       within(portalContainer).getByRole('region', { name: '토스트 알림' }),
     ).toBeInTheDocument();
     expect(within(portalContainer).getByRole('status')).toHaveTextContent('저장되었어요');
+    expect(
+      within(portalContainer).getByRole('region', { name: '토스트 알림' }),
+    ).not.toHaveAttribute('popover');
 
     unmount();
     portalContainer.remove();

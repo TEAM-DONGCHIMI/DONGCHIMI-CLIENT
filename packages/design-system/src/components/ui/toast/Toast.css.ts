@@ -45,6 +45,10 @@ export const toastIconClassName = style({
   color: atomic.common[100],
 });
 
+export const toastErrorIconClassName = style({
+  color: atomic.common[0],
+});
+
 export const toastMessageClassName = style({
   minWidth: 0,
   overflow: 'hidden',

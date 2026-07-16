@@ -1,6 +1,5 @@
 import { useCallback, useState, type ReactNode } from 'react';
-import { useNavigate } from 'react-router';
-import { IcCircleExclamationFillColor0 } from '@dongchimi/design-system/icons';
+import { useLocation, useNavigate } from 'react-router';
 import { useToast } from '@dongchimi/shared/toast';
 
 import { DesktopHeader, UploadModal } from '@/shared/components';
@@ -8,6 +7,10 @@ import { isApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/auth-store';
 import { usePresignedUploadMutation } from '@/domains/product/hooks';
+import {
+  createProductImportRouteState,
+  getProductImportFileConfirmation,
+} from '@/domains/product/model/product-import-route-state';
 
 import type {
   CancelProductImportParams,
@@ -29,16 +32,10 @@ const EXCEL_UPLOAD_ERROR_TOAST_ID = 'event-discount-registration-excel-upload-er
 const FILE_ANALYSIS_ERROR_TOAST_ID = 'event-discount-registration-file-analysis-error';
 export const EXCEL_TEMPLATE_DOWNLOAD_URL =
   'https://static.dongchiimi.com/static/%E1%84%83%E1%85%A9%E1%86%BC%E1%84%8E%E1%85%B5%E1%84%86%E1%85%B5+%E1%84%92%E1%85%A2%E1%86%BC%E1%84%89%E1%85%A1%E1%84%92%E1%85%A1%E1%86%AF%E1%84%8B%E1%85%B5%E1%86%AB+%E1%84%89%E1%85%A1%E1%86%BC%E1%84%91%E1%85%AE%E1%86%B7+%E1%84%83%E1%85%B3%E1%86%BC%E1%84%85%E1%85%A9%E1%86%A8+%E1%84%8B%E1%85%A3%E1%86%BC%E1%84%89%E1%85%B5%E1%86%A8.xlsx';
-const TOAST_ICON_SIZE = '2.4rem';
 const EXCEL_UPLOAD_DEFAULT_LABEL =
   '상품이 등록된 엑셀 파일을 선택해주세요.\n업로드하면 상품이 자동으로 등록됩니다.';
 const FILE_ANALYSIS_START_ERROR_MESSAGE = '파일 분석을 시작하지 못했습니다. 다시 시도해주세요.';
 const FILE_ANALYSIS_ERROR_LOG_PREFIX = '[EventDiscountRegistration] Failed to start product import';
-
-const toastIconProps = {
-  height: TOAST_ICON_SIZE,
-  width: TOAST_ICON_SIZE,
-} as const;
 
 const getFileAnalysisStartErrorMessage = (error: unknown) => {
   return isApiError(error) ? error.message : FILE_ANALYSIS_START_ERROR_MESSAGE;
@@ -59,6 +56,7 @@ export const EventDiscountRegistrationPage = ({
   startProductImport,
   subscribeProductImportProgress,
 }: EventDiscountRegistrationPageProps = {}) => {
+  const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
   const presignedUploadMutation = usePresignedUploadMutation();
@@ -71,11 +69,11 @@ export const EventDiscountRegistrationPage = ({
   const handleExcelUploadError = (message: string) => {
     toast.error(message, {
       id: EXCEL_UPLOAD_ERROR_TOAST_ID,
-      icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
     });
   };
   const {
     cancelFileAnalysisConfirmation,
+    confirmExcelUpload,
     excelUploadModal,
     handleExcelFileChange,
     handleExcelFileDrop,
@@ -90,6 +88,7 @@ export const EventDiscountRegistrationPage = ({
     uploadedExcelFileUrl,
     uploadedExcelFileName,
   } = useExcelUploadFlow({
+    initialFileConfirmation: getProductImportFileConfirmation(location.state),
     onExcelUploadError: handleExcelUploadError,
     resolveExcelFileUrl: resolveUploadedExcelFileUrl,
   });
@@ -111,18 +110,33 @@ export const EventDiscountRegistrationPage = ({
   const handleUploadLeaflet = () => {
     toast.error('아직 준비중인 기능이에요.', {
       id: 'event-discount-registration-action-feedback',
-      icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
     });
   };
 
   const handleFileAnalysisComplete = useCallback(() => {
-    navigate(MARKET_OWNER_ROUTES.registrationResult);
-  }, [navigate]);
+    if (uploadedExcelFileName == null || uploadedExcelFileUrl == null) {
+      navigate(MARKET_OWNER_ROUTES.registrationResult);
+      return;
+    }
+
+    const routeState = createProductImportRouteState({
+      fileName: uploadedExcelFileName,
+      fileUrl: uploadedExcelFileUrl,
+    });
+    const navigateToRegistrationResult = async () => {
+      await navigate(MARKET_OWNER_ROUTES.eventDiscountRegistration, {
+        replace: true,
+        state: routeState,
+      });
+      await navigate(MARKET_OWNER_ROUTES.registrationResult, { state: routeState });
+    };
+
+    void navigateToRegistrationResult();
+  }, [navigate, uploadedExcelFileName, uploadedExcelFileUrl]);
   const handleStartFileAnalysis = async () => {
     if (resolvedMarketId == null || uploadedExcelFileUrl == null) {
       toast.error(FILE_ANALYSIS_START_ERROR_MESSAGE, {
         id: FILE_ANALYSIS_ERROR_TOAST_ID,
-        icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
       });
       return;
     }
@@ -144,7 +158,6 @@ export const EventDiscountRegistrationPage = ({
 
       toast.error(getFileAnalysisStartErrorMessage(error), {
         id: FILE_ANALYSIS_ERROR_TOAST_ID,
-        icon: <IcCircleExclamationFillColor0 {...toastIconProps} />,
       });
     }
   };
@@ -209,15 +222,12 @@ export const EventDiscountRegistrationPage = ({
         onFileChange={handleExcelFileChange}
         onFileDrop={handleExcelFileDrop}
         onOpenChange={handleExcelUploadModalOpenChange}
-        onUpload={handleStartFileAnalysis}
+        onUpload={confirmExcelUpload}
         open={excelUploadModal.open}
         selectedFileText={excelUploadModal.selectedFileName ?? '선택된 파일이 없습니다.'}
         state={excelUploadModal.state}
         uploadButtonDisabled={
-          excelUploadModal.state !== 'upload' ||
-          isUploading ||
-          !isUploadedExcelFileReady ||
-          startProductImportMutation.isPending
+          excelUploadModal.state !== 'upload' || isUploading || !isUploadedExcelFileReady
         }
       />
 
