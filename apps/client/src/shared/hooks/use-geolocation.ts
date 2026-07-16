@@ -67,7 +67,7 @@ export const useGeolocation = ({
     };
   }, [enableHighAccuracy, requestRevision, timeout]);
 
-  usePermissionGrantedRetry(retry);
+  usePermissionGrantedRetry(errorCode, retry);
   useFocusRetryOnTimeout(errorCode, retry);
 
   return { coordinates, errorCode, isLoading, retry };

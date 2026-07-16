@@ -94,6 +94,37 @@ describe('getNearbyMarkets', () => {
     expect(result.nextCursor).toBeNull();
   });
 
+  it('allows markets without thumbnail images', async () => {
+    server.use(
+      http.get(`${window.location.origin}${NEARBY_MARKETS_ENDPOINT}`, () => {
+        return HttpResponse.json({
+          success: true,
+          code: 'SUCCESS',
+          message: '?붿껌???깃났?덉뒿?덈떎.',
+          data: {
+            hasNext: false,
+            nextCursor: null,
+            content: [
+              {
+                ...nearbyMarket,
+                thumbnailUrl: null,
+                previewProducts: nearbyMarket.previewProducts.map((product) => ({
+                  ...product,
+                  thumbnailUrl: null,
+                })),
+              },
+            ],
+          },
+        });
+      }),
+    );
+
+    const result = await getNearbyMarkets({ lat: 37.5651, lng: 126.9895 });
+
+    expect(result.contents[0]?.thumbnailUrl).toBeNull();
+    expect(result.contents[0]?.previewProducts[0]?.thumbnailUrl).toBeNull();
+  });
+
   it('응답 계약이 다르면 validation error를 던진다', async () => {
     server.use(
       http.get(`${window.location.origin}${NEARBY_MARKETS_ENDPOINT}`, () => {

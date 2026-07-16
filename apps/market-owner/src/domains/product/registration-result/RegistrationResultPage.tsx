@@ -1,13 +1,9 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { ToastProvider } from '@dongchimi/shared/toast';
 
 import dongchimiLogo from '@/shared/assets/images/Img_pavicon.svg';
 import { DesktopHeader } from '@/shared/components';
-import {
-  PRODUCT_CATEGORY_CODE_BY_NAME,
-  type ProductCategoryGroupTypes,
-} from '@/shared/constants/product-categories';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/auth-store';
 import {
@@ -21,20 +17,13 @@ import {
 } from '@/domains/product/model/product-import-route-state';
 
 import { MAX_PREPARED_PRODUCT_DRAFT_QUERY_SIZE } from '../api/get-prepared-product-drafts';
-import type { PreparedProductDraftCategoryCodeTypes } from '../api/prepared-product-draft.schema';
 import type { SavePreparedProductDraftsRequestTypes } from '../api/save-prepared-product-drafts';
 import { createRegistrationResultProducts } from './model';
 import * as S from './RegistrationResultPage.css';
-import { RegistrationResultSection, type RegistrationResultDraftQueryParams } from './sections';
+import { RegistrationResultSection } from './sections';
 import { resolvePresignedProductImageFileObjectKey } from './utils/resolve-product-image-file-url';
 
 const REGISTRATION_RESULT_PAGE_SIZE = 10;
-
-const getPreparedProductDraftCategoryCodes = (categories: readonly ProductCategoryGroupTypes[]) => {
-  return categories
-    .map((category) => PRODUCT_CATEGORY_CODE_BY_NAME[category])
-    .filter((category): category is PreparedProductDraftCategoryCodeTypes => category != null);
-};
 
 export const RegistrationResultPage = () => {
   const location = useLocation();
@@ -42,18 +31,16 @@ export const RegistrationResultPage = () => {
   const marketId = useAuthStore((state) => state.marketId);
   const presignedUploadMutation = usePresignedUploadMutation();
   const savePreparedProductDraftsMutation = useSavePreparedProductDraftsMutation();
-  const [draftQueryParams, setDraftQueryParams] = useState<RegistrationResultDraftQueryParams>({
-    categories: [],
-    search: '',
-  });
   const preparedProductDraftsQuery = usePreparedProductDraftsQuery({
-    categories: getPreparedProductDraftCategoryCodes(draftQueryParams.categories),
+    categories: [],
     fetchAll: true,
     marketId,
     page: 0,
-    search: draftQueryParams.search,
+    search: '',
     size: MAX_PREPARED_PRODUCT_DRAFT_QUERY_SIZE,
   });
+  const refetchPreparedProductDrafts = preparedProductDraftsQuery.refetch;
+  const savePreparedProductDrafts = savePreparedProductDraftsMutation.mutateAsync;
   const preparedProductDraftsData = preparedProductDraftsQuery.data?.data;
   const products = useMemo(
     () => createRegistrationResultProducts(preparedProductDraftsData?.preparedProducts ?? []),
@@ -80,17 +67,26 @@ export const RegistrationResultPage = () => {
           ? '상품 목록을 불러오고 있어요.'
           : undefined;
   const handleSaveDrafts = useCallback(
-    (request: SavePreparedProductDraftsRequestTypes) => {
+    async (request: SavePreparedProductDraftsRequestTypes) => {
       if (marketId == null) {
-        return Promise.reject(new Error('Prepared product drafts marketId is required.'));
+        throw new Error('Prepared product drafts marketId is required.');
       }
 
-      return savePreparedProductDraftsMutation.mutateAsync({
+      await savePreparedProductDrafts({
         marketId,
         request,
       });
+
+      const refreshedDraftsQuery = await refetchPreparedProductDrafts();
+      const refreshedDraftsData = refreshedDraftsQuery.data?.data;
+
+      if (refreshedDraftsQuery.isError || refreshedDraftsData == null) {
+        throw new Error('Prepared product drafts refresh failed.');
+      }
+
+      return { failCount: refreshedDraftsData.failCount };
     },
-    [marketId, savePreparedProductDraftsMutation],
+    [marketId, refetchPreparedProductDrafts, savePreparedProductDrafts],
   );
   const resolveProductImageFileObjectKey = useMemo(
     () => resolvePresignedProductImageFileObjectKey(presignedUploadMutation.mutateAsync),
@@ -128,7 +124,6 @@ export const RegistrationResultPage = () => {
           pageSize={REGISTRATION_RESULT_PAGE_SIZE}
           products={products}
           summary={summary}
-          onDraftQueryChange={setDraftQueryParams}
           onPrevious={handlePrevious}
           onRegister={() => navigate(MARKET_OWNER_ROUTES.leafletShare)}
           resolveProductImageFileObjectKey={resolveProductImageFileObjectKey}
