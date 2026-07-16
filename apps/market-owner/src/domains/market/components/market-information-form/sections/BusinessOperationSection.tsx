@@ -10,6 +10,7 @@ import {
   IcCircleExclamationSizeSmallColorNegative,
   IcClockSizeSmallColor60,
   IcLineHorizontalSizeSmall,
+  IcPlusSizeSmall,
   IcPlusSizeSmallColor60,
 } from '@dongchimi/design-system/icons';
 
@@ -295,7 +296,9 @@ export const BusinessOperationSection = ({
                 required
                 type='tel'
                 trailingActionLabel='영업 시간 추가'
-                trailingIcon={<IcPlusSizeSmallColor60 />}
+                trailingIcon={
+                  businessTime.length > 0 ? <IcPlusSizeSmall /> : <IcPlusSizeSmallColor60 />
+                }
                 {...businessTimeField}
                 value={businessTime}
                 onChange={onBusinessTimeChange}
