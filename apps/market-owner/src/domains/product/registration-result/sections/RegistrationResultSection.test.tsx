@@ -21,9 +21,8 @@ const renderSection = (props: Partial<RegistrationResultSectionProps> = {}) => {
           isSavingDrafts={props.isSavingDrafts}
           pageSize={props.pageSize ?? registrationResultFixture.pageSize}
           products={props.products ?? registrationResultFixture.products}
-          saveIntervalMs={props.saveIntervalMs}
+          saveDebounceMs={props.saveDebounceMs}
           summary={props.summary ?? registrationResultFixture.summary}
-          onDraftQueryChange={props.onDraftQueryChange}
           onPrevious={handlePrevious}
           onRegister={handleRegister}
           resolveProductImageFileUrl={props.resolveProductImageFileUrl}
@@ -35,6 +34,8 @@ const renderSection = (props: Partial<RegistrationResultSectionProps> = {}) => {
 
   return { handlePrevious, handleRegister };
 };
+
+const successfulDraftSyncResult = { failCount: 0 };
 
 const createDomRect = ({
   height,
@@ -91,7 +92,7 @@ describe('RegistrationResultSection', () => {
     expect(screen.getAllByRole('img', { name: '등록된 상품 이미지' })).toHaveLength(4);
   });
 
-  it('enables selected deletion and updates the needs-edit notice count', async () => {
+  it('enables selected deletion without changing the server summary count', async () => {
     const user = userEvent.setup();
 
     renderSection();
@@ -106,7 +107,8 @@ describe('RegistrationResultSection', () => {
     await user.click(screen.getByRole('button', { name: '선택삭제' }));
 
     expect(screen.getByText('선택된 상품 (0)')).toBeInTheDocument();
-    expect(screen.getByText('확인이 필요한 상품이 있어요 (11)')).toBeInTheDocument();
+    expect(screen.getByText('확인이 필요한 상품이 있어요 (12)')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '수정 필요 12' })).toBeInTheDocument();
   });
 
   it('shows mixed all-selection state and selects every visible row from the header checkbox', async () => {
@@ -339,6 +341,10 @@ describe('RegistrationResultSection', () => {
 
     expect(productNameInput).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByText('상품명을 입력해주세요.')).toBeInTheDocument();
+    expect(priceInput).toHaveAttribute('aria-invalid', 'true');
+    expect(discountPeriodInput).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByText('가격을 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('할인 기간을 입력해주세요.')).toBeInTheDocument();
 
     await user.type(productNameInput, '1234567890123456');
 
@@ -416,7 +422,7 @@ describe('RegistrationResultSection', () => {
     expect(screen.queryByText('이미지 미등록')).not.toBeInTheDocument();
   });
 
-  it('updates product status and segment counts when required fields become valid', async () => {
+  it('keeps a locally valid needs-edit row pending until the server confirms it', async () => {
     const user = userEvent.setup();
     const imageFile = new File(['preview'], 'preview.png', { type: 'image/png' });
     const product: RegistrationResultProduct = {
@@ -441,7 +447,7 @@ describe('RegistrationResultSection', () => {
       'page',
     );
 
-    await user.upload(screen.getByLabelText('상품 이미지 파일 선택'), imageFile);
+    await user.upload(screen.getByLabelText(/이미지 파일 선택$/), imageFile);
     await user.type(screen.getByPlaceholderText('제품명을 입력하세요'), '완성 상품');
     await user.type(screen.getByPlaceholderText('가격을 입력하세요'), '4500');
     await user.click(screen.getByRole('button', { name: '완성 상품 카테고리 선택' }));
@@ -456,10 +462,37 @@ describe('RegistrationResultSection', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: '등록 완료 1' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '수정 필요 0' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /^등록 완료$/ })).toBeEnabled();
+      expect(screen.getByRole('button', { name: '등록 완료 0' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '수정 필요 1' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^등록 완료$/ })).toBeDisabled();
     });
+  });
+
+  it('shows the remaining row errors after an image-only edit', async () => {
+    const user = userEvent.setup();
+    const imageFile = new File(['preview'], 'preview.png', { type: 'image/png' });
+    const product: RegistrationResultProduct = {
+      category: '수산물',
+      discountPeriod: '2026-07-15 ~ 2026-07-21',
+      id: 'image-and-name-error',
+      price: '4000',
+      productName: '1234567890123456',
+      promotionText: '',
+      status: 'needsEdit',
+      statusReason: '이미지 누락',
+    };
+
+    renderSection({
+      products: [product],
+      summary: { completedCount: 0, needsEditCount: 1, totalCount: 1 },
+    });
+
+    await user.upload(screen.getByLabelText(/이미지 파일 선택$/), imageFile);
+
+    expect(screen.getByText('상품명은 공백 포함 15자 이하로 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('이미지 누락')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '등록 완료 0' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '수정 필요 1' })).toBeInTheDocument();
   });
 
   it('uploads a product image preview from the image field', async () => {
@@ -550,19 +583,26 @@ describe('RegistrationResultSection', () => {
     expect(screen.queryByLabelText('전라도 포기김치 3kg 등록 결과')).not.toBeInTheDocument();
   });
 
-  it('notifies query params when search and category filters change', async () => {
+  it('keeps header counts stable while search changes the footer count', async () => {
     const user = userEvent.setup();
-    const handleDraftQueryChange = vi.fn();
 
-    renderSection({ onDraftQueryChange: handleDraftQueryChange });
+    renderSection();
+
+    await user.click(screen.getByRole('button', { name: '등록 완료 4' }));
+    expect(screen.getByRole('contentinfo', { name: '페이지네이션 정보' })).toHaveTextContent(
+      '전체4개 중1~4표시 중',
+    );
 
     await user.type(screen.getByRole('searchbox', { name: '상품 검색' }), '고등어');
 
-    expect(handleDraftQueryChange).toHaveBeenLastCalledWith({
-      categories: [],
-      search: '고등어',
-    });
+    expect(screen.getByRole('button', { name: '총 상품 16' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '등록 완료 4' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '수정 필요 12' })).toBeInTheDocument();
+    expect(screen.getByRole('contentinfo', { name: '페이지네이션 정보' })).toHaveTextContent(
+      '전체1개 중1~1표시 중',
+    );
 
+    await user.clear(screen.getByRole('searchbox', { name: '상품 검색' }));
     await user.click(screen.getByRole('button', { name: '정렬' }));
     await user.click(
       within(await screen.findByRole('group', { name: '카테고리 정렬' })).getByRole('checkbox', {
@@ -570,16 +610,18 @@ describe('RegistrationResultSection', () => {
       }),
     );
 
-    expect(handleDraftQueryChange).toHaveBeenLastCalledWith({
-      categories: ['수산물'],
-      search: '고등어',
-    });
+    expect(screen.getByRole('button', { name: '총 상품 16' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '등록 완료 4' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '수정 필요 12' })).toBeInTheDocument();
+    expect(screen.getByRole('contentinfo', { name: '페이지네이션 정보' })).toHaveTextContent(
+      '전체1개 중1~1표시 중',
+    );
   });
 
-  it('saves edited drafts before completing registration', async () => {
-    const user = userEvent.setup();
+  it('keeps registration disabled until an edited draft is synchronized', async () => {
+    vi.useFakeTimers();
     const imageFile = new File(['replacement'], 'replacement.png', { type: 'image/png' });
-    const handleSaveDrafts = vi.fn().mockResolvedValue(undefined);
+    const handleSaveDrafts = vi.fn().mockResolvedValue(successfulDraftSyncResult);
     const handleRegister = vi.fn();
     const resolveProductImageFileUrl = vi
       .fn()
@@ -603,41 +645,50 @@ describe('RegistrationResultSection', () => {
       onSaveDrafts: handleSaveDrafts,
     });
 
-    await user.click(screen.getByRole('button', { name: '총 상품 1' }));
-    await user.upload(screen.getByLabelText('고등어 이미지 파일 선택'), imageFile);
-    expect(await screen.findByRole('img', { name: 'replacement.png' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '총 상품 1' }));
+    fireEvent.change(screen.getByLabelText('고등어 이미지 파일 선택'), {
+      target: { files: [imageFile] },
+    });
+    expect(screen.getByRole('img', { name: 'replacement.png' })).toBeInTheDocument();
     const priceInput = screen.getByPlaceholderText('가격을 입력하세요');
 
     fireEvent.change(priceInput, { target: { value: '4500' } });
-    await user.click(screen.getByRole('button', { name: /^등록 완료$/ }));
+    expect(screen.getByRole('button', { name: /^등록 완료$/ })).toBeDisabled();
 
-    await waitFor(() => {
-      expect(resolveProductImageFileUrl).toHaveBeenCalledWith(imageFile);
-      expect(handleSaveDrafts).toHaveBeenCalledWith({
-        preparedProducts: [
-          {
-            preparedProductId: 12,
-            name: '고등어',
-            thumbnailUrl: 'https://static.dongchimi.kr/replacement.png',
-            discountedPrice: 4500,
-            category: 'SEAFOOD',
-            promotionalPhrase: '맛이 미쳤어요',
-            discountStartDate: '2026-07-15',
-            discountEndDate: '2026-07-21',
-            dealType: 'PERIODIC',
-          },
-        ],
-      });
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    expect(resolveProductImageFileUrl).toHaveBeenCalledWith(imageFile);
+    expect(handleSaveDrafts).toHaveBeenCalledWith({
+      preparedProducts: [
+        {
+          preparedProductId: 12,
+          name: '고등어',
+          thumbnailUrl: 'https://static.dongchimi.kr/replacement.png',
+          discountedPrice: 4500,
+          category: 'SEAFOOD',
+          promotionalPhrase: '맛이 미쳤어요',
+          discountStartDate: '2026-07-15',
+          discountEndDate: '2026-07-21',
+          dealType: 'PERIODIC',
+        },
+      ],
     });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(screen.getByRole('button', { name: /^등록 완료$/ })).toBeEnabled();
+
+    fireEvent.click(screen.getByRole('button', { name: /^등록 완료$/ }));
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(handleSaveDrafts).toHaveBeenCalledTimes(2);
     expect(handleRegister).toHaveBeenCalledTimes(1);
-    expect(handleSaveDrafts.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(handleSaveDrafts.mock.invocationCallOrder[1]).toBeLessThan(
       handleRegister.mock.invocationCallOrder[0],
     );
   });
 
   it('forces a final draft save before completing registration without local changes', async () => {
     const user = userEvent.setup();
-    const handleSaveDrafts = vi.fn().mockResolvedValue(undefined);
+    const handleSaveDrafts = vi.fn().mockResolvedValue(successfulDraftSyncResult);
     const handleRegister = vi.fn();
     const product: RegistrationResultProduct = {
       category: '수산물',
@@ -709,9 +760,9 @@ describe('RegistrationResultSection', () => {
     expect(handleRegister).not.toHaveBeenCalled();
   });
 
-  it('auto-saves the latest changed drafts without resetting the configured interval', async () => {
+  it('keeps the edited row dirty when an automatic save fails', async () => {
     vi.useFakeTimers();
-    const handleSaveDrafts = vi.fn().mockResolvedValue(undefined);
+    const handleSaveDrafts = vi.fn().mockRejectedValue(new Error('save failed'));
     const product: RegistrationResultProduct = {
       category: '수산물',
       discountPeriod: '2026-07-15 ~ 2026-07-21',
@@ -725,7 +776,41 @@ describe('RegistrationResultSection', () => {
 
     renderSection({
       products: [product],
-      saveIntervalMs: 1_000,
+      saveDebounceMs: 1_000,
+      summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
+      onSaveDrafts: handleSaveDrafts,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '등록 완료 1' }));
+    fireEvent.change(screen.getByPlaceholderText('가격을 입력하세요'), {
+      target: { value: '5000' },
+    });
+    await vi.advanceTimersByTimeAsync(1_000);
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('alert')).toHaveTextContent('임시 저장에 실패했습니다.');
+    expect(screen.getByPlaceholderText('가격을 입력하세요')).toHaveValue('5000');
+    expect(screen.getByRole('button', { name: /^등록 완료$/ })).toBeDisabled();
+  });
+
+  it('auto-saves the latest draft once after the trailing debounce expires', async () => {
+    vi.useFakeTimers();
+    const handleSaveDrafts = vi.fn().mockResolvedValue(successfulDraftSyncResult);
+    const product: RegistrationResultProduct = {
+      category: '수산물',
+      discountPeriod: '2026-07-15 ~ 2026-07-21',
+      id: '12',
+      imageUrl: 'https://static.dongchimi.kr/product.png',
+      price: '4000',
+      productName: '고등어',
+      promotionText: '',
+      status: 'completed',
+    };
+
+    renderSection({
+      products: [product],
+      saveDebounceMs: 1_000,
       summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
       onSaveDrafts: handleSaveDrafts,
     });
@@ -741,6 +826,10 @@ describe('RegistrationResultSection', () => {
     });
     await vi.advanceTimersByTimeAsync(500);
 
+    expect(handleSaveDrafts).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(500);
+
     expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
     expect(handleSaveDrafts).toHaveBeenCalledWith({
       preparedProducts: [
@@ -751,7 +840,7 @@ describe('RegistrationResultSection', () => {
       ],
     });
 
-    await vi.advanceTimersByTimeAsync(1_000);
+    await vi.advanceTimersByTimeAsync(2_000);
     expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
 
     fireEvent.change(screen.getByPlaceholderText('가격을 입력하세요'), {
@@ -770,10 +859,16 @@ describe('RegistrationResultSection', () => {
     });
   });
 
-  it('stops scheduled draft saves as soon as the previous action starts route exit', async () => {
+  it('serializes saves and preserves a newer row revision for the follow-up request', async () => {
     vi.useFakeTimers();
-    const handlePrevious = vi.fn();
-    const handleSaveDrafts = vi.fn().mockResolvedValue(undefined);
+    let resolveFirstSave: (result: typeof successfulDraftSyncResult) => void = () => undefined;
+    const firstSavePromise = new Promise<typeof successfulDraftSyncResult>((resolve) => {
+      resolveFirstSave = resolve;
+    });
+    const handleSaveDrafts = vi
+      .fn()
+      .mockImplementationOnce(() => firstSavePromise)
+      .mockResolvedValue(successfulDraftSyncResult);
     const product: RegistrationResultProduct = {
       category: '수산물',
       discountPeriod: '2026-07-15 ~ 2026-07-21',
@@ -787,7 +882,58 @@ describe('RegistrationResultSection', () => {
 
     renderSection({
       products: [product],
-      saveIntervalMs: 1_000,
+      saveDebounceMs: 1_000,
+      summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
+      onSaveDrafts: handleSaveDrafts,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '등록 완료 1' }));
+    fireEvent.change(screen.getByPlaceholderText('가격을 입력하세요'), {
+      target: { value: '5000' },
+    });
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
+
+    fireEvent.change(screen.getByPlaceholderText('가격을 입력하세요'), {
+      target: { value: '6000' },
+    });
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
+
+    resolveFirstSave(successfulDraftSyncResult);
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(handleSaveDrafts).toHaveBeenCalledTimes(2);
+    expect(handleSaveDrafts).toHaveBeenLastCalledWith({
+      preparedProducts: [
+        expect.objectContaining({
+          discountedPrice: 6000,
+          preparedProductId: 12,
+        }),
+      ],
+    });
+  });
+
+  it('stops scheduled draft saves as soon as the previous action starts route exit', async () => {
+    vi.useFakeTimers();
+    const handlePrevious = vi.fn();
+    const handleSaveDrafts = vi.fn().mockResolvedValue(successfulDraftSyncResult);
+    const product: RegistrationResultProduct = {
+      category: '수산물',
+      discountPeriod: '2026-07-15 ~ 2026-07-21',
+      id: '12',
+      imageUrl: 'https://static.dongchimi.kr/product.png',
+      price: '4000',
+      productName: '고등어',
+      promotionText: '',
+      status: 'completed',
+    };
+
+    renderSection({
+      products: [product],
+      saveDebounceMs: 1_000,
       summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
       onPrevious: handlePrevious,
       onSaveDrafts: handleSaveDrafts,
