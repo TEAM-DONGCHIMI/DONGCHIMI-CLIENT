@@ -55,8 +55,9 @@
 - 오늘의 특가 filter pill button은 `상품 등록 순`, `조회수 순` 중 하나만 selected 상태로 표시합니다.
 - 기본 selected 상태는 행사 할인 수정 페이지에서는 `카테고리별`, 오늘의 특가 수정 페이지에서는 `상품 등록 순`이며, 사용자가 선택한 항목을 filled 상태와 `aria-pressed`로 표시합니다.
 - breadcrumb header와 상단 control 영역은 scroll container 안에서 함께 고정되어 상품 목록 스크롤 중에도 유지됩니다.
-- 일괄 기간 수정 버튼을 처음 누르면 bulk period selection mode에 진입하고 `선택된 상품 (0)`을 표시합니다.
+- 일괄 기간 수정 버튼을 처음 누르면 bulk period selection mode에 진입하되, 선택 전에는 선택 개수를 표시하지 않습니다.
 - 선택된 상품 수는 `semantic.primary.strong` 색상으로 강조합니다.
+- `선택된 상품 (n)`은 상품을 1개 이상 선택한 시점부터 표시합니다.
 - bulk period selection mode에서 같은 버튼을 다시 눌렀을 때 선택 상품이 없으면 selection mode를 종료합니다.
 - bulk period selection mode에서 선택 상품이 1개 이상이면 기간 일괄 수정 버튼을 강조 상태로 표시합니다.
 - bulk period selection mode에서 선택 상품이 있으면 첫 번째 선택 상품의 기간을 기본값으로 전달해 `ProductEditPeriodModal`을 엽니다.
@@ -64,7 +65,7 @@
 - 기간 수정 API가 성공하면 `onUpdateProductPeriods`를 호출하고 selection mode를 종료하며, 실패하면 선택 상태를 유지합니다.
 - 오늘의 특가 기간 수정 modal은 시작일을 비활성 상태로 표시하고 `하루 더 늘리기` 버튼을 제공합니다.
 - 행사 할인 기간 수정 modal은 시작일과 종료일을 모두 수정 가능하게 표시하고 `하루 더 늘리기` 버튼을 제공하지 않습니다.
-- 일괄 삭제 버튼을 처음 누르면 bulk delete selection mode에 진입하고 `선택된 상품 (0)`을 표시합니다.
+- 일괄 삭제 버튼을 처음 누르면 bulk delete selection mode에 진입하되, 선택 전에는 선택 개수를 표시하지 않습니다.
 - bulk delete selection mode에서 같은 버튼을 다시 눌렀을 때 선택 상품이 없으면 selection mode를 종료합니다.
 - bulk delete selection mode에서 선택 상품이 1개 이상이면 일괄 삭제 버튼을 강조 상태로 표시합니다.
 - bulk delete selection mode에서 선택 상품이 있으면 `ProductEditConfirmModal action="delete"`를 열고, 확인 버튼을 누르면 선택 상품의 `productId[]`로 `onDeleteProducts`를 호출합니다.
@@ -73,6 +74,7 @@
 - 초기화 버튼을 누르면 `openProductEditConfirmModal`로 `ProductEditConfirmModal action="reset"`을 엽니다.
 - 초기화 확인 modal의 확인 버튼을 누르면 `onResetProducts`를 호출하고, 성공 시 selection mode를 종료하며 실패 시 기존 상태를 유지합니다.
 - 삭제 mutation 중에는 기간 일괄 수정, 일괄 삭제, 초기화 action을 비활성화합니다.
+- 수정 유형 tab의 label과 하단 underline 사이는 design-system `TabNav`의 `0.8rem` 간격을 사용합니다.
 - `productId` search param 기반 개별 수정 modal open/close는 children 영역의 상품 목록 컴포넌트가 담당합니다.
 
 ## Accessibility

@@ -56,6 +56,7 @@ interface AddableFieldOwnProps extends AddableFieldVariantProps {
   errorMessage?: ReactNode;
   leadingIcon: ReactNode;
   onTrailingAction: MouseEventHandler<HTMLButtonElement>;
+  trailingActionDisabled?: boolean;
   trailingActionLabel: string;
   trailingIcon: ReactNode;
   type?: AddableFieldInputTypes;
@@ -85,6 +86,7 @@ export const AddableField = forwardRef<HTMLInputElement, AddableFieldProps>(
       onTrailingAction,
       required,
       status = 'default',
+      trailingActionDisabled = false,
       trailingActionLabel,
       trailingIcon: trailingIconElement,
       type = 'text',
@@ -132,7 +134,7 @@ export const AddableField = forwardRef<HTMLInputElement, AddableFieldProps>(
           <button
             aria-label={trailingActionLabel}
             className={actionButton}
-            disabled={disabled}
+            disabled={disabled || trailingActionDisabled}
             onClick={onTrailingAction}
             type='button'
           >

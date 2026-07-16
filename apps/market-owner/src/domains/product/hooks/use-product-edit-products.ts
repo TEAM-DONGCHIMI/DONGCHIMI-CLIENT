@@ -22,7 +22,22 @@ export const useProductEditProducts = <ProductTypes extends ProductEditMutablePr
   initialProducts: readonly ProductTypes[],
   onDeleteProduct: (productId: number) => Promise<boolean>,
 ) => {
-  const [products, setProducts] = useState<ProductTypes[]>(() => [...initialProducts]);
+  const [deletedProductIds, setDeletedProductIds] = useState<Set<number>>(() => new Set());
+  const [productUpdates, setProductUpdates] = useState<
+    Map<number, Partial<ProductEditUpdateTypes>>
+  >(() => new Map());
+  const products = initialProducts.flatMap((product) => {
+    if (deletedProductIds.has(product.productId)) {
+      return [];
+    }
+
+    return [
+      {
+        ...product,
+        ...productUpdates.get(product.productId),
+      } as ProductTypes,
+    ];
+  });
 
   const deleteProduct = async (productId: number) => {
     const isDeleted = await onDeleteProduct(productId);
@@ -31,39 +46,50 @@ export const useProductEditProducts = <ProductTypes extends ProductEditMutablePr
       return false;
     }
 
-    setProducts((currentProducts) =>
-      currentProducts.filter((product) => product.productId !== productId),
-    );
+    setDeletedProductIds((currentProductIds) => new Set(currentProductIds).add(productId));
 
     return true;
   };
 
-  const updateProduct = (productName: string, productUpdate: Partial<ProductEditUpdateTypes>) => {
-    setProducts((currentProducts) =>
-      currentProducts.map((product) =>
-        product.productName === productName
-          ? ({
-              ...product,
-              ...productUpdate,
-            } as ProductTypes)
-          : product,
-      ),
-    );
+  const updateProduct = (productId: number, productUpdate: Partial<ProductEditUpdateTypes>) => {
+    const targetProduct = products.find((product) => product.productId === productId);
+
+    if (targetProduct == null) {
+      return;
+    }
+
+    setProductUpdates((currentUpdates) => {
+      const nextUpdates = new Map(currentUpdates);
+      const currentProductUpdate = nextUpdates.get(targetProduct.productId);
+
+      nextUpdates.set(targetProduct.productId, {
+        ...currentProductUpdate,
+        ...productUpdate,
+      });
+
+      return nextUpdates;
+    });
   };
 
   const updateProductPeriods = (productNames: string[], period: ProductEditPeriodUpdate) => {
     const productNameSet = new Set(productNames);
 
-    setProducts((currentProducts) =>
-      currentProducts.map((product) =>
-        productNameSet.has(product.productName)
-          ? ({
-              ...product,
-              ...period,
-            } as ProductTypes)
-          : product,
-      ),
-    );
+    setProductUpdates((currentUpdates) => {
+      const nextUpdates = new Map(currentUpdates);
+
+      products.forEach((product) => {
+        if (!productNameSet.has(product.productName)) {
+          return;
+        }
+
+        nextUpdates.set(product.productId, {
+          ...nextUpdates.get(product.productId),
+          ...period,
+        });
+      });
+
+      return nextUpdates;
+    });
   };
 
   return {

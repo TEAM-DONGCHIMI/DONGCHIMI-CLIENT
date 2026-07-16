@@ -20,12 +20,15 @@
 - Page-local components, sections, hooks, fixtures, and utils stay under this page folder.
 - Route: `/markets/information-management`
 - Access/layout: protected no-sidebar layout. 진입 전 SNB는 관리 route를 가리킵니다.
+- Access rule: 로그인 session에 `marketId`가 없거나 상세 조회가 `MARKET_NOT_FOUND`로 실패하면 `/markets/information-registration`으로 replace 이동합니다.
+- 취소/수정 완료 action은 form 하단 우측에 나란히 배치합니다.
 - Shared boundary: 등록/관리 화면이 함께 변경되는 form composition은 `information-registration`의 page surface를 `mode`로 재사용합니다. 제품 전용 form이므로 design-system으로 승격하지 않습니다.
 - Overlay boundary: 이탈 확인 dialog는 `components/open-market-information-leave-dialog.tsx`의 OverlayKit `openAsync<boolean>` helper가 mount/open 상태와 결과 전달을 소유합니다.
 
 ## UI States
 
 - loading: 로그인 session의 `marketId`로 상세 정보를 불러오는 동안 상태 안내를 표시합니다.
+- missing market: `marketId`가 없거나 상세 조회 결과가 `MARKET_NOT_FOUND`이면 마트 등록 페이지로 이동합니다.
 - initial: 조회한 마트명, 주소, 영업 시간, 연락처, 썸네일을 form 기본값으로 표시합니다.
 - query error: 403/404 code별 안내 또는 일반 오류 안내와 다시 불러오기 action을 표시합니다.
 - invalid: 기존 등록 schema를 사용하며 필수값이 유효하지 않으면 수정 완료 버튼을 비활성화합니다.

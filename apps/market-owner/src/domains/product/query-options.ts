@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { getProductDetail, type GetProductDetailParams } from './api/get-product-detail';
 import { getProductList } from './api/get-product-list';
@@ -15,6 +15,7 @@ import {
 } from './query-keys';
 
 const DEFAULT_PRODUCT_SEARCH_SIZE = 10;
+const DEFAULT_PRODUCT_LIST_SIZE = 12;
 const DEFAULT_PREPARED_PRODUCT_DRAFT_PAGE = 0;
 const DEFAULT_PREPARED_PRODUCT_DRAFT_SIZE = 10;
 
@@ -57,19 +58,40 @@ export const productDetailQueryOptions = (params: GetProductDetailParams) => {
   });
 };
 
-export const productListQueryOptions = (params: ProductListQueryParamsTypes) => {
-  const { marketId, sort = 'CATEGORY', type } = params;
-  const queryParams = { marketId, sort, type };
+export const getProductListNextPageParam = (
+  lastPage: Awaited<ReturnType<typeof getProductList>>,
+  _allPages: Awaited<ReturnType<typeof getProductList>>[],
+  _lastPageParam: number | undefined,
+  allPageParams: (number | undefined)[],
+) => {
+  const pagination = lastPage.data;
 
-  return queryOptions({
+  if (!pagination?.hasNext || pagination.nextCursor == null) {
+    return undefined;
+  }
+
+  if (allPageParams.includes(pagination.nextCursor)) {
+    return undefined;
+  }
+
+  return pagination.nextCursor;
+};
+
+export const productListInfiniteQueryOptions = (params: ProductListQueryParamsTypes) => {
+  const { marketId, size = DEFAULT_PRODUCT_LIST_SIZE, sort = 'CATEGORY', type } = params;
+  const queryParams = { marketId, size, sort, type };
+
+  return infiniteQueryOptions({
     enabled: marketId != null,
+    getNextPageParam: getProductListNextPageParam,
+    initialPageParam: undefined as number | undefined,
     queryKey: productQueryKeys.list(queryParams),
-    queryFn: () => {
+    queryFn: ({ pageParam }) => {
       if (marketId == null) {
         throw new Error('Product list marketId is required.');
       }
 
-      return getProductList({ marketId, sort, type });
+      return getProductList({ cursor: pageParam, marketId, size, sort, type });
     },
   });
 };

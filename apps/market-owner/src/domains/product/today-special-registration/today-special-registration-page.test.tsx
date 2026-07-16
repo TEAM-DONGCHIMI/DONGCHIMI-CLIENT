@@ -111,6 +111,7 @@ describe('TodaySpecialRegistrationPage', () => {
     useAuthStore.getState().clearSession();
     vi.useRealTimers();
     vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
   });
 
   it('redirects to market information registration when the login store has no market ID', async () => {
@@ -238,6 +239,7 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       '상품을 등록하지 못했습니다. 다시 시도해주세요.',
     );
+    expect(screen.getByTestId('today-special-registration-error-toast-icon')).toBeInTheDocument();
     expect(screen.queryByText('오늘의 특가 상품 수정 페이지')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '등록 완료' })).toBeEnabled();
   });
@@ -258,6 +260,7 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       '인터넷 연결을 확인한 후 다시 시도해주세요.',
     );
+    expect(screen.getByTestId('today-special-registration-error-toast-icon')).toBeInTheDocument();
     expect(screen.queryByText('오늘의 특가 상품 수정 페이지')).not.toBeInTheDocument();
   });
 
@@ -294,7 +297,9 @@ describe('TodaySpecialRegistrationPage', () => {
     renderTodaySpecialRegistrationPage();
 
     const productNameInput = screen.getByLabelText('상품명');
-    const promotionTextInput = screen.getByLabelText('상품 한줄 홍보문구');
+    const promotionTextInput = screen.getByLabelText<HTMLInputElement>('상품 한줄 홍보글 (선택)');
+
+    expect(promotionTextInput.labels?.[0]).toHaveTextContent('상품 한줄 홍보글 (선택)');
 
     expect(productNameInput).toHaveAttribute('maxlength', '15');
     expect(promotionTextInput).toHaveAttribute('maxlength', '25');
@@ -749,9 +754,18 @@ describe('TodaySpecialRegistrationPage', () => {
 
     renderTodaySpecialRegistrationPage();
 
-    await user.click(screen.getByRole('button', { name: '카테고리' }));
+    vi.stubGlobal('innerHeight', 500);
+    const categoryTrigger = screen.getByRole('button', { name: '카테고리' });
+    vi.spyOn(categoryTrigger, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(0, 300, 206, 40),
+    );
+
+    await user.click(categoryTrigger);
 
     const dropdown = await screen.findByRole('group', { name: '상품 구분 선택' });
+
+    expect(dropdown.style.getPropertyValue('--product-category-dropdown-max-height')).toBe('112px');
+    expect(getComputedStyle(dropdown).overflowY).toBe('auto');
 
     fireEvent.scroll(dropdown);
     expect(dropdown).toBeInTheDocument();

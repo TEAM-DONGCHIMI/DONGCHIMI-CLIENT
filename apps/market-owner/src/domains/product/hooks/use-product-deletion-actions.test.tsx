@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { deleteProduct, deleteProducts, resetProducts } from '../api/delete-products';
-import { productListQueryOptions } from '../query-options';
+import { productListInfiniteQueryOptions } from '../query-options';
 import { productQueryKeys } from '../query-keys';
 import { useProductDeletionActions } from './use-product-deletion-actions';
 
@@ -46,14 +46,19 @@ describe('useProductDeletionActions', () => {
   it('deletes one product, removes its detail cache, and invalidates market lists', async () => {
     const { queryClient, wrapper } = createWrapper();
     const detailKey = productQueryKeys.detail({ marketId: 1, productId: 101 });
-    const listKey = productListQueryOptions({ marketId: 1, type: 'DAILY' }).queryKey;
+    const listKey = productListInfiniteQueryOptions({ marketId: 1, type: 'DAILY' }).queryKey;
 
     queryClient.setQueryData(detailKey, { data: { productId: 101 } });
     queryClient.setQueryData(listKey, {
-      success: true,
-      code: 'SUCCESS',
-      message: '요청에 성공했습니다.',
-      data: { content: [], hasNext: false, nextCursor: null },
+      pageParams: [undefined],
+      pages: [
+        {
+          success: true,
+          code: 'SUCCESS',
+          message: '요청에 성공했습니다.',
+          data: { content: [], hasNext: false, nextCursor: null },
+        },
+      ],
     });
     mockedDeleteProduct.mockResolvedValue({
       success: true,
@@ -75,19 +80,30 @@ describe('useProductDeletionActions', () => {
 
   it('resets one deal type and invalidates every product list for the target market', async () => {
     const { queryClient, wrapper } = createWrapper();
-    const targetDailyKey = productListQueryOptions({ marketId: 1, type: 'DAILY' }).queryKey;
-    const targetPeriodicKey = productListQueryOptions({ marketId: 1, type: 'PERIODIC' }).queryKey;
-    const anotherMarketKey = productListQueryOptions({ marketId: 2, type: 'DAILY' }).queryKey;
-    const emptyProductListResponse = {
-      success: true as const,
-      code: 'SUCCESS',
-      message: '요청에 성공했습니다.',
-      data: { content: [], hasNext: false, nextCursor: null },
+    const targetDailyKey = productListInfiniteQueryOptions({ marketId: 1, type: 'DAILY' }).queryKey;
+    const targetPeriodicKey = productListInfiniteQueryOptions({
+      marketId: 1,
+      type: 'PERIODIC',
+    }).queryKey;
+    const anotherMarketKey = productListInfiniteQueryOptions({
+      marketId: 2,
+      type: 'DAILY',
+    }).queryKey;
+    const emptyProductListData = {
+      pageParams: [undefined],
+      pages: [
+        {
+          success: true as const,
+          code: 'SUCCESS',
+          message: '요청에 성공했습니다.',
+          data: { content: [], hasNext: false, nextCursor: null },
+        },
+      ],
     };
 
-    queryClient.setQueryData(targetDailyKey, emptyProductListResponse);
-    queryClient.setQueryData(targetPeriodicKey, emptyProductListResponse);
-    queryClient.setQueryData(anotherMarketKey, emptyProductListResponse);
+    queryClient.setQueryData(targetDailyKey, emptyProductListData);
+    queryClient.setQueryData(targetPeriodicKey, emptyProductListData);
+    queryClient.setQueryData(anotherMarketKey, emptyProductListData);
     mockedResetProducts.mockResolvedValue({
       success: true,
       code: 'SUCCESS',

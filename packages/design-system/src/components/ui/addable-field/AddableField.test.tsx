@@ -7,7 +7,13 @@ import { AddableField } from './AddableField';
 
 type RenderFieldProps = Pick<
   ComponentProps<typeof AddableField>,
-  'disabled' | 'errorMessage' | 'onTrailingAction' | 'placeholder' | 'required' | 'status'
+  | 'disabled'
+  | 'errorMessage'
+  | 'onTrailingAction'
+  | 'placeholder'
+  | 'required'
+  | 'status'
+  | 'trailingActionDisabled'
 >;
 
 const renderField = (props: Partial<RenderFieldProps> = {}) => {
@@ -78,6 +84,13 @@ describe('AddableField', () => {
     renderField({ disabled: true });
 
     expect(screen.getByRole('textbox', { name: '주제' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '값 추가' })).toBeDisabled();
+  });
+
+  it('disables only the trailing action', () => {
+    renderField({ trailingActionDisabled: true });
+
+    expect(screen.getByRole('textbox', { name: '주제' })).toBeEnabled();
     expect(screen.getByRole('button', { name: '값 추가' })).toBeDisabled();
   });
 

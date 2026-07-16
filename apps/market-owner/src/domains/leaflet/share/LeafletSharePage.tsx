@@ -192,7 +192,11 @@ export const LeafletSharePage = () => {
 
   return (
     <main className={S.pageRootClassName}>
-      <DesktopHeader currentLabel='오늘의 전단 최종 확인' parentLabel='홈' showSearchBar={false} />
+      <DesktopHeader
+        currentLabel='오늘의 전단 최종 확인'
+        parentLabel='행사 할인 상품 등록'
+        showSearchBar={false}
+      />
 
       {isConfirmView ? (
         <LeafletConfirmSection

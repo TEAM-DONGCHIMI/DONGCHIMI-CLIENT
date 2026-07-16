@@ -187,9 +187,12 @@ const createBusinessHourSlot = ({
 };
 
 const createClosedBusinessHourSlot = (holiday: string) => {
-  const day = businessDayToApiDayMap[holiday];
+  const days = holiday
+    .split(', ')
+    .map((dayLabel) => businessDayToApiDayMap[dayLabel])
+    .filter((day): day is string => day !== undefined);
 
-  return day ? { close: null, days: [day], isOpen: false, open: null } : null;
+  return days.length > 0 ? { close: null, days, isOpen: false, open: null } : null;
 };
 
 export const createMarketInformationRegistrationRequest = (

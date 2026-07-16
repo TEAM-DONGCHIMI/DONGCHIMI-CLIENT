@@ -59,13 +59,21 @@ describe('getProductList', () => {
     );
   });
 
-  it('passes the deal type and selected sort to the shared endpoint', async () => {
+  it('passes pagination, deal type, and selected sort to the shared endpoint', async () => {
     mockedGet.mockResolvedValue(productListResponse);
 
-    await getProductList({ marketId: 2, sort: 'VIEW_COUNT', type: 'PERIODIC' });
+    await getProductList({
+      cursor: 101,
+      marketId: 2,
+      size: 24,
+      sort: 'VIEW_COUNT',
+      type: 'PERIODIC',
+    });
 
     expect(mockedGet).toHaveBeenCalledWith(
       API_ENDPOINTS.owner.products.collection(2, {
+        cursor: 101,
+        size: 24,
         sort: 'VIEW_COUNT',
         type: 'PERIODIC',
       }),

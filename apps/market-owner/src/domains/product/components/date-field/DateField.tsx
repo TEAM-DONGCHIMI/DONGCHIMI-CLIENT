@@ -18,6 +18,7 @@ export interface DateFieldProps {
   errorMessage?: string;
   hasError?: boolean;
   min?: string;
+  pickerDisabled?: boolean;
   readOnly?: boolean;
   value: string;
   onBlur?: FocusEventHandler<HTMLInputElement>;
@@ -30,6 +31,7 @@ export const DateField = ({
   errorMessage,
   hasError = false,
   min = getTodayDateInputValue(),
+  pickerDisabled = false,
   readOnly = false,
   onBlur,
   onChange,
@@ -37,13 +39,14 @@ export const DateField = ({
 }: DateFieldProps) => {
   const errorMessageId = useId();
   const hasErrorMessage = hasError && Boolean(errorMessage);
+  const cannotOpenPicker = readOnly || pickerDisabled;
 
   const preventManualDateInput: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === 'Tab') {
       return;
     }
 
-    if (readOnly) {
+    if (cannotOpenPicker) {
       event.preventDefault();
       return;
     }
@@ -62,7 +65,7 @@ export const DateField = ({
   };
 
   const openDatePicker: MouseEventHandler<HTMLInputElement> = (event) => {
-    if (readOnly) {
+    if (cannotOpenPicker) {
       event.preventDefault();
       return;
     }
@@ -93,10 +96,10 @@ export const DateField = ({
           aria-invalid={hasError ? true : undefined}
           aria-label={ariaLabel}
           className={cn(S.nativeInputClassName, readOnly && S.readOnlyNativeInputClassName)}
-          min={min}
+          min={pickerDisabled ? undefined : min}
           readOnly={readOnly}
-          tabIndex={readOnly ? -1 : undefined}
-          type='date'
+          tabIndex={cannotOpenPicker ? -1 : undefined}
+          type={pickerDisabled ? 'text' : 'date'}
           value={value}
           onBlur={onBlur}
           onChange={onChange}

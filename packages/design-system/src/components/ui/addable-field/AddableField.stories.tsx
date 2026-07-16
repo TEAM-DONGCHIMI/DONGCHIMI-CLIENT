@@ -115,6 +115,12 @@ export const Required: StoryTypes = {
   },
 };
 
+export const TrailingActionDisabled: StoryTypes = {
+  args: {
+    trailingActionDisabled: true,
+  },
+};
+
 export const ErrorEmpty: StoryTypes = {
   args: {
     errorIcon: <DemoIcon />,
