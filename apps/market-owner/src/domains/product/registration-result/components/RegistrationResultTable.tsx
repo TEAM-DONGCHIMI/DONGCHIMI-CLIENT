@@ -39,6 +39,8 @@ interface RegistrationResultTableProps {
   onSelectAll: () => void;
 }
 
+const EMPTY_PRODUCT_ROW_COUNT = 4;
+
 const RequiredMark = () => {
   return <span className={S.requiredMarkClassName}>*</span>;
 };
@@ -145,7 +147,7 @@ const TableHeader = ({
 export const RegistrationResultTable = ({
   allVisibleSelected,
   children,
-  emptyMessage = '표시할 상품이 없습니다.',
+  emptyMessage,
   hasVisibleSelection,
   imagePreviews,
   productDrafts,
@@ -160,7 +162,17 @@ export const RegistrationResultTable = ({
 }: RegistrationResultTableProps) => {
   const renderProductRows = () => {
     if (products.length === 0) {
-      return <div className={S.emptyStateClassName}>{emptyMessage}</div>;
+      if (emptyMessage != null) {
+        return <div className={S.emptyStateClassName}>{emptyMessage}</div>;
+      }
+
+      return Array.from({ length: EMPTY_PRODUCT_ROW_COUNT }, (_, index) => (
+        <div
+          aria-hidden='true'
+          className={S.emptyProductRowClassName}
+          key={`empty-product-row-${index}`}
+        />
+      ));
     }
 
     return products.map((product) => {
