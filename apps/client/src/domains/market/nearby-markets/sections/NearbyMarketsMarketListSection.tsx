@@ -19,8 +19,9 @@ const NEARBY_MARKETS_LIST_ARIA_LABEL = '주변 마트 목록';
 const NEARBY_MARKETS_INITIAL_LOADING_MESSAGE = '주변 마트를 불러오는 중이에요.';
 const NEARBY_MARKETS_LOADING_MESSAGE = '마트를 더 불러오는 중이에요.';
 const NEARBY_MARKETS_LOAD_ERROR_MESSAGE = '마트를 불러올 수 없어요.';
-const NEARBY_MARKETS_EMPTY_MESSAGE =
-  '주변에 제휴 마트가 없어요.\n더 많은 마트를 만나보실 수 있도록 준비중이에요!';
+const NEARBY_MARKETS_EMPTY_MESSAGE = '근처에 등록된 마트가 아직 없어요';
+const NEARBY_MARKETS_SEARCH_EMPTY_MESSAGE = '검색 결과가 없어요';
+const NEARBY_MARKETS_PREVIEW_PRODUCT_LIMIT = 3;
 
 export const NearbyMarketsMarketListSection = () => {
   const {
@@ -83,7 +84,7 @@ export const NearbyMarketsMarketListSection = () => {
 
   if (markets.length === 0) {
     const emptyMessage = keyword
-      ? `'${keyword}'에 대한 검색 결과가 없어요`
+      ? NEARBY_MARKETS_SEARCH_EMPTY_MESSAGE
       : NEARBY_MARKETS_EMPTY_MESSAGE;
 
     return (
@@ -114,18 +115,20 @@ export const NearbyMarketsMarketListSection = () => {
           isOpen={market.isOpen}
           martName={market.name}
           onActionClick={() => router.push(CLIENT_ROUTES.market(market.slug))}
-          products={market.previewProducts.map((product) => {
-            const isDiscounted = product.discountRate > 0;
+          products={market.previewProducts
+            .slice(0, NEARBY_MARKETS_PREVIEW_PRODUCT_LIMIT)
+            .map((product) => {
+              const isDiscounted = product.discountRate > 0;
 
-            return {
-              hasSaleChip: isDiscounted,
-              imageAlt: product.name,
-              imageSrc: product.thumbnailUrl,
-              price: formatWon(product.discountedPrice),
-              productName: product.name,
-              ...(isDiscounted ? { saleChipLabel: `${product.discountRate}%` } : {}),
-            };
-          })}
+              return {
+                hasSaleChip: isDiscounted,
+                imageAlt: product.name,
+                imageSrc: product.thumbnailUrl,
+                price: formatWon(product.discountedPrice),
+                productName: product.name,
+                ...(isDiscounted ? { saleChipLabel: `${product.discountRate}%` } : {}),
+              };
+            })}
           profileImageAlt={market.name}
           profileImageSrc={market.thumbnailUrl}
         />

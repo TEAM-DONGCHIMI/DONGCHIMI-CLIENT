@@ -21,13 +21,22 @@ vi.mock('@/shared/components', () => ({
   MartSummaryCard: ({
     martName,
     onActionClick,
+    products,
   }: {
     martName: string;
     onActionClick?: () => void;
+    products?: { productName: string }[];
   }) => (
-    <button onClick={onActionClick} type='button'>
-      {martName}
-    </button>
+    <article>
+      <button onClick={onActionClick} type='button'>
+        {martName}
+      </button>
+      <ul>
+        {products?.map((product) => (
+          <li key={product.productName}>{product.productName}</li>
+        ))}
+      </ul>
+    </article>
   ),
 }));
 
@@ -78,7 +87,72 @@ describe('NearbyMarketsMarketListSection', () => {
     expect(router.push).toHaveBeenCalledWith('/markets/mangwon-fresh');
   });
 
-  it('등록된 마트가 없으면 APPJAM 빈 상태 이미지와 안내 문구를 표시한다', () => {
+  it('마트 상품 카드는 응답 순서를 유지해 최대 3개만 표시한다', () => {
+    useNearbyMarketsMarketList.mockReturnValue({
+      error: null,
+      fetchNextPage: vi.fn(),
+      hasNextPage: false,
+      isError: false,
+      isFetchingNextPage: false,
+      isPending: false,
+      keyword: undefined,
+      markets: [
+        {
+          isOpen: true,
+          marketId: 1,
+          name: '망원 신선마트',
+          previewProducts: [
+            {
+              discountRate: 10,
+              discountedPrice: 900,
+              name: '먼저 등록한 상품',
+              originalPrice: 1000,
+              productId: 1,
+              thumbnailUrl: null,
+            },
+            {
+              discountRate: 0,
+              discountedPrice: 2000,
+              name: '두번째 등록한 상품',
+              originalPrice: 2000,
+              productId: 2,
+              thumbnailUrl: null,
+            },
+            {
+              discountRate: 5,
+              discountedPrice: 2850,
+              name: '세번째 등록한 상품',
+              originalPrice: 3000,
+              productId: 3,
+              thumbnailUrl: null,
+            },
+            {
+              discountRate: 20,
+              discountedPrice: 3200,
+              name: '네번째 등록한 상품',
+              originalPrice: 4000,
+              productId: 4,
+              thumbnailUrl: null,
+            },
+          ],
+          productCount: 4,
+          slug: 'mangwon-fresh',
+          thumbnailUrl: null,
+        },
+      ],
+    });
+
+    render(<NearbyMarketsMarketListSection />);
+
+    expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      '먼저 등록한 상품',
+      '두번째 등록한 상품',
+      '세번째 등록한 상품',
+    ]);
+    expect(screen.queryByText('네번째 등록한 상품')).not.toBeInTheDocument();
+  });
+
+  it('등록된 마트가 없으면 APPJAM 빈 상태 이미지와 등록 마트 없음 문구를 표시한다', () => {
     useNearbyMarketsMarketList.mockReturnValue({
       error: null,
       fetchNextPage: vi.fn(),
@@ -92,13 +166,11 @@ describe('NearbyMarketsMarketListSection', () => {
 
     render(<NearbyMarketsMarketListSection />);
 
-    expect(screen.getByRole('status')).toHaveTextContent(
-      '주변에 제휴 마트가 없어요. 더 많은 마트를 만나보실 수 있도록 준비중이에요!',
-    );
+    expect(screen.getByRole('status')).toHaveTextContent('근처에 등록된 마트가 아직 없어요');
     expect(screen.getByRole('status').querySelector('img')).toBeInTheDocument();
   });
 
-  it('검색 결과가 없으면 기존 검색 결과 없음 문구를 표시한다', () => {
+  it('검색 결과가 없으면 검색 결과 없음 문구를 표시한다', () => {
     useNearbyMarketsMarketList.mockReturnValue({
       error: null,
       fetchNextPage: vi.fn(),
@@ -112,7 +184,7 @@ describe('NearbyMarketsMarketListSection', () => {
 
     render(<NearbyMarketsMarketListSection />);
 
-    expect(screen.getByRole('status')).toHaveTextContent("'망원'에 대한 검색 결과가 없어요");
+    expect(screen.getByRole('status')).toHaveTextContent('검색 결과가 없어요');
     expect(screen.getByRole('status').querySelector('img')).not.toBeInTheDocument();
   });
 

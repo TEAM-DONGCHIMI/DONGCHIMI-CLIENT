@@ -21,6 +21,10 @@ import {
   LOCATION_PERMISSION_DENIED_PLACEHOLDER,
 } from './NearbyMarketsPage.constants';
 import { useDaumPostcodeSearch } from './hooks/use-daum-postcode-search';
+import {
+  filterVisibleNearbyMarkets,
+  getPrioritizedVisibleNearbyMarkets,
+} from './utils/filter-visible-nearby-markets';
 import { flattenNearbyMarketsPages } from './utils/flatten-nearby-markets-pages';
 
 const LOCATION_PERMISSION_ERROR_TOAST_ID = 'nearby-markets-location-permission-error';
@@ -63,10 +67,6 @@ type NearbyMarketsClientProviderProps = Readonly<{
   children: ReactNode;
 }>;
 
-const hasRegisteredProducts = (market: NearbyMarketDtoTypes) => {
-  return market.productCount > 0;
-};
-
 export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientProviderProps) => {
   const toast = useToast();
   const [keyword, setKeyword] = useState('');
@@ -95,8 +95,8 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
   const { data: markerMarkets = [], isError: isMarkerMarketsError } =
     useGetNearbyMarketMarkersQuery(nearbyMarketsParams);
   const markets = useMemo(() => flattenNearbyMarketsPages(data), [data]);
-  const listMarkets = useMemo(() => markets.filter(hasRegisteredProducts), [markets]);
-  const mapMarkets = useMemo(() => markerMarkets.filter(hasRegisteredProducts), [markerMarkets]);
+  const listMarkets = useMemo(() => getPrioritizedVisibleNearbyMarkets(markets), [markets]);
+  const mapMarkets = useMemo(() => filterVisibleNearbyMarkets(markerMarkets), [markerMarkets]);
 
   useEffect(() => {
     if (errorCode === null) {
