@@ -1,6 +1,30 @@
 import { describe, expect, it } from 'vitest';
 
-import { createMarketInformationRegistrationRequest } from './market-information-form.utils';
+import {
+  createMarketInformationRegistrationRequest,
+  isValidMarketPhone,
+} from './market-information-form.utils';
+
+describe('isValidMarketPhone', () => {
+  it.each(['010-1234-5678', '02-123-4567', '02-1234-5678', '031-123-4567', '070-1234-5678'])(
+    'accepts a supported phone number: %s',
+    (phoneNumber) => {
+      expect(isValidMarketPhone(phoneNumber)).toBe(true);
+    },
+  );
+
+  it.each([
+    '034-123-4567',
+    '0311234567',
+    '031-1234567',
+    '031-0430-2432',
+    '031-12-5678',
+    '070-123-4567',
+    '010-123-4567',
+  ])('rejects an unsupported phone number: %s', (phoneNumber) => {
+    expect(isValidMarketPhone(phoneNumber)).toBe(false);
+  });
+});
 
 describe('createMarketInformationRegistrationRequest', () => {
   it('maps grouped opening hours and a weekly holiday to the API contract', () => {
