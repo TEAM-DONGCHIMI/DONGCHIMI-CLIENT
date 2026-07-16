@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "generate:svg-components": "svgr --typescript --memo --jsx-runtime automatic --no-index --out-dir src/shared/assets/images/generated src/shared/assets/images/404_Img.svg",
     "preview": "vite preview --host 127.0.0.1 --port 5173 --strictPort",
     "lint": "eslint .",
     "storybook": "storybook dev -p 6008",
@@ -42,6 +43,7 @@
     "@storybook/addon-a11y": "^10.4.6",
     "@storybook/addon-docs": "^10.4.6",
     "@storybook/react-vite": "^10.4.6",
+    "@svgr/cli": "catalog:",
     "@tanstack/react-query-devtools": "catalog:",
     "@testing-library/dom": "catalog:",
     "@testing-library/jest-dom": "catalog:",
