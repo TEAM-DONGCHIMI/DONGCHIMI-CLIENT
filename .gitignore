@@ -52,6 +52,10 @@ apps/*/.vercel
 next-env.d.ts
 tsconfig.tsbuildinfo
 
+# Generated service worker output
+/apps/client/public/sw.js
+/apps/client/public/sw.js.map
+
 # Serena MCP keeps runtime data under .serena. Commit only the project config.
 .serena/*
 !.serena/project.yml

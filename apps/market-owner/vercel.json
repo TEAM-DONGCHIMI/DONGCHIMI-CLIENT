@@ -2,17 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "routes": [
     {
-      "src": "/v1/(.*)",
-      "headers": {
-        "x-vercel-enable-rewrite-caching": "0"
-      },
-      "continue": true
-    },
-    {
-      "src": "/v1/(.*)",
-      "dest": "https://api.dongchiimi.com/v1/$1"
-    },
-    {
       "src": "/assets/(.*)",
       "dest": "/assets/$1"
     },
