@@ -15,7 +15,7 @@
 
 ## States And Side Effects
 
-- success response: `data.marketId`를 auth store에 저장해 재로그인 없이 마켓 상세 조회가 가능해야 합니다.
+- success response: 점주 마트 상세 전체 응답을 API boundary에서 검증하고, `data.marketId`를 auth store에 저장해 재로그인 없이 마켓 상세 조회가 가능해야 합니다.
 
 - pending: 등록 버튼을 비활성화하고 `등록 중...`을 표시합니다.
 - success: 서버 message로 완료 Toast를 표시한 뒤 홈 route로 replace 이동합니다.
@@ -29,7 +29,7 @@
 - 한 영업시간을 공유하는 요일은 하나의 `days` 배열로 묶습니다.
 - 영업 요일은 `MONDAY`~`SUNDAY` enum 문자열로 변환합니다.
 - 주간 휴무일은 `isOpen: false`, `open: null`, `close: null`로 변환합니다.
-- `공휴일` 선택은 서버 계약에 공휴일 enum이 없으므로 payload에 포함하지 않습니다.
+- `공휴일` 선택 여부는 `isHolidayClosed` boolean으로 전송하고, 월요일부터 일요일까지의 정기 휴무만 `businessHours`의 비영업 슬롯으로 전송합니다.
 - 주소 검색 연동 전까지 latitude/longitude는 form owner가 제공하는 값을 그대로 전달합니다.
 
 ## Verification

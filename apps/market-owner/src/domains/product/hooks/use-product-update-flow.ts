@@ -61,14 +61,18 @@ export const useProductUpdateFlow = () => {
     setIsPending(true);
 
     try {
-      const thumbnailUrl = imageFile
-        ? await uploadProductThumbnail(imageFile)
-        : currentThumbnailUrl;
+      const uploadedThumbnail = imageFile ? await uploadProductThumbnail(imageFile) : null;
+      const requestThumbnail = uploadedThumbnail?.objectKey ?? currentThumbnailUrl;
+      const thumbnailUrl = uploadedThumbnail?.publicUrl ?? currentThumbnailUrl;
 
       await productUpdateMutation.mutateAsync({
         marketId,
         productId,
-        request: createProductUpdateRequest({ dealType, thumbnailUrl, values }),
+        request: createProductUpdateRequest({
+          dealType,
+          thumbnailUrl: requestThumbnail,
+          values,
+        }),
       });
 
       return { success: true, thumbnailUrl };

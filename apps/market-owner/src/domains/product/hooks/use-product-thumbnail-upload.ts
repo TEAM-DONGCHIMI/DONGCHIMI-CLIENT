@@ -30,7 +30,10 @@ export const useProductThumbnailUpload = () => {
       uploadUrl: uploadContract.uploadUrl,
     });
 
-    return createPublicProductThumbnailUrl(s3BaseUrl, uploadContract.objectKey);
+    return {
+      objectKey: uploadContract.objectKey,
+      publicUrl: createPublicProductThumbnailUrl(s3BaseUrl, uploadContract.objectKey),
+    };
   };
 
   return { uploadProductThumbnail };

@@ -9,6 +9,8 @@ import { marketQueryKeys } from '../query-keys';
 
 type PeriodicProductsQueryKeyTypes = ReturnType<typeof marketQueryKeys.periodicProducts>;
 
+export const PERIODIC_PRODUCTS_INACTIVE_CACHE_TIME_MS = 30 * 60 * 1000;
+
 export const getPeriodicProductsNextPageParam = (
   lastPage: PeriodicProductsPageTypes,
   _allPages: PeriodicProductsPageTypes[],
@@ -34,6 +36,7 @@ export const periodicProductsInfiniteQueryOptions = (params: PeriodicProductsLis
     PeriodicProductsQueryKeyTypes,
     number | undefined
   >({
+    gcTime: PERIODIC_PRODUCTS_INACTIVE_CACHE_TIME_MS,
     getNextPageParam: getPeriodicProductsNextPageParam,
     initialPageParam: undefined as number | undefined,
     queryFn: ({ pageParam, signal }) =>

@@ -19,6 +19,7 @@ loading, error, data 상태만 소비하고 HTTP 요청 세부 사항을 알지 
 - query key: `homeQueryKeys.ownerHome()`
 - request parameter: 없음
 - response: 생성된 `ApiResponseOwnerHomeResponse`와 동기화한 Zod schema를 통과한 홈 데이터
+  - 상품 `thumbnailUrl`은 절대 URL 또는 `/images/...` 형태의 루트 상대 경로를 허용합니다.
 - retry/cache: app `QueryClient` 기본 정책을 사용합니다.
 - error: 홈 대시보드가 `role="alert"` 및 재시도 UI를 렌더링하도록 `throwOnError: false`를 설정합니다.
 

@@ -25,6 +25,7 @@ const mockedUsePreparedProductDraftsQuery = vi.mocked(usePreparedProductDraftsQu
 const mockedUsePresignedUploadMutation = vi.mocked(usePresignedUploadMutation);
 const mockedUseSavePreparedProductDraftsMutation = vi.mocked(useSavePreparedProductDraftsMutation);
 const mockedSavePreparedProductDrafts = vi.fn();
+const mockedRefetchPreparedProductDrafts = vi.fn();
 
 const FileAnalysisRouteStateProbe = () => {
   const location = useLocation();
@@ -115,12 +116,17 @@ const renderPage = (initialState?: unknown) => {
 describe('RegistrationResultPage', () => {
   beforeEach(() => {
     mockedSavePreparedProductDrafts.mockReset().mockResolvedValue(undefined);
+    mockedRefetchPreparedProductDrafts.mockReset().mockResolvedValue({
+      data: preparedDraftsQueryData,
+      isError: false,
+    });
     useAuthStore.getState().clearSession();
     useAuthStore.getState().setMarketId(12);
     mockedUsePreparedProductDraftsQuery.mockReturnValue({
       data: preparedDraftsQueryData,
       isError: false,
       isPending: false,
+      refetch: mockedRefetchPreparedProductDrafts,
     } as unknown as ReturnType<typeof usePreparedProductDraftsQuery>);
     mockedUseSavePreparedProductDraftsMutation.mockReturnValue({
       isPending: false,
@@ -187,7 +193,12 @@ describe('RegistrationResultPage', () => {
       data: completedPreparedDraftsQueryData,
       isError: false,
       isPending: false,
+      refetch: mockedRefetchPreparedProductDrafts,
     } as unknown as ReturnType<typeof usePreparedProductDraftsQuery>);
+    mockedRefetchPreparedProductDrafts.mockResolvedValue({
+      data: completedPreparedDraftsQueryData,
+      isError: false,
+    });
 
     renderPage();
 
@@ -211,6 +222,7 @@ describe('RegistrationResultPage', () => {
         ],
       },
     });
+    expect(mockedRefetchPreparedProductDrafts).toHaveBeenCalledTimes(1);
     expect(
       await screen.findByRole('heading', { name: '오늘의 전단 최종 확인' }),
     ).toBeInTheDocument();
@@ -223,7 +235,12 @@ describe('RegistrationResultPage', () => {
       data: completedPreparedDraftsQueryData,
       isError: false,
       isPending: false,
+      refetch: mockedRefetchPreparedProductDrafts,
     } as unknown as ReturnType<typeof usePreparedProductDraftsQuery>);
+    mockedRefetchPreparedProductDrafts.mockResolvedValue({
+      data: completedPreparedDraftsQueryData,
+      isError: false,
+    });
     mockedSavePreparedProductDrafts.mockRejectedValueOnce(new Error('save failed'));
 
     renderPage();
@@ -236,5 +253,31 @@ describe('RegistrationResultPage', () => {
       'top-center',
     );
     expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
+  });
+
+  it('stays on the result page when the refreshed server draft still fails', async () => {
+    const user = userEvent.setup();
+
+    mockedUsePreparedProductDraftsQuery.mockReturnValue({
+      data: completedPreparedDraftsQueryData,
+      isError: false,
+      isPending: false,
+      refetch: mockedRefetchPreparedProductDrafts,
+    } as unknown as ReturnType<typeof usePreparedProductDraftsQuery>);
+    mockedRefetchPreparedProductDrafts.mockResolvedValue({
+      data: preparedDraftsQueryData,
+      isError: false,
+    });
+
+    renderPage();
+
+    await user.click(screen.getByRole('button', { name: /^등록 완료$/ }));
+
+    expect(mockedSavePreparedProductDrafts).toHaveBeenCalledTimes(1);
+    expect(mockedRefetchPreparedProductDrafts).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: '오늘의 전단 최종 확인' }),
+    ).not.toBeInTheDocument();
   });
 });

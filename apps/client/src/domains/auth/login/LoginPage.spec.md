@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-12, DCMCL-17, DCMCL-22
+- Jira: DCMCL-12, DCMCL-17, DCMCL-22, DCMCL-27
 - Screen ID: `모웹_로그인`
 - Figma frame: [APPJAM node 2662:156337](https://www.figma.com/design/xIDbjqPKzG4bQL5Gaoqfvb/APPJAM?node-id=2662-156337&m=dev)
 - Route: `/login`
@@ -23,7 +23,8 @@
 
 ## Scope
 
-- 앱 viewport 상단에 `375 / 433` 비율의 온보딩 이미지 영역을 제공합니다.
+- 앱 viewport 상단에 최종 SVG 온보딩 이미지를 제공합니다.
+- 전달된 원본의 `375 / 510` 비율을 유지합니다.
 - 카카오 로그인 버튼과 약관 안내 문구를 제공합니다.
 - 카카오 버튼 배경은 디자인시스템의 `semantic.status.kakaoYellow` token을 사용합니다.
 - 모바일 viewport와 safe area에 대응합니다.
@@ -48,7 +49,7 @@ LoginPage
 
 - Figma device frame: `375px × 812px`
 - app viewport: `375px × 666px`
-- onboarding image: `375px × 433px`
+- onboarding image: `375px × 510px`
 - login container: app viewport 전체 높이, 좌우 `20px`, 하단 `60px`, 하단 정렬
 - Kakao login link: `335px × 50px`, radius `12px`
 - Kakao icon: `20px`
@@ -78,7 +79,7 @@ LoginPage
 
 ## Responsive
 
-- 온보딩 이미지는 viewport 상단에서 `375 / 433` 비율을 유지합니다.
+- 온보딩 이미지는 viewport 상단에서 원본 `375 / 510` 비율을 유지합니다.
 - 로그인 영역은 전체 viewport 높이를 차지하고 콘텐츠를 하단 정렬합니다.
 - 로그인 영역은 좌우 `2rem`, 하단 `6rem`을 기준으로 safe area를 반영합니다.
 
@@ -90,6 +91,7 @@ LoginPage
 - [x] `pnpm --filter client build`
 - [x] browser route: `/login`
 
-## Open Questions
+## Asset
 
-- 온보딩 이미지 최종 PNG 교체 시점과 asset 경로
+- 최종 온보딩 SVG: `src/shared/assets/images/img_mobile_onboarding.svg`
+- 이미지가 화면 내용을 반복 설명하지 않는 장식 요소이므로 빈 대체 텍스트를 사용합니다.

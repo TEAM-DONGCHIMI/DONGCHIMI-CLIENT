@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21
+- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21, DMCL-24, DCMCL-28
 - Figma: APPJAM, mobile web market leaflet flow
 - Route: `/markets/[slug]`
 - Owner: `apps/client`
@@ -18,7 +18,8 @@
 - 마트 상세 응답의 `marketId`로 오늘의 특가와 행사 할인 상품을 조회합니다.
 - 행사 상품은 전체 또는 서버 `ProductCategory` enum별 cursor pagination을 사용합니다.
 - 상품 카드는 `/markets/[slug]/products/[productId]`로 이동합니다.
-- 공유하기는 `MarketShareBottomSheet`를 재사용하고, 전화걸기는 확인 modal 후 `tel:` URL로 이동합니다.
+- 공유하기는 `MarketShareBottomSheet`를 재사용하고, 공유 시트의 `앱으로 전단보기`는 PWA 설치 안내 시트로 전환합니다.
+- 전화걸기는 확인 modal 후 `tel:` URL로 이동합니다.
 
 ## Layout And Sections
 
@@ -32,7 +33,7 @@
 
 - market detail browser endpoint: `GET /api/markets/{slug}`
 - market detail upstream: `GET /v1/users/markets/{slug}`
-- market summary: `marketId`, `name`, `thumbnailUrl`, `address`, `isOpenNow`, `businessHours`, 전화번호, `top3[]`
+- market summary: `marketId`, `name`, `thumbnailUrl`, `address`, `isOpenNow`, `isHolidayClosed`, `businessHours`, 전화번호, `top3[]`. 공휴일을 포함한 영업 상태는 서버의 `isOpenNow`를 그대로 표시하며 별도의 공휴일 휴무 문구는 추가하지 않습니다.
 - daily products browser endpoint: `GET /api/markets/products/daily?marketId={marketId}`
 - daily products upstream: `GET /v1/users/markets/{marketId}/products/daily`
 - daily products response: `totalCount`, `products[]`
@@ -74,9 +75,24 @@
 - 이미 사용한 `nextCursor`가 반환되면 반복 요청을 중단합니다.
 - observer의 연속 intersection은 진행 중인 다음 페이지 요청을 중복 실행하지 않습니다.
 - TanStack Query의 abort signal을 browser request와 upstream request에 전달합니다.
+- 설치 가능한 브라우저의 `홈 화면에 추가하기`는 사용자 제스처 안에서 네이티브 설치 prompt를 호출합니다.
+- 직접 설치 prompt를 지원하지 않는 브라우저는 공유 메뉴를 통한 수동 설치 절차를 안내합니다.
 - 내용이 없는 중간 페이지라도 `hasNext`가 true이면 최종 빈 상태로 확정하지 않습니다.
 - 각 페이지 grid는 `content-visibility: auto`로 화면 밖 렌더링 비용을 줄입니다.
 - 무한 목록 상품 link는 viewport 진입만으로 상세 route를 대량 요청하지 않도록 prefetch를 비활성화합니다.
+- TOP3, 오늘의 특가와 행사 할인 상품 link는 상세 이동 직전에 상품 ID, section, anchor ID, viewport 상대 위치와 fallback `scrollY`를 route 단위 sessionStorage에 저장합니다.
+- 상품 link를 클릭하면 현재 목록 history entry에 snapshot과 연결된 일회성 복원 token을 표시합니다.
+- 오늘의 특가 상품에서 돌아오면 저장한 전체보기 펼침 상태를 먼저 적용해 클릭 상품 anchor를 다시 렌더링합니다.
+- 행사 할인 상품에서 돌아오면 저장한 category와 category 더보기 상태를 먼저 적용합니다.
+- 행사 할인 category 복원은 동일한 `marketId + category` query key를 다시 사용하므로 TanStack Query가 보유한 무한 목록 `pages/pageParams`를 그대로 렌더링합니다.
+- 행사 할인 무한 목록의 비활성 캐시는 상세 탐색 시간을 고려해 30분 동안 유지합니다.
+- 저장한 목록 history entry가 다시 활성화됐을 때만 snapshot을 복원하며 일반적인 목록 신규 진입에서는 과거 상태를 적용하지 않습니다.
+- Next App Router가 목록 컴포넌트를 재사용하는 경우에도 `popstate`를 구독해 snapshot을 React 상태로 반영합니다.
+- 목록 component가 먼저 마운트된 뒤 snapshot이 도착해도 `restorationId`를 기준으로 오늘의 특가 펼침 상태와 행사 category 상태를 한 번 적용합니다.
+- 전역 page의 세로 scroll은 `window/documentElement`가 소유하며 body를 별도 scroll container로 만들지 않습니다.
+- anchor가 렌더링되면 저장한 viewport 상대 위치와 현재 위치의 차이만큼 즉시 보정하고, 연속 frame에서 위치가 안정되면 완료합니다.
+- 제한 시간까지 anchor 위치가 안정되지 않거나 찾지 못하면 저장한 절대 `scrollY`를 사용합니다.
+- 복원 정보는 성공 또는 fallback 처리 후 제거하며 sessionStorage 접근 실패는 기존 link 이동을 방해하지 않습니다.
 
 ## Accessibility
 
@@ -87,12 +103,12 @@
 
 ## Verification
 
-- [ ] `git diff --check`
-- [ ] `pnpm --filter client test`
-- [ ] `pnpm --filter client lint`
-- [ ] `pnpm --filter client typecheck`
-- [ ] `pnpm --filter client build`
-- [ ] browser route: `/markets/mangwon-fresh`, mobile viewport 375px
+- [x] `git diff --check`
+- [x] `pnpm --filter client test`
+- [x] `pnpm --filter client lint`
+- [x] `pnpm --filter client typecheck`
+- [x] `pnpm --filter client build`
+- [x] browser route: `/markets/mangwon-fresh`, mobile viewport 375px with fixed API responses
 
 ## Out Of Scope
 
@@ -100,3 +116,6 @@
 - Kakao SDK 공유 연동
 - 상품 상세 페이지 UI 변경
 - 위치, 지도, 권한 처리
+- 새로고침 또는 앱 재실행 이후의 무한 목록 영속화
+- 다른 목록 route의 전역 스크롤 복원 정책
+- 사용자가 이동 과정을 보게 되는 smooth scroll 애니메이션

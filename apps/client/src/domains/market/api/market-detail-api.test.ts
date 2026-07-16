@@ -59,6 +59,22 @@ describe('getMarketDetail', () => {
     expect(() => resolveMarketDetailResponse(response)).toThrow(ApiResponseValidationError);
   });
 
+  it('공휴일 휴무가 반영된 서버 영업 상태를 허용한다', () => {
+    const response = {
+      ...MARKET_DETAIL_API_RESPONSE_FIXTURE,
+      data: {
+        ...MARKET_DETAIL_API_RESPONSE_FIXTURE.data,
+        isHolidayClosed: true,
+        isOpenNow: false,
+      },
+    };
+
+    expect(resolveMarketDetailResponse(response)).toMatchObject({
+      isHolidayClosed: true,
+      isOpenNow: false,
+    });
+  });
+
   it('MONDAY부터 SUNDAY까지의 요일 값만 허용한다', () => {
     const response = {
       ...MARKET_DETAIL_API_RESPONSE_FIXTURE,

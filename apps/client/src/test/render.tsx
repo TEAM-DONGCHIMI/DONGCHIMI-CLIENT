@@ -4,6 +4,7 @@ import { ToastProvider } from '@dongchimi/shared/toast';
 import type { ReactElement, ReactNode } from 'react';
 
 import { createQueryClient } from '@/shared/query';
+import { PwaInstallProvider } from '@/shared/pwa';
 
 type TestRenderOptionsTypes = Omit<RenderOptions, 'wrapper'> & {
   queryClient?: ReturnType<typeof createQueryClient>;
@@ -20,7 +21,9 @@ export const renderWithProviders = (
   const Wrapper = ({ children }: Readonly<{ children: ReactNode }>) => {
     return (
       <QueryClientProvider client={queryClient}>
-        <ToastProvider placement='bottom-center'>{children}</ToastProvider>
+        <PwaInstallProvider>
+          <ToastProvider placement='bottom-center'>{children}</ToastProvider>
+        </PwaInstallProvider>
       </QueryClientProvider>
     );
   };

@@ -6,7 +6,6 @@ import type {
   RegistrationResultEditableProductFieldTypes,
   RegistrationResultProduct,
   RegistrationResultProductDraftMapTypes,
-  RegistrationResultProductDraftTypes,
   RegistrationResultProductFieldValues,
 } from '../model';
 import { getRegistrationResultProductFieldValues } from '../model';
@@ -40,32 +39,17 @@ interface RegistrationResultTableProps {
   onSelectAll: () => void;
 }
 
+const EMPTY_PRODUCT_ROW_COUNT = 4;
+
 const RequiredMark = () => {
   return <span className={S.requiredMarkClassName}>*</span>;
 };
 
-const validatedFields = [
-  'productName',
-  'price',
-  'promotionText',
-  'discountPeriod',
-] as const satisfies readonly RegistrationResultEditableProductFieldTypes[];
-
 const getVisibleFieldErrors = (
   fieldErrors: RegistrationResultProductFieldErrorTypes,
-  productDraft: RegistrationResultProductDraftTypes | undefined,
+  hasLocalChanges: boolean,
 ) => {
-  const visibleFieldErrors: RegistrationResultProductFieldErrorTypes = {};
-
-  validatedFields.forEach((field) => {
-    const errorMessage = fieldErrors[field];
-
-    if (productDraft?.[field] !== undefined && errorMessage != null) {
-      visibleFieldErrors[field] = errorMessage;
-    }
-  });
-
-  return visibleFieldErrors;
+  return hasLocalChanges ? fieldErrors : {};
 };
 
 const getProductFieldValues = (
@@ -90,17 +74,8 @@ const HeaderSelectionButton = ({
   mixed: boolean;
   onClick: () => void;
 }) => {
-  let ariaChecked: boolean | 'mixed' = checked;
-  let selectionState: 'checked' | 'mixed' | 'unchecked' = 'unchecked';
-  let mixedMark = null;
-
-  if (mixed) {
-    ariaChecked = 'mixed';
-    selectionState = 'mixed';
-    mixedMark = <span className={S.selectionMixedMarkClassName} />;
-  } else if (checked) {
-    selectionState = 'checked';
-  }
+  const ariaChecked: boolean | 'mixed' = mixed ? 'mixed' : checked;
+  const selectionState = checked ? 'checked' : 'unchecked';
 
   return (
     <button
@@ -111,7 +86,7 @@ const HeaderSelectionButton = ({
       role='checkbox'
       type='button'
     >
-      <span className={S.selectionBoxRecipe({ state: selectionState })}>{mixedMark}</span>
+      <span className={S.selectionBoxRecipe({ state: selectionState })} />
     </button>
   );
 };
@@ -163,7 +138,7 @@ const TableHeader = ({
 export const RegistrationResultTable = ({
   allVisibleSelected,
   children,
-  emptyMessage = '표시할 상품이 없습니다.',
+  emptyMessage,
   hasVisibleSelection,
   imagePreviews,
   productDrafts,
@@ -178,14 +153,24 @@ export const RegistrationResultTable = ({
 }: RegistrationResultTableProps) => {
   const renderProductRows = () => {
     if (products.length === 0) {
-      return <div className={S.emptyStateClassName}>{emptyMessage}</div>;
+      if (emptyMessage != null) {
+        return <div className={S.emptyStateClassName}>{emptyMessage}</div>;
+      }
+
+      return Array.from({ length: EMPTY_PRODUCT_ROW_COUNT }, (_, index) => (
+        <div
+          aria-hidden='true'
+          className={S.emptyProductRowClassName}
+          key={`empty-product-row-${index}`}
+        />
+      ));
     }
 
     return products.map((product) => {
       const fieldValues = getProductFieldValues(product, productDrafts);
       const fieldErrors = getVisibleFieldErrors(
         validateRegistrationResultProductFields(fieldValues),
-        productDrafts.get(product.id),
+        productDrafts.has(product.id) || imagePreviews.has(product.id),
       );
 
       return (

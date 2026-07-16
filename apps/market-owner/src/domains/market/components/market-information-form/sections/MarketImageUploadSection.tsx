@@ -1,7 +1,7 @@
 import { type ChangeEvent, useEffect, useId, useRef, useState } from 'react';
 
-import { Button, Stack } from '@dongchimi/design-system/components';
-import { IcCamera, IcPlus } from '@dongchimi/design-system/icons';
+import { IconButton, Stack } from '@dongchimi/design-system/components';
+import { IcCameraDefault, IcPlus } from '@dongchimi/design-system/icons';
 
 import * as S from './MarketImageUploadSection.css';
 
@@ -94,16 +94,15 @@ export const MarketImageUploadSection = ({
             className={S.imagePreviewDimmerClassName}
             data-testid='market-image-preview-dimmer'
           />
-          <Button
+          <IconButton
             aria-label='마트 이미지 변경'
             className={S.imageUploadCameraButtonClassName}
             color='assistive'
-            size='large'
+            icon={<IcCameraDefault />}
+            rounded
             variant='outlined'
             onClick={() => imageInputRef.current?.click()}
-          >
-            <IcCamera aria-hidden='true' className={S.imageUploadCameraIconClassName} />
-          </Button>
+          />
         </div>
       ) : (
         <label

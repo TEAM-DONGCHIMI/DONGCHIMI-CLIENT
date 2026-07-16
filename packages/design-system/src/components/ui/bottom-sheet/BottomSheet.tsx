@@ -30,7 +30,18 @@ const focusableSelector = [
 ].join(',');
 
 let bodyScrollLockCount = 0;
-let originalBodyOverflow = '';
+
+interface BodyScrollLockSnapshot {
+  left: string;
+  overflow: string;
+  position: string;
+  scrollX: number;
+  scrollY: number;
+  top: string;
+  width: string;
+}
+
+let bodyScrollLockSnapshot: BodyScrollLockSnapshot | null = null;
 
 type BottomSheetOpenProps =
   | {
@@ -110,8 +121,23 @@ const getFocusableElements = (element: HTMLElement) => {
 
 const lockBodyScroll = () => {
   if (bodyScrollLockCount === 0) {
-    originalBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const { body } = document;
+
+    bodyScrollLockSnapshot = {
+      left: body.style.left,
+      overflow: body.style.overflow,
+      position: body.style.position,
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+      top: body.style.top,
+      width: body.style.width,
+    };
+
+    body.style.left = `-${bodyScrollLockSnapshot.scrollX}px`;
+    body.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    body.style.top = `-${bodyScrollLockSnapshot.scrollY}px`;
+    body.style.width = '100%';
   }
 
   bodyScrollLockCount += 1;
@@ -120,8 +146,25 @@ const lockBodyScroll = () => {
     bodyScrollLockCount = Math.max(0, bodyScrollLockCount - 1);
 
     if (bodyScrollLockCount === 0) {
-      document.body.style.overflow = originalBodyOverflow;
-      originalBodyOverflow = '';
+      const snapshot = bodyScrollLockSnapshot;
+
+      bodyScrollLockSnapshot = null;
+
+      if (snapshot == null) {
+        return;
+      }
+
+      const { body } = document;
+
+      body.style.left = snapshot.left;
+      body.style.overflow = snapshot.overflow;
+      body.style.position = snapshot.position;
+      body.style.top = snapshot.top;
+      body.style.width = snapshot.width;
+
+      if (snapshot.scrollX !== 0 || snapshot.scrollY !== 0) {
+        window.scrollTo(snapshot.scrollX, snapshot.scrollY);
+      }
     }
   };
 };

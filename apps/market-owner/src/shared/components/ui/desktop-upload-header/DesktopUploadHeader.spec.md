@@ -43,6 +43,8 @@
 - total / completed / needsEdit: `selectedSegment`로 받은 활성 segment에 neutral 60 background와 white text를 적용합니다.
 - no selection: `selectedCount`가 0이면 선택삭제 버튼을 disabled로 두고 neutral 30 text를 사용합니다.
 - selected: `selectedCount`가 1 이상이면 선택삭제 버튼을 활성화하고 negative text를 사용합니다.
+- sort closed: 정렬 버튼의 왼쪽에는 16×16 neutral 70 tune icon, 오른쪽에는 16×16 neutral 70 chevron down icon을 표시합니다.
+- sort open: 정렬 dropdown이 열리면 오른쪽 icon을 16×16 neutral 70 chevron up 형태로 전환합니다.
 - no optional action: 선택, 정렬, 검색 관련 props가 없으면 오른쪽 action group을 렌더링하지 않습니다.
 - search focus/hover/error/filled: 내부 SearchBar 상태 정책을 따릅니다.
 - loading/error: Header 자체 상태로는 제공하지 않습니다.
@@ -84,7 +86,7 @@ return (
 - Segment item width는 150px 기준입니다.
 - Segment item label은 body-2 regular, count는 body-2 semibold를 사용합니다.
 - 오른쪽 action group gap은 16px입니다.
-- 정렬 버튼은 36px height, neutral 10 background, pill radius를 사용합니다.
+- 정렬 버튼은 36px height, neutral 10 background, pill radius를 사용합니다. 양쪽 icon은 16×16과 neutral 70을 유지하고, 오른쪽 chevron은 dropdown 열림 여부에 따라 down/up 방향을 표시합니다.
 - 디자인시스템 token의 `atomic`, `semantic`, `typography`를 사용합니다.
 
 ## Verification

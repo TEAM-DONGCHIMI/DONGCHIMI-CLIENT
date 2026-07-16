@@ -100,6 +100,45 @@ describe('useGeolocation', () => {
     await waitFor(() => expect(result.current.coordinates).toEqual({ lat: 37.5665, lng: 126.978 }));
   });
 
+  it('requests the position again when permission is already granted after a denied request', async () => {
+    let permissionState: PermissionState = 'denied';
+    let successCallback: PositionCallback | undefined;
+    let errorCallback: PositionErrorCallback | undefined;
+    const permissionStatus = createPermissionStatusMock(() => permissionState);
+    const getCurrentPosition = vi.fn(
+      (success: PositionCallback, error: PositionErrorCallback | null | undefined) => {
+        successCallback = success;
+        errorCallback = error ?? undefined;
+      },
+    );
+
+    vi.stubGlobal('navigator', {
+      geolocation: {
+        getCurrentPosition,
+      },
+      permissions: {
+        query: vi.fn().mockResolvedValue(permissionStatus),
+      },
+    });
+
+    const { result } = renderHook(() => useGeolocation());
+
+    await waitFor(() => expect(getCurrentPosition).toHaveBeenCalledTimes(1));
+
+    act(() => {
+      permissionState = 'granted';
+      errorCallback?.(createGeolocationError(1));
+    });
+
+    await waitFor(() => expect(getCurrentPosition).toHaveBeenCalledTimes(2));
+
+    act(() => {
+      successCallback?.(createPosition(37.5665, 126.978));
+    });
+
+    await waitFor(() => expect(result.current.coordinates).toEqual({ lat: 37.5665, lng: 126.978 }));
+  });
+
   it('retries the position request once when the window regains focus after a timeout', async () => {
     let successCallback: PositionCallback | undefined;
     let errorCallback: PositionErrorCallback | undefined;

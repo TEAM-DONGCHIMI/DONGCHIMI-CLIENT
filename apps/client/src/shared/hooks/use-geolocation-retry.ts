@@ -4,8 +4,15 @@ import { useEffect } from 'react';
 
 import type { GeolocationErrorCodeTypes } from './use-geolocation.types';
 
-export const usePermissionGrantedRetry = (retry: () => void) => {
+export const usePermissionGrantedRetry = (
+  errorCode: GeolocationErrorCodeTypes | null,
+  retry: () => void,
+) => {
   useEffect(() => {
+    if (errorCode !== 'PERMISSION_DENIED' && errorCode !== 'TIMEOUT') {
+      return;
+    }
+
     let isActive = true;
     let permissionStatus: PermissionStatus | null = null;
 
@@ -15,7 +22,7 @@ export const usePermissionGrantedRetry = (retry: () => void) => {
       };
     }
 
-    const handlePermissionChange = () => {
+    const retryIfPermissionGranted = () => {
       if (!isActive || permissionStatus?.state !== 'granted') {
         return;
       }
@@ -31,7 +38,9 @@ export const usePermissionGrantedRetry = (retry: () => void) => {
           return;
         }
 
-        permissionStatus.addEventListener('change', handlePermissionChange);
+        permissionStatus.addEventListener('change', retryIfPermissionGranted);
+        window.addEventListener('focus', retryIfPermissionGranted, { once: true });
+        retryIfPermissionGranted();
       } catch {
         return;
       }
@@ -42,9 +51,10 @@ export const usePermissionGrantedRetry = (retry: () => void) => {
     return () => {
       isActive = false;
 
-      permissionStatus?.removeEventListener('change', handlePermissionChange);
+      permissionStatus?.removeEventListener('change', retryIfPermissionGranted);
+      window.removeEventListener('focus', retryIfPermissionGranted);
     };
-  }, [retry]);
+  }, [errorCode, retry]);
 };
 
 export const useFocusRetryOnTimeout = (

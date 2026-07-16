@@ -34,7 +34,7 @@ describe('useProductThumbnailUpload', () => {
     mockedUploadFileToPresignedUrl.mockReset();
   });
 
-  it('uploads a product image and returns its public S3 URL', async () => {
+  it('uploads a product image and returns its object key and public S3 URL', async () => {
     vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', 'https://static.dongchimi.kr///');
     const imageFile = new File(['image'], 'product.png', { type: 'image/png' });
     mockedCreatePresignedUploadUrl.mockResolvedValue({
@@ -47,10 +47,12 @@ describe('useProductThumbnailUpload', () => {
     const { result } = renderHook(() => useProductThumbnailUpload(), {
       wrapper: createWrapper(queryClient),
     });
-    let thumbnailUrl = '';
+    let uploadedThumbnail: Awaited<
+      ReturnType<ReturnType<typeof useProductThumbnailUpload>['uploadProductThumbnail']>
+    > | null = null;
 
     await act(async () => {
-      thumbnailUrl = await result.current.uploadProductThumbnail(imageFile);
+      uploadedThumbnail = await result.current.uploadProductThumbnail(imageFile);
     });
 
     expect(mockedCreatePresignedUploadUrl).toHaveBeenCalledWith({
@@ -63,6 +65,9 @@ describe('useProductThumbnailUpload', () => {
       requiredHeaders: { 'Content-Type': 'image/png' },
       uploadUrl: 'https://upload.example.com/product.png',
     });
-    expect(thumbnailUrl).toBe('https://static.dongchimi.kr/tmp/PRODUCT_THUMBNAIL/product.png');
+    expect(uploadedThumbnail).toEqual({
+      objectKey: '/tmp/PRODUCT_THUMBNAIL/product.png',
+      publicUrl: 'https://static.dongchimi.kr/tmp/PRODUCT_THUMBNAIL/product.png',
+    });
   });
 });

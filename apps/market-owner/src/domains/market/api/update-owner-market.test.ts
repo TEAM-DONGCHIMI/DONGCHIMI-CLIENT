@@ -16,6 +16,7 @@ const request = {
   latitude: 37.5,
   longitude: 127.0,
   businessHours: [{ days: ['MONDAY'], isOpen: true, open: '13:00', close: '18:00' }],
+  isHolidayClosed: false,
   marketPhone1: '02-1234-5678',
   marketPhone2: null,
   marketPhonePrimary: 1,

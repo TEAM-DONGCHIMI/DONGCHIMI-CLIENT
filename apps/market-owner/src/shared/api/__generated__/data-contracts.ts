@@ -54,6 +54,8 @@ export interface MarketUpdateRequest {
   longitude: number;
   /** 영업시간 (요일 묶음 배열) */
   businessHours: BusinessHourSlotRequest[];
+  /** 공휴일 휴무 여부. 생략 시 false */
+  isHolidayClosed?: boolean | null;
   /** 마트 대표 전화번호 1 */
   marketPhone1: string;
   /** 마트 전화번호 2 (추가 등록 시) */
@@ -123,9 +125,9 @@ export interface PreparedProductDraftRequest {
   name?: string | null;
   /** 썸네일 이미지 URL (미입력이면 null) */
   thumbnailUrl?: string | null;
-  /** 정가 (discountedPrice와 함께 보내야 한다) */
+  /** 정가 (미입력 시 판매 가격으로 채운다) */
   originalPrice?: number | null;
-  /** 판매(할인) 가격 (originalPrice와 함께 보내야 한다) */
+  /** 판매(할인) 가격 (미입력 시 정가로 채운다) */
   discountedPrice?: number | null;
   /** 카테고리 코드 (미선택이면 null) */
   category?:
@@ -141,13 +143,13 @@ export interface PreparedProductDraftRequest {
   /** 홍보 문구 (선택) */
   promotionalPhrase?: string | null;
   /**
-   * 할인 시작일 (discountEndDate와 함께 보내야 한다)
+   * 할인 시작일 (종료일과 둘 다 있을 때만 기간으로 저장)
    * @format date
    * @example "2025-08-01"
    */
   discountStartDate?: string | null;
   /**
-   * 할인 종료일 (discountStartDate와 함께 보내야 한다)
+   * 할인 종료일 (시작일과 둘 다 있을 때만 기간으로 저장)
    * @format date
    * @example "2025-08-16"
    */
@@ -185,6 +187,8 @@ export interface MarketRegisterRequest {
   longitude: number;
   /** 영업시간 (요일 묶음 배열) */
   businessHours: BusinessHourSlotRequest[];
+  /** 공휴일 휴무 여부. 생략 시 false */
+  isHolidayClosed?: boolean | null;
   /** 마트 대표 전화번호 1 */
   marketPhone1: string;
   /** 마트 전화번호 2 (추가 등록 시) */
@@ -200,19 +204,63 @@ export interface MarketRegisterRequest {
   brn?: string | null;
 }
 
-export interface ApiResponseMarketRegisterResponse {
+export interface ApiResponseOwnerMarketDetailResponse {
   success: boolean;
   code: string;
   message: string;
-  data?: MarketRegisterResponse | null;
+  data?: OwnerMarketDetailResponse | null;
 }
 
-export interface MarketRegisterResponse {
+export interface OwnerMarketBusinessHourResponse {
+  /** 요일 목록 (MONDAY ~ SUNDAY) */
+  days: string[];
+  /** 영업일 여부. 휴무면 false */
+  isOpen: boolean;
+  /** 오픈 시각 (HH:mm). 휴무면 null */
+  open?: string | null;
+  /** 마감 시각 (HH:mm). 휴무면 null */
+  close?: string | null;
+}
+
+export interface OwnerMarketDetailResponse {
   /**
-   * 등록된 마트 아이디
+   * 마트 id
    * @format int64
    */
   marketId: number;
+  /** 마트명 */
+  name: string;
+  /** 마트 대표 이미지 URL (없으면 null) */
+  thumbnailUrl?: string | null;
+  /** 마트 주소 */
+  address: string;
+  /**
+   * 위도
+   * @format double
+   */
+  latitude: number;
+  /**
+   * 경도
+   * @format double
+   */
+  longitude: number;
+  /** 영업시간 (요일 묶음 배열) */
+  businessHours: OwnerMarketBusinessHourResponse[];
+  /** 공휴일 휴무 여부 */
+  isHolidayClosed: boolean;
+  /** 마트 대표 전화번호 1 */
+  marketPhone1: string;
+  /** 마트 전화번호 2 (없으면 null) */
+  marketPhone2?: string | null;
+  /**
+   * 마트 번호 중 대표 번호 (1 또는 2)
+   * @format int32
+   */
+  marketPhonePrimary: number;
+  /** 점주 전화번호 */
+  ownerPhone: string;
+  /** 사업자등록번호 (없으면 null) */
+  brn?: string | null;
 }
 
 export interface ProductImportRequest {
@@ -432,63 +480,6 @@ export interface ProductDiscountPeriodUpdateRequest {
    * @example [1,2,3]
    */
   productIds: number[];
-}
-
-export interface ApiResponseOwnerMarketDetailResponse {
-  success: boolean;
-  code: string;
-  message: string;
-  data?: OwnerMarketDetailResponse | null;
-}
-
-export interface OwnerMarketBusinessHourResponse {
-  /** 요일 목록 (MONDAY ~ SUNDAY) */
-  days: string[];
-  /** 영업일 여부. 휴무면 false */
-  isOpen: boolean;
-  /** 오픈 시각 (HH:mm). 휴무면 null */
-  open?: string | null;
-  /** 마감 시각 (HH:mm). 휴무면 null */
-  close?: string | null;
-}
-
-export interface OwnerMarketDetailResponse {
-  /**
-   * 마트 id
-   * @format int64
-   */
-  marketId: number;
-  /** 마트명 */
-  name: string;
-  /** 마트 대표 이미지 URL (없으면 null) */
-  thumbnailUrl?: string | null;
-  /** 마트 주소 */
-  address: string;
-  /**
-   * 위도
-   * @format double
-   */
-  latitude: number;
-  /**
-   * 경도
-   * @format double
-   */
-  longitude: number;
-  /** 영업시간 (요일 묶음 배열) */
-  businessHours: OwnerMarketBusinessHourResponse[];
-  /** 마트 대표 전화번호 1 */
-  marketPhone1: string;
-  /** 마트 전화번호 2 (없으면 null) */
-  marketPhone2?: string | null;
-  /**
-   * 마트 번호 중 대표 번호 (1 또는 2)
-   * @format int32
-   */
-  marketPhonePrimary: number;
-  /** 점주 전화번호 */
-  ownerPhone: string;
-  /** 사업자등록번호 (없으면 null) */
-  brn?: string | null;
 }
 
 export interface ApiResponseCursorSliceResponseOwnerProductListItemResponse {
@@ -811,6 +802,8 @@ export interface FlyerPreviewResponse {
   isOpenNow: boolean;
   /** 영업시간 (요일 묶음 배열) */
   businessHours: FlyerPreviewBusinessHourResponse[];
+  /** 공휴일 휴무 여부 */
+  isHolidayClosed: boolean;
   /** 마트 대표 전화번호 1 */
   marketPhone1: string;
   /** 마트 전화번호 2 (없으면 null) */
@@ -848,6 +841,8 @@ export interface FlyerDailyPreviewResponse {
   isOpenNow: boolean;
   /** 영업시간 (요일 묶음 배열) */
   businessHours: FlyerPreviewBusinessHourResponse[];
+  /** 공휴일 휴무 여부 */
+  isHolidayClosed: boolean;
   /** 마트 대표 전화번호 1 */
   marketPhone1: string;
   /** 마트 전화번호 2 (없으면 null) */
@@ -971,7 +966,7 @@ export type GetDraftsData = ApiResponseOwnerPreparedProductDraftListResponse;
 
 export type SaveDraftsData = ApiResponseUnit;
 
-export type RegisterData = ApiResponseMarketRegisterResponse;
+export type RegisterData = ApiResponseOwnerMarketDetailResponse;
 
 export type GetProductsData = ApiResponseCursorSliceResponseOwnerProductListItemResponse;
 

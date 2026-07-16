@@ -1,15 +1,19 @@
 import { style } from '@vanilla-extract/css';
 
-import { atomic, typography } from '@dongchimi/design-system/tokens';
+import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
+
+const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
 
 export const pageClassName = style({
+  display: 'flex',
+  flexDirection: 'column',
   minHeight: '100dvh',
   backgroundColor: atomic.common[0],
   color: atomic.neutral[90],
 });
 
 export const logoClassName = style({
-  width: '100%',
+  width: 'auto',
   height: '100%',
   objectFit: 'contain',
 });
@@ -45,7 +49,8 @@ export const locationSearchFieldClassName = style({
 
   selectors: {
     '&:focus-within': {
-      boxShadow: `0 0 0 2px ${atomic.neutral[30]}`,
+      outline: `3px solid ${focusOutlineColor}`,
+      outlineOffset: 2,
     },
   },
 });
@@ -112,8 +117,10 @@ export const marketInfoWindowClassName = style({
 
 export const marketListSectionClassName = style({
   display: 'flex',
+  flex: 1,
   flexDirection: 'column',
   gap: '2rem',
+  minHeight: 0,
   padding: '1.6rem 0',
 });
 
@@ -122,6 +129,34 @@ export const marketListStatusClassName = style({
   padding: '2rem',
   color: atomic.neutral[60],
   textAlign: 'center',
+});
+
+export const marketListEmptyStateClassName = style({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '1rem',
+  minHeight: 0,
+  padding: '0 2rem',
+});
+
+export const marketListEmptyImageClassName = style({
+  width: '9.1rem',
+  height: '9.1rem',
+  objectFit: 'contain',
+});
+
+export const marketListEmptyTextClassName = style({
+  ...typography['body-2-medium'],
+  width: '100%',
+  margin: 0,
+  color: atomic.neutral[90],
+  letterSpacing: 0,
+  textAlign: 'center',
+  whiteSpace: 'pre-line',
+  wordBreak: 'keep-all',
 });
 
 export const marketListSentinelClassName = style({

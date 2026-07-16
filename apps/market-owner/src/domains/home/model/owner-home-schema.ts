@@ -3,9 +3,14 @@ import { z } from '@dongchimi/shared/api';
 
 type OwnerHomeApiResponseTypes = OwnerApiTypes.ApiResponseOwnerHomeResponse;
 
+const absoluteOrRootRelativeUrlSchema = z.union([
+  z.url(),
+  z.string().regex(/^\/(?!\/)/, 'Expected an absolute URL or root-relative path'),
+]);
+
 const homeProductSchema = z.object({
   productId: z.number().int(),
-  thumbnailUrl: z.url().nullable().optional(),
+  thumbnailUrl: absoluteOrRootRelativeUrlSchema.nullable().optional(),
   name: z.string(),
   originalPrice: z.number(),
   discountedPrice: z.number(),

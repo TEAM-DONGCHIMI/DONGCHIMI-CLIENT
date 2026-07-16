@@ -19,6 +19,7 @@ export const ownerMarketDetailResponseSchema = z.object({
     latitude: z.number(),
     longitude: z.number(),
     businessHours: z.array(marketBusinessHourSchema),
+    isHolidayClosed: z.boolean(),
     marketPhone1: z.string(),
     marketPhone2: z.string().nullable().optional(),
     marketPhonePrimary: z.number().int(),

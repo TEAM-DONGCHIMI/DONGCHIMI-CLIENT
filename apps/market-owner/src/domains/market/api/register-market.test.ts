@@ -21,6 +21,7 @@ const request: RegisterMarketRequestTypes = {
       open: '13:00',
     },
   ],
+  isHolidayClosed: false,
   detailAddress: '101호',
   latitude: 37.5665,
   longitude: 126.978,
@@ -40,7 +41,21 @@ describe('registerMarket', () => {
   it('posts the market registration request and returns the validated response', async () => {
     const response = {
       code: 'SUCCESS',
-      data: { marketId: 10 },
+      data: {
+        address: '서울특별시 마포구 월드컵로 123|101호',
+        brn: null,
+        businessHours: request.businessHours,
+        isHolidayClosed: false,
+        latitude: 37.5665,
+        longitude: 126.978,
+        marketId: 10,
+        marketPhone1: '02-1234-5678',
+        marketPhone2: null,
+        marketPhonePrimary: 1,
+        name: '동치미마트',
+        ownerPhone: '010-1234-5678',
+        thumbnailUrl: null,
+      },
       message: '요청에 성공했습니다.',
       success: true as const,
     };
@@ -51,7 +66,7 @@ describe('registerMarket', () => {
     expect(mockedPost).toHaveBeenCalledWith(API_ENDPOINTS.owner.markets.root, { json: request });
   });
 
-  it('rejects a success response without the registered market id', async () => {
+  it('rejects a success response without the registered market detail', async () => {
     mockedPost.mockResolvedValue({
       code: 'SUCCESS',
       message: '등록되었습니다.',

@@ -11,7 +11,7 @@ const productDetailViewports = [
 test('client root route redirects to login', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page).toHaveTitle('DONGCHIMI Client');
+  await expect(page).toHaveTitle('동치미');
   await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByRole('heading', { name: '동치미 로그인' })).toBeVisible({
     timeout: routeShellTimeout,
@@ -45,6 +45,7 @@ test('client product detail route shell renders', async ({ page }) => {
         data: {
           address: '서울 마포구 월드컵로 13길 1',
           businessHours: [],
+          isHolidayClosed: false,
           isOpenNow: true,
           marketId: 1,
           marketPhone1: '02-123-4567',

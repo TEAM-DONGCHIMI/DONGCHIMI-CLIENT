@@ -1,25 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import Image from 'next/image';
+import { useCallback, useState } from 'react';
 
 import { BottomSheet } from '@dongchimi/design-system';
 import {
   IcCircleCheckFillSizeSmall,
   IcCopySizeSmall,
   IcCopySizeXsmallColor50,
-  IcLoginSizeSmall,
   IcLogoKakaoSizeSmall,
+  IcShareIos,
 } from '@dongchimi/design-system/icons';
 import { ToastProvider, useToast, type ToastStatusTypes } from '@dongchimi/shared/toast';
 
+import { usePwaInstall } from '@/shared/pwa';
+
 import * as S from './MarketShareBottomSheet.css';
+import installGuideImage from './assets/pwa-install-guide.png';
 
 type MarketShareActionHandlerTypes = () => void | Promise<void>;
 
 export interface MarketShareBottomSheetProps {
   marketName: string;
   onCopyLink?: MarketShareActionHandlerTypes;
-  onOpenQrCode?: MarketShareActionHandlerTypes;
   onShareKakao?: MarketShareActionHandlerTypes;
   shareUrl: string;
   triggerClassName?: string;
@@ -28,8 +31,12 @@ export interface MarketShareBottomSheetProps {
 
 type MarketShareBottomSheetContentProps = Pick<
   MarketShareBottomSheetProps,
-  'marketName' | 'onCopyLink' | 'onOpenQrCode' | 'onShareKakao' | 'shareUrl'
->;
+  'marketName' | 'onCopyLink' | 'onShareKakao' | 'shareUrl'
+> & {
+  onOpenInstallGuide: () => void;
+};
+
+type MarketShareSheetViewTypes = 'install' | 'share';
 
 const MARKET_SHARE_TOAST_ID = 'market-share-action-feedback';
 const MARKET_SHARE_TOAST_DISMISS_MS = 2500;
@@ -62,12 +69,11 @@ const copyToClipboard = async (shareUrl: string) => {
 const MarketShareBottomSheetContent = ({
   marketName,
   onCopyLink,
-  onOpenQrCode,
+  onOpenInstallGuide,
   onShareKakao,
   shareUrl,
 }: MarketShareBottomSheetContentProps) => {
   const toast = useToast();
-  const hasQrCodeAction = onOpenQrCode != null;
 
   const showShareToast = (message: string, status: ToastStatusTypes) => {
     const options = {
@@ -106,10 +112,6 @@ const MarketShareBottomSheetContent = ({
     }
 
     showShareToast(SHARE_KAKAO_PENDING_MESSAGE, 'error');
-  };
-
-  const handleOpenQrCode = () => {
-    void onOpenQrCode?.();
   };
 
   return (
@@ -158,22 +160,114 @@ const MarketShareBottomSheetContent = ({
             </span>
             카카오톡으로 공유
           </button>
-          <button
-            className={S.actionButtonClassName}
-            disabled={!hasQrCodeAction}
-            onClick={handleOpenQrCode}
-            type='button'
-          >
+          <button className={S.actionButtonClassName} onClick={onOpenInstallGuide} type='button'>
             <span aria-hidden='true' className={S.actionIconClassName}>
-              <IcLoginSizeSmall />
+              <IcShareIos />
             </span>
-            QR 코드 보기
+            앱으로 전단보기
           </button>
         </div>
       </BottomSheet.Body>
-      <BottomSheet.Footer>
-        <BottomSheet.Close>닫기</BottomSheet.Close>
-      </BottomSheet.Footer>
+    </>
+  );
+};
+
+interface PwaInstallGuideContentProps {
+  onClose: () => void;
+}
+
+interface GetPwaInstallGuideCopyOptions {
+  installed: boolean;
+  manualInstructionsVisible: boolean;
+  requesting: boolean;
+}
+
+const getPwaInstallGuideCopy = ({
+  installed,
+  manualInstructionsVisible,
+  requesting,
+}: GetPwaInstallGuideCopyOptions) => {
+  if (installed) {
+    return {
+      buttonLabel: '확인',
+      description: '동치미가 이미 홈 화면에 추가되어 있어요.',
+    };
+  }
+
+  if (manualInstructionsVisible) {
+    return {
+      buttonLabel: '확인',
+      description: '브라우저의 공유 버튼을 누른 뒤\n홈 화면에 추가를 선택해주세요.',
+    };
+  }
+
+  return {
+    buttonLabel: requesting ? '설치 요청 중' : '홈 화면에 추가하기',
+    description: '홈 화면에 추가하기 버튼을 누르면\n마트 할인 정보를 빠르게 확인할 수 있어요.',
+  };
+};
+
+const PwaInstallGuideContent = ({ onClose }: PwaInstallGuideContentProps) => {
+  const { availability, requestInstall } = usePwaInstall();
+  const [manualInstructionsVisible, setManualInstructionsVisible] = useState(false);
+  const [requesting, setRequesting] = useState(false);
+  const installed = availability === 'installed';
+  const confirmationMode = installed || manualInstructionsVisible;
+  const { buttonLabel, description } = getPwaInstallGuideCopy({
+    installed,
+    manualInstructionsVisible,
+    requesting,
+  });
+
+  const handleInstall = async () => {
+    if (confirmationMode) {
+      onClose();
+      return;
+    }
+
+    setRequesting(true);
+    const result = await requestInstall();
+    setRequesting(false);
+
+    if (result === 'manual') {
+      setManualInstructionsVisible(true);
+      return;
+    }
+
+    onClose();
+  };
+
+  return (
+    <>
+      <BottomSheet.Handle />
+      <BottomSheet.Title className={S.visuallyHiddenClassName}>
+        홈 화면에 추가하기 안내
+      </BottomSheet.Title>
+      <BottomSheet.Body className={S.installBodyClassName}>
+        <Image
+          alt='동치미 앱 아이콘이 표시된 홈 화면 예시'
+          className={S.installImageClassName}
+          height={177}
+          src={installGuideImage}
+          width={263}
+        />
+        <BottomSheet.Description aria-live='polite' className={S.installDescriptionClassName}>
+          {description}
+        </BottomSheet.Description>
+        <button
+          aria-busy={requesting}
+          autoFocus
+          className={S.installButtonClassName}
+          disabled={requesting}
+          onClick={() => {
+            void handleInstall();
+          }}
+          type='button'
+        >
+          {buttonLabel}
+        </button>
+      </BottomSheet.Body>
+      <BottomSheet.Close className={S.installLaterButtonClassName}>다음에 하기</BottomSheet.Close>
     </>
   );
 };
@@ -181,28 +275,44 @@ const MarketShareBottomSheetContent = ({
 export const MarketShareBottomSheet = ({
   marketName,
   onCopyLink,
-  onOpenQrCode,
   onShareKakao,
   shareUrl,
   triggerClassName,
   triggerLabel = '전단 공유하기',
 }: MarketShareBottomSheetProps) => {
+  const [open, setOpen] = useState(false);
   const [sheetElement, setSheetElement] = useState<HTMLDialogElement | null>(null);
+  const [view, setView] = useState<MarketShareSheetViewTypes>('share');
+
+  const handleOpenChange = useCallback((nextOpen: boolean) => {
+    setOpen(nextOpen);
+
+    if (!nextOpen) {
+      setView('share');
+    }
+  }, []);
 
   return (
-    <BottomSheet>
+    <BottomSheet onOpenChange={handleOpenChange} open={open}>
       <BottomSheet.Trigger className={triggerClassName ?? S.triggerClassName}>
         {triggerLabel}
       </BottomSheet.Trigger>
-      <BottomSheet.Content ref={setSheetElement} className={S.sheetClassName}>
+      <BottomSheet.Content
+        ref={setSheetElement}
+        className={view === 'install' ? S.installSheetClassName : S.sheetClassName}
+      >
         <ToastProvider placement='bottom-center' portalContainer={sheetElement}>
-          <MarketShareBottomSheetContent
-            marketName={marketName}
-            onCopyLink={onCopyLink}
-            onOpenQrCode={onOpenQrCode}
-            onShareKakao={onShareKakao}
-            shareUrl={shareUrl}
-          />
+          {view === 'share' ? (
+            <MarketShareBottomSheetContent
+              marketName={marketName}
+              onCopyLink={onCopyLink}
+              onOpenInstallGuide={() => setView('install')}
+              onShareKakao={onShareKakao}
+              shareUrl={shareUrl}
+            />
+          ) : (
+            <PwaInstallGuideContent onClose={() => handleOpenChange(false)} />
+          )}
         </ToastProvider>
       </BottomSheet.Content>
     </BottomSheet>

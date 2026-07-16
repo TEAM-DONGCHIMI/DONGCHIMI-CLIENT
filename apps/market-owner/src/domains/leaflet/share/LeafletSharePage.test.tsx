@@ -37,6 +37,7 @@ const periodicPreviewFixture = {
   address: '서울 마포구 망원동',
   isOpenNow: true,
   businessHours: [{ days: ['MONDAY', 'TUESDAY'], isOpen: true, open: '10:00', close: '20:00' }],
+  isHolidayClosed: false,
   marketPhone1: '02-123-4567',
   marketPhone2: null,
   ownerPhone: '010-0000-0000',

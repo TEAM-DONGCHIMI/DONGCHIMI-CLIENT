@@ -61,6 +61,8 @@ export interface MarketDetailResponse {
   isOpenNow: boolean;
   /** 영업시간 (요일 묶음 배열) */
   businessHours: BusinessHourResponse[];
+  /** 공휴일 휴무 여부 */
+  isHolidayClosed: boolean;
   /** 마트 대표 전화번호 1 */
   marketPhone1: string;
   /** 마트 전화번호 2 (없으면 null) */
@@ -137,14 +139,14 @@ export interface ProductDetailResponse {
   marketName: string;
 }
 
-export interface ApiResponseCursorSliceResponsePeriodicProductResponse {
+export interface ApiResponsePeriodicProductListResponse {
   success: boolean;
   code: string;
   message: string;
-  data?: CursorSliceResponsePeriodicProductResponse | null;
+  data?: PeriodicProductListResponse | null;
 }
 
-export interface CursorSliceResponsePeriodicProductResponse {
+export interface PeriodicProductListResponse {
   /** 조회 결과 목록 */
   content: PeriodicProductResponse[];
   /** 다음 페이지 존재 여부 */
@@ -154,6 +156,8 @@ export interface CursorSliceResponsePeriodicProductResponse {
    * @format int64
    */
   nextCursor?: number | null;
+  /** 해당 마트에 현재 활성화된 PERIODIC 상품이 존재하는 카테고리 목록 */
+  availableCategories: string[];
 }
 
 export interface PeriodicProductResponse {
@@ -316,7 +320,7 @@ export type GetDetailData = ApiResponseMarketDetailResponse;
 
 export type GetDetail1Data = ApiResponseProductDetailResponse;
 
-export type GetPeriodicDealsData = ApiResponseCursorSliceResponsePeriodicProductResponse;
+export type GetPeriodicDealsData = ApiResponsePeriodicProductListResponse;
 
 export type GetDailyProductsData = ApiResponseDailyProductListResponse;
 

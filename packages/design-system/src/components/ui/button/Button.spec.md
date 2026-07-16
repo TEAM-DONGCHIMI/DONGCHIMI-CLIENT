@@ -95,6 +95,7 @@ Button
 4. `leftIcon`과 `rightIcon`은 장식용 슬롯이므로 `aria-hidden` 영역에 렌더링합니다.
 5. 아이콘만 있는 버튼은 이 컴포넌트로 만들지 않고 `IconButton`을 사용합니다.
 6. `disabled`는 color/variant 조합과 별개로 최종 상태 스타일을 덮어씁니다.
+7. 아이콘 슬롯의 직계 SVG는 글자 크기를 상속한 `1em`으로 축소하지 않고 Figma의 `16px x 16px` 프레임 전체를 채웁니다. SVG path의 내부 여백은 원본 자산의 optical spacing으로 유지합니다.
 
 ## Figma Presets
 
@@ -132,7 +133,7 @@ public type은 현재 스타일이 정의된 preset 조합만 허용합니다.
 ## Styling
 
 - layout: `inline-flex`, center alignment, grid parent 안에서도 stretch되지 않는 content-based auto width, max-width 100%
-- spacing: size별 fixed height, min-width, inline padding, icon slot 16px
+- spacing: size별 fixed height, min-width, inline padding, icon slot 16px. 슬롯에는 별도 padding을 두지 않고 직계 SVG가 전체 프레임을 채웁니다.
 - variants: `outlined`은 흰 배경과 테두리를 사용하고, `soft`는 연한 primary 배경과 primary 테두리를 함께 사용합니다.
 - responsive: 호출부 width 안에서 max-width 100%를 넘지 않습니다.
 - hover/focus/disabled: focus-visible outline 유지, disabled는 background, border, text를 neutral disabled color로 통일

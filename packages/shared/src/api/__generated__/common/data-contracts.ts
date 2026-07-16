@@ -79,8 +79,16 @@ export interface ReissueTokenResponse {
   accessToken: string;
 }
 
+export interface ApiResponseUnit {
+  success: boolean;
+  code: string;
+  message: string;
+}
+
 export type CreatePresignedUrlsData = ApiResponsePresignedUploadsResponse;
 
 export type CreatePresignedUrlData = ApiResponsePresignedUploadResponse;
 
 export type ReissueData = ApiResponseReissueTokenResponse;
+
+export type LogoutData = ApiResponseUnit;
