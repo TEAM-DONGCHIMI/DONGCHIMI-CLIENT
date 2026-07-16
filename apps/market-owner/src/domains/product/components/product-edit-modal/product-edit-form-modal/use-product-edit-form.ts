@@ -30,6 +30,22 @@ interface UseProductEditFormParams {
   variant: ProductEditCardVariantTypes;
 }
 
+const formatProductEditInputValue = (key: keyof ProductEditFormValues, inputValue: string) => {
+  if (key === 'productName') {
+    return limitProductNameInput(inputValue);
+  }
+
+  if (key === 'promotionText') {
+    return limitProductPromotionTextInput(inputValue);
+  }
+
+  if (key === 'originalPrice' || key === 'salePrice') {
+    return formatProductPriceInput(inputValue);
+  }
+
+  return inputValue;
+};
+
 export const useProductEditForm = ({ detail, variant }: UseProductEditFormParams) => {
   const [initialValues] = useState(() => createProductEditInitialValues(detail));
   const [values, setValues] = useState(initialValues);
@@ -49,15 +65,7 @@ export const useProductEditForm = ({ detail, variant }: UseProductEditFormParams
     (key: keyof ProductEditFormValues): ChangeEventHandler<HTMLInputElement> =>
     (event) => {
       const inputValue = event.target.value;
-      const isPriceField = key === 'originalPrice' || key === 'salePrice';
-      const nextValue =
-        key === 'productName'
-          ? limitProductNameInput(inputValue)
-          : key === 'promotionText'
-            ? limitProductPromotionTextInput(inputValue)
-            : isPriceField
-              ? formatProductPriceInput(inputValue)
-              : inputValue;
+      const nextValue = formatProductEditInputValue(key, inputValue);
 
       setValues((currentValues) => ({
         ...currentValues,
@@ -110,7 +118,6 @@ export const useProductEditForm = ({ detail, variant }: UseProductEditFormParams
       variant === 'todaySpecial' ||
       values.startDate === initialValues.startDate ||
       isProductEditDateTodayOrFuture(values.startDate),
-    isTodayOnly: values.startDate === values.endDate,
     selectCategory,
     toggleCategoryDropdown: categoryDropdown.toggle,
     toggleTodayOnlyPeriod,

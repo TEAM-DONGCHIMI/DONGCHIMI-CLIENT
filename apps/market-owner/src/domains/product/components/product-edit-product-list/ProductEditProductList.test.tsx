@@ -28,6 +28,13 @@ vi.mock('@/domains/product/hooks/use-product-update-flow', () => ({
 mockUseProductDetailQuery.mockImplementation(({ productId }: { productId: number }) => {
   const isEventDiscount = productId === 201 || productId === 202;
   const hasPastStartDate = productId === 202;
+  let discountStartDate = '2026-08-16';
+
+  if (hasPastStartDate) {
+    discountStartDate = '2020-08-12';
+  } else if (isEventDiscount) {
+    discountStartDate = '2026-08-12';
+  }
 
   return {
     data: {
@@ -41,11 +48,7 @@ mockUseProductDetailQuery.mockImplementation(({ productId }: { productId: number
         category: 'VEGETABLE_FRUIT',
         categoryName: '채소/과일',
         promotionalPhrase: isEventDiscount ? '상세 조회 홍보글' : null,
-        discountStartDate: hasPastStartDate
-          ? '2020-08-12'
-          : isEventDiscount
-            ? '2026-08-12'
-            : '2026-08-16',
+        discountStartDate,
         discountEndDate: '2026-08-16',
       },
     },
