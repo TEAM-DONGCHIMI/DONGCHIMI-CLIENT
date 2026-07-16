@@ -24,16 +24,8 @@ const NEARBY_MARKETS_SEARCH_EMPTY_MESSAGE = '검색 결과가 없어요';
 const NEARBY_MARKETS_PREVIEW_PRODUCT_LIMIT = 3;
 
 export const NearbyMarketsMarketListSection = () => {
-  const {
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isError,
-    isFetchingNextPage,
-    isPending,
-    keyword,
-    markets,
-  } = useNearbyMarketsMarketList();
+  const { fetchNextPage, hasNextPage, isError, isFetchingNextPage, isPending, keyword, markets } =
+    useNearbyMarketsMarketList();
   const router = useRouter();
   const toast = useToast();
 
@@ -65,9 +57,17 @@ export const NearbyMarketsMarketListSection = () => {
   if (isError) {
     return (
       <section aria-label={NEARBY_MARKETS_LIST_ARIA_LABEL} className={S.marketListSectionClassName}>
-        <p className={S.marketListStatusClassName} role='alert'>
-          {error?.message ?? NEARBY_MARKETS_LOAD_ERROR_MESSAGE}
-        </p>
+        <div className={S.marketListEmptyStateClassName} role='alert'>
+          <Image
+            alt=''
+            aria-hidden
+            className={S.marketListEmptyImageClassName}
+            height={91}
+            src={emptyImage}
+            width={91}
+          />
+          <p className={S.marketListEmptyTextClassName}>{NEARBY_MARKETS_LOAD_ERROR_MESSAGE}</p>
+        </div>
       </section>
     );
   }

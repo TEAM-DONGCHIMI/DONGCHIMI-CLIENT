@@ -205,4 +205,22 @@ describe('NearbyMarketsMarketListSection', () => {
     expect(screen.getByRole('status')).toHaveTextContent('마트를 더 불러오는 중이에요.');
     expect(screen.getByRole('status').querySelector('img')).not.toBeInTheDocument();
   });
+
+  it('list error renders the APPJAM empty image without leaking the raw error message', () => {
+    useNearbyMarketsMarketList.mockReturnValue({
+      error: new Error('network exploded'),
+      fetchNextPage: vi.fn(),
+      hasNextPage: false,
+      isError: true,
+      isFetchingNextPage: false,
+      isPending: false,
+      keyword: undefined,
+      markets: [],
+    });
+
+    render(<NearbyMarketsMarketListSection />);
+
+    expect(screen.getByRole('alert')).not.toHaveTextContent('network exploded');
+    expect(screen.getByRole('alert').querySelector('img')).toBeInTheDocument();
+  });
 });
