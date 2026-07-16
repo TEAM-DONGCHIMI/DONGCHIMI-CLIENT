@@ -11,6 +11,7 @@
 ## Purpose
 
 - 회원가입을 완료한 마트 사장님이 온보딩 단계에서 마트명, 사업자 등록 번호, 주소, 영업 시간, 휴무일, 연락처를 입력해 마트 정보를 등록하는 페이지 UI를 제공합니다.
+- 로그인 session에 `marketId`가 이미 있으면 중복 등록을 막기 위해 `/markets/information-management`로 replace 이동합니다.
 - 이번 범위에서는 API 연동 전 fixture 수준의 입력 UI와 disabled submit 조건을 고정합니다.
 
 ## Source Of Truth
