@@ -35,7 +35,8 @@
 
 ## Data
 
-- query: auth store의 `marketId`로 `useProductListQuery({ marketId, type: 'PERIODIC', sort })`
+- query: auth store의 `marketId`로 `useProductListInfiniteQuery({ marketId, type: 'PERIODIC', sort })`
+- pagination: 서버의 `nextCursor`를 다음 요청의 `cursor`로 전달하고 목록 하단 진입 시 다음 페이지를 이어 붙입니다.
 - mutation: 개별 삭제, 일괄 삭제, `dealType=PERIODIC` 상품 초기화
 - fixture: 사용하지 않음
 - model: `domains/product/model/product-list.ts`
@@ -63,7 +64,6 @@
 - 삭제 API가 실패하면 기존 상품 목록과 선택 상태를 유지하고 오류를 안내합니다.
 - 초기화 확인 시 `dealType: PERIODIC`, `forceDelete: true`로 전체 삭제 API를 요청합니다.
 - 개별 삭제, 일괄 삭제, 초기화는 같은 deletion action 인스턴스를 공유하며 요청 중 모든 삭제 action을 비활성화합니다.
-- 수정 mutation과 cursor pagination은 후속 범위입니다.
 
 ## Accessibility
 

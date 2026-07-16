@@ -13,11 +13,12 @@ export type ProductSearchQueryKeyParamsTypes = Omit<ProductSearchQueryParamsType
 
 export type ProductDetailQueryParamsTypes = GetProductDetailParams;
 
-export type ProductListQueryParamsTypes = Omit<GetProductListParams, 'marketId'> & {
+export type ProductListQueryParamsTypes = Omit<GetProductListParams, 'cursor' | 'marketId'> & {
   marketId?: GetProductListParams['marketId'];
 };
 
-export type ProductListQueryKeyParamsTypes = Omit<ProductListQueryParamsTypes, 'sort'> & {
+export type ProductListQueryKeyParamsTypes = Omit<ProductListQueryParamsTypes, 'size' | 'sort'> & {
+  size: NonNullable<GetProductListParams['size']>;
   sort: NonNullable<GetProductListParams['sort']>;
 };
 

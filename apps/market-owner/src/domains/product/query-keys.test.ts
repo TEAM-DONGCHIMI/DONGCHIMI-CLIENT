@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import { productQueryKeys } from './query-keys';
 import {
+  getProductListNextPageParam,
   preparedProductDraftsQueryOptions,
   productDetailQueryOptions,
-  productListQueryOptions,
+  productListInfiniteQueryOptions,
   productSearchQueryOptions,
 } from './query-options';
 
@@ -35,11 +36,9 @@ describe('productQueryKeys', () => {
       'detail',
       { marketId: 1, productId: 101 },
     ]);
-    expect(productQueryKeys.list({ marketId: 1, sort: 'CATEGORY', type: 'DAILY' })).toEqual([
-      'product',
-      'list',
-      { marketId: 1, sort: 'CATEGORY', type: 'DAILY' },
-    ]);
+    expect(
+      productQueryKeys.list({ marketId: 1, size: 12, sort: 'CATEGORY', type: 'DAILY' }),
+    ).toEqual(['product', 'list', { marketId: 1, size: 12, sort: 'CATEGORY', type: 'DAILY' }]);
     expect(productQueryKeys.listByMarket(1)).toEqual(['product', 'list', { marketId: 1 }]);
     expect(
       productQueryKeys.preparedDrafts({
@@ -114,38 +113,49 @@ describe('productQueryKeys', () => {
   });
 
   it('combines list params in query options', () => {
-    const defaultSortKey = productListQueryOptions({ marketId: 1, type: 'DAILY' }).queryKey;
+    const defaultSortKey = productListInfiniteQueryOptions({
+      marketId: 1,
+      type: 'DAILY',
+    }).queryKey;
 
     expect(defaultSortKey).toEqual([
       'product',
       'list',
       {
         marketId: 1,
+        size: 12,
         sort: 'CATEGORY',
         type: 'DAILY',
       },
     ]);
     expect(defaultSortKey).toEqual(
-      productListQueryOptions({ marketId: 1, sort: 'CATEGORY', type: 'DAILY' }).queryKey,
+      productListInfiniteQueryOptions({
+        marketId: 1,
+        size: 12,
+        sort: 'CATEGORY',
+        type: 'DAILY',
+      }).queryKey,
     );
   });
 
   it('disables product list without a market id', () => {
-    expect(productListQueryOptions({ marketId: undefined, type: 'DAILY' }).enabled).toBe(false);
+    expect(productListInfiniteQueryOptions({ marketId: undefined, type: 'DAILY' }).enabled).toBe(
+      false,
+    );
   });
 
   it('separates cache entries by market, deal type, and sort', () => {
-    const dailyKey = productListQueryOptions({
+    const dailyKey = productListInfiniteQueryOptions({
       marketId: 1,
       sort: 'LATEST',
       type: 'DAILY',
     }).queryKey;
-    const periodicKey = productListQueryOptions({
+    const periodicKey = productListInfiniteQueryOptions({
       marketId: 1,
       sort: 'LATEST',
       type: 'PERIODIC',
     }).queryKey;
-    const anotherSortKey = productListQueryOptions({
+    const anotherSortKey = productListInfiniteQueryOptions({
       marketId: 1,
       sort: 'VIEW_COUNT',
       type: 'DAILY',
@@ -153,6 +163,31 @@ describe('productQueryKeys', () => {
 
     expect(dailyKey).not.toEqual(periodicKey);
     expect(dailyKey).not.toEqual(anotherSortKey);
+    expect(dailyKey).not.toEqual(
+      productListInfiniteQueryOptions({
+        marketId: 1,
+        size: 24,
+        sort: 'LATEST',
+        type: 'DAILY',
+      }).queryKey,
+    );
+  });
+
+  it('uses the server nextCursor once and stops when there is no next page', () => {
+    const nextPage = {
+      code: 'SUCCESS',
+      data: { content: [], hasNext: true, nextCursor: 101 },
+      message: '요청에 성공했습니다.',
+      success: true,
+    };
+    const lastPage = {
+      ...nextPage,
+      data: { content: [], hasNext: false, nextCursor: null },
+    };
+
+    expect(getProductListNextPageParam(nextPage, [], undefined, [undefined])).toBe(101);
+    expect(getProductListNextPageParam(nextPage, [], 101, [undefined, 101])).toBeUndefined();
+    expect(getProductListNextPageParam(lastPage, [], 101, [undefined, 101])).toBeUndefined();
   });
 
   it('combines normalized prepared draft params in query options', () => {

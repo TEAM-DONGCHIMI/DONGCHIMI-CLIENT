@@ -1,5 +1,5 @@
 import { MemoryRouter, Route, Routes } from 'react-router';
-import { fireEvent, waitFor } from '@testing-library/react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
 import { ToastProvider } from '@dongchimi/shared/toast';
 import { OverlayProvider } from 'overlay-kit';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, userEvent } from '@/test';
 
 import { ProductEditProductList } from './ProductEditProductList';
+import { useProductEditListActions } from './use-product-edit-list-actions';
 import {
   type ProductEditCardProps,
   type ProductEditCardVariantTypes,
@@ -16,6 +17,22 @@ import {
 const mockUseProductDetailQuery = vi.hoisted(() => vi.fn());
 const mockSubmitProductUpdate = vi.hoisted(() => vi.fn());
 const mockUseProductUpdateFlow = vi.hoisted(() => vi.fn());
+let intersectionObserverCallback: IntersectionObserverCallback | undefined;
+
+class IntersectionObserverMock implements IntersectionObserver {
+  readonly root = null;
+  readonly rootMargin = '';
+  readonly thresholds = [];
+
+  constructor(callback: IntersectionObserverCallback) {
+    intersectionObserverCallback = callback;
+  }
+
+  disconnect = vi.fn();
+  observe = vi.fn();
+  takeRecords = vi.fn(() => []);
+  unobserve = vi.fn();
+}
 
 vi.mock('@/domains/product/hooks/use-product-detail-query', () => ({
   useProductDetailQuery: mockUseProductDetailQuery,
@@ -58,11 +75,49 @@ mockUseProductDetailQuery.mockImplementation(({ productId }: { productId: number
   };
 });
 
+interface ProductEditProductListWithActionsProps {
+  autoOpenProductId?: string | null;
+  editModalVariant?: ProductEditCardVariantTypes;
+  groups: ProductEditProductGroup[];
+  onAutoOpenProductMissing?: (productId: string) => void;
+  onDeleteProduct?: (product: ProductEditCardProps) => void;
+  onUpdateProduct?: (productId: number, product: ProductEditCardProps) => void;
+}
+
+const ProductEditProductListWithActions = ({
+  autoOpenProductId,
+  editModalVariant = 'todaySpecial',
+  groups,
+  onAutoOpenProductMissing,
+  onDeleteProduct,
+  onUpdateProduct,
+}: ProductEditProductListWithActionsProps) => {
+  const actions = useProductEditListActions({
+    autoOpenProductId,
+    groups,
+    marketId: 1,
+    selectionMode: false,
+    variant: editModalVariant,
+    onAutoOpenProductMissing,
+    onDeleteProduct,
+    onUpdateProduct,
+  });
+
+  return (
+    <ProductEditProductList
+      actions={actions}
+      ariaLabel='오늘의 특가 상품 수정 목록'
+      groups={groups}
+      registrationHref='/products/today-special/new'
+    />
+  );
+};
+
 const renderProductList = (
   groups: ProductEditProductGroup[] = [],
   editModalVariant: ProductEditCardVariantTypes = 'todaySpecial',
   onDeleteProduct?: (product: ProductEditCardProps) => void,
-  onUpdateProduct?: (productName: string, product: ProductEditCardProps) => void,
+  onUpdateProduct?: (productId: number, product: ProductEditCardProps) => void,
 ) => {
   return render(
     <MemoryRouter>
@@ -71,12 +126,9 @@ const renderProductList = (
           <Routes>
             <Route
               element={
-                <ProductEditProductList
-                  ariaLabel='오늘의 특가 상품 수정 목록'
+                <ProductEditProductListWithActions
                   editModalVariant={editModalVariant}
                   groups={groups}
-                  marketId={1}
-                  registrationHref='/products/today-special/new'
                   onDeleteProduct={onDeleteProduct}
                   onUpdateProduct={onUpdateProduct}
                 />
@@ -93,6 +145,8 @@ const renderProductList = (
 
 describe('ProductEditProductList', () => {
   beforeEach(() => {
+    intersectionObserverCallback = undefined;
+    vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
     mockUseProductDetailQuery.mockClear();
     mockSubmitProductUpdate.mockReset();
     mockSubmitProductUpdate.mockResolvedValue({ success: true, thumbnailUrl: null });
@@ -100,6 +154,104 @@ describe('ProductEditProductList', () => {
       isPending: false,
       submitProductUpdate: mockSubmitProductUpdate,
     });
+  });
+
+  it('loads the next page when the list sentinel enters the viewport', () => {
+    const handleLoadNextPage = vi.fn();
+
+    render(
+      <MemoryRouter>
+        <OverlayProvider>
+          <ProductEditProductList
+            actions={{}}
+            ariaLabel='오늘의 특가 상품 수정 목록'
+            groups={[
+              {
+                title: '2026년 8월 15일',
+                products: [
+                  {
+                    productId: 101,
+                    productName: '딸기 2팩',
+                    salePrice: '4,500',
+                  },
+                ],
+              },
+            ]}
+            pagination={{
+              hasNextPage: true,
+              status: 'idle',
+              onLoadNextPage: handleLoadNextPage,
+            }}
+            registrationHref='/products/today-special/new'
+          />
+        </OverlayProvider>
+      </MemoryRouter>,
+    );
+
+    act(() => {
+      intersectionObserverCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+
+    expect(handleLoadNextPage).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the list visible while loading or retrying the next page', async () => {
+    const user = userEvent.setup();
+    const handleLoadNextPage = vi.fn();
+    const groups = [
+      {
+        title: '2026년 8월 15일',
+        products: [{ productId: 101, productName: '딸기 2팩', salePrice: '4,500' }],
+      },
+    ];
+    const { rerender } = render(
+      <MemoryRouter>
+        <OverlayProvider>
+          <ProductEditProductList
+            actions={{}}
+            ariaLabel='오늘의 특가 상품 수정 목록'
+            groups={groups}
+            pagination={{
+              hasNextPage: true,
+              status: 'loading',
+              onLoadNextPage: handleLoadNextPage,
+            }}
+            registrationHref='/products/today-special/new'
+          />
+        </OverlayProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText('딸기 2팩')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('상품을 더 불러오는 중이에요.');
+
+    rerender(
+      <MemoryRouter>
+        <OverlayProvider>
+          <ProductEditProductList
+            actions={{}}
+            ariaLabel='오늘의 특가 상품 수정 목록'
+            groups={groups}
+            pagination={{
+              hasNextPage: true,
+              status: 'error',
+              onLoadNextPage: handleLoadNextPage,
+            }}
+            registrationHref='/products/today-special/new'
+          />
+        </OverlayProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText('딸기 2팩')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('상품을 더 불러오지 못했어요.');
+
+    await user.click(screen.getByRole('button', { name: '다시 시도' }));
+
+    expect(handleLoadNextPage).toHaveBeenCalledTimes(1);
   });
 
   it('renders empty state with registration button when no products are available', async () => {
@@ -129,8 +281,8 @@ describe('ProductEditProductList', () => {
       <MemoryRouter>
         <OverlayProvider>
           <ProductEditProductList
+            actions={{}}
             ariaLabel='오늘의 특가 상품 수정 목록'
-            editModalVariant='todaySpecial'
             groups={[
               {
                 title: '2026년 8월 15일',
@@ -148,10 +300,11 @@ describe('ProductEditProductList', () => {
               },
             ]}
             registrationHref='/products/today-special/new'
-            marketId={1}
-            selectedProductIds={[101]}
-            selectionMode
-            onToggleProductSelection={handleToggleProductSelection}
+            selection={{
+              enabled: true,
+              selectedProductIds: [101],
+              onToggleProduct: handleToggleProductSelection,
+            }}
           />
         </OverlayProvider>
       </MemoryRouter>,
@@ -252,8 +405,7 @@ describe('ProductEditProductList', () => {
     render(
       <MemoryRouter>
         <OverlayProvider>
-          <ProductEditProductList
-            ariaLabel='오늘의 특가 상품 수정 목록'
+          <ProductEditProductListWithActions
             autoOpenProductId=''
             editModalVariant='todaySpecial'
             groups={[
@@ -269,8 +421,6 @@ describe('ProductEditProductList', () => {
                 ],
               },
             ]}
-            marketId={1}
-            registrationHref='/products/today-special/new'
             onAutoOpenProductMissing={handleAutoOpenProductMissing}
           />
         </OverlayProvider>
@@ -356,7 +506,7 @@ describe('ProductEditProductList', () => {
       }),
     );
     expect(handleUpdateProduct).toHaveBeenCalledWith(
-      '햇감자 1kg',
+      201,
       expect.objectContaining({
         categoryName: '정육/달걀',
         productName: '햇감자 1kg',
