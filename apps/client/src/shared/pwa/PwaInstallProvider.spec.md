@@ -4,7 +4,7 @@
 
 - App: `client`
 - Path: `apps/client/src/shared/pwa/PwaInstallProvider.tsx`
-- Jira: DCMCL-28
+- Jira: DCMCL-28, DCMCL-34
 - Status: Implemented
 
 ## Purpose
@@ -17,14 +17,14 @@
 
 - `PwaInstallProvider`: `src/app/providers.tsx`에서 한 번 조립합니다.
 - `usePwaInstall()`:
-  - `availability`: `prompt`, `manual`, `installed` 중 현재 상태입니다.
-  - `requestInstall()`: 보관한 프롬프트를 한 번 호출하고 `accepted`, `dismissed`, `manual`, `already-installed` 결과를 반환합니다.
-- 제품 UI는 결과에 맞는 안내, 닫기, 후속 동작을 직접 결정합니다.
+  - `availability`: `prompt`, `unavailable`, `installed` 중 현재 상태입니다.
+  - `requestInstall()`: 보관한 프롬프트를 한 번 호출하고 `accepted`, `dismissed`, `unavailable`, `already-installed` 결과를 반환합니다.
+- 제품 UI는 `requestInstall()`을 사용자 CTA에서 직접 호출하며, prompt 미지원 상태를 별도 앱 내부 설치 플로우로 확장하지 않습니다.
 
 ## States
 
 - `prompt`: 설치 가능한 브라우저가 `beforeinstallprompt`를 전달한 상태입니다.
-- `manual`: 프로그래밍 방식 설치 프롬프트가 없어 브라우저 메뉴 안내가 필요한 상태입니다.
+- `unavailable`: 프로그래밍 방식 설치 프롬프트가 없는 상태입니다.
 - `installed`: standalone으로 실행 중이거나 현재 세션에서 `appinstalled`가 발생한 상태입니다.
 
 ## Behavior
@@ -33,7 +33,7 @@
 - 이벤트의 `prompt()`는 반드시 `requestInstall()`을 호출한 사용자 액션에서 실행합니다.
 - 한 번 사용한 prompt는 수락/거절과 무관하게 제거합니다.
 - `appinstalled` 또는 display-mode 변경 시 `installed`로 동기화합니다.
-- SSR과 `matchMedia`가 없는 테스트 환경에서도 `manual` 상태로 안전하게 동작합니다.
+- SSR과 `matchMedia`가 없는 테스트 환경에서도 `unavailable` 상태로 안전하게 동작합니다.
 
 ## Accessibility
 
@@ -43,7 +43,7 @@
 ## Verification
 
 - [x] prompt 수락/거절 단위 테스트
-- [x] manual/installed 상태 단위 테스트
+- [x] unavailable/installed 상태 단위 테스트
 - [x] `pnpm --filter client lint`
 - [x] `pnpm --filter client typecheck`
 - [x] `pnpm --filter client test`
