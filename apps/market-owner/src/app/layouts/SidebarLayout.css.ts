@@ -57,6 +57,7 @@ export const profileAvatarClassName = style({
   borderRadius: '999rem',
   backgroundColor: atomic.neutral[20],
   color: atomic.neutral[70],
+  overflow: 'hidden',
   ...typography['caption-1-medium'],
 });
 
@@ -113,7 +114,7 @@ export const helpTextClassName = style({
   alignItems: 'center',
   gap: '0.8rem',
   margin: 0,
-  color: atomic.neutral[80],
+  color: atomic.neutral[60],
   ...typography['caption-1-medium'],
 });
 

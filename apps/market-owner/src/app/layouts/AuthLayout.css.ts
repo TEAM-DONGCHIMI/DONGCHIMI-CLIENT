@@ -4,7 +4,7 @@ import { atomic, shadow } from '@dongchimi/design-system/tokens';
 
 export const authLayoutRootClassName = style({
   display: 'flex',
-  height: '100vh',
+  height: '100dvh',
   boxSizing: 'border-box',
   overflow: 'hidden',
   backgroundColor: atomic.neutral[5],
@@ -15,7 +15,6 @@ export const onboardingPanelClassName = style({
   alignItems: 'center',
   justifyContent: 'center',
   flexShrink: 0,
-  width: 'min(36.5rem, calc(100vh * 0.4056))',
   height: '100%',
   overflow: 'hidden',
   backgroundColor: atomic.common[0],
@@ -23,9 +22,8 @@ export const onboardingPanelClassName = style({
 
 export const onboardingImageClassName = style({
   display: 'block',
-  width: '100%',
+  width: 'auto',
   height: '100%',
-  objectFit: 'contain',
 });
 
 export const authLayoutContentWrapperClassName = style({

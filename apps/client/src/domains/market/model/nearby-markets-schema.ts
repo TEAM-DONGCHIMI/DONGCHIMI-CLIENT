@@ -1,9 +1,14 @@
 import { z } from '@dongchimi/shared/api';
 
+const nullableStringSchema = z
+  .string()
+  .nullish()
+  .transform((value) => value ?? null);
+
 export const nearbyMarketPreviewProductSchema = z.object({
   productId: z.number(),
   name: z.string(),
-  thumbnailUrl: z.string(),
+  thumbnailUrl: nullableStringSchema,
   originalPrice: z.number(),
   discountedPrice: z.number(),
   discountRate: z.number(),
@@ -13,7 +18,7 @@ export const nearbyMarketDtoSchema = z.object({
   marketId: z.number(),
   name: z.string(),
   slug: z.string(),
-  thumbnailUrl: z.string(),
+  thumbnailUrl: nullableStringSchema,
   address: z.string(),
   latitude: z.number(),
   longitude: z.number(),
