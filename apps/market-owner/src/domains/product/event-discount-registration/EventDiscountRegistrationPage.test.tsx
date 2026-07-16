@@ -7,6 +7,7 @@ import { ApiError } from '@/shared/api';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { QueryProvider } from '@/shared/query';
 import { useAuthStore } from '@/shared/stores/auth-store';
+import { createProductImportRouteState } from '@/domains/product/model/product-import-route-state';
 
 import {
   EXCEL_TEMPLATE_DOWNLOAD_URL,
@@ -88,7 +89,7 @@ const createDeferred = <ValueTypes,>() => {
 
 const renderEventDiscountRegistrationPage = (
   props: Partial<EventDiscountRegistrationPageProps> = {},
-  options: { omitMarketId?: boolean } = {},
+  options: { initialState?: unknown; omitMarketId?: boolean } = {},
 ) => {
   const resolveExcelFileUrl = props.resolveExcelFileUrl ?? createMockResolveExcelFileUrl();
   const startProductImport = props.startProductImport ?? createMockStartProductImport();
@@ -117,7 +118,12 @@ const renderEventDiscountRegistrationPage = (
       },
     ],
     {
-      initialEntries: [MARKET_OWNER_ROUTES.eventDiscountRegistration],
+      initialEntries: [
+        {
+          pathname: MARKET_OWNER_ROUTES.eventDiscountRegistration,
+          state: options.initialState,
+        },
+      ],
     },
   );
   const renderResult = render(
@@ -139,7 +145,7 @@ const renderEventDiscountRegistrationPage = (
 };
 
 describe('EventDiscountRegistrationPage', () => {
-  it('uploads the selected file before starting analysis from the upload modal', async () => {
+  it('shows file confirmation after upload and starts analysis only from the confirmation action', async () => {
     const user = userEvent.setup();
     const excelFile = new File(['name,price'], '상품목록_202607.xlsx', {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -178,6 +184,13 @@ describe('EventDiscountRegistrationPage', () => {
     });
 
     await user.click(uploadButton);
+
+    expect(screen.queryByRole('dialog', { name: '엑셀 파일 업로드' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
+    expect(screen.getByText('상품목록_202607.xlsx')).toBeInTheDocument();
+    expect(startProductImport).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: '분석 시작' }));
 
     expect(startProductImport).toHaveBeenCalledWith({
       marketId: 12,
@@ -232,6 +245,10 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(uploadButton);
 
+    expect(startProductImport).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: '분석 시작' }));
+
     expect(startProductImport).toHaveBeenCalledWith({
       marketId: 27,
       request: {
@@ -268,9 +285,24 @@ describe('EventDiscountRegistrationPage', () => {
     await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
     await user.upload(screen.getByLabelText('파일 선택'), excelFile);
     await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+    await user.click(screen.getByRole('button', { name: '분석 시작' }));
 
     expect(await screen.findByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.registrationResult);
+    expect(router.state.location.state).toEqual(
+      createProductImportRouteState({
+        fileName: '상품목록_202607.xlsx',
+        fileUrl: 'https://static.dongchimi.kr/test/상품목록_202607.xlsx',
+      }),
+    );
+
+    await router.navigate(-1);
+
+    expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.eventDiscountRegistration);
+    expect(
+      await screen.findByRole('heading', { name: '등록한 파일을 확인해주세요' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('상품목록_202607.xlsx')).toBeInTheDocument();
   });
 
   it('shows the server message and returns to confirmation after the failed event', async () => {
@@ -297,6 +329,7 @@ describe('EventDiscountRegistrationPage', () => {
     await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
     await user.upload(screen.getByLabelText('파일 선택'), excelFile);
     await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+    await user.click(screen.getByRole('button', { name: '분석 시작' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('상품 정보 분석에 실패했습니다.');
     expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
@@ -321,6 +354,7 @@ describe('EventDiscountRegistrationPage', () => {
     await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
     await user.upload(screen.getByLabelText('파일 선택'), excelFile);
     await user.click(screen.getByRole('button', { name: '파일 업로드' }));
+    await user.click(screen.getByRole('button', { name: '분석 시작' }));
     await user.click(screen.getByRole('button', { name: '취소' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('존재하지 않는 분석 작업입니다.');
@@ -371,6 +405,10 @@ describe('EventDiscountRegistrationPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('엑셀 파일 크기가 너무 큽니다.');
     expect(screen.getAllByText('엑셀 파일 크기가 너무 큽니다.')).toHaveLength(2);
     expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: '토스트 알림' })).toHaveAttribute(
+      'data-placement',
+      'bottom-center',
+    );
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       '[EventDiscountRegistration] Failed to upload excel file',
       uploadError,
@@ -429,8 +467,12 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(uploadButton);
 
+    expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '분석 시작' }));
+
     expect(screen.getByRole('alert')).toHaveTextContent('인증이 필요합니다.');
-    expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       '[EventDiscountRegistration] Failed to start product import',
       analysisError,
@@ -523,12 +565,6 @@ describe('EventDiscountRegistrationPage', () => {
 
     await user.click(uploadButton);
 
-    expect(
-      await screen.findByRole('heading', { name: 'AI가 상품 정보를 분석하고 있어요' }),
-    ).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: '취소' }));
-
     expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '취소' }));
@@ -539,6 +575,21 @@ describe('EventDiscountRegistrationPage', () => {
 
     expect(screen.getByRole('button', { name: '파일 업로드' })).toBeDisabled();
     expect(screen.getByText('지원 파일은 .xlsx, .csv예요.')).toBeInTheDocument();
+  });
+
+  it('restores the uploaded file confirmation from route state', () => {
+    renderEventDiscountRegistrationPage(
+      {},
+      {
+        initialState: createProductImportRouteState({
+          fileName: '이전상품목록.xlsx',
+          fileUrl: 'https://static.dongchimi.kr/test/previous.xlsx',
+        }),
+      },
+    );
+
+    expect(screen.getByRole('heading', { name: '등록한 파일을 확인해주세요' })).toBeInTheDocument();
+    expect(screen.getByText('이전상품목록.xlsx')).toBeInTheDocument();
   });
 
   it('opens the excel template download URL and renders the remaining method actions', async () => {
@@ -564,6 +615,6 @@ describe('EventDiscountRegistrationPage', () => {
     const errorToast = screen.getByRole('alert');
 
     expect(errorToast).toHaveTextContent('아직 준비중인 기능이에요.');
-    expect(errorToast.querySelector('svg')).toBeInTheDocument();
+    expect(screen.getByTestId('toast-error-icon')).toBeInTheDocument();
   });
 });
