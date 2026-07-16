@@ -14,6 +14,7 @@ export const MARKET_DETAIL_API_RESPONSE_FIXTURE = {
         isOpen: false,
       },
     ],
+    isHolidayClosed: false,
     isOpenNow: true,
     marketId: 1,
     marketPhone1: '02-123-4567',

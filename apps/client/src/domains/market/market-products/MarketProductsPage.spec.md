@@ -32,7 +32,7 @@
 
 - market detail browser endpoint: `GET /api/markets/{slug}`
 - market detail upstream: `GET /v1/users/markets/{slug}`
-- market summary: `marketId`, `name`, `thumbnailUrl`, `address`, `isOpenNow`, `businessHours`, 전화번호, `top3[]`
+- market summary: `marketId`, `name`, `thumbnailUrl`, `address`, `isOpenNow`, `isHolidayClosed`, `businessHours`, 전화번호, `top3[]`. 공휴일을 포함한 영업 상태는 서버의 `isOpenNow`를 그대로 표시하며 별도의 공휴일 휴무 문구는 추가하지 않습니다.
 - daily products browser endpoint: `GET /api/markets/products/daily?marketId={marketId}`
 - daily products upstream: `GET /v1/users/markets/{marketId}/products/daily`
 - daily products response: `totalCount`, `products[]`
