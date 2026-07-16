@@ -42,7 +42,7 @@
 - 변경 시 상세 응답의 `dealType`을 요청 `type`으로 사용해 기존 판매 유형을 유지합니다.
 - 오늘의 특가는 `originalPrice`를 포함하고, 행사 할인은 `originalPrice`를 전송하지 않습니다.
 - 홍보글을 비우면 `promotionalPhrase: null`을 전송합니다.
-- 이미지가 변경되지 않으면 상세 응답의 기존 URL을 유지하고, 새 이미지가 선택되면 Presigned 업로드 후 public S3 URL을 전송합니다.
+- 이미지가 변경되지 않으면 상세 응답의 기존 값을 유지하고, 새 이미지가 선택되면 Presigned 업로드 후 `objectKey`를 서버에 전송합니다. 화면 카드에는 S3 base URL과 `objectKey`를 결합한 공개 URL을 사용합니다.
 - 수정 성공 후 상품 목록과 해당 상품 상세 query를 invalidate합니다.
 - 상세 조회 중에는 modal을 렌더링하지 않고, 조회 실패 시 error toast를 표시한 뒤 overlay를 닫습니다.
 - 취소는 modal을 닫고 form state를 버립니다.
