@@ -10,6 +10,7 @@
 - 위치: `apps/market-owner/src/domains/product/components/product-edit-modal/product-edit-period-modal/ProductEditPeriodModal.tsx`
 - 사용처: `ProductEditPageShell`
 - modal open/close는 `openProductEditPeriodModal` helper가 공통 overlay helper로 처리합니다.
+- 날짜 필드와 오늘의 특가 toggle UI는 개별 수정 modal과 상위 `ProductPeriodSection.tsx`를 공유하고, 이 modal은 로컬 기간 state와 변경 handler를 전달합니다.
 
 ## Public API
 
@@ -25,12 +26,13 @@
 
 - 제목은 `선택된 상품들의 판매 기간을 수정해주세요`를 표시합니다.
 - 시작일과 종료일 기본값은 고정 날짜가 아니라 호출부에서 전달한 상품 기간 데이터를 input 형식으로 변환해 사용합니다.
-- 오늘의 특가 variant는 시작일을 비활성 상태로 표시하고 `하루 더 늘리기` 버튼을 표시합니다.
+- 오늘의 특가 variant는 시작일을 회색 `readOnly` field로 표시하고, 종료일은 일반 field visual을 유지한 채 date picker만 열지 않으며 `하루 더 늘리기` 버튼으로만 기간을 변경합니다.
 - `하루 더 늘리기`를 누르면 종료일을 하루 증가시키고 버튼을 `오늘만 특가로`로 전환합니다.
 - `오늘만 특가로`를 누르면 종료일을 시작일로 되돌리고 다른 변경이 없으면 `변경하기`를 다시 disabled 처리합니다.
 - 행사 할인 variant는 시작일과 종료일을 모두 수정 가능하게 표시하고 `하루 더 늘리기` 버튼을 표시하지 않습니다.
 - 편집 가능한 시작일 field는 오늘부터 선택할 수 있습니다.
 - 종료일 field의 최소 날짜는 시작일과 오늘 중 더 늦은 날짜이며, 종료일이 시작일보다 이전이면 `변경하기`를 비활성화합니다.
+- 행사 할인 상품의 기존 시작일이 과거인 경우 기존 시작일을 유지한 종료일 변경은 허용하고, 시작일 자체를 변경할 때만 오늘 이후인지 검증합니다.
 - 변경 전에는 `변경하기` 버튼을 disabled 상태로 표시합니다.
 - modal 최초 진입 시 특정 제목/날짜 field/button에 focus-visible 상태를 만들지 않고 dialog container에 focus를 둡니다.
 - pending 동안 취소와 `변경하기`를 비활성화해 중복 제출을 막습니다.

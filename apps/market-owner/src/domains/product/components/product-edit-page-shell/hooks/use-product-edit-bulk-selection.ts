@@ -174,7 +174,6 @@ export const useProductEditBulkSelection = ({
     bulkAction,
     selectedProductCount,
     selectionControls,
-    selectionMode,
     openDeleteBulkAction,
     openPeriodBulkAction,
     openResetConfirm,
