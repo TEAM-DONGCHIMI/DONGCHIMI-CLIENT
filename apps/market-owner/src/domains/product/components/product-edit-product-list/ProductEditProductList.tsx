@@ -105,7 +105,7 @@ export const ProductEditProductList = ({
       )}
       {isFetchingNextPage && (
         <p className={S.loadingClassName} role='status'>
-          상품을 더 불러오는 중이에요.
+          상품을 더 불러오는 중입니다.
         </p>
       )}
       {isFetchNextPageError && (

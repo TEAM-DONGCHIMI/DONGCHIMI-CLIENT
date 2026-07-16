@@ -398,7 +398,7 @@ export const EventDiscountProductsSection = ({
       )}
       {isFetchingNextPage && (
         <p className={S.emptyTextClassName} role='status'>
-          행사 상품을 더 불러오는 중이에요.
+          상품을 더 불러오는 중입니다.
         </p>
       )}
       {isFetchNextPageError && (
