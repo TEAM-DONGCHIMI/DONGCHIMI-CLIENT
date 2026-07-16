@@ -22,13 +22,8 @@ export const useProductEditFilter = ({ activeType }: UseProductEditFilterParams)
   const categoryFilterRef = useRef<HTMLDivElement>(null);
   const categoryTriggerRef = useRef<HTMLButtonElement>(null);
   const showCategoryFilter = activeType === 'eventDiscount';
-  const {
-    closeCategoryDropdown,
-    isCategoryDropdownOpen,
-    selectCategory,
-    selectedCategory,
-    toggleCategoryDropdown,
-  } = useProductCategoryDropdown(categoryFilterRef);
+  const { isCategoryDropdownOpen, selectCategory, selectedCategory, toggleCategoryDropdown } =
+    useProductCategoryDropdown(categoryFilterRef);
   const categoryDropdownStyle = useProductCategoryDropdownLayout({
     containerRef: categoryFilterRef,
     isOpen: isCategoryDropdownOpen,
@@ -48,8 +43,8 @@ export const useProductEditFilter = ({ activeType }: UseProductEditFilterParams)
   };
 
   const selectSortFilter = (value: ProductEditFilterTypes) => {
+    selectCategory(null);
     setSelectedFilter(value);
-    closeCategoryDropdown();
   };
 
   return {

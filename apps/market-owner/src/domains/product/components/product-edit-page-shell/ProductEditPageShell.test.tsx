@@ -62,5 +62,48 @@ describe('ProductEditPageShell', () => {
 
     expect(dropdown).toBeInTheDocument();
     expect(screen.getByText('상품 목록')).toBeInTheDocument();
+
+    await user.click(categoryTrigger);
+
+    expect(screen.queryByRole('group', { name: '카테고리 선택' })).not.toBeInTheDocument();
   });
+
+  it.each(['상품 등록 순', '조회수 순'] as const)(
+    'resets the selected category when %s is selected',
+    async (sortLabel) => {
+      const user = userEvent.setup();
+
+      render(
+        <MemoryRouter>
+          <AppProviders>
+            <ProductEditPageShell
+              activeType='eventDiscount'
+              productCounts={{ eventDiscount: 2, todaySpecial: 1 }}
+            >
+              {(_, selectedCategory) => (
+                <div>{selectedCategory == null ? '선택 카테고리 없음' : selectedCategory}</div>
+              )}
+            </ProductEditPageShell>
+          </AppProviders>
+        </MemoryRouter>,
+      );
+
+      await user.click(screen.getByRole('button', { name: '카테고리별' }));
+      await user.click(await screen.findByRole('button', { name: '유제품' }));
+
+      expect(screen.getByRole('button', { name: '유제품' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+      expect(screen.getByText('유제품', { selector: 'div' })).toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: sortLabel }));
+
+      expect(screen.getByRole('button', { name: '카테고리별' })).toHaveAttribute(
+        'aria-pressed',
+        'false',
+      );
+      expect(screen.getByText('선택 카테고리 없음')).toBeInTheDocument();
+    },
+  );
 });
