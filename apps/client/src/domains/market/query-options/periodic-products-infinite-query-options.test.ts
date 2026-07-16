@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { getPeriodicProductsNextPageParam } from './periodic-products-infinite-query-options';
+import {
+  getPeriodicProductsNextPageParam,
+  PERIODIC_PRODUCTS_INACTIVE_CACHE_TIME_MS,
+  periodicProductsInfiniteQueryOptions,
+} from './periodic-products-infinite-query-options';
 
 type NextPageTypes = Parameters<typeof getPeriodicProductsNextPageParam>[0];
 
@@ -62,5 +66,14 @@ describe('getPeriodicProductsNextPageParam', () => {
         [undefined, 301],
       ),
     ).toBeUndefined();
+  });
+});
+
+describe('periodicProductsInfiniteQueryOptions', () => {
+  it('상품 상세 탐색 중 무한 목록 cache를 30분 유지한다', () => {
+    expect(periodicProductsInfiniteQueryOptions({ marketId: 1 }).gcTime).toBe(
+      PERIODIC_PRODUCTS_INACTIVE_CACHE_TIME_MS,
+    );
+    expect(PERIODIC_PRODUCTS_INACTIVE_CACHE_TIME_MS).toBe(30 * 60 * 1000);
   });
 });

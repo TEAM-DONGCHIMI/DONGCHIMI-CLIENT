@@ -6,7 +6,7 @@ import './globals.css';
 import { AppProviders } from './providers';
 
 export const metadata: Metadata = {
-  title: 'DONGCHIMI Client',
+  title: '동치미',
   description: 'DONGCHIMI client app',
   icons: {
     icon: '/favicon.svg',
