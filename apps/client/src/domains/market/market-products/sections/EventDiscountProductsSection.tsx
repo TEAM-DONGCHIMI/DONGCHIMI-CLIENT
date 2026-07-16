@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 
 import { Button, PillButton } from '@dongchimi/design-system';
 import { IcChevronDown, IcChevronUp } from '@dongchimi/design-system/icons';
@@ -14,6 +14,12 @@ import { PeriodProductCard } from '@/shared/components/ui/period-product-card';
 import { CLIENT_ROUTES } from '@/shared/constants';
 import { useIntersectionObserver } from '@/shared/hooks';
 
+import {
+  getMarketProductAnchorId,
+  isPrimaryProductLinkClick,
+  saveMarketProductsScrollRestoration,
+  type EventDiscountScrollRestorationTypes,
+} from '../hooks/market-products-scroll-restoration';
 import { useEventDiscountCategoryLayout } from '../hooks/useEventDiscountCategoryLayout';
 import * as S from '../MarketProductsPage.css';
 import { formatPrice } from '../utils/format-price';
@@ -21,6 +27,7 @@ import { formatPrice } from '../utils/format-price';
 interface EventDiscountProductsSectionProps {
   marketId: number;
   marketSlug: string;
+  restorationState?: EventDiscountScrollRestorationTypes;
   visibleCategoryCount: number;
 }
 
@@ -52,8 +59,20 @@ const EVENT_DISCOUNT_CATEGORIES = [
   { apiCategory: 'ETC', categoryId: 'etc', label: '기타' },
 ] satisfies EventDiscountCategoryTypes[];
 
+const resolveEventDiscountCategoryId = (categoryId?: string) => {
+  if (
+    categoryId != null &&
+    EVENT_DISCOUNT_CATEGORIES.some((category) => category.categoryId === categoryId)
+  ) {
+    return categoryId;
+  }
+
+  return EVENT_DISCOUNT_ALL_CATEGORY_ID;
+};
+
 interface EventDiscountProductsContentProps {
   hasNextPage: boolean;
+  isCategoryExpanded: boolean;
   isError: boolean;
   isFetchNextPageError: boolean;
   isPending: boolean;
@@ -61,16 +80,21 @@ interface EventDiscountProductsContentProps {
   onRetry: () => void;
   pageParams: (number | undefined)[];
   productPages: PeriodicProductsPageTypes[];
+  selectedCategoryId: string;
 }
 
 interface EventDiscountProductPageProps {
+  isCategoryExpanded: boolean;
   marketSlug: string;
   page: PeriodicProductsPageTypes;
+  selectedCategoryId: string;
 }
 
 const EventDiscountProductPage = memo(function EventDiscountProductPage({
+  isCategoryExpanded,
   marketSlug,
   page,
+  selectedCategoryId,
 }: EventDiscountProductPageProps) {
   return (
     <div className={S.eventProductGridClassName}>
@@ -79,8 +103,25 @@ const EventDiscountProductPage = memo(function EventDiscountProductPage({
           key={product.productId}
           className={S.eventProductCardClassName}
           href={CLIENT_ROUTES.marketProduct(marketSlug, String(product.productId))}
+          id={getMarketProductAnchorId('event-discount', product.productId)}
           imageSizes={EVENT_DISCOUNT_PRODUCT_IMAGE_SIZES}
           imageSrc={product.thumbnailUrl ?? undefined}
+          onClick={(event) => {
+            if (!isPrimaryProductLinkClick(event)) {
+              return;
+            }
+
+            saveMarketProductsScrollRestoration({
+              anchorId: event.currentTarget.id,
+              isCategoryExpanded,
+              marketSlug,
+              productId: String(product.productId),
+              scrollY: window.scrollY,
+              section: 'event-discount',
+              selectedCategoryId,
+              viewportTop: event.currentTarget.getBoundingClientRect().top,
+            });
+          }}
           prefetch={false}
           priceText={formatPrice(product.discountedPrice)}
           productName={product.name}
@@ -92,6 +133,7 @@ const EventDiscountProductPage = memo(function EventDiscountProductPage({
 
 const EventDiscountProductsContent = ({
   hasNextPage,
+  isCategoryExpanded,
   isError,
   isFetchNextPageError,
   isPending,
@@ -99,6 +141,7 @@ const EventDiscountProductsContent = ({
   onRetry,
   pageParams,
   productPages,
+  selectedCategoryId,
 }: EventDiscountProductsContentProps) => {
   const hasProducts = productPages.some((page) => page.content.length > 0);
 
@@ -144,7 +187,15 @@ const EventDiscountProductsContent = ({
 
         const pageKey = pageParams[pageIndex] ?? 'initial';
 
-        return <EventDiscountProductPage key={pageKey} marketSlug={marketSlug} page={page} />;
+        return (
+          <EventDiscountProductPage
+            key={pageKey}
+            isCategoryExpanded={isCategoryExpanded}
+            marketSlug={marketSlug}
+            page={page}
+            selectedCategoryId={selectedCategoryId}
+          />
+        );
       })}
     </div>
   );
@@ -153,12 +204,17 @@ const EventDiscountProductsContent = ({
 export const EventDiscountProductsSection = ({
   marketId,
   marketSlug,
+  restorationState,
   visibleCategoryCount,
 }: EventDiscountProductsSectionProps) => {
+  const restoredCategoryId = resolveEventDiscountCategoryId(restorationState?.selectedCategoryId);
+  const appliedRestorationIdRef = useRef(restorationState?.restorationId);
   const [availableCategorySnapshot, setAvailableCategorySnapshot] =
     useState<AvailableCategorySnapshotTypes | null>(null);
-  const [isCategoryExpanded, setIsCategoryExpanded] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(EVENT_DISCOUNT_ALL_CATEGORY_ID);
+  const [isCategoryExpanded, setIsCategoryExpanded] = useState(
+    restorationState?.isCategoryExpanded ?? false,
+  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState(restoredCategoryId);
   const selectedCategory = EVENT_DISCOUNT_CATEGORIES.find(
     (category) => category.categoryId === selectedCategoryId,
   );
@@ -186,6 +242,19 @@ export const EventDiscountProductsSection = ({
       availableCategorySet.has(category.apiCategory) || category.categoryId === selectedCategoryId
     );
   });
+
+  useEffect(() => {
+    if (
+      restorationState == null ||
+      restorationState.restorationId === appliedRestorationIdRef.current
+    ) {
+      return;
+    }
+
+    appliedRestorationIdRef.current = restorationState.restorationId;
+    setIsCategoryExpanded(restorationState.isCategoryExpanded);
+    setSelectedCategoryId(resolveEventDiscountCategoryId(restorationState.selectedCategoryId));
+  }, [restorationState]);
 
   const handleSelectCategory = (categoryId: string) => {
     if (categoryId === selectedCategoryId) {
@@ -309,6 +378,7 @@ export const EventDiscountProductsSection = ({
 
       <EventDiscountProductsContent
         hasNextPage={Boolean(hasNextPage)}
+        isCategoryExpanded={isCategoryExpanded}
         isError={isError}
         isFetchNextPageError={isFetchNextPageError}
         isPending={isPending}
@@ -316,6 +386,7 @@ export const EventDiscountProductsSection = ({
         onRetry={() => void refetch()}
         pageParams={pageParams}
         productPages={productPages}
+        selectedCategoryId={selectedCategoryId}
       />
 
       {hasNextPage && !isFetchNextPageError && (
