@@ -18,6 +18,10 @@ type RegistrationResultTypes =
   | { productId: number; success: true; thumbnailUrl: string }
   | { success: false };
 
+const createPublicProductThumbnailUrl = (s3BaseUrl: string, objectKey: string) => {
+  return `${s3BaseUrl.replace(/\/+$/, '')}/${objectKey.replace(/^\/+/, '')}`;
+};
+
 export const useTodaySpecialProductRegistration = (marketId: number) => {
   const toast = useToast();
   const { uploadProductImage } = useTodaySpecialImageUpload();
@@ -35,8 +39,10 @@ export const useTodaySpecialProductRegistration = (marketId: number) => {
 
       const uploadedImageObjectKey = await uploadProductImage(product);
 
-      const request = createDailyProductRequest({ product, s3BaseUrl, uploadedImageObjectKey });
-      const thumbnailUrl = request.thumbnailUrl;
+      const request = createDailyProductRequest({ product, uploadedImageObjectKey });
+      const thumbnailUrl = uploadedImageObjectKey
+        ? createPublicProductThumbnailUrl(s3BaseUrl!, uploadedImageObjectKey)
+        : request.thumbnailUrl;
 
       if (thumbnailUrl == null) {
         throw new Error('Product thumbnail URL is required.');

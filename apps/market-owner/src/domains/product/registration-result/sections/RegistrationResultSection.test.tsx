@@ -26,7 +26,7 @@ const renderSection = (props: Partial<RegistrationResultSectionProps> = {}) => {
           summary={props.summary ?? registrationResultFixture.summary}
           onPrevious={handlePrevious}
           onRegister={handleRegister}
-          resolveProductImageFileUrl={props.resolveProductImageFileUrl}
+          resolveProductImageFileObjectKey={props.resolveProductImageFileObjectKey}
           onSaveDrafts={props.onSaveDrafts}
         />
       </OverlayProvider>
@@ -673,9 +673,9 @@ describe('RegistrationResultSection', () => {
     const imageFile = new File(['replacement'], 'replacement.png', { type: 'image/png' });
     const handleSaveDrafts = vi.fn().mockResolvedValue(successfulDraftSyncResult);
     const handleRegister = vi.fn();
-    const resolveProductImageFileUrl = vi
+    const resolveProductImageFileObjectKey = vi
       .fn()
-      .mockResolvedValue('https://static.dongchimi.kr/replacement.png');
+      .mockResolvedValue('tmp/PRODUCT_THUMBNAIL/replacement.png');
     const product: RegistrationResultProduct = {
       category: '수산물',
       discountPeriod: '2026-07-15 ~ 2026-07-21',
@@ -691,7 +691,7 @@ describe('RegistrationResultSection', () => {
       products: [product],
       summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
       onRegister: handleRegister,
-      resolveProductImageFileUrl,
+      resolveProductImageFileObjectKey,
       onSaveDrafts: handleSaveDrafts,
     });
 
@@ -707,13 +707,13 @@ describe('RegistrationResultSection', () => {
 
     await vi.advanceTimersByTimeAsync(1_000);
 
-    expect(resolveProductImageFileUrl).toHaveBeenCalledWith(imageFile);
+    expect(resolveProductImageFileObjectKey).toHaveBeenCalledWith(imageFile);
     expect(handleSaveDrafts).toHaveBeenCalledWith({
       preparedProducts: [
         {
           preparedProductId: 12,
           name: '고등어',
-          thumbnailUrl: 'https://static.dongchimi.kr/replacement.png',
+          thumbnailUrl: 'tmp/PRODUCT_THUMBNAIL/replacement.png',
           discountedPrice: 4500,
           category: 'SEAFOOD',
           promotionalPhrase: '맛이 미쳤어요',

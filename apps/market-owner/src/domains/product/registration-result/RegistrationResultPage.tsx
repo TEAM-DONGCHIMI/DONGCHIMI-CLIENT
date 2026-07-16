@@ -21,7 +21,7 @@ import type { SavePreparedProductDraftsRequestTypes } from '../api/save-prepared
 import { createRegistrationResultProducts } from './model';
 import * as S from './RegistrationResultPage.css';
 import { RegistrationResultSection } from './sections';
-import { resolvePresignedProductImageFileUrl } from './utils/resolve-product-image-file-url';
+import { resolvePresignedProductImageFileObjectKey } from './utils/resolve-product-image-file-url';
 
 const REGISTRATION_RESULT_PAGE_SIZE = 10;
 
@@ -88,8 +88,8 @@ export const RegistrationResultPage = () => {
     },
     [marketId, refetchPreparedProductDrafts, savePreparedProductDrafts],
   );
-  const resolveProductImageFileUrl = useMemo(
-    () => resolvePresignedProductImageFileUrl(presignedUploadMutation.mutateAsync),
+  const resolveProductImageFileObjectKey = useMemo(
+    () => resolvePresignedProductImageFileObjectKey(presignedUploadMutation.mutateAsync),
     [presignedUploadMutation.mutateAsync],
   );
   const fileConfirmation = getProductImportFileConfirmation(location.state);
@@ -126,7 +126,7 @@ export const RegistrationResultPage = () => {
           summary={summary}
           onPrevious={handlePrevious}
           onRegister={() => navigate(MARKET_OWNER_ROUTES.leafletShare)}
-          resolveProductImageFileUrl={resolveProductImageFileUrl}
+          resolveProductImageFileObjectKey={resolveProductImageFileObjectKey}
           onSaveDrafts={handleSaveDrafts}
         />
       </main>
