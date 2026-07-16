@@ -28,7 +28,7 @@ export const logoClassName = style({
 });
 
 export const titleClassName = style({
-  ...typography['title-1-semibold'],
+  ...typography['heading-3-semibold'],
   margin: 0,
   color: atomic.neutral[90],
 });

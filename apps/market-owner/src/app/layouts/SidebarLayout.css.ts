@@ -28,6 +28,19 @@ export const contentSlotClassName = style({
   overflowY: 'auto',
 });
 
+export const brandLinkClassName = style({
+  display: 'inline-flex',
+  width: 'fit-content',
+  borderRadius: '0.4rem',
+  cursor: 'pointer',
+  selectors: {
+    '&:focus-visible': {
+      outline: `0.3rem solid color-mix(in srgb, ${atomic.neutral[90]} 20%, transparent)`,
+      outlineOffset: '0.2rem',
+    },
+  },
+});
+
 export const brandImageClassName = style({
   display: 'block',
   width: '9.2rem',

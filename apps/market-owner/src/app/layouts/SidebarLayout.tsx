@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 
 import {
   IcCircleQuestion,
@@ -142,7 +142,9 @@ const getActiveSidebarItemId = (pathname: string): SidebarItemIdTypes | undefine
 };
 
 const SidebarBrand = () => (
-  <img alt='동치미' className={S.brandImageClassName} src={sidebarBrandLogo} />
+  <Link aria-label='홈으로 이동' className={S.brandLinkClassName} to={MARKET_OWNER_ROUTES.home}>
+    <img alt='동치미' className={S.brandImageClassName} src={sidebarBrandLogo} />
+  </Link>
 );
 
 const SidebarHelp = () => (
