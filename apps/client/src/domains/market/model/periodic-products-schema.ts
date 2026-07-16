@@ -20,13 +20,15 @@ export const periodicProductCategorySchema = z.enum(PERIODIC_PRODUCT_CATEGORIES)
 
 export type PeriodicProductCategoryTypes = z.infer<typeof periodicProductCategorySchema>;
 
-// Swagger보다 먼저 배포된 서버 필드를 generated 파일 수정 없이 격리한다.
-type PeriodicProductsPageContractTypes = UserApiTypes.CursorSliceResponsePeriodicProductResponse & {
+type PeriodicProductsPageContractTypes = Omit<
+  UserApiTypes.PeriodicProductListResponse,
+  'availableCategories'
+> & {
   availableCategories: PeriodicProductCategoryTypes[];
 };
 
 type PeriodicProductsResponseContractTypes = Omit<
-  UserApiTypes.ApiResponseCursorSliceResponsePeriodicProductResponse,
+  UserApiTypes.ApiResponsePeriodicProductListResponse,
   'data'
 > & {
   data?: PeriodicProductsPageContractTypes | null;

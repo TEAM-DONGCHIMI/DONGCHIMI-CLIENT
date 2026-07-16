@@ -1,25 +1,19 @@
-import { API_ENDPOINTS, validateApiResponse, z } from '@dongchimi/shared/api';
+import { API_ENDPOINTS, validateApiResponse } from '@dongchimi/shared/api';
 
 import { httpClient, type OwnerApiTypes } from '@/shared/api';
 
+import {
+  ownerProductDetailResponseSchema,
+  type OwnerProductDetailApiResponseTypes,
+} from './product-detail.schema';
+
 export type RegisterDailyProductRequestTypes = OwnerApiTypes.DailyProductRegisterRequest;
-export type RegisterDailyProductResponseTypes = OwnerApiTypes.RegisterDailyProductData & {
-  data: OwnerApiTypes.DailyProductRegisterResponse;
-};
+export type RegisterDailyProductResponseTypes = OwnerProductDetailApiResponseTypes;
 
 export interface RegisterDailyProductParams {
-  marketId: number | string;
+  marketId: number;
   request: RegisterDailyProductRequestTypes;
 }
-
-const registerDailyProductResponseSchema = z.object({
-  success: z.literal(true),
-  code: z.literal('SUCCESS'),
-  message: z.string(),
-  data: z.object({
-    productId: z.number().int().positive(),
-  }),
-}) satisfies z.ZodType<RegisterDailyProductResponseTypes>;
 
 export const registerDailyProduct = async ({
   marketId,
@@ -30,7 +24,7 @@ export const registerDailyProduct = async ({
     json: request,
   });
 
-  return validateApiResponse(registerDailyProductResponseSchema, response, {
+  return validateApiResponse(ownerProductDetailResponseSchema, response, {
     endpoint,
     schemaDescription: 'Daily product registration response',
   });
