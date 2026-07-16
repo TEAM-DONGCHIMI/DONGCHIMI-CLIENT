@@ -216,6 +216,56 @@ interface ToastViewportItemProps {
   toast: ToastEntry;
 }
 
+interface ToastViewportProps {
+  children: ReactNode;
+  className: string;
+  placement: ToastPlacementTypes;
+  style?: ToastViewportStyleTypes;
+  useTopLayer: boolean;
+}
+
+const ToastViewport = ({
+  children,
+  className,
+  placement,
+  style,
+  useTopLayer,
+}: ToastViewportProps) => {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const canUsePopoverTopLayer =
+    useTopLayer &&
+    typeof HTMLElement !== 'undefined' &&
+    typeof HTMLElement.prototype.showPopover === 'function';
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+
+    if (!canUsePopoverTopLayer || viewport == null) {
+      return;
+    }
+
+    try {
+      viewport.showPopover();
+    } catch {
+      // Browsers without an available top layer keep the fixed body portal fallback.
+    }
+  }, [canUsePopoverTopLayer]);
+
+  return (
+    <div
+      aria-label='토스트 알림'
+      className={className}
+      data-placement={placement}
+      popover={canUsePopoverTopLayer ? 'manual' : undefined}
+      ref={viewportRef}
+      role='region'
+      style={style}
+    >
+      {children}
+    </div>
+  );
+};
+
 const ToastViewportItem = ({ onDismiss, onRemove, placement, toast }: ToastViewportItemProps) => {
   useEffect(() => {
     if (toast.durationMs === null || toast.phase === 'dismissing') {
@@ -337,6 +387,7 @@ export const ToastProvider = ({
   const visibleToasts = getVisibleToasts(toasts, safeMaxVisibleCount);
   const viewportStyle = getToastViewportStyle(offset);
   const viewportClassName = S.toastViewportPlacementClassNameMap[placement];
+  const useTopLayer = typeof document !== 'undefined' && portalContainer === document.body;
 
   return (
     <ToastContext.Provider value={toastActions}>
@@ -344,11 +395,11 @@ export const ToastProvider = ({
       {portalContainer !== null &&
         visibleToasts.length > 0 &&
         createPortal(
-          <div
-            aria-label='토스트 알림'
+          <ToastViewport
             className={viewportClassName}
-            role='region'
+            placement={placement}
             style={viewportStyle}
+            useTopLayer={useTopLayer}
           >
             {visibleToasts.map((toast) => (
               <ToastViewportItem
@@ -359,7 +410,7 @@ export const ToastProvider = ({
                 toast={toast}
               />
             ))}
-          </div>,
+          </ToastViewport>,
           portalContainer,
         )}
     </ToastContext.Provider>

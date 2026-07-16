@@ -73,6 +73,7 @@ describe('HomePage QR modal', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'QR 코드를 불러오지 못했습니다. 다시 시도해주세요.',
     );
+    expect(screen.getByTestId('toast-error-icon')).toBeInTheDocument();
     expect(screen.queryByRole('dialog', { name: '매장 고유 QR코드' })).not.toBeInTheDocument();
   });
 
