@@ -1,8 +1,6 @@
 import { style } from '@vanilla-extract/css';
 
-import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
-
-const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
+import { atomic, typography } from '@dongchimi/design-system/tokens';
 
 export const pageClassName = style({
   display: 'flex',
@@ -46,13 +44,6 @@ export const locationSearchFieldClassName = style({
   backgroundColor: atomic.neutral[10],
   color: atomic.neutral[60],
   cursor: 'text',
-
-  selectors: {
-    '&:focus-within': {
-      outline: `3px solid ${focusOutlineColor}`,
-      outlineOffset: 2,
-    },
-  },
 });
 
 export const locationIconClassName = style({

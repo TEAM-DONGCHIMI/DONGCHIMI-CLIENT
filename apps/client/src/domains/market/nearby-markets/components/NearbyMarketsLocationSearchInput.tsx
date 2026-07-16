@@ -1,4 +1,4 @@
-import type { ChangeEventHandler, MouseEventHandler } from 'react';
+import type { ChangeEventHandler, MouseEventHandler, PointerEventHandler } from 'react';
 
 import { IcLocationSizeSmallColor60 } from '@dongchimi/design-system/icons';
 
@@ -27,6 +27,14 @@ export const NearbyMarketsLocationSearchInput = ({
     onClick?.();
   };
 
+  const handlePointerDown: PointerEventHandler<HTMLInputElement> = (event) => {
+    if (!readOnly) {
+      return;
+    }
+
+    event.preventDefault();
+  };
+
   return (
     <label className={S.locationSearchFieldClassName}>
       <span className={S.visuallyHiddenClassName}>위치 또는 마트 검색</span>
@@ -39,6 +47,7 @@ export const NearbyMarketsLocationSearchInput = ({
         value={value}
         onChange={handleChange}
         onClick={handleClick}
+        onPointerDown={handlePointerDown}
       />
     </label>
   );
