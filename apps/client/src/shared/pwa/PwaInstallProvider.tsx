@@ -10,8 +10,8 @@ import {
   type ReactNode,
 } from 'react';
 
-type PwaInstallAvailabilityTypes = 'installed' | 'manual' | 'prompt';
-type PwaInstallResultTypes = 'accepted' | 'already-installed' | 'dismissed' | 'manual';
+type PwaInstallAvailabilityTypes = 'installed' | 'prompt' | 'unavailable';
+type PwaInstallResultTypes = 'accepted' | 'already-installed' | 'dismissed' | 'unavailable';
 
 interface BeforeInstallPromptEventTypes extends Event {
   prompt: () => Promise<void>;
@@ -61,7 +61,7 @@ const getPwaInstallAvailability = ({
   }
 
   if (installPrompt == null) {
-    return 'manual';
+    return 'unavailable';
   }
 
   return 'prompt';
@@ -108,7 +108,7 @@ export const PwaInstallProvider = ({ children }: PwaInstallProviderProps) => {
     }
 
     if (installPrompt == null) {
-      return 'manual';
+      return 'unavailable';
     }
 
     try {
@@ -121,7 +121,7 @@ export const PwaInstallProvider = ({ children }: PwaInstallProviderProps) => {
     } catch {
       setInstallPrompt(null);
 
-      return 'manual';
+      return 'unavailable';
     }
   }, [installPrompt, installed]);
 

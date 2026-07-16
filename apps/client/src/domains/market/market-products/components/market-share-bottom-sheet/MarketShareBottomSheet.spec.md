@@ -49,9 +49,7 @@
 - pending: Kakao SDK 연동 전까지 카카오톡 공유를 누르면 bottom-center error toast로 `아직 준비중인 기능이에요.`를 표시합니다.
 - installGuide: `앱으로 전단보기`를 누르면 같은 modal context 안에서 설치 안내 view로 전환합니다.
 - installPrompt: prompt 지원 브라우저에서 `홈 화면에 추가하기`를 누르면 네이티브 설치 UI를 호출합니다.
-- manualInstall: prompt 미지원 환경에서 버튼을 누르면 브라우저 공유 메뉴의 홈 화면 추가 절차와 확인 action을 표시합니다.
-- installed: 이미 standalone인 경우 중복 설치 prompt 없이 설치 완료 문구와 확인 action을 표시합니다.
-- loading: 네이티브 설치 prompt를 요청하는 동안 primary action을 비활성화하고 `설치 요청 중`을 표시합니다.
+- promptUnavailable: prompt 미지원 또는 이미 설치된 환경에서도 첨부 디자인의 설치 안내 view를 유지하며 별도 앱 내부 후속 안내를 표시하지 않습니다.
 - empty: 지원하지 않습니다. `marketName`, `shareUrl`은 필수입니다.
 - error: clipboard fallback 실패 시 bottom-center error toast를 표시합니다.
 
@@ -72,7 +70,7 @@
 - 링크 박스의 복사 icon button에는 `aria-label="전단 링크 복사"`를 제공합니다.
 - 액션 버튼은 실제 `button` element로 렌더링합니다.
 - 시각적 제목이 없는 설치 안내 view도 visually-hidden `BottomSheet.Title`로 dialog name을 제공합니다.
-- 설치 결과와 수동 안내 변경은 `aria-live="polite"` 영역에서 전달합니다.
+- 설치 안내 문구와 CTA label은 첨부 디자인의 단일 상태로 유지합니다.
 
 ## Verification
 

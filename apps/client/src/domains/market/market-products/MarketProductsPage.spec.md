@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21, DMCL-24, DCMCL-28
+- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21, DMCL-24, DCMCL-28, DCMCL-34
 - Figma: APPJAM, mobile web market leaflet flow
 - Route: `/markets/[slug]`
 - Owner: `apps/client`
@@ -76,7 +76,7 @@
 - observer의 연속 intersection은 진행 중인 다음 페이지 요청을 중복 실행하지 않습니다.
 - TanStack Query의 abort signal을 browser request와 upstream request에 전달합니다.
 - 설치 가능한 브라우저의 `홈 화면에 추가하기`는 사용자 제스처 안에서 네이티브 설치 prompt를 호출합니다.
-- 직접 설치 prompt를 지원하지 않는 브라우저는 공유 메뉴를 통한 수동 설치 절차를 안내합니다.
+- 설치 prompt 지원 여부나 설치 상태에 따라 디자인에 없는 앱 내부 후속 안내 view를 추가하지 않습니다.
 - 내용이 없는 중간 페이지라도 `hasNext`가 true이면 최종 빈 상태로 확정하지 않습니다.
 - 각 페이지 grid는 `content-visibility: auto`로 화면 밖 렌더링 비용을 줄입니다.
 - 무한 목록 상품 link는 viewport 진입만으로 상세 route를 대량 요청하지 않도록 prefetch를 비활성화합니다.

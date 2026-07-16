@@ -567,7 +567,7 @@ describe('MarketProductsPage', () => {
     });
   });
 
-  it('guides manual installation when a native PWA prompt is unavailable', async () => {
+  it('keeps the designed install guide unchanged when the native prompt is unavailable', async () => {
     const user = userEvent.setup();
 
     await renderMarketProductsPage();
@@ -585,15 +585,37 @@ describe('MarketProductsPage', () => {
 
     await user.click(within(installDialog).getByRole('button', { name: '홈 화면에 추가하기' }));
 
-    expect(within(installDialog).getByText(/브라우저의 공유 버튼을 누른 뒤/)).toBeVisible();
+    expect(installDialog).toBeVisible();
+    expect(within(installDialog).getByText(/홈 화면에 추가하기 버튼을 누르면/)).toBeVisible();
+    expect(within(installDialog).queryByText(/브라우저의 공유 버튼을 누른 뒤/)).toBeNull();
+    expect(within(installDialog).queryByRole('button', { name: '확인' })).toBeNull();
+  });
 
-    await user.click(within(installDialog).getByRole('button', { name: '확인' }));
+  it('does not add an installed confirmation view to the install guide', async () => {
+    const user = userEvent.setup();
 
-    await waitFor(() => {
-      expect(
-        screen.queryByRole('dialog', { name: '홈 화면에 추가하기 안내' }),
-      ).not.toBeInTheDocument();
+    await renderMarketProductsPage();
+
+    act(() => {
+      window.dispatchEvent(new Event('appinstalled'));
     });
+
+    await user.click(screen.getByRole('button', { name: '공유하기' }));
+    await user.click(
+      within(await screen.findByRole('dialog', { name: '전단 공유하기' })).getByRole('button', {
+        name: '앱으로 전단보기',
+      }),
+    );
+
+    const installDialog = await screen.findByRole('dialog', {
+      name: '홈 화면에 추가하기 안내',
+    });
+
+    await user.click(within(installDialog).getByRole('button', { name: '홈 화면에 추가하기' }));
+
+    expect(installDialog).toBeVisible();
+    expect(within(installDialog).queryByText(/이미 홈 화면에 추가되어/)).toBeNull();
+    expect(within(installDialog).queryByRole('button', { name: '확인' })).toBeNull();
   });
 
   it('행사 할인 상품을 서버 category enum으로 필터링한다', async () => {
