@@ -38,6 +38,7 @@ describe('MarketImageUploadSection', () => {
       'https://cdn.example.com/market.png',
     );
     expect(screen.getByRole('button', { name: '마트 이미지 변경' })).toBeInTheDocument();
+    expect(screen.getByTestId('market-image-preview-dimmer')).toBeInTheDocument();
   });
 
   it('기존 마트 썸네일을 불러오지 못하면 이미지 추가 상태로 복구한다', () => {
@@ -91,5 +92,6 @@ describe('MarketImageUploadSection', () => {
     await user.upload(fileInput, imageFile);
 
     expect(screen.getByRole('button', { name: '마트 이미지 변경' })).toBeInTheDocument();
+    expect(screen.getByTestId('market-image-preview-dimmer')).toBeInTheDocument();
   });
 });
