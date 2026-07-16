@@ -47,9 +47,9 @@ export const NearbyMarketsMarketListSection = () => {
   if (isPending) {
     return (
       <section aria-label={NEARBY_MARKETS_LIST_ARIA_LABEL} className={S.marketListSectionClassName}>
-        <p className={S.marketListStatusClassName} role='status'>
-          {NEARBY_MARKETS_INITIAL_LOADING_MESSAGE}
-        </p>
+        <div className={S.marketListEmptyStateClassName} role='status'>
+          <p className={S.marketListStatusClassName}>{NEARBY_MARKETS_INITIAL_LOADING_MESSAGE}</p>
+        </div>
       </section>
     );
   }
@@ -75,9 +75,9 @@ export const NearbyMarketsMarketListSection = () => {
   if (markets.length === 0 && isFetchingNextPage) {
     return (
       <section aria-label={NEARBY_MARKETS_LIST_ARIA_LABEL} className={S.marketListSectionClassName}>
-        <p className={S.marketListStatusClassName} role='status'>
-          {NEARBY_MARKETS_LOADING_MESSAGE}
-        </p>
+        <div className={S.marketListEmptyStateClassName} role='status'>
+          <p className={S.marketListStatusClassName}>{NEARBY_MARKETS_LOADING_MESSAGE}</p>
+        </div>
       </section>
     );
   }
