@@ -42,14 +42,8 @@ export const useProductEditListActions = ({
 }: UseProductEditListActionsParams) => {
   const openedProductIdRef = useRef<string | null>(null);
 
-  const openEditProduct = useCallback(
-    (product: ProductEditCardProps, onClose?: () => void) => {
-      const productId = parseProductId(product.productId);
-
-      if (productId == null) {
-        return false;
-      }
-
+  const openEditProductById = useCallback(
+    (productId: number, product?: ProductEditCardProps, onClose?: () => void) => {
       openProductEditModal({
         marketId,
         product,
@@ -58,10 +52,23 @@ export const useProductEditListActions = ({
         onClose,
         onSubmit: (updatedProduct) => onUpdateProduct?.(productId, updatedProduct),
       });
+    },
+    [marketId, onUpdateProduct, variant],
+  );
+
+  const openEditProduct = useCallback(
+    (product: ProductEditCardProps, onClose?: () => void) => {
+      const productId = parseProductId(product.productId);
+
+      if (productId == null) {
+        return false;
+      }
+
+      openEditProductById(productId, product, onClose);
 
       return true;
     },
-    [marketId, onUpdateProduct, variant],
+    [openEditProductById],
   );
 
   useEffect(() => {
@@ -78,18 +85,23 @@ export const useProductEditListActions = ({
     const targetProduct = groups
       .flatMap((group) => group.products)
       .find((product) => String(product.productId) === autoOpenProductId);
+    const targetProductId = parseProductId(autoOpenProductId);
 
     openedProductIdRef.current = autoOpenProductId;
 
-    if (targetProduct == null || !openEditProduct(targetProduct, onAutoOpenProductModalClose)) {
+    if (targetProductId == null) {
       onAutoOpenProductMissing?.(autoOpenProductId);
+
+      return;
     }
+
+    openEditProductById(targetProductId, targetProduct, onAutoOpenProductModalClose);
   }, [
     autoOpenProductId,
     groups,
     onAutoOpenProductMissing,
     onAutoOpenProductModalClose,
-    openEditProduct,
+    openEditProductById,
     selectionMode,
   ]);
 

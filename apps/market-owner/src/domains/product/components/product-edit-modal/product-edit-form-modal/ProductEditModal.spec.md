@@ -20,7 +20,8 @@
 
 - `open`: OverlayKit controller가 전달하는 modal open 상태입니다.
 - `marketId`, `productId`: modal이 열린 뒤 상세 조회에 사용합니다.
-- `product`: 수정 완료 후 목록의 기존 카드 상태와 병합할 상품 props입니다.
+- `product`: 수정 완료 후 목록의 기존 카드 상태와 병합할 선택적 상품 props입니다. route target이 현재
+  pagination 목록에 없으면 생략하고, 상세 조회와 mutation은 `productId`만으로 진행합니다.
 - `variant`: `todaySpecial` 또는 `eventDiscount`로 가격/기간 입력 구성을 결정합니다.
 - `onClose`: OverlayKit `close`/`unmount` 흐름으로 modal을 닫는 handler입니다.
 - `onSubmit`: PUT 성공 후 수정된 카드 값을 호출부로 전달하는 handler입니다.
@@ -39,6 +40,8 @@
 
 - 수정 버튼 클릭은 `ProductEditProductList`가 `openProductEditModal`을 호출하고, helper가 `overlay.open`으로 선택 상품 modal을 엽니다.
 - modal이 열리면 `marketId`, `productId`로 상품 상세 API를 호출하고 상품명, 이미지, 카테고리, 가격, 홍보글, 기간을 form 초기값으로 사용합니다.
+- route target이 현재 목록에 없어 `product`가 전달되지 않아도 상세 조회 결과로 modal을 렌더링합니다.
+  이 경우 수정 성공 후 query invalidation으로 목록을 갱신하고, 로컬 카드 병합 callback은 생략합니다.
 - 변경 시 상세 응답의 `dealType`을 요청 `type`으로 사용해 기존 판매 유형을 유지합니다.
 - 오늘의 특가는 `originalPrice`를 포함하고, 행사 할인은 `originalPrice`를 전송하지 않습니다.
 - 홍보글을 비우면 `promotionalPhrase: null`을 전송합니다.

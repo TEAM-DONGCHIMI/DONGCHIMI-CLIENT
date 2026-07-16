@@ -76,6 +76,8 @@
 - 삭제 mutation 중에는 기간 일괄 수정, 일괄 삭제, 초기화 action을 비활성화합니다.
 - 수정 유형 tab의 label과 하단 underline 사이는 design-system `TabNav`의 `0.8rem` 간격을 사용합니다.
 - `productId` search param 기반 개별 수정 modal open/close는 children 영역의 상품 목록 컴포넌트가 담당합니다.
+- URL 대상 상품이 현재 pagination 목록에 없어도 유효한 `productId`이면 상품 상세 조회 기반 modal을
+  열고, 상세 조회 실패 시 error toast와 함께 search param을 제거합니다.
 
 ## Accessibility
 
