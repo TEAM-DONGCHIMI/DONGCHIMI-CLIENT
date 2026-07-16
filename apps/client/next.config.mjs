@@ -8,6 +8,14 @@ const withVanillaExtract = createVanillaExtractPlugin();
 const isSentrySourceMapUploadEnabled = Boolean(process.env.SENTRY_AUTH_TOKEN);
 
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'static.dongchiimi.com',
+      },
+    ],
+  },
   transpilePackages: ['@dongchimi/design-system'],
   turbopack: {
     root: path.join(__dirname, '../..'),
