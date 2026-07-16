@@ -19,8 +19,8 @@ const NEARBY_MARKETS_LIST_ARIA_LABEL = '주변 마트 목록';
 const NEARBY_MARKETS_INITIAL_LOADING_MESSAGE = '주변 마트를 불러오는 중이에요.';
 const NEARBY_MARKETS_LOADING_MESSAGE = '마트를 더 불러오는 중이에요.';
 const NEARBY_MARKETS_LOAD_ERROR_MESSAGE = '마트를 불러올 수 없어요.';
-const NEARBY_MARKETS_EMPTY_MESSAGE = '근처에 등록된 마트가 아직 없어요';
-const NEARBY_MARKETS_SEARCH_EMPTY_MESSAGE = '검색 결과가 없어요';
+const NEARBY_MARKETS_EMPTY_MESSAGE = '근처에 등록된 마트가 아직 없어요.';
+const NEARBY_MARKETS_SEARCH_EMPTY_MESSAGE = '검색 결과가 없어요.';
 const NEARBY_MARKETS_PREVIEW_PRODUCT_LIMIT = 3;
 
 export const NearbyMarketsMarketListSection = () => {
