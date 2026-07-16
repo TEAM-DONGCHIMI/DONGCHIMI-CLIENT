@@ -79,6 +79,7 @@ interface ProductEditProductListWithActionsProps {
   autoOpenProductId?: string | null;
   editModalVariant?: ProductEditCardVariantTypes;
   groups: ProductEditProductGroup[];
+  selectionMode?: boolean;
   onAutoOpenProductMissing?: (productId: string) => void;
   onDeleteProduct?: (product: ProductEditCardProps) => void;
   onUpdateProduct?: (productId: number, product: ProductEditCardProps) => void;
@@ -88,6 +89,7 @@ const ProductEditProductListWithActions = ({
   autoOpenProductId,
   editModalVariant = 'todaySpecial',
   groups,
+  selectionMode = false,
   onAutoOpenProductMissing,
   onDeleteProduct,
   onUpdateProduct,
@@ -96,7 +98,6 @@ const ProductEditProductListWithActions = ({
     autoOpenProductId,
     groups,
     marketId: 1,
-    selectionMode: false,
     variant: editModalVariant,
     onAutoOpenProductMissing,
     onDeleteProduct,
@@ -109,6 +110,11 @@ const ProductEditProductListWithActions = ({
       ariaLabel='오늘의 특가 상품 수정 목록'
       groups={groups}
       registrationHref='/products/today-special/new'
+      selection={
+        selectionMode
+          ? { enabled: true, selectedProductIds: [], onToggleProduct: vi.fn() }
+          : undefined
+      }
     />
   );
 };
@@ -469,6 +475,57 @@ describe('ProductEditProductList', () => {
     await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 수정' }));
 
     expect(mockUseProductDetailQuery).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('opens the searched product modal immediately while bulk selection mode is active', async () => {
+    const user = userEvent.setup();
+    const groups = [
+      {
+        title: '2026년 8월 15일',
+        products: [
+          {
+            categoryName: '채소/과일',
+            endDate: '2026. 8. 16',
+            originalPrice: '5,000',
+            productId: 101,
+            productName: '딸기 2팩',
+            salePrice: '4,500',
+          },
+        ],
+      },
+    ];
+    const { rerender } = render(
+      <MemoryRouter>
+        <ToastProvider defaultDurationMs={null}>
+          <OverlayProvider>
+            <ProductEditProductListWithActions
+              autoOpenProductId='101'
+              groups={groups}
+              selectionMode
+            />
+          </OverlayProvider>
+        </ToastProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '딸기 2팩 상품 수정' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    rerender(
+      <MemoryRouter>
+        <ToastProvider defaultDurationMs={null}>
+          <OverlayProvider>
+            <ProductEditProductListWithActions autoOpenProductId='101' groups={groups} />
+          </OverlayProvider>
+        </ToastProvider>
+      </MemoryRouter>,
+    );
+
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 

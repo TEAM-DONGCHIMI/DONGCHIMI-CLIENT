@@ -11,7 +11,6 @@ interface UseProductEditListActionsParams {
   autoOpenProductId?: string | null;
   groups: ProductEditProductGroup[];
   marketId: number;
-  selectionMode: boolean;
   variant: ProductEditCardVariantTypes;
   onAutoOpenProductMissing?: (productId: string) => void;
   onAutoOpenProductModalClose?: () => void;
@@ -33,7 +32,6 @@ export const useProductEditListActions = ({
   autoOpenProductId,
   groups,
   marketId,
-  selectionMode,
   variant,
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
@@ -78,7 +76,7 @@ export const useProductEditListActions = ({
       return;
     }
 
-    if (selectionMode || openedProductIdRef.current === autoOpenProductId) {
+    if (openedProductIdRef.current === autoOpenProductId) {
       return;
     }
 

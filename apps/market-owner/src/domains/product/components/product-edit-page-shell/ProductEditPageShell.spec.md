@@ -44,6 +44,8 @@
 - 검색 API 오류는 현재 route를 유지하고 검색 패널 error 상태로 표시합니다.
 - 헤더 검색에서 상품을 선택하면 `DAILY`는 오늘의 특가 수정 route, `PERIODIC`은 행사 할인 수정 route로
   `productId` search param을 붙여 이동합니다.
+- 일괄 삭제 또는 기간 일괄 수정 selection mode에서도 헤더 검색으로 선택한 상품의 `productId`를 즉시 처리해
+  개별 수정 modal을 열며, selection mode 종료 시점까지 modal open을 보류하지 않습니다.
 - tab은 상품이 있는 경우 `TabNav.Item as={Link}`로 렌더링해 `/products/today-special/edit`, `/products/event-discount/edit` 사이를 route 이동합니다.
 - 등록 상품 수가 0인 tab은 disabled item으로 렌더링해 route 이동을 막습니다.
 - `카테고리별` filter는 행사 할인 수정 페이지에만 노출되며, trigger 아래에 category dropdown을 엽니다.
@@ -91,5 +93,6 @@
 
 - [x] 현재 수정 페이지의 header search에서 다른 `dealType` 상품을 선택하면 해당 수정 route와
       `productId` search param으로 이동하고 개별 수정 modal을 엽니다.
+- [x] bulk selection mode 중에도 header search로 선택한 상품의 개별 수정 modal을 즉시 엽니다.
 - [x] 빈 검색어에서는 검색 API를 호출하지 않습니다.
 - [x] header search API 오류는 현재 route를 유지하고 error 상태를 표시합니다.

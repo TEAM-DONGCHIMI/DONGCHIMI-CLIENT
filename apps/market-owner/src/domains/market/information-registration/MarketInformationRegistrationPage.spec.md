@@ -51,6 +51,13 @@
 - 폼 상태와 touched/error 관리는 `react-hook-form`으로 처리하고, 필드 검증 규칙은 `zod` schema와 `zodResolver`로 관리합니다.
 - 기존 design-system layout primitive와 form/button/input/chip/addable field 컴포넌트를 우선 조합합니다.
 
+### 마트 전화번호 검증 형식
+
+- 휴대전화: `010-1234-5678`
+- 서울 일반전화: `02-123-4567`, `02-1234-5678`
+- 지역 일반전화: `031-123-4567`
+- 인터넷전화: `070-1234-5678`
+
 ## Out Of Scope
 
 - 이미지 선택 시 `market_thumbnail` 용도의 presigned URL을 발급받고, 응답의 필수 헤더로

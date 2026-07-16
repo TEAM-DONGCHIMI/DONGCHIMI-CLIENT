@@ -42,7 +42,7 @@ describe('PwaInstallProvider', () => {
     vi.unstubAllGlobals();
   });
 
-  it('returns manual when the browser has not provided an install prompt', async () => {
+  it('returns unavailable when the browser has not provided an install prompt', async () => {
     const user = userEvent.setup();
 
     render(
@@ -51,11 +51,11 @@ describe('PwaInstallProvider', () => {
       </PwaInstallProvider>,
     );
 
-    expect(screen.getByLabelText('install availability')).toHaveTextContent('manual');
+    expect(screen.getByLabelText('install availability')).toHaveTextContent('unavailable');
 
     await user.click(screen.getByRole('button', { name: 'install' }));
 
-    expect(screen.getByLabelText('install result')).toHaveTextContent('manual');
+    expect(screen.getByLabelText('install result')).toHaveTextContent('unavailable');
   });
 
   it.each(['accepted', 'dismissed'] as const)(

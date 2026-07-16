@@ -61,6 +61,7 @@ interface PointChipProps extends ComponentPropsWithoutRef<'span'> {
 
 - token 색상과 typography를 우선 사용합니다.
 - desktop 45px, mobile 40px 정사각형 높이를 갖습니다.
+- 배경 SVG는 `?url` asset import로 소비하며, 앱/Storybook 번들 결과의 CSS가 JavaScript 모듈 래퍼가 아닌 실제 SVG asset URL을 가리켜야 합니다.
 
 ## Accessibility
 
@@ -79,3 +80,6 @@ interface PointChipProps extends ComponentPropsWithoutRef<'span'> {
 - `pnpm --filter @dongchimi/design-system typecheck`
 - `pnpm --filter @dongchimi/design-system lint`
 - `pnpm --filter @dongchimi/design-system build`
+- `pnpm --filter @dongchimi/design-system build-storybook`
+- `pnpm --filter client build`
+- client 생성 CSS의 PointChip `background-image` 대상이 `<svg`로 시작하는 실제 SVG인지 확인

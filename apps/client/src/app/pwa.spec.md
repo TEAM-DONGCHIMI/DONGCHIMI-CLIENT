@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-28
+- Jira: DCMCL-28, DCMCL-34
 - Route: app-wide, `/offline`
 - Owner: `apps/client`
 - Status: Implemented
@@ -33,11 +33,11 @@
   - `id`, `start_url`, `scope`: `/`
   - `display`: `standalone`
   - `orientation`: `portrait`
-  - `theme_color`: `#15C47E`
+  - `theme_color`: `#FFFFFF` (`common/0`)
   - `background_color`: `#FFFFFF`
   - install icons: 192×192, 512×512, 512×512 maskable
 - root metadata keeps `/favicon.svg` and adds the manifest-facing app name, Apple web app metadata, and Apple touch icon.
-- root viewport owns `themeColor` and device viewport behavior.
+- root viewport owns the `common/0` (`#FFFFFF`) `themeColor` and device viewport behavior.
 - QA-provided 360×360 mobile-web app icon is the source for PNG install icons; the maskable output adds only a same-color safe area and does not redesign the artwork.
 - `@serwist/next` compiles `src/app/sw.ts` into generated `public/sw.js` during production builds.
 - service worker generation and registration are disabled in development.
@@ -46,14 +46,17 @@
 - app root의 `PwaInstallProvider`가 `beforeinstallprompt`를 보관하고 standalone/appinstalled 상태를 동기화합니다.
 - `/markets/[slug]` 공유 바텀시트의 `앱으로 전단보기`에서 Figma 설치 안내 시트로 전환합니다.
 - 지원 브라우저의 `홈 화면에 추가하기`는 보관한 네이티브 설치 프롬프트를 호출합니다.
-- iOS Safari 등 직접 프롬프트를 지원하지 않는 환경은 브라우저 공유 메뉴의 홈 화면 추가 절차를 안내합니다.
+- prompt 미지원 또는 이미 설치된 환경에서도 디자인에 없는 앱 내부 후속 안내 view를 추가하지 않습니다.
+- iOS Safari는 프로그래밍 방식 설치 프롬프트를 지원하지 않으며, 이번 범위에서는 별도 수동 설치 안내 UI를 제공하지 않습니다.
 
 ## Cache Policy
 
 - document navigation: `NetworkOnly`, then the precached `/offline` fallback when no response is available. Authenticated HTML is not persisted in Cache Storage.
 - `/_next/static/**`, local fonts, and PWA icons: bounded `CacheFirst` or `StaleWhileRevalidate` caches with expiration rules.
 - same-origin images fetched with `GET`: bounded `StaleWhileRevalidate`; failed images remain caller-owned UI state.
-- `/api/**`, `/oauth/callback`, cross-origin API requests, non-GET requests, and responses marked private/no-store: `NetworkOnly` and never persisted in Cache Storage.
+- `/api/**` and `/oauth/callback`: `NetworkOnly` and never persisted in Cache Storage.
+- cross-origin and non-GET requests: not intercepted by the service worker; they use the browser network path and are not persisted in this PWA's Cache Storage.
+- responses marked private/no-store: rejected by the public-response cache policy and never persisted in Cache Storage.
 - runtime cache names are versioned; activation removes obsolete runtime caches owned by this PWA, while Serwist removes outdated precache entries.
 
 ## Service Worker Lifecycle
@@ -107,7 +110,8 @@
 - [x] `/api/**`, OAuth, and user-specific responses do not appear in Cache Storage
 - [x] `/markets/[slug]` share sheet transitions to the Figma install guide
 - [x] simulated `beforeinstallprompt` is deferred until the install CTA and invoked once
-- [x] prompt-unavailable browsers receive manual add-to-home-screen guidance
+- [x] prompt-unavailable and installed states do not introduce an additional app-side install view
+- [x] viewport and manifest theme colors use `common/0` (`#FFFFFF`)
 - [x] install guide matches `375 x 397` and has no horizontal overflow at 320px
 - [ ] Android Chrome and iOS Safari real-device installation smoke test
 
