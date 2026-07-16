@@ -1,5 +1,3 @@
-import mapMarkerImage from '@/shared/assets/images/img_map.svg';
-
 export const KAKAO_MAP_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY;
 
 export const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
@@ -23,9 +21,9 @@ export const SELECTED_LOCATION_MARKER_IMAGE = {
 };
 
 export const MARKET_MARKER_IMAGE = {
-  src: mapMarkerImage,
-  size: { width: 71, height: 71 },
+  src: '/images/img_map.svg',
+  size: { width: 72, height: 72 },
   options: {
-    offset: { x: 35.5, y: 35.5 },
+    offset: { x: 36, y: 36 },
   },
 };
