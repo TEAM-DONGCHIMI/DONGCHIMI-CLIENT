@@ -117,13 +117,9 @@ export const actionButtonClassName = style({
   color: atomic.neutral[80],
   cursor: 'pointer',
   textAlign: 'left',
-  transition: 'background-color 130ms ease',
   selectors: {
     '&:disabled': {
       cursor: 'not-allowed',
-    },
-    '&:not(:disabled):hover': {
-      backgroundColor: atomic.neutral[10],
     },
     '&:focus-visible': {
       outline: `3px solid ${focusOutlineColor}`,
