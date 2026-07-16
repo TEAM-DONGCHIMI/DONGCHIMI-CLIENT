@@ -63,6 +63,7 @@ export type PopularProductTypes = z.infer<typeof popularProductSchema>;
 export const marketDetailSchema = z.object({
   address: z.string(),
   businessHours: z.array(businessHourSchema),
+  isHolidayClosed: z.boolean(),
   isOpenNow: z.boolean(),
   marketId: z.number().int().positive(),
   marketPhone1: z.string(),

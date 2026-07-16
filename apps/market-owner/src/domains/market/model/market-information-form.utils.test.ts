@@ -49,6 +49,7 @@ describe('createMarketInformationRegistrationRequest', () => {
         },
       ],
       detailAddress: null,
+      isHolidayClosed: false,
       latitude: 37.5665,
       longitude: 126.978,
       marketPhone1: '02-1234-5678',
@@ -58,5 +59,37 @@ describe('createMarketInformationRegistrationRequest', () => {
       ownerPhone: '010-1234-5678',
       thumbnailUrl: null,
     });
+  });
+
+  it('maps a public holiday separately from weekly holidays', () => {
+    const request = createMarketInformationRegistrationRequest({
+      additionalBusinessDay: '',
+      additionalBusinessTime: '',
+      address: '서울특별시 마포구 월드컵로 123',
+      brn: '',
+      businessDay: '월요일, 화요일',
+      businessTime: '09:00 - 18:00',
+      detailAddress: '',
+      hasAdditionalBusinessHours: false,
+      hasAdditionalMarketPhone: false,
+      holiday: '공휴일, 일요일',
+      latitude: 37.5665,
+      longitude: 126.978,
+      marketPhone1: '02-1234-5678',
+      marketPhone2: null,
+      marketPhonePrimary: 1,
+      name: '동치미마트',
+      ownerPhone: '010-1234-5678',
+      thumbnailUrl: null,
+    });
+
+    expect(request.isHolidayClosed).toBe(true);
+    expect(request.businessHours).toContainEqual({
+      close: null,
+      days: ['SUNDAY'],
+      isOpen: false,
+      open: null,
+    });
+    expect(request.businessHours.flatMap(({ days }) => days ?? [])).not.toContain('공휴일');
   });
 });

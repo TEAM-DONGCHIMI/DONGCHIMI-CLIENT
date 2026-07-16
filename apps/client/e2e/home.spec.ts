@@ -45,6 +45,7 @@ test('client product detail route shell renders', async ({ page }) => {
         data: {
           address: '서울 마포구 월드컵로 13길 1',
           businessHours: [],
+          isHolidayClosed: false,
           isOpenNow: true,
           marketId: 1,
           marketPhone1: '02-123-4567',

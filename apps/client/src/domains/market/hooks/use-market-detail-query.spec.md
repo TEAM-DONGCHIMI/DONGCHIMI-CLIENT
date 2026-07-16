@@ -28,7 +28,7 @@
 - endpoint: `GET /v1/users/markets/{slug}`
 - method: `GET`
 - request: path parameter `slug`; non-empty string Zod schema로 검증한 뒤 browser는 same-origin `GET /api/markets/{slug}` Route Handler로 요청합니다. Route Handler는 server-only `API_BASE_URL`을 사용하는 Ky client로 백엔드에 전달합니다.
-- response: 성공 envelope의 non-null `data`를 `market-detail-schema.ts`에서 검증합니다. `businessHours`는 요일 묶음 배열이며, `days`는 `MONDAY`부터 `SUNDAY`까지만 허용합니다. `isOpen: true`이면 `open`과 `close`가 `HH:mm` 형식으로 필수이고, `isOpen: false`이면 두 필드를 허용하지 않습니다.
+- response: 성공 envelope의 non-null `data`를 `market-detail-schema.ts`에서 검증합니다. `isHolidayClosed`는 boolean으로 검증하며, 영업 상태는 서버가 공휴일을 반영해 계산한 `isOpenNow`를 사용합니다. `businessHours`는 요일 묶음 배열이며, `days`는 `MONDAY`부터 `SUNDAY`까지만 허용합니다. `isOpen: true`이면 `open`과 `close`가 `HH:mm` 형식으로 필수이고, `isOpen: false`이면 두 필드를 허용하지 않습니다.
 - query key: `marketQueryKeys.detail({ slug })`
 - query options: `marketDetailQueryOptions({ slug })`가 query key와 query function을 함께 정의하고, hook은 실행 조건만 추가합니다.
 - invalidation: read-only query이므로 없음
