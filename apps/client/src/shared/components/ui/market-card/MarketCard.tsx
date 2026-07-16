@@ -5,6 +5,8 @@ import { cn } from '@dongchimi/design-system/styles';
 import type { RecipeVariantProps } from '@dongchimi/design-system/styles';
 import Image, { type ImageProps } from 'next/image';
 
+import { hasDisplayableImageSrc } from '@/shared/utils';
+
 import * as S from './MarketCard.css';
 
 type NativeMarketCardProps = Omit<ComponentPropsWithoutRef<'article'>, 'children'>;
@@ -35,7 +37,7 @@ export const MarketCard = forwardRef<HTMLElement, MarketCardProps>(
     ref,
   ) => {
     const shouldShowSaleChip = hasSaleChip && saleChipLabel != null && saleChipLabel.length > 0;
-    const hasImage = imageSrc != null && (typeof imageSrc !== 'string' || imageSrc.length > 0);
+    const hasImage = hasDisplayableImageSrc(imageSrc);
 
     return (
       <article ref={ref} className={cn(S.marketCard({ size }), className)} {...props}>

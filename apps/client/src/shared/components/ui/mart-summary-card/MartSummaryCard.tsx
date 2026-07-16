@@ -4,6 +4,8 @@ import { Button, Chip } from '@dongchimi/design-system';
 import { cn } from '@dongchimi/design-system/styles';
 import Image, { type ImageProps } from 'next/image';
 
+import { hasDisplayableImageSrc } from '@/shared/utils';
+
 import { MarketCard, type MarketCardProps } from '../market-card';
 import * as S from './MartSummaryCard.css';
 
@@ -41,9 +43,7 @@ export const MartSummaryCard = forwardRef<HTMLElement, MartSummaryCardProps>(
     },
     ref,
   ) => {
-    const hasProfileImage =
-      profileImageSrc != null &&
-      (typeof profileImageSrc !== 'string' || profileImageSrc.length > 0);
+    const hasProfileImage = hasDisplayableImageSrc(profileImageSrc);
 
     return (
       <article ref={ref} className={cn(S.martSummaryCardClassName, className)} {...props}>
