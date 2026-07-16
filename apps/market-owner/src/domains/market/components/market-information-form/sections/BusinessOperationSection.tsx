@@ -122,6 +122,7 @@ export const BusinessOperationSection = ({
   const selectedBusinessDays = businessDay.length > 0 ? businessDay.split(', ') : [];
   const selectedAdditionalBusinessDays =
     additionalBusinessDay.length > 0 ? additionalBusinessDay.split(', ') : [];
+  const selectedHolidays = holiday.length > 0 ? holiday.split(', ') : [];
   const businessDayTriggerLabel =
     selectedBusinessDays.length > 0 ? getBusinessDaysDisplayLabel(selectedBusinessDays) : '요일';
   const additionalBusinessDayTriggerLabel =
@@ -212,8 +213,7 @@ export const BusinessOperationSection = ({
   };
 
   const handleHolidayOptionClick = (holiday: string) => {
-    onHolidayChange(holiday);
-    closeOverlay(holidayDropdownId);
+    onHolidayChange(toggleBusinessDaySelection(holiday, selectedHolidays));
   };
 
   const handleAdditionalBusinessDayOptionClick = (businessDay: string) => {
@@ -409,7 +409,7 @@ export const BusinessOperationSection = ({
                   <Dropdown.Item
                     checkbox
                     key={holidayOption}
-                    selected={holiday === holidayOption}
+                    selected={selectedHolidays.includes(holidayOption)}
                     onClick={() => handleHolidayOptionClick(holidayOption)}
                   >
                     {holidayOption}
