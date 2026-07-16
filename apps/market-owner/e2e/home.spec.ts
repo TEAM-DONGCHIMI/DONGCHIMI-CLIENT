@@ -5,7 +5,7 @@ import { signInMarketOwner } from './auth';
 test('market owner home page renders', async ({ page }) => {
   await signInMarketOwner(page);
 
-  await expect(page).toHaveTitle('DONGCHIMI Market Owner');
+  await expect(page).toHaveTitle('동치미 | 마트 관리자');
   await expect(page.getByRole('heading', { level: 1, name: '홈' })).toBeVisible({
     timeout: 15_000,
   });
