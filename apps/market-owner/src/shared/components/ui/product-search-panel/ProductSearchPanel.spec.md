@@ -84,8 +84,9 @@ ProductSearchPanel(root)
 2. 검색창과 dropdown 사이 gap은 4px입니다.
 3. 검색 결과는 호출부/API가 전달한 순서를 유지하고, 최대 10개까지만 렌더링합니다.
 4. 외부 영역을 pointer/click하면 dropdown을 닫습니다.
-5. 결과 item hover 시 해당 button에 focus를 이동해 hover/focus 영역을 일치시킵니다.
-6. 결과 item click 시 `onSelectProduct(item)`만 호출합니다.
+5. 결과 item hover는 pointer가 머무는 동안에만 배경을 강조하고 keyboard focus를 이동시키지 않습니다.
+6. keyboard focus 시 해당 button을 scroll 영역 안으로 보정하고 focus-visible 상태를 표시합니다.
+7. 결과 item click 시 `onSelectProduct(item)`만 호출합니다.
 
 ## Accessibility
 
@@ -105,7 +106,9 @@ ProductSearchPanel(root)
   사용합니다. 4개 초과 시 max-height는 `40px * 4 + 4px * 3 + 16px = 188px`입니다.
 - result item: label chip + product name, one-line ellipsis. 상품명은 Figma 기준 body-2 regular에 맞춥니다.
 - result label chip: Figma default category chip 기준 caption-1 regular, primary soft 색상에 맞춥니다.
-- result item hover/focus: neutral 10 background로 영역을 강조합니다.
+- result item hover: pointer가 머무는 동안 neutral 10 background로 영역을 강조하고 pointer가 벗어나면
+  즉시 해제합니다.
+- result item focus-visible: neutral 10 background와 outline으로 keyboard focus를 표시합니다.
 - empty: 결과 label과 동일한 `Chip color="primary" variant="soft"`를 중앙에 표시합니다.
 
 ## Verification

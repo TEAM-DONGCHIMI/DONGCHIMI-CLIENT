@@ -1,4 +1,4 @@
-import { type ComponentPropsWithoutRef, type FocusEvent, type MouseEvent } from 'react';
+import { type ComponentPropsWithoutRef, type FocusEvent } from 'react';
 
 import { Chip, Toast } from '@dongchimi/design-system';
 import { IcSearchSizeSmall } from '@dongchimi/design-system/icons';
@@ -40,14 +40,12 @@ const searchIcon = <IcSearchSizeSmall aria-hidden='true' className={S.searchIcon
 
 interface ProductSearchResultListProps {
   onResultFocus: (event: FocusEvent<HTMLButtonElement>) => void;
-  onResultMouseEnter: (event: MouseEvent<HTMLButtonElement>) => void;
   onResultSelect: (item: ProductSearchPanelItemTypes) => void;
   results: ProductSearchPanelItemTypes[];
 }
 
 const ProductSearchResultList = ({
   onResultFocus,
-  onResultMouseEnter,
   onResultSelect,
   results,
 }: ProductSearchResultListProps) => {
@@ -63,7 +61,6 @@ const ProductSearchResultList = ({
             className={S.resultButtonClassName}
             onClick={() => onResultSelect(item)}
             onFocus={onResultFocus}
-            onMouseEnter={onResultMouseEnter}
             type='button'
           >
             <Chip
@@ -96,7 +93,6 @@ const ProductSearchDropdownContent = ({
   isError,
   isPending,
   onResultFocus,
-  onResultMouseEnter,
   onResultSelect,
   pendingMessage,
   results,
@@ -113,7 +109,6 @@ const ProductSearchDropdownContent = ({
     return (
       <ProductSearchResultList
         onResultFocus={onResultFocus}
-        onResultMouseEnter={onResultMouseEnter}
         onResultSelect={onResultSelect}
         results={results}
       />
@@ -154,7 +149,6 @@ export const ProductSearchPanel = ({
 }: ProductSearchPanelProps) => {
   const {
     handleResultFocus,
-    handleResultMouseEnter,
     handleResultSelect,
     handleSearchFocus,
     handleValueChange,
@@ -188,7 +182,6 @@ export const ProductSearchPanel = ({
             isError={status === 'error'}
             isPending={isPending}
             onResultFocus={handleResultFocus}
-            onResultMouseEnter={handleResultMouseEnter}
             onResultSelect={handleResultSelect}
             pendingMessage={pendingMessage}
             results={results}

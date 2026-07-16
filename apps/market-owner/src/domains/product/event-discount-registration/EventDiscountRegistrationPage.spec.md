@@ -7,7 +7,7 @@
 - Page: `event-discount-registration`
 - Route: `/products/event-discount/new`
 - Path: `apps/market-owner/src/domains/product/event-discount-registration/EventDiscountRegistrationPage.tsx`
-- Jira: DCMSM-18, DCMSM-19, DCMSM-25, DCMSM-33, DCMSM-34, DCMSM-52, DCMSM-62, DCMSM-95, DCMSM-99
+- Jira: DCMSM-18, DCMSM-19, DCMSM-25, DCMSM-33, DCMSM-34, DCMSM-52, DCMSM-62, DCMSM-95, DCMSM-98, DCMSM-99
 - Figma:
   - APPJAM registration method home node 3799:102468
   - APPJAM excel upload image node 3799:102479
@@ -56,6 +56,14 @@
 
 - Page root owns background and vertical flow only. It does not apply global inline padding.
 - `DesktopHeader` owns its Figma header spacing, including 64px height and 40px inline padding.
+- The registration method heading uses `title-2-semibold`, its description uses `body-1-medium`, and
+  the two lines keep a `0.4rem` gap. Typography token letter spacing is used without page-local reset.
+- Method card titles use `heading-3-semibold`, descriptions use `caption-1-regular`, action labels use
+  `body-3-semibold`, and both support lines use `caption-1-medium`. Both cards reserve the same 34px
+  support area immediately above the bottom padding; a single support line aligns to that area's bottom.
+- At the 1440×900 desktop viewport, the method section follows Figma node 3799:102468 with 90px
+  top and 56px bottom padding. Its 550px method row uses 14px bottom padding, centers the 355×434px
+  cards vertically, and keeps 36px between each card and the `또는` divider.
 - `FileAnalysisConfirmSection` is rendered directly under the page root and keeps its card width,
   internal padding, and vertical centering responsibility.
 
