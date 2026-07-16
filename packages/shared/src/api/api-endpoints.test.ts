@@ -29,10 +29,12 @@ describe('API_ENDPOINTS', () => {
   it('builds owner product query endpoints', () => {
     expect(
       API_ENDPOINTS.owner.products.collection('market-1', {
-        type: 'PERIODIC',
+        cursor: 101,
+        size: 12,
         sort: 'VIEW_COUNT',
+        type: 'PERIODIC',
       }),
-    ).toBe('/v1/owners/markets/market-1/products?type=PERIODIC&sort=VIEW_COUNT');
+    ).toBe('/v1/owners/markets/market-1/products?cursor=101&size=12&sort=VIEW_COUNT&type=PERIODIC');
 
     expect(
       API_ENDPOINTS.owner.products.draft('market-1', {
