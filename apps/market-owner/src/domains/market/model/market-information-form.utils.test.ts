@@ -15,7 +15,7 @@ describe('createMarketInformationRegistrationRequest', () => {
         detailAddress: '',
         hasAdditionalBusinessHours: true,
         hasAdditionalMarketPhone: false,
-        holiday: '일요일',
+        holiday: '토요일, 일요일',
         latitude: 37.5665,
         longitude: 126.978,
         marketPhone1: '02-1234-5678',
@@ -43,7 +43,7 @@ describe('createMarketInformationRegistrationRequest', () => {
         },
         {
           close: null,
-          days: ['SUNDAY'],
+          days: ['SATURDAY', 'SUNDAY'],
           isOpen: false,
           open: null,
         },
