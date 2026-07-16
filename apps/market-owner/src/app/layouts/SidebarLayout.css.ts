@@ -57,6 +57,7 @@ export const profileAvatarClassName = style({
   borderRadius: '999rem',
   backgroundColor: atomic.neutral[20],
   color: atomic.neutral[70],
+  overflow: 'hidden',
   ...typography['caption-1-medium'],
 });
 
