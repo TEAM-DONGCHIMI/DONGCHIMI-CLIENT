@@ -10,6 +10,7 @@
 - 위치: `apps/market-owner/src/domains/product/components/product-edit-modal/product-edit-period-modal/ProductEditPeriodModal.tsx`
 - 사용처: `ProductEditPageShell`
 - modal open/close는 `openProductEditPeriodModal` helper가 공통 overlay helper로 처리합니다.
+- 날짜 필드와 오늘의 특가 toggle UI는 개별 수정 modal과 상위 `ProductPeriodSection.tsx`를 공유하고, 이 modal은 로컬 기간 state와 변경 handler를 전달합니다.
 
 ## Public API
 

@@ -1,21 +1,19 @@
 import { useState, type ChangeEventHandler } from 'react';
 
 import { Button, Dialog } from '@dongchimi/design-system/components';
-import { IcCalendarPlusSizeSmall, IcLineHorizontalSizeSmall } from '@dongchimi/design-system/icons';
 
 import { useProductDiscountPeriodUpdateFlow } from '@/domains/product/hooks';
 
 import {
   addOneDayToProductEditDate,
   formatProductEditDateForInput,
-  getProductDateMinimum,
   isProductEditDateRangeValid,
   isProductEditDateTodayOrFuture,
 } from '../../../utils/product-date';
-import { DateField } from '../../date-field';
 import { type ProductEditTypeTypes } from '../../product-edit-page-shell';
 import { useProductEditModalContentFocus } from '../hooks/use-product-edit-modal-content-focus';
 import { keepProductEditDialogOpen, openProductEditOverlay } from '../open-product-edit-overlay';
+import { ProductPeriodSection } from '../ProductPeriodSection';
 import * as S from './ProductEditPeriodModal.css';
 
 interface ProductEditPeriodModalProps {
@@ -64,7 +62,6 @@ export const ProductEditPeriodModal = ({
   const [startDate, setStartDate] = useState(initialPeriod.startDate);
   const [endDate, setEndDate] = useState(initialPeriod.endDate);
   const isTodaySpecial = variant === 'todaySpecial';
-  const isTodayOnly = startDate === endDate;
   const isEdited = startDate !== initialPeriod.startDate || endDate !== initialPeriod.endDate;
   const isStartDateValid =
     isTodaySpecial ||
@@ -105,51 +102,15 @@ export const ProductEditPeriodModal = ({
             선택된 상품들의 판매 기간을 수정해주세요
           </Dialog.Title>
 
-          <section className={S.sectionClassName}>
-            <h3 className={S.sectionTitleClassName}>기간 설정</h3>
-            <div className={S.fieldGroupClassName}>
-              <span className={S.fieldLabelClassName}>행사 기간</span>
-              <div className={S.dateRowClassName}>
-                <div className={S.dateRangeClassName}>
-                  <DateField
-                    ariaLabel='행사 시작일'
-                    className={S.dateFieldClassName}
-                    readOnly={isTodaySpecial}
-                    value={startDate}
-                    onChange={updateStartDate}
-                  />
-                  <span className={S.dateDividerClassName}>~</span>
-                  <DateField
-                    ariaLabel='행사 종료일'
-                    className={S.dateFieldClassName}
-                    min={getProductDateMinimum(startDate)}
-                    pickerDisabled={isTodaySpecial}
-                    value={endDate}
-                    onChange={updateEndDate}
-                  />
-                </div>
-                {isTodaySpecial && (
-                  <Button
-                    className={S.periodToggleButtonClassName}
-                    color='assistive'
-                    rightIcon={
-                      isTodayOnly ? (
-                        <IcCalendarPlusSizeSmall aria-hidden='true' />
-                      ) : (
-                        <IcLineHorizontalSizeSmall aria-hidden='true' />
-                      )
-                    }
-                    size='small'
-                    type='button'
-                    variant='outlined'
-                    onClick={toggleTodayOnlyPeriod}
-                  >
-                    {isTodayOnly ? '하루 더 늘리기' : '오늘만 특가로'}
-                  </Button>
-                )}
-              </div>
-            </div>
-          </section>
+          <ProductPeriodSection
+            endDate={endDate}
+            isTodaySpecial={isTodaySpecial}
+            sectionClassName={S.sectionClassName}
+            startDate={startDate}
+            onEndDateChange={updateEndDate}
+            onStartDateChange={updateStartDate}
+            onToggleTodayOnlyPeriod={toggleTodayOnlyPeriod}
+          />
 
           <div className={S.footerClassName}>
             <Button

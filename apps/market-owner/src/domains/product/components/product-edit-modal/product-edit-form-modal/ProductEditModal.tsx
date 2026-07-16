@@ -67,7 +67,6 @@ const ProductEditModalForm = ({
     isDateRangeValid,
     isEdited,
     isStartDateValid,
-    isTodayOnly,
     selectCategory,
     toggleCategoryDropdown,
     toggleTodayOnlyPeriod,
@@ -107,7 +106,6 @@ const ProductEditModalForm = ({
               values={values}
             />
             <ProductPriceAndPeriodSection
-              isTodayOnly={isTodayOnly}
               toggleTodayOnlyPeriod={toggleTodayOnlyPeriod}
               updateValue={updateValue}
               values={values}

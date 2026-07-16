@@ -13,7 +13,8 @@
 - `ProductEditModal.tsx`는 상세 조회, 수정 요청, modal 조립과 닫기 흐름을 담당합니다.
 - `use-product-edit-form.ts`는 입력값, 카테고리 dropdown, 이미지 미리보기, 기간 변경과 validation 상태를 담당합니다.
 - `product-edit-form.utils.ts`는 상세 응답의 초기값 변환과 수정 완료 카드 변환을 담당합니다.
-- `ProductInfoSection.tsx`와 `ProductPriceAndPeriodSection.tsx`는 form controller에서 필요한 값과 action만 받아 각 화면 section을 렌더링합니다.
+- `ProductInfoSection.tsx`와 `ProductPriceAndPeriodSection.tsx`는 form controller에서 필요한 값과 action만 받아 상품 정보와 가격 section을 렌더링합니다.
+- 기간 section은 개별 수정과 일괄 기간 수정이 같은 날짜 필드와 오늘의 특가 toggle 규칙을 사용하도록 상위 `ProductPeriodSection.tsx`를 공유합니다.
 
 ## Public API
 
