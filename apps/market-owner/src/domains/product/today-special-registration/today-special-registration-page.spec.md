@@ -51,7 +51,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - `sections/registration-title-section.tsx`
   - 등록 화면 title과 등록된 상품/현재 입력 상품 사이를 이동하는 화살표, 현재 순번을 렌더링합니다.
 - `sections/product-info-section.tsx`
-  - 상품 이미지, 상품명, 상품 구분 dropdown, 상품 한줄 홍보문구를 렌더링합니다.
+  - 상품 이미지, 상품명, 상품 구분 dropdown, 상품 한줄 홍보글을 렌더링합니다.
 - `sections/product-price-section.tsx`
   - 오늘의 특가, 판매가 input을 렌더링합니다.
 - `sections/product-period-section.tsx`
@@ -94,7 +94,8 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - submit pending: action button을 disabled 처리하고 submit button copy를 `등록 중`으로 변경합니다.
 - submit success: 선택 이미지를 임시 저장소에 업로드하고 상품 등록 API가 성공하면 오늘의 특가 상품 수정 route로 이동합니다.
 - field error: blur 또는 submit validation 이후 필드 아래에 icon과 error message를 표시합니다.
-- registration error: 일반 실패는 `상품을 등록하지 못했습니다. 다시 시도해주세요.`, 네트워크 실패는 `인터넷 연결을 확인한 후 다시 시도해주세요.` toast를 표시하고 현재 페이지에 머뭅니다.
+- field error layout: field group의 layout 높이는 error 유무와 관계없이 `6.8rem`으로 유지합니다. error message는 input 아래로 노출되어 시각적 전체 영역이 `8.8rem`이 되지만 다음 field와 section의 배치 높이에는 더해지지 않아 action button 위치가 변하지 않습니다.
+- registration error: 일반 실패는 `상품을 등록하지 못했습니다. 다시 시도해주세요.`, 네트워크 실패는 `인터넷 연결을 확인한 후 다시 시도해주세요.` toast를 `IcCircleExclamation` 아이콘과 함께 표시하고 현재 페이지에 머뭅니다.
 - market missing: auth store에 `marketId`가 없으면 마트 정보 등록 route로 이동합니다.
 
 ## Form Rules
@@ -115,8 +116,9 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 필수 선택입니다.
   - 기본 상태에서는 `카테고리` placeholder를 표시합니다.
   - 선택 즉시 dropdown을 닫고 선택값을 trigger에 표시합니다.
-- 상품 한줄 홍보문구
+- 상품 한줄 홍보글
   - 선택 입력입니다.
+  - label은 `상품 한줄 홍보글 (선택)`으로 표시하고 `(선택)`은 `atomic.neutral.50` 색상을 사용합니다.
   - 입력 중에는 최대 길이만 제한하고, blur 또는 submit payload 생성 시점에 앞뒤 공백을 제거합니다.
   - 공백만 입력한 경우 빈 값으로 처리합니다.
   - 공백 포함 최대 25자까지만 저장합니다.
@@ -143,7 +145,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 최대 글자 수를 초과한 경우: `상품명은 공백 포함 15자 이하로 입력해주세요.`
 - 상품 구분
   - 미선택한 경우: `카테고리를 선택해주세요.`
-- 상품 한줄 홍보문구
+- 상품 한줄 홍보글
   - 최대 글자 수를 초과한 경우: `홍보문구는 공백 포함 25자 이하로 입력해주세요.`
 - 오늘의 특가
   - 미입력한 경우: `오늘의 특가를 입력해주세요.`
@@ -215,9 +217,12 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - OverlayKit: category dropdown open/close controller로 사용합니다.
 - `DateField`는 native date input의 브라우저 기본 icon/text를 노출하지 않기 위해 visible field와 transparent native input overlay를 사용합니다.
 - 오늘의 특가 등록 시작일은 오늘 날짜를 기본값과 `min`으로 사용해 이전 날짜 선택을 막습니다.
-- 상품명 또는 상품 구분 error message가 표시되면 error message 아래와 `상품 한줄 홍보문구` label 사이 간격은 `0.9rem`입니다.
+- 입력 field group은 Figma의 고정 layout slot인 `6.8rem` 높이를 사용하고 field row 사이에는 항상 `2rem` 간격을 사용합니다.
+- field label과 input 사이 간격은 `0.8rem`이며, category error message는 trigger 아래 `0.2rem` 간격으로 표시합니다.
+- 상품 한줄 홍보글 field는 두 번째 `6.8rem` slot 안에서 `0.9rem` 아래로 배치해 앞선 error message와의 간격을 유지하고, 홍보글 input 하단과 `상품 가격` label 사이를 `2.9rem`으로 맞춥니다.
+- field sections의 기본 layout 높이는 `56.8rem`이며 validation error 조합과 관계없이 action button은 동일한 위치를 유지합니다.
 - 카테고리 목록은 product domain 공용 `ProductCategoryDropdown`의 기본 테두리와 item layout을 유지합니다.
-- Layout은 desktop Figma frame 기준으로 sidebar layout 내부 no-scroll form 화면을 목표로 합니다.
+- Layout은 desktop Figma frame 기준으로 구성하고, viewport 높이가 작아 스크롤되는 경우 마지막 action button과 화면 하단 사이에 `7.2rem` 여백을 유지합니다.
 
 ## Non-Goals / Follow-Ups
 

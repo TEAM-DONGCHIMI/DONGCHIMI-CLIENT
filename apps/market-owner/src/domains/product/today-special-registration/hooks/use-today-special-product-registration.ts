@@ -1,4 +1,6 @@
+import { IcCircleExclamation } from '@dongchimi/design-system/icons';
 import { useToast } from '@dongchimi/shared/toast';
+import { createElement, type SVGProps } from 'react';
 
 import { normalizeApiError } from '@/shared/api';
 import { getMarketOwnerEnv } from '@/shared/config';
@@ -57,7 +59,11 @@ export const useTodaySpecialProductRegistration = (marketId: number) => {
           ? registrationErrorMessages.network
           : registrationErrorMessages.failed;
 
-      toast.error(message);
+      toast.error(message, {
+        icon: createElement(IcCircleExclamation, {
+          'data-testid': 'today-special-registration-error-toast-icon',
+        } as SVGProps<SVGSVGElement>),
+      });
 
       return { success: false };
     }

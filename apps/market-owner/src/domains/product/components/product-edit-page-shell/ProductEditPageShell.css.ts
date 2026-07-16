@@ -118,5 +118,4 @@ export const dropdownMenuClassName = style({
   left: 0,
   zIndex: 20,
   width: '20.6rem',
-  overflowY: 'auto',
 });
