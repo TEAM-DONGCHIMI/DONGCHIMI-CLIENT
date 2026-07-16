@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useLayoutEffect, useRef, type CSSProperties } from 'react';
 
 import { Dropdown } from '@dongchimi/design-system/components';
 
@@ -14,6 +14,7 @@ interface ProductCategoryDropdownProps<CategoryTypes extends string> {
   className?: string;
   id?: string;
   isSelected?: (category: CategoryTypes) => boolean;
+  renderInTopLayer?: boolean;
   style?: CSSProperties;
 }
 
@@ -24,9 +25,15 @@ export const ProductCategoryDropdown = <CategoryTypes extends string>({
   isSelected,
   onSelect,
   options,
+  renderInTopLayer = false,
   selectedCategory,
   style,
 }: ProductCategoryDropdownProps<CategoryTypes>) => {
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const canRenderInTopLayer =
+    renderInTopLayer &&
+    typeof HTMLElement !== 'undefined' &&
+    'showPopover' in HTMLElement.prototype;
   const dropdownStyle: CSSProperties = {
     ...style,
     maxHeight: 'var(--product-category-dropdown-max-height)',
@@ -35,11 +42,21 @@ export const ProductCategoryDropdown = <CategoryTypes extends string>({
     overscrollBehaviorY: 'none',
   };
 
+  useLayoutEffect(() => {
+    if (!canRenderInTopLayer) {
+      return;
+    }
+
+    dropdownRef.current?.showPopover?.();
+  }, [canRenderInTopLayer]);
+
   return (
     <Dropdown
+      ref={dropdownRef}
       aria-label={ariaLabel}
       className={className}
       id={id}
+      popover={canRenderInTopLayer ? 'manual' : undefined}
       role='group'
       style={dropdownStyle}
     >

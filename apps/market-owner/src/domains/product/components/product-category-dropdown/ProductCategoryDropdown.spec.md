@@ -16,6 +16,7 @@
 - 등록 화면의 placeholder와 error border는 호출부 className으로 확장합니다.
 - 호출부가 공통 layout hook으로 전달한 최대 높이를 적용하고, option 목록이 가용 높이를 넘으면 dropdown 내부를 세로 스크롤합니다.
 - dropdown은 viewport 하단과 40px 간격을 확보할 수 있도록 최대 높이를 계산하며, 작은 viewport에서도 이 여백보다 최소 높이를 우선하지 않습니다.
+- `renderInTopLayer`를 사용하면 native popover top layer에 표시해 modal의 overflow 경계에 잘리지 않고, 호출부가 전달한 fixed 위치와 최대 높이를 사용합니다.
 - dropdown item은 `flex-shrink: 0`으로 고정해 스크롤 컨테이너에서도 `4rem` 높이를 유지합니다.
 - dropdown item의 hover와 selected 상태는 모두 `semantic.primary.light` 배경과 `semantic.primary.strong` text를 사용합니다.
 

@@ -58,6 +58,7 @@ export const useProductEditForm = ({ detail, variant }: UseProductEditFormParams
   const categoryDropdownStyle = useProductCategoryDropdownLayout({
     containerRef: categoryFieldRef,
     isOpen: categoryDropdown.isOpen,
+    positionStrategy: 'fixed',
     triggerRef: categoryTriggerRef,
   });
 

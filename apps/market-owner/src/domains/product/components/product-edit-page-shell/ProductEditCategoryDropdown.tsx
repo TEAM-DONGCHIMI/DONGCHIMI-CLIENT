@@ -1,14 +1,18 @@
+import type { CSSProperties } from 'react';
+
 import { productCategoryOptions, type ProductCategoryTypes } from '../../constants';
 import { ProductCategoryDropdown } from '../product-category-dropdown';
 import * as S from './ProductEditPageShell.css';
 
 interface ProductEditCategoryDropdownProps {
   selectedCategory: ProductCategoryTypes | null;
+  style?: CSSProperties;
   onSelect: (category: ProductCategoryTypes) => void;
 }
 
 export const ProductEditCategoryDropdown = ({
   selectedCategory,
+  style,
   onSelect,
 }: ProductEditCategoryDropdownProps) => {
   return (
@@ -20,6 +24,7 @@ export const ProductEditCategoryDropdown = ({
       }
       options={productCategoryOptions}
       selectedCategory={selectedCategory}
+      style={style}
       onSelect={onSelect}
     />
   );

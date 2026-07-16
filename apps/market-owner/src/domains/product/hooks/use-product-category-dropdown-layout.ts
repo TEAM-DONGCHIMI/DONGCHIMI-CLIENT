@@ -7,12 +7,14 @@ const dropdownFallbackMaxHeightPx = 40;
 interface UseProductCategoryDropdownLayoutParams {
   containerRef: RefObject<HTMLElement | null>;
   isOpen: boolean;
+  positionStrategy?: 'absolute' | 'fixed';
   triggerRef: RefObject<HTMLElement | null>;
 }
 
 export const useProductCategoryDropdownLayout = ({
   containerRef,
   isOpen,
+  positionStrategy = 'absolute',
   triggerRef,
 }: UseProductCategoryDropdownLayoutParams) => {
   const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
@@ -26,11 +28,25 @@ export const useProductCategoryDropdownLayout = ({
             0,
             window.innerHeight - triggerRect.bottom - dropdownGapPx - dropdownBottomMarginPx,
           );
+    const positionStyle: CSSProperties =
+      triggerRect != null && positionStrategy === 'fixed'
+        ? {
+            bottom: 'auto',
+            left: `${triggerRect.left}px`,
+            margin: 0,
+            position: 'fixed',
+            right: 'auto',
+            top: `${triggerRect.bottom + dropdownGapPx}px`,
+            width: `${triggerRect.width}px`,
+          }
+        : {};
 
-    setDropdownStyle({
+    const maxHeightStyle = {
       '--product-category-dropdown-max-height': `${maxHeight}px`,
-    } as CSSProperties);
-  }, [triggerRef]);
+    } as CSSProperties;
+
+    setDropdownStyle({ ...positionStyle, ...maxHeightStyle });
+  }, [positionStrategy, triggerRef]);
 
   useLayoutEffect(() => {
     if (!isOpen) {

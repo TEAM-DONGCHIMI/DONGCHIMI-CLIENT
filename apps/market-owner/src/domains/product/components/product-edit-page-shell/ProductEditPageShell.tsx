@@ -83,7 +83,9 @@ export const ProductEditPageShell = ({
 
   // 필터/드롭다운 상태
   const {
+    categoryDropdownStyle,
     categoryFilterRef,
+    categoryTriggerRef,
     isCategoryDropdownOpen,
     isCategorySelected,
     selectedCategory,
@@ -252,6 +254,7 @@ export const ProductEditPageShell = ({
             {showCategoryFilter && (
               <div ref={categoryFilterRef} className={S.categoryFilterClassName}>
                 <PillButton
+                  ref={categoryTriggerRef}
                   aria-expanded={isCategoryDropdownOpen}
                   aria-pressed={isCategorySelected}
                   icon={
@@ -271,6 +274,7 @@ export const ProductEditPageShell = ({
                 {isCategoryDropdownOpen && (
                   <ProductEditCategoryDropdown
                     selectedCategory={selectedCategory}
+                    style={categoryDropdownStyle}
                     onSelect={selectCategoryFilter}
                   />
                 )}
