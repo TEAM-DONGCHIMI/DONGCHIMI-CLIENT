@@ -26,7 +26,7 @@ export const pageRootClassName = style({
   flexDirection: 'column',
   boxSizing: 'border-box',
   padding: 0,
-  backgroundColor: atomic.neutral[10],
+  backgroundColor: atomic.neutral[5],
 });
 
 export const excelUploadModalClassName = style({
