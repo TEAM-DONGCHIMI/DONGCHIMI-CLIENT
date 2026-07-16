@@ -229,6 +229,10 @@ export const BusinessOperationSection = ({
   };
 
   const handleAddAdditionalBusinessTime = () => {
+    if (shouldShowAdditionalBusinessTime) {
+      return;
+    }
+
     onAdditionalBusinessTimeAdd();
     openOverlay(additionalBusinessTimeId);
   };
@@ -295,6 +299,7 @@ export const BusinessOperationSection = ({
                 placeholder='00:00 - 00:00'
                 required
                 type='tel'
+                trailingActionDisabled={shouldShowAdditionalBusinessTime}
                 trailingActionLabel='영업 시간 추가'
                 trailingIcon={
                   businessTime.length > 0 ? <IcPlusSizeSmall /> : <IcPlusSizeSmallColor60 />
