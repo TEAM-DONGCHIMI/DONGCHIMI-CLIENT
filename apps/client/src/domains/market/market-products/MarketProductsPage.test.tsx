@@ -3,7 +3,16 @@ import { HttpResponse, http } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { formatBusinessDays } from '@dongchimi/shared/business-hours';
-import { act, renderWithProviders, screen, server, userEvent, waitFor, within } from '@/test';
+import {
+  act,
+  fireEvent,
+  renderWithProviders,
+  screen,
+  server,
+  userEvent,
+  waitFor,
+  within,
+} from '@/test';
 
 import { DAILY_PRODUCTS_API_RESPONSE_FIXTURE } from '../api/daily-products-api.mock';
 import { MARKET_DETAIL_API_RESPONSE_FIXTURE } from '../api/market-detail-api.mock';
@@ -12,7 +21,14 @@ import {
   PERIODIC_PRODUCTS_LAST_PAGE_RESPONSE_FIXTURE,
 } from '../api/periodic-products-api.mock';
 import type { BusinessHourTypes } from '../model/market-detail-schema';
+import { marketQueryKeys } from '../query-keys';
 import { MarketProductsPage } from './MarketProductsPage';
+import {
+  clearMarketProductsScrollRestoration,
+  consumePendingMarketProductsScrollRestoration,
+  getMarketProductAnchorId,
+  saveMarketProductsScrollRestoration,
+} from './hooks/market-products-scroll-restoration';
 import { calculateFirstRowCategoryCount } from './hooks/useEventDiscountCategoryLayout';
 import { formatPrice } from './utils/format-price';
 import { getCurrentBusinessCloseTime } from './utils/market-actions';
@@ -150,6 +166,15 @@ const getSectionQueries = (headingName: string) => {
   return within(section as HTMLElement);
 };
 
+const useTimerAnimationFrame = () => {
+  vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+    return window.setTimeout(() => callback(performance.now()), 16);
+  });
+  vi.stubGlobal('cancelAnimationFrame', (animationFrameId: number) => {
+    window.clearTimeout(animationFrameId);
+  });
+};
+
 describe('MarketProductsPage', () => {
   beforeEach(() => {
     router.back.mockClear();
@@ -157,6 +182,9 @@ describe('MarketProductsPage', () => {
     intersectionObserverCallback = undefined;
     intersectionObserverOptions = undefined;
     vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
+    clearMarketProductsScrollRestoration(MARKET_SLUG);
+    window.sessionStorage.clear();
+    window.history.replaceState({}, '', `/markets/${MARKET_SLUG}`);
     useMarketDetailHandler();
     usePeriodicProductsHandler();
     server.use(
@@ -177,6 +205,7 @@ describe('MarketProductsPage', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
   it('API로 조회한 마트의 marketId로 행사 할인 상품을 렌더링한다', async () => {
@@ -190,6 +219,39 @@ describe('MarketProductsPage', () => {
     expect(screen.getByRole('heading', { name: '오늘의 특가 상품' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '행사 할인 상품' })).toBeInTheDocument();
     expect(await screen.findByText('대추방울토마토 500G')).toBeInTheDocument();
+  });
+
+  it('TOP3 상품을 클릭하면 상품 상대 위치를 저장한다', async () => {
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(360);
+    await renderMarketProductsPage();
+
+    const popularSection = getSectionQueries('지금 가장 인기 있는 상품 TOP 3');
+    const productLink = popularSection.getByRole('link', {
+      name: '삼겹살 500g 6,900원 상품 보기',
+    });
+
+    vi.spyOn(productLink, 'getBoundingClientRect').mockReturnValue({
+      bottom: 196,
+      height: 100,
+      left: 0,
+      right: 100,
+      toJSON: () => ({}),
+      top: 96,
+      width: 100,
+      x: 0,
+      y: 96,
+    });
+    productLink.addEventListener('click', (event) => event.preventDefault(), { once: true });
+
+    fireEvent.click(productLink);
+
+    expect(consumePendingMarketProductsScrollRestoration(MARKET_SLUG)).toMatchObject({
+      anchorId: getMarketProductAnchorId('popular', 101),
+      productId: '101',
+      scrollY: 360,
+      section: 'popular',
+      viewportTop: 96,
+    });
   });
 
   it('마트 상세 조회 중 loading 상태를 표시한다', async () => {
@@ -308,6 +370,51 @@ describe('MarketProductsPage', () => {
 
     await user.click(screen.getByRole('button', { name: '접기' }));
     expect(todaySection.getAllByRole('link')).toHaveLength(2);
+  });
+
+  it('오늘의 특가 상세에서 뒤로오면 저장한 전체보기 상태를 먼저 복원한다', async () => {
+    const restoredProduct = {
+      ...DAILY_PRODUCTS_API_RESPONSE_FIXTURE.data.products[0],
+      name: '뒤로가기 복원 특가 상품',
+      productId: 299,
+    };
+    const expandedProducts = [
+      ...DAILY_PRODUCTS_API_RESPONSE_FIXTURE.data.products,
+      restoredProduct,
+    ];
+
+    server.use(
+      http.get(DAILY_PRODUCTS_API_PATH, () => {
+        return HttpResponse.json({
+          ...DAILY_PRODUCTS_API_RESPONSE_FIXTURE,
+          data: {
+            products: expandedProducts,
+            totalCount: expandedProducts.length,
+          },
+        });
+      }),
+    );
+    useTimerAnimationFrame();
+    saveMarketProductsScrollRestoration({
+      anchorId: getMarketProductAnchorId('today-special', restoredProduct.productId),
+      isExpanded: true,
+      marketSlug: MARKET_SLUG,
+      productId: String(restoredProduct.productId),
+      scrollY: 720,
+      section: 'today-special',
+      viewportTop: 0,
+    });
+    await renderMarketProductsPage();
+
+    expect(await screen.findByText(restoredProduct.name)).toBeInTheDocument();
+
+    const todaySection = getSectionQueries('오늘의 특가 상품');
+
+    expect(todaySection.getAllByRole('link')).toHaveLength(expandedProducts.length);
+    expect(todaySection.getByRole('button', { name: '접기' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
   });
 
   it('오늘의 특가 조회 중 loading 상태를 표시한다', async () => {
@@ -511,6 +618,161 @@ describe('MarketProductsPage', () => {
 
     expect(await eventSection.findByText('손질 고등어 1팩')).toBeInTheDocument();
     expect(eventSection.getAllByRole('link')).toHaveLength(1);
+  });
+
+  it('행사 상품을 클릭하면 category와 상품 상대 위치를 저장한다', async () => {
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(1_240);
+    await renderMarketProductsPage();
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+    const productLink = await eventSection.findByRole('link', {
+      name: '대추방울토마토 500G 상품 보기',
+    });
+
+    vi.spyOn(productLink, 'getBoundingClientRect').mockReturnValue({
+      bottom: 300,
+      height: 100,
+      left: 0,
+      right: 100,
+      toJSON: () => ({}),
+      top: 200,
+      width: 100,
+      x: 0,
+      y: 200,
+    });
+    productLink.addEventListener('click', (event) => event.preventDefault(), { once: true });
+
+    fireEvent.click(productLink);
+    expect(consumePendingMarketProductsScrollRestoration(MARKET_SLUG)).toMatchObject({
+      anchorId: getMarketProductAnchorId('event-discount', 302),
+      isCategoryExpanded: false,
+      productId: '302',
+      scrollY: 1_240,
+      section: 'event-discount',
+      selectedCategoryId: 'all',
+      viewportTop: 200,
+    });
+  });
+
+  it('목록이 마운트된 뒤 복원 상태가 도착해도 저장한 category를 적용한다', async () => {
+    useTimerAnimationFrame();
+    vi.stubGlobal('scrollBy', vi.fn());
+    await renderMarketProductsPage();
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+
+    expect(eventSection.getByRole('button', { name: '전체' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+
+    saveMarketProductsScrollRestoration({
+      anchorId: getMarketProductAnchorId('event-discount', 402),
+      isCategoryExpanded: true,
+      marketSlug: MARKET_SLUG,
+      productId: '402',
+      scrollY: 1_240,
+      section: 'event-discount',
+      selectedCategoryId: 'meat-egg',
+      viewportTop: 0,
+    });
+
+    const marketListHistoryState = window.history.state;
+
+    window.history.replaceState({}, '', `/markets/${MARKET_SLUG}/products/402`);
+
+    act(() => {
+      window.history.replaceState(marketListHistoryState, '', `/markets/${MARKET_SLUG}`);
+      window.dispatchEvent(
+        new PopStateEvent('popstate', {
+          state: marketListHistoryState,
+        }),
+      );
+    });
+
+    await waitFor(() => {
+      expect(eventSection.getByRole('button', { name: '정육·달걀' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+    });
+    expect(document.getElementById(getMarketProductAnchorId('event-discount', 402))).not.toBeNull();
+  });
+
+  it('행사 상품 상세에서 뒤로오면 category와 기존 무한 목록 pages를 재사용한다', async () => {
+    const marketId = MARKET_DETAIL_API_RESPONSE_FIXTURE.data.marketId;
+    const cachedLastProduct = {
+      discountedPrice: 8_900,
+      name: '캐시된 5페이지 행사 상품',
+      productId: 499,
+      thumbnailUrl: null,
+    };
+    const cachedPages = [
+      {
+        ...PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE.data,
+        content: categoryProducts.MEAT_EGG,
+        nextCursor: 402,
+      },
+      {
+        ...PERIODIC_PRODUCTS_LAST_PAGE_RESPONSE_FIXTURE.data,
+        content: [cachedLastProduct],
+      },
+    ];
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          staleTime: Number.POSITIVE_INFINITY,
+        },
+      },
+    });
+    let periodicRequestCount = 0;
+
+    queryClient.setQueryData(marketQueryKeys.periodicProducts({ category: 'MEAT_EGG', marketId }), {
+      pageParams: [undefined, 402],
+      pages: cachedPages,
+    });
+    server.use(
+      http.get(PERIODIC_PRODUCTS_API_PATH, () => {
+        periodicRequestCount += 1;
+        return HttpResponse.json(PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE);
+      }),
+    );
+    useTimerAnimationFrame();
+    saveMarketProductsScrollRestoration({
+      anchorId: getMarketProductAnchorId('event-discount', cachedLastProduct.productId),
+      isCategoryExpanded: true,
+      marketSlug: MARKET_SLUG,
+      productId: String(cachedLastProduct.productId),
+      scrollY: 1_640,
+      section: 'event-discount',
+      selectedCategoryId: 'meat-egg',
+      viewportTop: 0,
+    });
+    renderWithProviders(<MarketProductsPage marketSlug={MARKET_SLUG} />, { queryClient });
+
+    await screen.findByRole('heading', { name: MARKET_DETAIL_API_RESPONSE_FIXTURE.data.name });
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+
+    expect(await eventSection.findByText(cachedLastProduct.name)).toBeInTheDocument();
+    expect(eventSection.getByRole('button', { name: '정육·달걀' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(eventSection.getByRole('button', { name: '더보기' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    expect(periodicRequestCount).toBe(0);
+    expect(
+      queryClient.getQueryData(
+        marketQueryKeys.periodicProducts({ category: 'MEAT_EGG', marketId }),
+      ),
+    ).toMatchObject({
+      pageParams: [undefined, 402],
+      pages: [{ content: categoryProducts.MEAT_EGG }, { content: [cachedLastProduct] }],
+    });
   });
 
   it('상품이 존재하는 availableCategories만 카테고리로 노출한다', async () => {
