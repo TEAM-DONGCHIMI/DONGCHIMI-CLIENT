@@ -146,6 +146,18 @@ const mockClipboardWriteText = (writeText: (text: string) => Promise<void>) => {
   });
 };
 
+const createBeforeInstallPromptEvent = () => {
+  const event = new Event('beforeinstallprompt', { cancelable: true });
+  const prompt = vi.fn().mockResolvedValue(undefined);
+
+  Object.assign(event, {
+    prompt,
+    userChoice: Promise.resolve({ outcome: 'accepted', platform: 'web' }),
+  });
+
+  return { event, prompt };
+};
+
 const getSectionQueries = (headingName: string) => {
   const section = screen.getByRole('heading', { name: headingName }).closest('section');
 
@@ -516,6 +528,72 @@ describe('MarketProductsPage', () => {
 
     expect(await within(dialog).findByRole('alert')).toHaveTextContent('아직 준비중인 기능이에요.');
     expect(within(dialog).getByRole('region', { name: '토스트 알림' })).toBeInTheDocument();
+  });
+
+  it('opens the native PWA install prompt from the leaflet share sheet', async () => {
+    const user = userEvent.setup();
+    const { event, prompt } = createBeforeInstallPromptEvent();
+
+    await renderMarketProductsPage();
+
+    act(() => {
+      window.dispatchEvent(event);
+    });
+
+    await user.click(screen.getByRole('button', { name: '공유하기' }));
+    await user.click(
+      within(await screen.findByRole('dialog', { name: '전단 공유하기' })).getByRole('button', {
+        name: '앱으로 전단보기',
+      }),
+    );
+
+    const installDialog = await screen.findByRole('dialog', {
+      name: '홈 화면에 추가하기 안내',
+    });
+
+    expect(
+      within(installDialog).getByRole('img', {
+        name: '동치미 앱 아이콘이 표시된 홈 화면 예시',
+      }),
+    ).toBeVisible();
+
+    await user.click(within(installDialog).getByRole('button', { name: '홈 화면에 추가하기' }));
+
+    expect(prompt).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('dialog', { name: '홈 화면에 추가하기 안내' }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('guides manual installation when a native PWA prompt is unavailable', async () => {
+    const user = userEvent.setup();
+
+    await renderMarketProductsPage();
+
+    await user.click(screen.getByRole('button', { name: '공유하기' }));
+    await user.click(
+      within(await screen.findByRole('dialog', { name: '전단 공유하기' })).getByRole('button', {
+        name: '앱으로 전단보기',
+      }),
+    );
+
+    const installDialog = await screen.findByRole('dialog', {
+      name: '홈 화면에 추가하기 안내',
+    });
+
+    await user.click(within(installDialog).getByRole('button', { name: '홈 화면에 추가하기' }));
+
+    expect(within(installDialog).getByText(/브라우저의 공유 버튼을 누른 뒤/)).toBeVisible();
+
+    await user.click(within(installDialog).getByRole('button', { name: '확인' }));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('dialog', { name: '홈 화면에 추가하기 안내' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('행사 할인 상품을 서버 category enum으로 필터링한다', async () => {

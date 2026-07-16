@@ -5,6 +5,7 @@ import { ToastProvider } from '@dongchimi/shared/toast';
 import { OverlayProvider } from 'overlay-kit';
 
 import { QueryProvider } from '@/shared/query';
+import { PwaInstallProvider } from '@/shared/pwa';
 
 type AppProvidersProps = Readonly<{
   children: ReactNode;
@@ -13,9 +14,11 @@ type AppProvidersProps = Readonly<{
 export const AppProviders = ({ children }: AppProvidersProps) => {
   return (
     <QueryProvider>
-      <ToastProvider placement='bottom-center'>
-        <OverlayProvider>{children}</OverlayProvider>
-      </ToastProvider>
+      <PwaInstallProvider>
+        <ToastProvider placement='bottom-center'>
+          <OverlayProvider>{children}</OverlayProvider>
+        </ToastProvider>
+      </PwaInstallProvider>
     </QueryProvider>
   );
 };

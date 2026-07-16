@@ -36,7 +36,7 @@ describe('registration result product model', () => {
 
   it('creates a prepared draft save request from edited row drafts', () => {
     const request = createPreparedProductDraftSaveRequest({
-      productImageUrls: new Map([['12', 'https://static.dongchimi.kr/uploaded.png']]),
+      productImageObjectKeys: new Map([['12', 'tmp/PRODUCT_THUMBNAIL/uploaded.png']]),
       products: [
         {
           category: '수산물',
@@ -67,7 +67,7 @@ describe('registration result product model', () => {
         {
           preparedProductId: 12,
           name: '고등어',
-          thumbnailUrl: 'https://static.dongchimi.kr/uploaded.png',
+          thumbnailUrl: 'tmp/PRODUCT_THUMBNAIL/uploaded.png',
           discountedPrice: 4500,
           category: 'MEAT_EGG',
           promotionalPhrase: '오늘만 특가',

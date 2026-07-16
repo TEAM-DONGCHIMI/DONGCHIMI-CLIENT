@@ -19,6 +19,7 @@
     "@dongchimi/design-system": "workspace:*",
     "@dongchimi/shared": "workspace:*",
     "@sentry/nextjs": "catalog:",
+    "@serwist/next": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@vanilla-extract/css": "catalog:",
     "@vanilla-extract/recipes": "catalog:",
@@ -51,6 +52,7 @@
     "eslint-plugin-storybook": "^10.4.6",
     "jsdom": "catalog:",
     "msw": "catalog:",
+    "serwist": "catalog:",
     "storybook": "^10.4.6",
     "typescript": "catalog:",
     "vitest": "catalog:"

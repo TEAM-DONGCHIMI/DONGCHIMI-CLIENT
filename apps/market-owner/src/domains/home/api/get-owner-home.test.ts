@@ -33,6 +33,27 @@ describe('getOwnerHome', () => {
     expect(mockedGet).toHaveBeenCalledWith(API_ENDPOINTS.owner.home);
   });
 
+  it('accepts a root-relative product thumbnail URL', async () => {
+    const responseData = {
+      ...ownerHomeFixture,
+      dailyProducts: [
+        {
+          ...ownerHomeFixture.dailyProducts[0],
+          thumbnailUrl: '/images/product-replace.svg',
+        },
+      ],
+    };
+
+    mockedGet.mockResolvedValue({
+      success: true,
+      code: 'SUCCESS',
+      message: '요청에 성공했습니다.',
+      data: responseData,
+    });
+
+    await expect(getOwnerHome()).resolves.toEqual(responseData);
+  });
+
   it('rejects an invalid success response contract', async () => {
     mockedGet.mockResolvedValue({
       success: true,

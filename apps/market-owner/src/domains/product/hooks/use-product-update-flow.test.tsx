@@ -83,11 +83,12 @@ describe('useProductUpdateFlow', () => {
     });
   });
 
-  it('uploads a new image before sending its public URL in the update request', async () => {
+  it('sends a new image object key to the update API and returns its public URL for display', async () => {
     const imageFile = new File(['image'], 'product.png', { type: 'image/png' });
-    uploadProductThumbnail.mockResolvedValue(
-      'https://static.dongchimi.kr/tmp/PRODUCT_THUMBNAIL/product.png',
-    );
+    uploadProductThumbnail.mockResolvedValue({
+      objectKey: 'tmp/PRODUCT_THUMBNAIL/product.png',
+      publicUrl: 'https://static.dongchimi.kr/tmp/PRODUCT_THUMBNAIL/product.png',
+    });
     mutateProductUpdate.mockResolvedValue({
       success: true,
       code: 'SUCCESS',
@@ -95,18 +96,26 @@ describe('useProductUpdateFlow', () => {
     });
     const { result } = renderHook(() => useProductUpdateFlow());
 
+    let updateResult: Awaited<
+      ReturnType<ReturnType<typeof useProductUpdateFlow>['submitProductUpdate']>
+    > = { success: false };
+
     await act(async () => {
-      await result.current.submitProductUpdate({ ...commonParams, imageFile });
+      updateResult = await result.current.submitProductUpdate({ ...commonParams, imageFile });
     });
 
     expect(uploadProductThumbnail).toHaveBeenCalledWith(imageFile);
     expect(mutateProductUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         request: expect.objectContaining({
-          thumbnailUrl: 'https://static.dongchimi.kr/tmp/PRODUCT_THUMBNAIL/product.png',
+          thumbnailUrl: 'tmp/PRODUCT_THUMBNAIL/product.png',
         }),
       }),
     );
+    expect(updateResult).toEqual({
+      success: true,
+      thumbnailUrl: 'https://static.dongchimi.kr/tmp/PRODUCT_THUMBNAIL/product.png',
+    });
   });
 
   it('reports failure when the update request fails', async () => {

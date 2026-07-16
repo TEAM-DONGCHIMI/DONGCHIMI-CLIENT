@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useState } from 'react';
 import {
   clearMarketProductsScrollRestoration,
   consumePendingMarketProductsScrollRestoration,
+  peekPendingMarketProductsScrollRestoration,
 } from './market-products-scroll-restoration';
 
 const ANCHOR_WAIT_TIMEOUT_MS = 3_000;
@@ -13,7 +14,7 @@ const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLa
 
 export const useMarketProductsScrollRestoration = (marketSlug: string) => {
   const [restorationState, setRestorationState] = useState(() => {
-    return consumePendingMarketProductsScrollRestoration(marketSlug);
+    return peekPendingMarketProductsScrollRestoration(marketSlug);
   });
 
   useEffect(() => {

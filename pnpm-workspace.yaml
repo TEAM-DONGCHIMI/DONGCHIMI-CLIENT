@@ -27,6 +27,7 @@ catalog:
   '@playwright/test': ^1.61.1
   '@sentry/nextjs': ^10.59.0
   '@sentry/react': ^10.59.0
+  '@serwist/next': ^9.5.11
   '@tanstack/react-query': ^5.101.0
   '@tanstack/react-query-devtools': ^5.101.0
   '@hookform/resolvers': ^5.4.0
@@ -38,6 +39,7 @@ catalog:
   react-dom: ^19.2.0
   react-hook-form: ^7.81.0
   react-router: ^7.18.0
+  serwist: ^9.5.11
   ky: ^2.0.2
   turbo: ^2.9.18
   typescript: ^5.9.2

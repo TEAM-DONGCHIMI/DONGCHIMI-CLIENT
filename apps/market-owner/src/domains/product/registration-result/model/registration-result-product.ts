@@ -47,7 +47,7 @@ export interface RegistrationResultProductFieldValues {
 }
 
 interface CreatePreparedProductDraftSaveRequestParams {
-  productImageUrls?: ReadonlyMap<string, string>;
+  productImageObjectKeys?: ReadonlyMap<string, string>;
   productDrafts: RegistrationResultProductDraftMapTypes;
   products: readonly RegistrationResultProduct[];
 }
@@ -148,7 +148,7 @@ export const createRegistrationResultProducts = (
 };
 
 export const createPreparedProductDraftSaveRequest = ({
-  productImageUrls,
+  productImageObjectKeys,
   productDrafts,
   products,
 }: CreatePreparedProductDraftSaveRequestParams): OwnerApiTypes.PreparedProductDraftSaveRequest => {
@@ -167,7 +167,7 @@ export const createPreparedProductDraftSaveRequest = ({
       const preparedProduct: OwnerApiTypes.PreparedProductDraftRequest = {
         preparedProductId,
         name: normalizeOptionalText(getProductFieldValue(product, productDrafts, 'productName')),
-        thumbnailUrl: productImageUrls?.get(product.id) ?? product.imageUrl ?? null,
+        thumbnailUrl: productImageObjectKeys?.get(product.id) ?? product.imageUrl ?? null,
         discountedPrice: normalizePrice(getProductFieldValue(product, productDrafts, 'price')),
         ...(categoryCode == null ? {} : { category: categoryCode }),
         promotionalPhrase: normalizeOptionalText(
