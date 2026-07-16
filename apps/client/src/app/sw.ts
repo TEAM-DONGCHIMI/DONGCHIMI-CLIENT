@@ -52,10 +52,10 @@ const runtimeCaching = [
     matcher: ({ sameOrigin, url }) => sameOrigin && url.pathname === '/oauth/callback',
     handler: new NetworkOnly(),
   },
-  {
-    matcher: ({ sameOrigin }) => !sameOrigin,
-    handler: new NetworkOnly(),
-  },
+  // Cross-origin requests intentionally bypass Serwist. Registering a
+  // NetworkOnly route would make the worker CSP govern those fetches and can
+  // block third-party SDKs such as Kakao Maps. Unmatched requests still use the
+  // browser network path and are not cached by this service worker.
   {
     matcher: ({ request, sameOrigin }) => sameOrigin && request.mode === 'navigate',
     handler: new NetworkOnly(),
