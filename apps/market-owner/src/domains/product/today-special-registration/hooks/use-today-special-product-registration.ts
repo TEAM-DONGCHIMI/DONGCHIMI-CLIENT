@@ -6,7 +6,11 @@ import { normalizeApiError } from '@/shared/api';
 import { getMarketOwnerEnv } from '@/shared/config';
 
 import { useDailyProductRegistrationMutation } from '../../hooks/use-daily-product-registration-mutation';
-import { createDailyProductRequest, type TodaySpecialProductFormTypes } from '../model';
+import {
+  createDailyProductRequest,
+  DEFAULT_PRODUCT_THUMBNAIL_URL,
+  type TodaySpecialProductFormTypes,
+} from '../model';
 import { useTodaySpecialImageUpload } from './use-today-special-image-upload';
 
 const registrationErrorMessages = {
@@ -36,9 +40,9 @@ export const useTodaySpecialProductRegistration = (marketId: number) => {
       const uploadedImageObjectKey = await uploadProductImage(product);
 
       const request = createDailyProductRequest({ product, s3BaseUrl, uploadedImageObjectKey });
-      const thumbnailUrl = request.thumbnailUrl;
+      const requestThumbnailUrl = request.thumbnailUrl;
 
-      if (thumbnailUrl == null) {
+      if (requestThumbnailUrl == null) {
         throw new Error('Product thumbnail URL is required.');
       }
 
@@ -50,7 +54,7 @@ export const useTodaySpecialProductRegistration = (marketId: number) => {
       return {
         productId: response.data.productId,
         success: true,
-        thumbnailUrl,
+        thumbnailUrl: response.data.thumbnailUrl ?? DEFAULT_PRODUCT_THUMBNAIL_URL,
       };
     } catch (error) {
       const normalizedError = await normalizeApiError(error);

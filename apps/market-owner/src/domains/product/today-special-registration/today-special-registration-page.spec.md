@@ -7,7 +7,7 @@
 - Page: `today-special-registration`
 - Route: `/products/today-special/new`
 - Path: `apps/market-owner/src/domains/product/today-special-registration/today-special-registration-page.tsx`
-- Jira: DCMSM-21, DCMSM-54, DCMSM-56, DCMSM-82
+- Jira: DCMSM-21, DCMSM-54, DCMSM-56, DCMSM-82, DCMSM-109
 - Related API: DCMSM-50, DCMSM-58
 - Status: UI, Presigned image upload, product registration, registered product update/delete implemented with auth store market ID
 
@@ -82,10 +82,11 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - next product ready: `상품 계속 등록` 성공 후 새 빈 상품을 마지막에 추가하고 해당 상품으로 이동합니다.
 - cancel next product: 마지막 미등록 상품에서는 `-` 버튼을 표시하고, 클릭하면 서버 요청 없이 해당 입력을 취소한 뒤 직전 등록 상품으로 이동합니다.
 - registered product history: 이전 상품으로 이동하면 `(현재 순번/전체 상품 수)`와 이동 화살표를 표시하고, 저장된 snapshot을 수정 가능한 form 초기값으로 사용합니다.
-- registered product update: `수정 완료`를 누르면 저장된 `productId`로 PUT하고 성공한 경우에만 snapshot을 갱신합니다.
+- registered product image restore: 등록 세션 내에서는 선택한 이미지의 object URL을 snapshot 미리보기로 유지하고, 서버 응답 `thumbnailUrl`은 수정 payload와 상세 query cache용으로 분리해 저장합니다.
+- registered product update: 등록 화면의 `등록 완료`를 누르면 저장된 `productId`로 PUT하고 성공한 경우에만 snapshot을 갱신합니다.
 - registered image unchanged: 새 파일을 선택하지 않으면 snapshot의 기존 `thumbnailUrl`을 유지하고 이미지 업로드를 생략합니다.
 - registered image changed: 새 파일을 선택한 경우에만 Presigned upload 후 새 URL로 PUT하고 snapshot의 이미지 URL을 교체합니다.
-- update pending/error: 수정 중 중복 action을 막고, 실패하면 현재 입력값과 기존 snapshot 식별자를 유지한 채 오류 toast를 표시합니다.
+- update pending/error: `등록 중` 상태에서 중복 action을 막고, 실패하면 현재 입력값과 기존 snapshot 식별자를 유지한 채 오류 toast를 표시합니다.
 - registered product deletion: 등록된 이전 상품의 `-` 버튼은 `정말 삭제하시겠어요?` 확인 modal을 열고, 성공한 경우에만 snapshot을 제거합니다.
 - delete pending: 확인 modal의 취소/삭제 버튼을 비활성화하고 중복 DELETE를 막습니다.
 - delete error: 등록 snapshot과 순번을 유지하고 오류 toast를 표시하며 modal을 유지합니다.
@@ -169,11 +170,14 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 성공 전에는 입력값을 초기화하거나 다음 상품 form을 만들지 않습니다.
   - 성공하면 등록된 상품 snapshot을 유지한 채 새 빈 상품을 추가하고 touched/submitted, validation 상태를 초기화합니다.
   - 등록 성공 응답의 `data.productId`를 해당 snapshot에 저장합니다.
+  - 이미지 미리보기는 등록 세션 동안 로컬 object URL을 유지하고, 수정에 사용할 영속 `thumbnailUrl`은 등록 성공 응답의 `data.thumbnailUrl`로 별도 저장합니다.
+  - 등록 mutation은 응답 전체를 상품 상세 query cache에 저장해 후속 상세 조회 소비자가 재사용할 수 있게 합니다.
+  - 서버 `thumbnailUrl`은 브라우저에서 GET 가능한 URL이어야 하며, private `/tmp` URL을 반환하는 경우 새로고침이나 새 세션에서는 이미지를 복원할 수 없습니다.
   - 상품이 2개 이상이면 제목 옆에 현재 순번과 전체 개수, 이전/다음 이동 화살표를 표시합니다.
-  - 이미 등록된 이전 상품은 입력값을 수정할 수 있고, `수정 완료`를 누르면 저장된 `productId`로 PUT합니다.
+  - 이미 등록된 이전 상품은 입력값을 수정할 수 있고, `등록 완료`를 누르면 저장된 `productId`로 PUT합니다.
   - 수정 성공 후 form snapshot의 입력값과 `thumbnailUrl`을 갱신하고 상품 목록·상세 cache를 invalidate합니다.
   - 기존 이미지를 변경하지 않으면 Presigned 요청과 storage PUT 없이 기존 URL을 유지합니다.
-  - 새 이미지를 선택하면 업로드 결과 URL로 수정하고 snapshot의 `imageFile`은 비웁니다.
+  - 새 이미지를 선택하면 업로드 결과 URL로 수정하고 snapshot의 `imageFile`은 비우되 로컬 object URL 미리보기는 유지합니다.
   - 수정 실패 시 편집 중인 입력값을 유지하고 오류 toast를 표시합니다.
   - 등록 상품에서 `상품 계속 등록`을 누르면 수정 요청 없이 기존 미등록 draft로 이동하거나 새 draft를 엽니다.
   - 마지막 미등록 상품의 `-` 버튼은 등록 취소만 수행하며, 등록 완료된 상품을 삭제하지 않습니다.

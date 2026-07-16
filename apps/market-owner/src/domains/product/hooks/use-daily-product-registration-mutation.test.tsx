@@ -15,6 +15,25 @@ vi.mock('../api/register-daily-product', () => ({
 
 const mockedRegisterDailyProduct = vi.mocked(registerDailyProduct);
 
+const registeredProductResponse = {
+  success: true,
+  code: 'SUCCESS',
+  message: '요청에 성공했습니다.',
+  data: {
+    productId: 101,
+    name: '토마토',
+    dealType: 'DAILY',
+    thumbnailUrl: 'https://cdn.example.com/products/101.png',
+    originalPrice: 5000,
+    discountedPrice: 4500,
+    category: 'VEGETABLE_FRUIT',
+    categoryName: '채소/과일',
+    promotionalPhrase: null,
+    discountStartDate: '2026-06-30',
+    discountEndDate: '2026-06-30',
+  },
+} as const;
+
 const createWrapper = (queryClient: QueryClient) => {
   const TestQueryProvider = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -42,12 +61,7 @@ describe('useDailyProductRegistrationMutation', () => {
         discountEndDate: '2026-06-30',
       },
     };
-    const response = {
-      success: true,
-      code: 'SUCCESS',
-      message: '요청에 성공했습니다.',
-      data: { productId: 101 },
-    };
+    const response = registeredProductResponse;
 
     mockedRegisterDailyProduct.mockResolvedValue(response);
     const queryClient = createQueryClient();
@@ -88,12 +102,7 @@ describe('useDailyProductRegistrationMutation', () => {
 
     queryClient.setQueryData(dailyListQueryKey, { data: { content: [] } });
     queryClient.setQueryData(periodicListQueryKey, { data: { content: [] } });
-    mockedRegisterDailyProduct.mockResolvedValue({
-      success: true,
-      code: 'SUCCESS',
-      message: '요청에 성공했습니다.',
-      data: { productId: 101 },
-    });
+    mockedRegisterDailyProduct.mockResolvedValue(registeredProductResponse);
 
     const { result } = renderHook(() => useDailyProductRegistrationMutation(), {
       wrapper: createWrapper(queryClient),
@@ -105,5 +114,8 @@ describe('useDailyProductRegistrationMutation', () => {
 
     expect(queryClient.getQueryState(dailyListQueryKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(periodicListQueryKey)?.isInvalidated).toBe(true);
+    expect(
+      queryClient.getQueryData(productQueryKeys.detail({ marketId: 1, productId: 101 })),
+    ).toEqual(registeredProductResponse);
   });
 });

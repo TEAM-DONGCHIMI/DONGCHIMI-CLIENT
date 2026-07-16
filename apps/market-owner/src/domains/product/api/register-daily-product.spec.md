@@ -32,12 +32,25 @@
   "code": "SUCCESS",
   "message": "요청에 성공했습니다.",
   "data": {
-    "productId": 101
+    "productId": 101,
+    "name": "토마토",
+    "dealType": "DAILY",
+    "thumbnailUrl": "https://cdn.dongchimi.kr/products/101.png",
+    "originalPrice": 5000,
+    "discountedPrice": 4500,
+    "category": "VEGETABLE_FRUIT",
+    "categoryName": "채소/과일",
+    "promotionalPhrase": "멋쟁이 토마토",
+    "discountStartDate": "2026-06-30",
+    "discountEndDate": "2026-06-30"
   }
 }
 ```
 
-응답 Zod schema는 `satisfies z.ZodType<OwnerApiTypes.RegisterDailyProductData>`로 OpenAPI 생성 타입과 구조를 맞추고, API boundary에서 `success: true`, `code: SUCCESS`, `message: string`, `data.productId: number` 계약을 검증합니다. `productId`가 없는 성공 응답은 validation error로 처리합니다.
+등록 응답은 상품 상세 조회와 같은 `OwnerProductDetailResponse` 계약을 사용합니다. 공용 Zod schema로
+`productId`, `thumbnailUrl`, 상품명, 판매 유형, 가격, 카테고리, 홍보 문구, 할인 기간을 검증합니다.
+응답 `thumbnailUrl`은 브라우저에서 GET 가능한 영속 URL이어야 하며 상세 query cache와 후속 수정 payload에 저장합니다.
+등록 세션 내 snapshot의 미리보기는 private 임시 URL에 의존하지 않도록 로컬 object URL을 유지합니다.
 
 ## Errors
 
@@ -56,6 +69,8 @@
 - Cache: 등록 성공 시 `productQueryKeys.listRoot` prefix를 invalidate하여 `DAILY`, `PERIODIC`
   목록 cache를 모두 stale 상태로 변경합니다. 목록 query가 다시 성공하면 `dataUpdatedAt`을
   기준으로 화면의 로컬 상품 state도 최신 응답으로 초기화합니다.
+- Cache seed: 등록 응답 전체를 `productQueryKeys.detail({ marketId, productId })`에 저장해 등록 직후
+  수정 모달 또는 상세 소비자가 추가 GET 없이 같은 서버 확정 데이터를 사용할 수 있게 합니다.
 
 ## Integration Gate
 
@@ -75,6 +90,7 @@
 - [x] S3 base URL 누락 시 상대경로를 등록하지 않는 mapper test
 - [x] 이미지 미선택 시 기본 상품 이미지가 `thumbnailUrl`에 연결되는 mapper/page test
 - [x] auth store의 실제 `marketId`로 page submit 연결
-- [x] 등록 성공 응답의 `data.productId` runtime validation 및 등록 snapshot 연결
+- [x] 등록 성공 응답의 전체 상품 상세 runtime validation
+- [x] 등록 응답을 상품 상세 query cache와 등록 snapshot에 연결
 - [x] 실제 session의 `marketId`로 연결
 - [ ] 실제 서버 200/401/403/404 확인
