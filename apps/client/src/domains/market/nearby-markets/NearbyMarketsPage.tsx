@@ -14,7 +14,7 @@ import {
 export const NearbyMarketsPage = () => {
   return (
     <main className={S.pageClassName}>
-      <MobileHeader aria-label='주변 마트 헤더'>
+      <MobileHeader aria-label='주변 마트 헤더' className={S.homeHeaderClassName}>
         <MobileHeader.Logo>
           <Image
             alt='동치미'

@@ -16,6 +16,10 @@ export const logoClassName = style({
   objectFit: 'contain',
 });
 
+export const homeHeaderClassName = style({
+  margin: '0 1rem',
+});
+
 export const searchSectionClassName = style({
   display: 'flex',
   flexDirection: 'column',
