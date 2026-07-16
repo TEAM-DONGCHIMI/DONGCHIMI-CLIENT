@@ -18,17 +18,10 @@ export const onboardingImageClassName = style({
   position: 'absolute',
   top: 0,
   left: 0,
+  display: 'block',
   width: '100%',
-  aspectRatio: '375 / 433',
-  backgroundColor: atomic.neutral[10],
-  backgroundImage: [
-    'linear-gradient(45deg, rgba(255, 255, 255, 0.72) 25%, transparent 25%)',
-    'linear-gradient(-45deg, rgba(255, 255, 255, 0.72) 25%, transparent 25%)',
-    'linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.72) 75%)',
-    'linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.72) 75%)',
-  ].join(', '),
-  backgroundPosition: '0 0, 0 3.1rem, 3.1rem -3.1rem, -3.1rem 0',
-  backgroundSize: '6.2rem 6.2rem',
+  height: 'auto',
+  aspectRatio: '375 / 510',
 });
 
 export const loginSectionClassName = style({
