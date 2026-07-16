@@ -2,7 +2,7 @@ import { ToastProvider } from '@dongchimi/shared/toast';
 import { OverlayProvider, overlay } from 'overlay-kit';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { fireEvent, render, screen, userEvent, waitFor, within } from '@/test';
+import { act, fireEvent, render, screen, userEvent, waitFor, within } from '@/test';
 import * as RegistrationResultStyles from '../components/RegistrationResult.css';
 import { registrationResultFixture, type RegistrationResultProduct } from '../fixtures';
 import {
@@ -37,6 +37,17 @@ const renderSection = (props: Partial<RegistrationResultSectionProps> = {}) => {
 };
 
 const successfulDraftSyncResult = { failCount: 0 };
+
+const createDeferred = <Value,>() => {
+  let rejectPromise: (reason?: unknown) => void = () => undefined;
+  let resolvePromise: (value: Value) => void = () => undefined;
+  const promise = new Promise<Value>((resolve, reject) => {
+    rejectPromise = reject;
+    resolvePromise = resolve;
+  });
+
+  return { promise, reject: rejectPromise, resolve: resolvePromise };
+};
 
 const createDomRect = ({
   height,
@@ -572,6 +583,29 @@ describe('RegistrationResultSection', () => {
     expect(screen.queryByRole('img', { name: 'product.txt' })).not.toBeInTheDocument();
   });
 
+  it('does not upload when the local image preview cannot be created', async () => {
+    const imageFile = new File(['preview'], 'preview.png', { type: 'image/png' });
+    const resolveProductImageFileObjectKey = vi.fn();
+    const createObjectUrlSpy = vi.spyOn(URL, 'createObjectURL').mockImplementationOnce(() => {
+      throw new Error('preview failed');
+    });
+
+    try {
+      renderSection({ resolveProductImageFileObjectKey });
+
+      const [imageInput] = screen.getAllByLabelText('상품 이미지 파일 선택');
+
+      fireEvent.change(imageInput, { target: { files: [imageFile] } });
+
+      expect(
+        await screen.findByText('이미지 미리보기를 생성하지 못했습니다. 다시 시도해주세요.'),
+      ).toBeInTheDocument();
+      expect(resolveProductImageFileObjectKey).not.toHaveBeenCalled();
+    } finally {
+      createObjectUrlSpy.mockRestore();
+    }
+  });
+
   it('replaces an existing product image from the uploaded image button', async () => {
     const user = userEvent.setup();
     const replacementImage = new File(['replacement'], 'replacement.png', { type: 'image/png' });
@@ -734,6 +768,192 @@ describe('RegistrationResultSection', () => {
     expect(handleSaveDrafts.mock.invocationCallOrder[1]).toBeLessThan(
       handleRegister.mock.invocationCallOrder[0],
     );
+  });
+
+  it('saves field drafts while an image upload is pending and saves its object key on completion', async () => {
+    vi.useFakeTimers();
+    const imageFile = new File(['replacement'], 'replacement.png', { type: 'image/png' });
+    const imageUpload = createDeferred<string>();
+    const handleSaveDrafts = vi.fn().mockResolvedValue(successfulDraftSyncResult);
+    const resolveProductImageFileObjectKey = vi.fn().mockReturnValue(imageUpload.promise);
+    const product: RegistrationResultProduct = {
+      category: '수산물',
+      discountPeriod: '2026-07-15 ~ 2026-07-21',
+      id: '12',
+      imageUrl: 'https://static.dongchimi.kr/product.png',
+      price: '4000',
+      productName: '고등어',
+      promotionText: '맛이 미쳤어요',
+      status: 'completed',
+    };
+
+    renderSection({
+      products: [product],
+      saveDebounceMs: 1_000,
+      summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
+      resolveProductImageFileObjectKey,
+      onSaveDrafts: handleSaveDrafts,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '총 상품 1' }));
+    fireEvent.change(screen.getByLabelText('고등어 이미지 파일 선택'), {
+      target: { files: [imageFile] },
+    });
+
+    expect(resolveProductImageFileObjectKey).toHaveBeenCalledWith(imageFile);
+
+    fireEvent.change(screen.getByPlaceholderText('가격을 입력하세요'), {
+      target: { value: '4500' },
+    });
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
+    expect(handleSaveDrafts).toHaveBeenLastCalledWith({
+      preparedProducts: [
+        expect.objectContaining({
+          discountedPrice: 4500,
+          preparedProductId: 12,
+          thumbnailUrl: 'https://static.dongchimi.kr/product.png',
+        }),
+      ],
+    });
+    expect(screen.getByRole('img', { name: 'replacement.png' })).toBeInTheDocument();
+
+    await act(async () => {
+      imageUpload.resolve('tmp/PRODUCT_THUMBNAIL/replacement.png');
+      await imageUpload.promise;
+    });
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(handleSaveDrafts).toHaveBeenCalledTimes(2);
+    expect(handleSaveDrafts).toHaveBeenLastCalledWith({
+      preparedProducts: [
+        expect.objectContaining({
+          discountedPrice: 4500,
+          preparedProductId: 12,
+          thumbnailUrl: 'tmp/PRODUCT_THUMBNAIL/replacement.png',
+        }),
+      ],
+    });
+  });
+
+  it('ignores a late image upload response after a newer image is selected', async () => {
+    const firstFile = new File(['first'], 'first.png', { type: 'image/png' });
+    const secondFile = new File(['second'], 'second.png', { type: 'image/png' });
+    const firstUpload = createDeferred<string>();
+    const secondUpload = createDeferred<string>();
+    const handleSaveDrafts = vi.fn().mockResolvedValue(successfulDraftSyncResult);
+    const resolveProductImageFileObjectKey = vi
+      .fn()
+      .mockReturnValueOnce(firstUpload.promise)
+      .mockReturnValueOnce(secondUpload.promise);
+    const product: RegistrationResultProduct = {
+      category: '수산물',
+      discountPeriod: '2026-07-15 ~ 2026-07-21',
+      id: '12',
+      imageUrl: 'https://static.dongchimi.kr/product.png',
+      price: '4000',
+      productName: '고등어',
+      promotionText: '',
+      status: 'completed',
+    };
+
+    renderSection({
+      products: [product],
+      summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
+      resolveProductImageFileObjectKey,
+      onSaveDrafts: handleSaveDrafts,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '총 상품 1' }));
+    fireEvent.change(screen.getByLabelText('고등어 이미지 파일 선택'), {
+      target: { files: [firstFile] },
+    });
+    fireEvent.change(screen.getByLabelText('고등어 이미지 파일 선택'), {
+      target: { files: [secondFile] },
+    });
+
+    expect(resolveProductImageFileObjectKey).toHaveBeenCalledTimes(2);
+    expect(screen.getByRole('img', { name: 'second.png' })).toBeInTheDocument();
+
+    await act(async () => {
+      secondUpload.resolve('tmp/PRODUCT_THUMBNAIL/second.png');
+      await secondUpload.promise;
+    });
+
+    await waitFor(() => {
+      expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
+    });
+    expect(handleSaveDrafts).toHaveBeenLastCalledWith({
+      preparedProducts: [
+        expect.objectContaining({
+          preparedProductId: 12,
+          thumbnailUrl: 'tmp/PRODUCT_THUMBNAIL/second.png',
+        }),
+      ],
+    });
+
+    await act(async () => {
+      firstUpload.resolve('tmp/PRODUCT_THUMBNAIL/first.png');
+      await firstUpload.promise;
+    });
+
+    expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps registration disabled after an image upload failure and retries on reselect', async () => {
+    const failedFile = new File(['failed'], 'failed.png', { type: 'image/png' });
+    const retryFile = new File(['retry'], 'retry.png', { type: 'image/png' });
+    const handleSaveDrafts = vi.fn().mockResolvedValue(successfulDraftSyncResult);
+    const resolveProductImageFileObjectKey = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('upload failed'))
+      .mockResolvedValueOnce('tmp/PRODUCT_THUMBNAIL/retry.png');
+    const product: RegistrationResultProduct = {
+      category: '수산물',
+      discountPeriod: '2026-07-15 ~ 2026-07-21',
+      id: '12',
+      imageUrl: 'https://static.dongchimi.kr/product.png',
+      price: '4000',
+      productName: '고등어',
+      promotionText: '',
+      status: 'completed',
+    };
+
+    renderSection({
+      products: [product],
+      summary: { completedCount: 1, needsEditCount: 0, totalCount: 1 },
+      resolveProductImageFileObjectKey,
+      onSaveDrafts: handleSaveDrafts,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '총 상품 1' }));
+    fireEvent.change(screen.getByLabelText('고등어 이미지 파일 선택'), {
+      target: { files: [failedFile] },
+    });
+
+    expect(
+      await screen.findByText('이미지 업로드에 실패했습니다. 이미지를 다시 선택해주세요.'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^등록 완료$/ })).toBeDisabled();
+    expect(handleSaveDrafts).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText('고등어 이미지 파일 선택'), {
+      target: { files: [retryFile] },
+    });
+
+    await waitFor(() => {
+      expect(handleSaveDrafts).toHaveBeenCalledTimes(1);
+      expect(screen.getByRole('button', { name: /^등록 완료$/ })).toBeEnabled();
+    });
+    expect(handleSaveDrafts).toHaveBeenLastCalledWith({
+      preparedProducts: [
+        expect.objectContaining({
+          preparedProductId: 12,
+          thumbnailUrl: 'tmp/PRODUCT_THUMBNAIL/retry.png',
+        }),
+      ],
+    });
   });
 
   it('forces a final draft save before completing registration without local changes', async () => {

@@ -16,6 +16,7 @@ import { useRegistrationResultCategoryDropdowns } from '../hooks/useRegistration
 import { useRegistrationResultDraftAutosave } from '../hooks/useRegistrationResultDraftAutosave';
 import { useRegistrationResultDraftRevisions } from '../hooks/useRegistrationResultDraftRevisions';
 import { useRegistrationResultImagePreviews } from '../hooks/useRegistrationResultImagePreviews';
+import { useRegistrationResultImageUploads } from '../hooks/useRegistrationResultImageUploads';
 import { useRegistrationResultPagination } from '../hooks/useRegistrationResultPagination';
 import { useRegistrationResultProductDrafts } from '../hooks/useRegistrationResultProductDrafts';
 import { useRegistrationResultProductSearch } from '../hooks/useRegistrationResultProductSearch';
@@ -64,6 +65,7 @@ const SEGMENT_LABELS: Record<UploadSegmentTypes, string> = {
   total: '총 상품',
 };
 const AUTO_SAVE_DEBOUNCE_MS = 1_000;
+const IMAGE_UPLOAD_ERROR_TOAST_ID = 'registration-result-image-upload-error';
 const SAVE_DRAFT_ERROR_TOAST_ID = 'registration-result-save-draft-error';
 const UNSUPPORTED_IMAGE_FILE_ERROR_TOAST_ID = 'registration-result-unsupported-image-file-error';
 const SUPPORTED_PRODUCT_IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png']);
@@ -109,21 +111,41 @@ export const RegistrationResultSection = ({
   onSaveDrafts,
 }: RegistrationResultSectionProps) => {
   const toast = useToast();
-  const uploadedImageObjectKeyRef = useRef<ReadonlyMap<string, { file: File; objectKey: string }>>(
-    new Map(),
-  );
   const lastSavedDraftKeyRef = useRef<string | null>(null);
   const lastDraftSyncResultRef = useRef<RegistrationResultDraftSyncResult>({
     failCount: summary.needsEditCount,
   });
   const [removedIds, setRemovedIds] = useState<ReadonlySet<string>>(new Set());
   const [selectedSegment, setSelectedSegment] = useState<UploadSegmentTypes>('needsEdit');
+  const [touchedProductIds, setTouchedProductIds] = useState<ReadonlySet<string>>(new Set());
+  const markProductsTouched = useCallback((productIds: Iterable<string>) => {
+    const nextTouchedProductIds = Array.from(productIds);
+
+    setTouchedProductIds((previousTouchedProductIds) => {
+      const nextIds = new Set(previousTouchedProductIds);
+
+      nextTouchedProductIds.forEach((productId) => nextIds.add(productId));
+
+      return nextIds;
+    });
+  }, []);
   const { deleteImagePreviews, imagePreviews, setImagePreview } =
     useRegistrationResultImagePreviews({
       onPreviewCreateError: () => {
         toast.error('이미지 미리보기를 생성하지 못했습니다. 다시 시도해주세요.');
       },
     });
+  const {
+    action: { acknowledgeSavedUploads, getUploadedObjectKeys, removeUploads, uploadImage },
+    state: { hasUploadErrors, isUploading: isUploadingImages },
+  } = useRegistrationResultImageUploads({
+    onUploadError: () => {
+      toast.error('이미지 업로드에 실패했습니다. 이미지를 다시 선택해주세요.', {
+        id: IMAGE_UPLOAD_ERROR_TOAST_ID,
+      });
+    },
+    resolveProductImageFileObjectKey,
+  });
   const {
     action: { changeProductField, deleteProductDrafts },
     state: { productDrafts },
@@ -135,13 +157,14 @@ export const RegistrationResultSection = ({
       hasPendingChangesNow,
       markChanged: markProductsChanged,
     },
-    state: { hasPendingChanges, revision, revisions: rowRevisions },
+    state: { hasPendingChanges, revision },
   } = useRegistrationResultDraftRevisions();
   const handleProductFieldChange = (
     productId: string,
     field: RegistrationResultEditableProductFieldTypes,
     value: string,
   ) => {
+    markProductsTouched([productId]);
     markProductsChanged([productId]);
     changeProductField(productId, field, value);
   };
@@ -156,11 +179,11 @@ export const RegistrationResultSection = ({
 
         return createProductWithCurrentStatus({
           hasProductImage,
-          hasLocalChanges: rowRevisions.has(product.id),
+          hasLocalChanges: touchedProductIds.has(product.id),
           product: productWithDrafts,
         });
       });
-  }, [imagePreviews, productDrafts, products, removedIds, rowRevisions]);
+  }, [imagePreviews, productDrafts, products, removedIds, touchedProductIds]);
   const { completedCount, needsEditCount, totalCount } = summary;
   const {
     action: { changeSearchValue, changeSelectedCategories },
@@ -236,22 +259,8 @@ export const RegistrationResultSection = ({
     selectedCategoryFilters: selectedCategories,
   });
 
-  const handleImageFileChange = (productId: string) => {
-    return (file: File) => {
-      if (!isSupportedProductImageFile(file)) {
-        toast.error('지원하지 않는 파일 형식입니다.', {
-          id: UNSUPPORTED_IMAGE_FILE_ERROR_TOAST_ID,
-        });
-
-        return;
-      }
-
-      markProductsChanged([productId]);
-      setImagePreview(productId, file);
-    };
-  };
-
   const handleDeleteSelected = () => {
+    markProductsTouched(selectedIds);
     markProductsChanged(selectedIds);
     setRemovedIds((previousRemovedIds) => {
       const nextRemovedIds = new Set(previousRemovedIds);
@@ -260,11 +269,7 @@ export const RegistrationResultSection = ({
 
       return nextRemovedIds;
     });
-    uploadedImageObjectKeyRef.current = new Map(
-      Array.from(uploadedImageObjectKeyRef.current).filter(
-        ([productId]) => !selectedIds.has(productId),
-      ),
-    );
+    removeUploads(selectedIds);
     deleteImagePreviews(selectedIds);
     deleteProductDrafts(selectedIds);
     clearSelection();
@@ -273,7 +278,7 @@ export const RegistrationResultSection = ({
 
   const hasLocalValidationErrors = useMemo(() => {
     return currentProducts.some((product) => {
-      if (!rowRevisions.has(product.id)) {
+      if (!touchedProductIds.has(product.id)) {
         return false;
       }
 
@@ -282,37 +287,13 @@ export const RegistrationResultSection = ({
 
       return !hasProductImage || Object.keys(fieldErrors).length > 0;
     });
-  }, [currentProducts, imagePreviews, rowRevisions]);
-
-  const resolveChangedProductImageObjectKeys = useCallback(async () => {
-    const nextUploadedImageObjectKeys = new Map(uploadedImageObjectKeyRef.current);
-    const productImageObjectKeys = new Map<string, string>();
-
-    for (const [productId, imagePreview] of imagePreviews) {
-      const cachedUpload = nextUploadedImageObjectKeys.get(productId);
-
-      if (cachedUpload?.file === imagePreview.file) {
-        productImageObjectKeys.set(productId, cachedUpload.objectKey);
-        continue;
-      }
-
-      if (resolveProductImageFileObjectKey == null) {
-        continue;
-      }
-
-      const objectKey = await resolveProductImageFileObjectKey(imagePreview.file);
-
-      nextUploadedImageObjectKeys.set(productId, { file: imagePreview.file, objectKey });
-      productImageObjectKeys.set(productId, objectKey);
-    }
-
-    uploadedImageObjectKeyRef.current = nextUploadedImageObjectKeys;
-
-    return productImageObjectKeys;
-  }, [imagePreviews, resolveProductImageFileObjectKey]);
+  }, [currentProducts, imagePreviews, touchedProductIds]);
 
   const acknowledgeSavedRevisions = useCallback(
-    (savedRevisionSnapshot: ReadonlyMap<string, number>) => {
+    (
+      savedRevisionSnapshot: ReadonlyMap<string, number>,
+      savedImageObjectKeys: ReadonlyMap<string, string>,
+    ) => {
       const acknowledgedProductIds = acknowledgeRevisions(savedRevisionSnapshot);
 
       if (acknowledgedProductIds.size === 0) {
@@ -320,14 +301,16 @@ export const RegistrationResultSection = ({
       }
 
       deleteProductDrafts(acknowledgedProductIds);
-      deleteImagePreviews(acknowledgedProductIds);
-      uploadedImageObjectKeyRef.current = new Map(
-        Array.from(uploadedImageObjectKeyRef.current).filter(
-          ([productId]) => !acknowledgedProductIds.has(productId),
+      const acknowledgedImageObjectKeys = new Map(
+        Array.from(savedImageObjectKeys).filter(([productId]) =>
+          acknowledgedProductIds.has(productId),
         ),
       );
+      const acknowledgedImageProductIds = acknowledgeSavedUploads(acknowledgedImageObjectKeys);
+
+      deleteImagePreviews(acknowledgedImageProductIds);
     },
-    [acknowledgeRevisions, deleteImagePreviews, deleteProductDrafts],
+    [acknowledgeRevisions, acknowledgeSavedUploads, deleteImagePreviews, deleteProductDrafts],
   );
 
   const saveCurrentDrafts = useCallback(
@@ -339,7 +322,7 @@ export const RegistrationResultSection = ({
       }
 
       try {
-        const productImageObjectKeys = await resolveChangedProductImageObjectKeys();
+        const productImageObjectKeys = getUploadedObjectKeys();
         const request = createPreparedProductDraftSaveRequest({
           productImageObjectKeys,
           productDrafts,
@@ -352,7 +335,7 @@ export const RegistrationResultSection = ({
         }
 
         if (!force && draftKey === lastSavedDraftKeyRef.current) {
-          acknowledgeSavedRevisions(savedRevisionSnapshot);
+          acknowledgeSavedRevisions(savedRevisionSnapshot, productImageObjectKeys);
 
           return lastDraftSyncResultRef.current;
         }
@@ -361,7 +344,7 @@ export const RegistrationResultSection = ({
 
         lastSavedDraftKeyRef.current = draftKey;
         lastDraftSyncResultRef.current = draftSyncResult;
-        acknowledgeSavedRevisions(savedRevisionSnapshot);
+        acknowledgeSavedRevisions(savedRevisionSnapshot, productImageObjectKeys);
 
         return draftSyncResult;
       } catch {
@@ -375,11 +358,11 @@ export const RegistrationResultSection = ({
     [
       acknowledgeSavedRevisions,
       currentProducts,
+      getUploadedObjectKeys,
       getRevisionSnapshot,
       onSaveDrafts,
       productDrafts,
       summary.needsEditCount,
-      resolveChangedProductImageObjectKeys,
       toast,
     ],
   );
@@ -394,10 +377,44 @@ export const RegistrationResultSection = ({
     onSave: saveCurrentDrafts,
     revision,
   });
+  const handleImageFileChange = (productId: string) => {
+    return (file: File) => {
+      if (!isSupportedProductImageFile(file)) {
+        toast.error('지원하지 않는 파일 형식입니다.', {
+          id: UNSUPPORTED_IMAGE_FILE_ERROR_TOAST_ID,
+        });
+
+        return;
+      }
+
+      if (!setImagePreview(productId, file)) {
+        return;
+      }
+
+      markProductsTouched([productId]);
+
+      void uploadImage(productId, file).then((uploadResult) => {
+        const latestUploadedObjectKey = getUploadedObjectKeys().get(productId);
+
+        if (
+          uploadResult == null ||
+          uploadResult.objectKey !== latestUploadedObjectKey ||
+          onSaveDrafts == null
+        ) {
+          return;
+        }
+
+        markProductsChanged([productId]);
+        void flushDrafts();
+      });
+    };
+  };
   const registerDisabled =
     needsEditCount > 0 ||
     hasPendingChanges ||
     hasLocalValidationErrors ||
+    hasUploadErrors ||
+    isUploadingImages ||
     isSavingDrafts ||
     isDraftSyncPending;
 
