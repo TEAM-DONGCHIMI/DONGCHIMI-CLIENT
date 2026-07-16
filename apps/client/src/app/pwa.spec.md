@@ -53,7 +53,9 @@
 - document navigation: `NetworkOnly`, then the precached `/offline` fallback when no response is available. Authenticated HTML is not persisted in Cache Storage.
 - `/_next/static/**`, local fonts, and PWA icons: bounded `CacheFirst` or `StaleWhileRevalidate` caches with expiration rules.
 - same-origin images fetched with `GET`: bounded `StaleWhileRevalidate`; failed images remain caller-owned UI state.
-- `/api/**`, `/oauth/callback`, cross-origin API requests, non-GET requests, and responses marked private/no-store: `NetworkOnly` and never persisted in Cache Storage.
+- `/api/**` and `/oauth/callback`: `NetworkOnly` and never persisted in Cache Storage.
+- cross-origin and non-GET requests: not intercepted by the service worker; they use the browser network path and are not persisted in this PWA's Cache Storage.
+- responses marked private/no-store: rejected by the public-response cache policy and never persisted in Cache Storage.
 - runtime cache names are versioned; activation removes obsolete runtime caches owned by this PWA, while Serwist removes outdated precache entries.
 
 ## Service Worker Lifecycle
