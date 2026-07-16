@@ -21,6 +21,7 @@
 - Route: `/markets/information-management`
 - Access/layout: protected no-sidebar layout. 진입 전 SNB는 관리 route를 가리킵니다.
 - Access rule: 로그인 session에 `marketId`가 없거나 상세 조회가 `MARKET_NOT_FOUND`로 실패하면 `/markets/information-registration`으로 replace 이동합니다.
+- 취소/수정 완료 action은 form 하단 우측에 나란히 배치합니다.
 - Shared boundary: 등록/관리 화면이 함께 변경되는 form composition은 `information-registration`의 page surface를 `mode`로 재사용합니다. 제품 전용 form이므로 design-system으로 승격하지 않습니다.
 - Overlay boundary: 이탈 확인 dialog는 `components/open-market-information-leave-dialog.tsx`의 OverlayKit `openAsync<boolean>` helper가 mount/open 상태와 결과 전달을 소유합니다.
 

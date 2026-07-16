@@ -5,14 +5,26 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ApiError } from '@/shared/api/api-error';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
-import { render, screen } from '@/test';
+import { render, screen, userEvent, waitFor } from '@/test';
 
 import { MarketInformationManagementPage } from './MarketInformationManagementPage';
 
-const { authState, useOwnerMarketDetailQuery, useUpdateOwnerMarketMutation } = vi.hoisted(() => ({
+const {
+  authState,
+  toastCompleted,
+  updateOwnerMarket,
+  useOwnerMarketDetailQuery,
+  useUpdateOwnerMarketMutation,
+} = vi.hoisted(() => ({
   authState: { marketId: 12 as number | undefined },
+  toastCompleted: vi.fn(),
+  updateOwnerMarket: vi.fn(),
   useOwnerMarketDetailQuery: vi.fn(),
   useUpdateOwnerMarketMutation: vi.fn(),
+}));
+
+vi.mock('@dongchimi/shared/toast', () => ({
+  useToast: () => ({ completed: toastCompleted }),
 }));
 
 vi.mock('@/domains/market/hooks', () => ({
@@ -21,8 +33,16 @@ vi.mock('@/domains/market/hooks', () => ({
 }));
 
 vi.mock('@/domains/market/components/market-information-form', () => ({
-  MarketInformationForm: () => <div>마트 정보 관리 폼</div>,
+  MarketInformationForm: ({
+    onSubmit,
+  }: {
+    onSubmit: (request: unknown, form: unknown, reset: () => void) => Promise<void>;
+  }) => <button onClick={() => void onSubmit({}, {}, vi.fn())}>수정 완료</button>,
   MarketInformationFormToastProvider: ({ children }: { children: ReactNode }) => children,
+}));
+
+vi.mock('@/domains/market/model', () => ({
+  createMarketInformationForm: vi.fn(() => ({})),
 }));
 
 vi.mock('@/shared/stores/auth-store', () => ({
@@ -50,6 +70,9 @@ const renderMarketInformationManagementPage = () => {
 describe('MarketInformationManagementPage', () => {
   beforeEach(() => {
     authState.marketId = 12;
+    toastCompleted.mockReset();
+    updateOwnerMarket.mockReset();
+    updateOwnerMarket.mockResolvedValue({ message: '서버 응답 메시지' });
     useOwnerMarketDetailQuery.mockReturnValue({
       data: undefined,
       error: null,
@@ -59,7 +82,7 @@ describe('MarketInformationManagementPage', () => {
     });
     useUpdateOwnerMarketMutation.mockReturnValue({
       isPending: false,
-      mutateAsync: vi.fn(),
+      mutateAsync: updateOwnerMarket,
     });
   });
 
@@ -89,5 +112,26 @@ describe('MarketInformationManagementPage', () => {
 
     expect(await screen.findByText('마트 정보 등록 페이지')).toBeInTheDocument();
     expect(screen.queryByText('마트 정보를 찾을 수 없습니다.')).not.toBeInTheDocument();
+  });
+
+  it('마트 정보 수정에 성공하면 고정된 완료 메시지를 표시한다', async () => {
+    const user = userEvent.setup();
+    useOwnerMarketDetailQuery.mockReturnValue({
+      data: {},
+      error: null,
+      isError: false,
+      isPending: false,
+      refetch: vi.fn(),
+    });
+
+    renderMarketInformationManagementPage();
+
+    await user.click(screen.getByRole('button', { name: '수정 완료' }));
+
+    await waitFor(() => {
+      expect(toastCompleted).toHaveBeenCalledWith('정보가 변경되었습니다.', {
+        id: 'market-information-management-completed',
+      });
+    });
   });
 });

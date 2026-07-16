@@ -11,7 +11,7 @@ import {
 } from '@/domains/market/components/market-information-form';
 import { useOwnerMarketDetailQuery, useUpdateOwnerMarketMutation } from '@/domains/market/hooks';
 import { createMarketInformationForm } from '@/domains/market/model';
-import { isApiError } from '@/shared/api';
+import { isApiError } from '@/shared/api/api-error';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/auth-store';
 
@@ -131,10 +131,10 @@ const MarketInformationManagementPageController = () => {
       title='마트 정보 관리'
       onDirtyChange={handleDirtyChange}
       onSubmit={async (request, _form, reset) => {
-        const response = await updateOwnerMarketMutation.mutateAsync({ marketId, request });
+        await updateOwnerMarketMutation.mutateAsync({ marketId, request });
 
         reset();
-        toast.completed(response.message, {
+        toast.completed('정보가 변경되었습니다.', {
           id: 'market-information-management-completed',
         });
       }}
