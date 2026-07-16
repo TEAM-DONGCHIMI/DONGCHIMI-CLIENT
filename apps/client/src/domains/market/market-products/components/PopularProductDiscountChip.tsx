@@ -9,6 +9,10 @@ type PopularProductDiscountChipProps = Readonly<{
 }>;
 
 export const PopularProductDiscountChip = ({ discountRate }: PopularProductDiscountChipProps) => {
+  if (discountRate <= 0) {
+    return null;
+  }
+
   return (
     <PointChip className={S.discountChipClassName} size='mobile'>{`${discountRate}%`}</PointChip>
   );

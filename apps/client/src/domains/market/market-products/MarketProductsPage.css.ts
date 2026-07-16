@@ -5,6 +5,7 @@ import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 import { cardMaxWidthVar as periodProductCardMaxWidthVar } from '@/shared/components/ui/period-product-card/PeriodProductCard.css';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
+const eventProductRowMinHeight = '14.8rem';
 
 export const pageClassName = style({
   minHeight: '100dvh',
@@ -491,6 +492,10 @@ export const eventProductPagesClassName = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '1.2rem',
+});
+
+export const eventProductContentClassName = style({
+  minHeight: eventProductRowMinHeight,
 });
 
 export const eventProductCardClassName = style({
