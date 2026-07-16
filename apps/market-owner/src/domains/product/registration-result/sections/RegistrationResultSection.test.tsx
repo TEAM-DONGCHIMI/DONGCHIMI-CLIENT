@@ -3,6 +3,7 @@ import { OverlayProvider, overlay } from 'overlay-kit';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { fireEvent, render, screen, userEvent, waitFor, within } from '@/test';
+import * as RegistrationResultStyles from '../components/RegistrationResult.css';
 import { registrationResultFixture, type RegistrationResultProduct } from '../fixtures';
 import {
   RegistrationResultSection,
@@ -164,10 +165,16 @@ describe('RegistrationResultSection', () => {
     await user.click(firstProductCheckbox);
 
     expect(allCheckbox).toHaveAttribute('aria-checked', 'mixed');
+    expect(allCheckbox.firstElementChild).toHaveClass(
+      RegistrationResultStyles.selectionBoxRecipe({ state: 'unchecked' }),
+    );
 
     await user.click(allCheckbox);
 
     expect(allCheckbox).toHaveAttribute('aria-checked', 'true');
+    expect(allCheckbox.firstElementChild).toHaveClass(
+      RegistrationResultStyles.selectionBoxRecipe({ state: 'checked' }),
+    );
     expect(screen.getByText('선택된 상품 (10)')).toBeInTheDocument();
   });
 

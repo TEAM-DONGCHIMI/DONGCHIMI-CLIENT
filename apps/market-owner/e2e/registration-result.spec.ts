@@ -52,9 +52,13 @@ const COMPLETED_PREPARED_PRODUCT_DRAFTS_RESPONSE = {
   },
 };
 
+type PreparedProductDraftsResponse =
+  | typeof PREPARED_PRODUCT_DRAFTS_RESPONSE
+  | typeof COMPLETED_PREPARED_PRODUCT_DRAFTS_RESPONSE;
+
 const mockPreparedProductDrafts = async (
   page: Page,
-  response = PREPARED_PRODUCT_DRAFTS_RESPONSE,
+  response: PreparedProductDraftsResponse = PREPARED_PRODUCT_DRAFTS_RESPONSE,
 ) => {
   await page.route(PREPARED_PRODUCT_DRAFT_ENDPOINT_PATTERN, async (route) => {
     const requestMethod = route.request().method();
@@ -122,7 +126,15 @@ test('registration result table keeps fixed columns while the viewport resizes',
   const tableHeader = getTableHeader(page);
   const table = tableHeader.locator('..');
   const tableScroll = table.locator('..');
+  const sortButton = page.getByRole('button', { name: '정렬' });
+  const sortTrailingIcon = sortButton.locator('span').last();
 
+  await expect(tableHeader).toHaveCSS('border-top-right-radius', '12px');
+  await expect(sortTrailingIcon).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+  await sortButton.click();
+  await expect(sortButton).toHaveAttribute('aria-expanded', 'true');
+  await expect(sortTrailingIcon).toHaveCSS('transform', 'matrix(-1, 0, 0, -1, 0, 0)');
+  await sortButton.click();
   await expect
     .poll(() => table.evaluate((element) => element.getBoundingClientRect().width))
     .toBe(1376);
