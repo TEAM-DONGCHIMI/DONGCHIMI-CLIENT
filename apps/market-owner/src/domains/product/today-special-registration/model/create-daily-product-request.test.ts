@@ -15,12 +15,11 @@ describe('createDailyProductRequest', () => {
         specialPrice: '4,500',
         startDate: '2026-06-30',
       },
-      s3BaseUrl: 'https://static.example.com/',
       uploadedImageObjectKey: '/tmp/PRODUCT_THUMBNAIL/product.png',
     });
 
     expect(request).toEqual({
-      thumbnailUrl: 'https://static.example.com/tmp/PRODUCT_THUMBNAIL/product.png',
+      thumbnailUrl: '/tmp/PRODUCT_THUMBNAIL/product.png',
       name: '토마토',
       category: 'VEGETABLE_FRUIT',
       promotionalPhrase: '멋쟁이 토마토',
@@ -29,23 +28,6 @@ describe('createDailyProductRequest', () => {
       discountStartDate: '2026-06-30',
       discountEndDate: '2026-06-30',
     });
-  });
-
-  it('does not create a relative image URL when the S3 base URL is missing', () => {
-    expect(() =>
-      createDailyProductRequest({
-        product: {
-          ...createEmptyTodaySpecialProductForm(),
-          category: '기타',
-          name: '상품',
-          salePrice: '2,000',
-          specialPrice: '1,000',
-          startDate: '2026-06-30',
-        },
-        s3BaseUrl: undefined,
-        uploadedImageObjectKey: 'tmp/PRODUCT_THUMBNAIL/product.png',
-      }),
-    ).toThrow('VITE_PUBLIC_S3_BASE_URL is not configured.');
   });
 
   it('uses the default product image and omits the promotional phrase when optional inputs are empty', () => {
@@ -58,7 +40,6 @@ describe('createDailyProductRequest', () => {
         specialPrice: '1,000',
         startDate: '2026-06-30',
       },
-      s3BaseUrl: undefined,
       uploadedImageObjectKey: null,
     });
 

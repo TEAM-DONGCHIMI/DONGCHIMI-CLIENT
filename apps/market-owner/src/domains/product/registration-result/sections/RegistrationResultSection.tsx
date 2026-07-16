@@ -23,7 +23,7 @@ import {
   getRegistrationResultProductFieldValues,
   type RegistrationResultProduct,
 } from '../model';
-import type { ResolveProductImageFileUrlTypes } from '../utils/resolve-product-image-file-url';
+import type { ResolveProductImageFileObjectKeyTypes } from '../utils/resolve-product-image-file-url';
 import { validateRegistrationResultProductFields } from '../utils/registration-result-product-validation';
 
 interface RegistrationResultSummary {
@@ -46,7 +46,7 @@ export interface RegistrationResultSectionProps {
   onDraftQueryChange?: (params: RegistrationResultDraftQueryParams) => void;
   onPrevious: () => void;
   onRegister: () => void;
-  resolveProductImageFileUrl?: ResolveProductImageFileUrlTypes;
+  resolveProductImageFileObjectKey?: ResolveProductImageFileObjectKeyTypes;
   onSaveDrafts?: (request: SavePreparedProductDraftsRequestTypes) => Promise<unknown>;
 }
 
@@ -131,11 +131,11 @@ export const RegistrationResultSection = ({
   onDraftQueryChange,
   onPrevious,
   onRegister,
-  resolveProductImageFileUrl,
+  resolveProductImageFileObjectKey,
   onSaveDrafts,
 }: RegistrationResultSectionProps) => {
   const toast = useToast();
-  const uploadedImageUrlRef = useRef<ReadonlyMap<string, { file: File; imageUrl: string }>>(
+  const uploadedImageObjectKeyRef = useRef<ReadonlyMap<string, { file: File; objectKey: string }>>(
     new Map(),
   );
   const isLeavingRef = useRef(false);
@@ -290,8 +290,10 @@ export const RegistrationResultSection = ({
 
       return nextRemovedIds;
     });
-    uploadedImageUrlRef.current = new Map(
-      Array.from(uploadedImageUrlRef.current).filter(([productId]) => !selectedIds.has(productId)),
+    uploadedImageObjectKeyRef.current = new Map(
+      Array.from(uploadedImageObjectKeyRef.current).filter(
+        ([productId]) => !selectedIds.has(productId),
+      ),
     );
     deleteImagePreviews(selectedIds);
     deleteProductDrafts(selectedIds);
@@ -305,32 +307,32 @@ export const RegistrationResultSection = ({
   const hasPendingDraftChanges = productDrafts.size > 0 || removedIds.size > 0;
   const hasPendingChanges = hasPendingDraftChanges || hasPendingImageChanges;
 
-  const resolveChangedProductImageUrls = useCallback(async () => {
-    const nextUploadedImageUrls = new Map(uploadedImageUrlRef.current);
-    const productImageUrls = new Map<string, string>();
+  const resolveChangedProductImageObjectKeys = useCallback(async () => {
+    const nextUploadedImageObjectKeys = new Map(uploadedImageObjectKeyRef.current);
+    const productImageObjectKeys = new Map<string, string>();
 
     for (const [productId, imagePreview] of imagePreviews) {
-      const cachedUpload = nextUploadedImageUrls.get(productId);
+      const cachedUpload = nextUploadedImageObjectKeys.get(productId);
 
       if (cachedUpload?.file === imagePreview.file) {
-        productImageUrls.set(productId, cachedUpload.imageUrl);
+        productImageObjectKeys.set(productId, cachedUpload.objectKey);
         continue;
       }
 
-      if (resolveProductImageFileUrl == null) {
+      if (resolveProductImageFileObjectKey == null) {
         continue;
       }
 
-      const imageUrl = await resolveProductImageFileUrl(imagePreview.file);
+      const objectKey = await resolveProductImageFileObjectKey(imagePreview.file);
 
-      nextUploadedImageUrls.set(productId, { file: imagePreview.file, imageUrl });
-      productImageUrls.set(productId, imageUrl);
+      nextUploadedImageObjectKeys.set(productId, { file: imagePreview.file, objectKey });
+      productImageObjectKeys.set(productId, objectKey);
     }
 
-    uploadedImageUrlRef.current = nextUploadedImageUrls;
+    uploadedImageObjectKeyRef.current = nextUploadedImageObjectKeys;
 
-    return productImageUrls;
-  }, [imagePreviews, resolveProductImageFileUrl]);
+    return productImageObjectKeys;
+  }, [imagePreviews, resolveProductImageFileObjectKey]);
 
   const saveCurrentDrafts = useCallback(
     async ({ force = false }: SaveCurrentDraftsOptions = {}) => {
@@ -343,9 +345,9 @@ export const RegistrationResultSection = ({
       }
 
       try {
-        const productImageUrls = await resolveChangedProductImageUrls();
+        const productImageObjectKeys = await resolveChangedProductImageObjectKeys();
         const request = createPreparedProductDraftSaveRequest({
-          productImageUrls,
+          productImageObjectKeys,
           productDrafts,
           products: currentProducts,
         });
@@ -372,7 +374,7 @@ export const RegistrationResultSection = ({
       hasPendingChanges,
       onSaveDrafts,
       productDrafts,
-      resolveChangedProductImageUrls,
+      resolveChangedProductImageObjectKeys,
       toast,
     ],
   );
