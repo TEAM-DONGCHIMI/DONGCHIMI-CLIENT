@@ -11,7 +11,9 @@ import { httpClient, type OwnerApiTypes } from '@/shared/api';
 export type GetProductListResponseTypes = OwnerApiTypes.GetProductsData;
 
 export interface GetProductListParams {
+  cursor?: number;
   marketId: number;
+  size?: number;
   sort?: OwnerProductSortTypes;
   type: OwnerProductListTypeTypes;
 }
@@ -55,11 +57,18 @@ const getProductListResponseSchema = z.object({
 }) satisfies z.ZodType<GetProductListResponseTypes>;
 
 export const getProductList = async ({
+  cursor,
   marketId,
+  size,
   sort = 'CATEGORY',
   type,
 }: GetProductListParams): Promise<GetProductListResponseTypes> => {
-  const endpoint = API_ENDPOINTS.owner.products.collection(marketId, { sort, type });
+  const endpoint = API_ENDPOINTS.owner.products.collection(marketId, {
+    cursor,
+    size,
+    sort,
+    type,
+  });
   const response = await httpClient.get<unknown>(endpoint);
 
   return validateApiResponse(getProductListResponseSchema, response, {

@@ -18,6 +18,8 @@ export type OwnerProductListTypeTypes = 'DAILY' | 'PERIODIC';
 export type OwnerProductSortTypes = 'CATEGORY' | 'LATEST' | 'VIEW_COUNT';
 
 export interface OwnerProductsSearchParamsTypes extends ApiSearchParamsTypes {
+  cursor?: number;
+  size?: number;
   sort?: OwnerProductSortTypes;
   type?: OwnerProductListTypeTypes;
 }

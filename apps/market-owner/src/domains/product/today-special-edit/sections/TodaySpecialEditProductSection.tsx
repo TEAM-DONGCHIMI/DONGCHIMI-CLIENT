@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import {
   createProductEditCardProps,
   createProductEditDisplayGroups,
@@ -8,10 +10,9 @@ import {
   type ProductEditFilterTypes,
   type ProductEditPageSelectionControls,
 } from '@/domains/product/components/product-edit-page-shell';
-import { useProductEditProducts, useProductListQuery } from '@/domains/product/hooks';
+import { useProductEditProducts, useProductListInfiniteQuery } from '@/domains/product/hooks';
 import {
-  createProductEditListItem,
-  createProductEditListStateKey,
+  createProductEditListItems,
   getProductListSort,
   type ProductEditListItemTypes,
 } from '@/domains/product/model/product-list';
@@ -30,18 +31,26 @@ interface TodaySpecialEditProductSectionProps {
 
 interface TodaySpecialEditProductListProps extends TodaySpecialEditProductSectionProps {
   initialProducts: ProductEditListItemTypes[];
+  hasNextPage: boolean;
+  isFetchNextPageError: boolean;
+  isFetchingNextPage: boolean;
+  onLoadNextPage: () => void;
 }
 
 const TodaySpecialEditProductList = ({
   autoOpenProductId,
   deletePending,
   initialProducts,
+  hasNextPage,
+  isFetchNextPageError,
+  isFetchingNextPage,
   marketId,
   selection,
   selectedFilter,
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
   onDeleteProduct,
+  onLoadNextPage,
 }: TodaySpecialEditProductListProps) => {
   const { deleteProduct, products, updateProduct } = useProductEditProducts(
     initialProducts,
@@ -65,6 +74,9 @@ const TodaySpecialEditProductList = ({
       deletePending={deletePending}
       editModalVariant='todaySpecial'
       groups={productGroups}
+      hasNextPage={hasNextPage}
+      isFetchNextPageError={isFetchNextPageError}
+      isFetchingNextPage={isFetchingNextPage}
       marketId={marketId}
       registrationHref={MARKET_OWNER_ROUTES.todaySpecialRegistration}
       selectedProductIds={selection.selectedProductIds}
@@ -72,6 +84,7 @@ const TodaySpecialEditProductList = ({
       onAutoOpenProductMissing={onAutoOpenProductMissing}
       onAutoOpenProductModalClose={onAutoOpenProductModalClose}
       onDeleteProduct={(product) => void deleteProduct(Number(product.productId))}
+      onLoadNextPage={onLoadNextPage}
       onToggleProductSelection={selection.onToggleProductSelection}
       onUpdateProduct={updateProduct}
     />
@@ -79,29 +92,38 @@ const TodaySpecialEditProductList = ({
 };
 
 export const TodaySpecialEditProductSection = (props: TodaySpecialEditProductSectionProps) => {
-  const productListQuery = useProductListQuery({
+  const productListQuery = useProductListInfiniteQuery({
     marketId: props.marketId,
     sort: getProductListSort(props.selectedFilter),
     type: 'DAILY',
   });
 
+  const products = useMemo(
+    () => createProductEditListItems(productListQuery.data?.pages ?? []),
+    [productListQuery.data?.pages],
+  );
+
   if (productListQuery.isPending) {
     return <ProductEditProductListLoading />;
   }
 
-  if (productListQuery.isError) {
+  if (productListQuery.isError && productListQuery.data == null) {
     throw productListQuery.error;
   }
 
-  const products = (productListQuery.data?.data?.content ?? []).map(createProductEditListItem);
-  const productListStateKey = createProductEditListStateKey(products);
+  const loadNextPage = () => {
+    void productListQuery.fetchNextPage({ cancelRefetch: false });
+  };
 
   return (
     <TodaySpecialEditProductList
-      key={`${props.selectedFilter}-${productListStateKey}`}
       {...props}
+      hasNextPage={Boolean(productListQuery.hasNextPage)}
       initialProducts={products}
+      isFetchNextPageError={productListQuery.isFetchNextPageError}
+      isFetchingNextPage={productListQuery.isFetchingNextPage}
       marketId={props.marketId}
+      onLoadNextPage={loadNextPage}
     />
   );
 };

@@ -11,6 +11,7 @@ import {
   type ProductEditProductGroup,
 } from './display-groups';
 import { ProductEditEmptyView } from './product-edit-empty-view';
+import { useProductListIntersectionObserver } from './use-product-list-intersection-observer';
 
 interface ProductEditProductListProps {
   deletePending?: boolean;
@@ -18,15 +19,19 @@ interface ProductEditProductListProps {
   editModalVariant: ProductEditCardVariantTypes;
   autoOpenProductId?: string | null;
   groups: ProductEditProductGroup[];
+  hasNextPage?: boolean;
+  isFetchNextPageError?: boolean;
+  isFetchingNextPage?: boolean;
   marketId: number;
   registrationHref: string;
   selectedProductIds?: (number | string)[];
   selectionMode?: boolean;
   onDeleteProduct?: (product: ProductEditCardProps) => void;
+  onLoadNextPage?: () => void;
   onAutoOpenProductMissing?: (productId: string) => void;
   onAutoOpenProductModalClose?: () => void;
   onToggleProductSelection?: (product: ProductEditCardProps) => void;
-  onUpdateProduct?: (productName: string, product: ProductEditCardProps) => void;
+  onUpdateProduct?: (productId: number, product: ProductEditCardProps) => void;
 }
 
 const hasProducts = (groups: ProductEditProductGroup[]) =>
@@ -48,6 +53,9 @@ export const ProductEditProductList = ({
   editModalVariant,
   autoOpenProductId,
   groups,
+  hasNextPage = false,
+  isFetchNextPageError = false,
+  isFetchingNextPage = false,
   marketId,
   selectedProductIds = [],
   selectionMode = false,
@@ -55,10 +63,15 @@ export const ProductEditProductList = ({
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
   onDeleteProduct,
+  onLoadNextPage,
   onToggleProductSelection,
   onUpdateProduct,
 }: ProductEditProductListProps) => {
   const openedProductIdRef = useRef<string | null>(null);
+  const loadMoreSentinelRef = useProductListIntersectionObserver<HTMLDivElement>({
+    enabled: hasNextPage && !isFetchingNextPage && !isFetchNextPageError,
+    onIntersect: onLoadNextPage,
+  });
 
   useEffect(() => {
     if (autoOpenProductId == null) {
@@ -97,7 +110,7 @@ export const ProductEditProductList = ({
       productId: targetProductId,
       variant: editModalVariant,
       onClose: onAutoOpenProductModalClose,
-      onSubmit: (updatedProduct) => onUpdateProduct?.(targetProduct.productName, updatedProduct),
+      onSubmit: (updatedProduct) => onUpdateProduct?.(targetProductId, updatedProduct),
     });
   }, [
     autoOpenProductId,
@@ -132,7 +145,7 @@ export const ProductEditProductList = ({
       product,
       productId,
       variant: editModalVariant,
-      onSubmit: (updatedProduct) => onUpdateProduct?.(product.productName, updatedProduct),
+      onSubmit: (updatedProduct) => onUpdateProduct?.(productId, updatedProduct),
     });
   };
   const selectedProductIdSet = new Set(selectedProductIds.map(String));
@@ -150,7 +163,7 @@ export const ProductEditProductList = ({
 
               return (
                 <ProductEditCardDesktop
-                  key={`${title}-${product.productName}`}
+                  key={product.productId ?? `${title}-${product.productName}`}
                   {...product}
                   actionsDisabled={selectionMode || deletePending}
                   aria-label={product['aria-label'] ?? `${product.productName} 상품 수정 카드`}
@@ -170,6 +183,23 @@ export const ProductEditProductList = ({
           </div>
         </section>
       ))}
+
+      {hasNextPage && !isFetchNextPageError && (
+        <div ref={loadMoreSentinelRef} aria-hidden='true' className={S.loadMoreSentinelClassName} />
+      )}
+      {isFetchingNextPage && (
+        <p className={S.loadingClassName} role='status'>
+          상품을 더 불러오는 중이에요.
+        </p>
+      )}
+      {isFetchNextPageError && (
+        <div className={S.loadMoreErrorClassName} role='alert'>
+          <p className={S.loadMoreErrorMessageClassName}>상품을 더 불러오지 못했어요.</p>
+          <button className={S.retryButtonClassName} onClick={onLoadNextPage} type='button'>
+            다시 시도
+          </button>
+        </div>
+      )}
     </section>
   );
 };
