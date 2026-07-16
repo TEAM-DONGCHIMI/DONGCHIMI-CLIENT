@@ -60,17 +60,6 @@ export const imageUploadCameraButtonClassName = style({
   zIndex: 1,
   top: '1.2rem',
   right: '1.2rem',
-  width: '4rem',
-  minWidth: '4rem',
-  height: '4rem',
-  padding: '1rem',
-  borderRadius: '100%',
-});
-
-export const imageUploadCameraIconClassName = style({
-  display: 'block',
-  width: '2rem',
-  height: '2rem',
 });
 
 export const imageUploadIconClassName = style({

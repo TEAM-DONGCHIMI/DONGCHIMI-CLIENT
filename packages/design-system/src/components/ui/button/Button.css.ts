@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { globalStyle, style } from '@vanilla-extract/css';
 
 import { recipe } from '../../../styles/recipe';
 import { atomic, semantic, typography } from '../../../tokens';
@@ -173,8 +173,12 @@ export const buttonIcon = style({
   flexShrink: 0,
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '0.13rem',
   pointerEvents: 'none',
   width: 16,
   height: 16,
+});
+
+globalStyle(`${buttonIcon} > svg`, {
+  width: '100%',
+  height: '100%',
 });
