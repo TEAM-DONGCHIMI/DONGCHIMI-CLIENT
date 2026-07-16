@@ -8,6 +8,8 @@ import { useDailyProductsQuery } from '@/domains/market/hooks/use-daily-products
 import { useMarketDetailQuery } from '@/domains/market/hooks/use-market-detail-query';
 
 import * as S from '../../MarketProductsPage.css';
+import type { TodaySpecialScrollRestorationTypes } from '../../hooks/market-products-scroll-restoration';
+import { useMarketProductsScrollRestoration } from '../../hooks/useMarketProductsScrollRestoration';
 import { EventDiscountProductsSection } from '../../sections/EventDiscountProductsSection';
 import { MarketOverviewSection } from '../../sections/MarketOverviewSection';
 import { PopularProductsSection } from '../../sections/PopularProductsSection';
@@ -23,6 +25,7 @@ const DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT = 2;
 type TodaySpecialProductsQuerySectionProps = Readonly<{
   marketId: number;
   marketSlug: string;
+  restorationState?: TodaySpecialScrollRestorationTypes;
 }>;
 
 const TodaySpecialProductsQueryState = ({ children }: Readonly<{ children: ReactNode }>) => {
@@ -41,6 +44,7 @@ const TodaySpecialProductsQueryState = ({ children }: Readonly<{ children: React
 const TodaySpecialProductsQuerySection = ({
   marketId,
   marketSlug,
+  restorationState,
 }: TodaySpecialProductsQuerySectionProps) => {
   const { data, isError, isPending, refetch } = useDailyProductsQuery({ marketId });
 
@@ -67,13 +71,19 @@ const TodaySpecialProductsQuerySection = ({
     <TodaySpecialProductsSection
       marketSlug={marketSlug}
       products={data.products}
+      restorationState={restorationState}
       totalCount={data.totalCount}
     />
   );
 };
 
 export const MarketProductsQueryContent = ({ marketSlug }: MarketProductsQueryContentProps) => {
+  const restorationState = useMarketProductsScrollRestoration(marketSlug);
   const { data: market, isError, isPending, refetch } = useMarketDetailQuery({ slug: marketSlug });
+  const todaySpecialRestorationState =
+    restorationState?.section === 'today-special' ? restorationState : undefined;
+  const eventDiscountRestorationState =
+    restorationState?.section === 'event-discount' ? restorationState : undefined;
 
   if (isPending) {
     return (
@@ -103,11 +113,16 @@ export const MarketProductsQueryContent = ({ marketSlug }: MarketProductsQueryCo
       <div className={S.productSectionsFrameClassName}>
         <PopularProductsSection marketSlug={marketSlug} products={market.top3} />
 
-        <TodaySpecialProductsQuerySection marketId={market.marketId} marketSlug={marketSlug} />
+        <TodaySpecialProductsQuerySection
+          marketId={market.marketId}
+          marketSlug={marketSlug}
+          restorationState={todaySpecialRestorationState}
+        />
 
         <EventDiscountProductsSection
           marketId={market.marketId}
           marketSlug={marketSlug}
+          restorationState={eventDiscountRestorationState}
           visibleCategoryCount={DEFAULT_EVENT_CATEGORY_VISIBLE_COUNT}
         />
       </div>
