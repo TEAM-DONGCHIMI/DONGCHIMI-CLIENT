@@ -52,7 +52,7 @@
 - confirm view는 auth store의 현재 `marketId`로 기간 할인 전단 미리보기를 조회한다.
 - confirm/share view header는 상품 검색창을 렌더링하지 않습니다.
 - query key는 `marketId`를 포함한다.
-- 전단 수정 후 돌아왔을 때 30초 전역 stale cache의 이전 개수를 표시하지 않도록 confirm view가 mount될 때마다 미리보기를 재조회한다.
+- 전단 수정 저장이 완료되면 기간 할인 미리보기 query를 invalidate하고 confirm view에서 변경된 상품 개수를 다시 조회한다.
 - 조회 성공 시 `daily.totalCount`는 오늘의 특가 요약 개수로, `preparedProducts.length`는 행사 할인 상품 요약 개수로 사용한다.
 - 모바일 미리보기는 market 정보, 영업시간, top3, daily products, prepared products를 API 응답에서 렌더링한다.
 - `전단 공유하기`는 현재 `marketId`로 상품 최종 저장 mutation을 먼저 호출하고, 성공한 경우에만 전단 발행 mutation을 호출한다.

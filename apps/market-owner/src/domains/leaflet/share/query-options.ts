@@ -18,7 +18,6 @@ export const periodicPreviewQueryOptions = ({ marketId }: PeriodicPreviewQueryPa
 
       return getPeriodicPreview(marketId);
     },
-    refetchOnMount: 'always',
     throwOnError: false,
   });
 };
