@@ -168,6 +168,9 @@ const MarketShareBottomSheetContent = ({
           </button>
         </div>
       </BottomSheet.Body>
+      <BottomSheet.Footer>
+        <BottomSheet.Close>닫기</BottomSheet.Close>
+      </BottomSheet.Footer>
     </>
   );
 };
