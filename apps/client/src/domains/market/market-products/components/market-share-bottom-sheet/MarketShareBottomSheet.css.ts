@@ -149,6 +149,14 @@ export const actionIconClassName = style({
   lineHeight: 0,
 });
 
+export const shareCloseButtonClassName = style({
+  selectors: {
+    '&&:hover:not(:disabled)': {
+      backgroundColor: atomic.common[0],
+    },
+  },
+});
+
 export const toastIconClassName = style({
   ...typography['heading-3-regular'],
   display: 'block',

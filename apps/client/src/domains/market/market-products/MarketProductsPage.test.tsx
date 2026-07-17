@@ -564,6 +564,23 @@ describe('MarketProductsPage', () => {
     expect(within(dialog).getByRole('region', { name: '토스트 알림' })).toBeInTheDocument();
   });
 
+  it('closes the leaflet share sheet and restores focus to its trigger', async () => {
+    const user = userEvent.setup();
+
+    await renderMarketProductsPage();
+
+    const trigger = screen.getByRole('button', { name: '공유하기' });
+
+    await user.click(trigger);
+
+    const dialog = await screen.findByRole('dialog', { name: '전단 공유하기' });
+
+    await user.click(within(dialog).getByRole('button', { name: '닫기' }));
+
+    expect(screen.queryByRole('dialog', { name: '전단 공유하기' })).not.toBeInTheDocument();
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
   it('opens the native PWA install prompt from the leaflet share sheet', async () => {
     const user = userEvent.setup();
     const { event, prompt } = createBeforeInstallPromptEvent();
