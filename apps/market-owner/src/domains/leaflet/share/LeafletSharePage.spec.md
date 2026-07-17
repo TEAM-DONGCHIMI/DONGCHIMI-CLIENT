@@ -7,7 +7,7 @@
 - Page: `share`
 - Route: `/leaflets/share`
 - Path: `apps/market-owner/src/domains/leaflet/share/LeafletSharePage.tsx`
-- Jira: DCMSM-29, DCMSM-67, DCMSM-71, DCMSM-77, DCMSM-83, DCMSM-86, DCMSM-99
+- Jira: DCMSM-29, DCMSM-67, DCMSM-71, DCMSM-77, DCMSM-83, DCMSM-86, DCMSM-99, DCMSM-112
 - Status: Implemented
 
 ## Purpose
@@ -52,6 +52,7 @@
 - confirm view는 auth store의 현재 `marketId`로 기간 할인 전단 미리보기를 조회한다.
 - confirm/share view header는 상품 검색창을 렌더링하지 않습니다.
 - query key는 `marketId`를 포함한다.
+- 전단 수정 후 돌아왔을 때 30초 전역 stale cache의 이전 개수를 표시하지 않도록 confirm view가 mount될 때마다 미리보기를 재조회한다.
 - 조회 성공 시 `daily.totalCount`는 오늘의 특가 요약 개수로, `preparedProducts.length`는 행사 할인 상품 요약 개수로 사용한다.
 - 모바일 미리보기는 market 정보, 영업시간, top3, daily products, prepared products를 API 응답에서 렌더링한다.
 - `전단 공유하기`는 현재 `marketId`로 상품 최종 저장 mutation을 먼저 호출하고, 성공한 경우에만 전단 발행 mutation을 호출한다.
@@ -85,6 +86,7 @@
 - [ ] `/leaflets/share` route renders `오늘의 전단 최종 확인`
 - [ ] route header does not render product search
 - [ ] clicking `전단 수정하기` navigates to `/products/registration-result`
+- [ ] returning after leaflet edits refetches the preview and renders the updated product counts
 - [ ] clicking `전단 공유하기` confirms product drafts and then publishes the leaflet with the current marketId
 - [ ] failed product confirmation does not publish and keeps the confirmation view
 - [ ] pending product confirmation or publish disables the action and renders `전단 발행 중`

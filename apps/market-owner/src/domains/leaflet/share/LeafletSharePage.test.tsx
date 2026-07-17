@@ -81,6 +81,7 @@ const createTestQueryClient = () => {
       },
       queries: {
         retry: false,
+        staleTime: 30_000,
       },
     },
   });
@@ -208,6 +209,33 @@ describe('LeafletSharePage', () => {
       await screen.findByRole('heading', { name: '파일 등록 상품 수정 확인' }),
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.registrationResult);
+  });
+
+  it('refetches the preview when returning after editing the leaflet', async () => {
+    const queryClient = createTestQueryClient();
+    const wrapper = createWrapper(queryClient);
+    const firstRender = render(<LeafletSharePage />, { wrapper });
+
+    expect(await screen.findByRole('button', { name: '전단 수정하기' })).toBeInTheDocument();
+    expect(mockedGetPeriodicPreview).toHaveBeenCalledTimes(1);
+
+    firstRender.unmount();
+    mockedGetPeriodicPreview.mockResolvedValueOnce({
+      ...periodicPreviewFixture,
+      preparedProducts: [
+        ...periodicPreviewFixture.preparedProducts,
+        {
+          ...periodicPreviewFixture.preparedProducts[0],
+          preparedProductId: 302,
+          name: '추가 행사 상품',
+        },
+      ],
+    });
+
+    render(<LeafletSharePage />, { wrapper });
+
+    expect(await screen.findByText('2개')).toBeInTheDocument();
+    expect(mockedGetPeriodicPreview).toHaveBeenCalledTimes(2);
   });
 
   it('disables the share action while product confirmation is pending', async () => {
