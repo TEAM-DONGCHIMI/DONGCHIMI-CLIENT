@@ -16,7 +16,7 @@
 
 - Figma: https://www.figma.com/design/xIDbjqPKzG4bQL5Gaoqfvb/APPJAM?node-id=267-14240
 - Node ID: 267:14240 (Mobile Mart Comment Card)
-- Jira: DCMCL-4
+- Jira: DCMCL-4, DCMCL-37
 
 ## Requirements
 
@@ -39,7 +39,7 @@
 
 ## Styling Constraints
 
-- 배경: `semantic.primary.light` (#E6FAF2), radius 12.
+- 배경: `atomic.neutral[5]` (#F9FAFB), radius 12.
 - padding: 좌우 18 / 상하 14, 내부 세로 배치 · 라벨/문구 간격 4.
 - 라벨: `typography['body-3-semibold']` + `atomic.neutral[60]` (#6B7684).
 - 문구: `typography['body-2-medium']` + `atomic.neutral[90]` (#191F28), 1줄 말줄임.

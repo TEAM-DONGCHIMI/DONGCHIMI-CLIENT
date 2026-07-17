@@ -1,5 +1,5 @@
 import { recipe } from '@dongchimi/design-system/styles';
-import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
+import { atomic, typography } from '@dongchimi/design-system/tokens';
 
 export const cardText = recipe({
   base: {
@@ -11,7 +11,7 @@ export const cardText = recipe({
     width: '100%',
     padding: '1.4rem 1.8rem',
     borderRadius: 12,
-    backgroundColor: semantic.primary.light,
+    backgroundColor: atomic.neutral[5],
   },
 });
 

@@ -70,7 +70,6 @@ const EventDiscountEditProductList = ({
     autoOpenProductId,
     groups: productGroups,
     marketId,
-    selectionMode: selection.selectionMode,
     variant: 'eventDiscount',
     onAutoOpenProductMissing,
     onAutoOpenProductModalClose,

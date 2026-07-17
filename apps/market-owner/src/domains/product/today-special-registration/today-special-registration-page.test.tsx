@@ -79,12 +79,28 @@ describe('TodaySpecialRegistrationPage', () => {
     registerDailyProduct.mockReset();
     let nextProductId = 101;
 
-    registerDailyProduct.mockImplementation(async () => ({
-      success: true,
-      code: 'SUCCESS',
-      message: '요청에 성공했습니다.',
-      data: { productId: nextProductId++ },
-    }));
+    registerDailyProduct.mockImplementation(async ({ request }) => {
+      const productId = nextProductId++;
+
+      return {
+        success: true,
+        code: 'SUCCESS',
+        message: '요청에 성공했습니다.',
+        data: {
+          productId,
+          name: request.name,
+          dealType: 'DAILY',
+          thumbnailUrl: `https://cdn.example.com/products/${productId}.png`,
+          originalPrice: request.originalPrice,
+          discountedPrice: request.discountedPrice,
+          category: request.category,
+          categoryName: '채소/과일',
+          promotionalPhrase: request.promotionalPhrase ?? null,
+          discountStartDate: request.discountStartDate,
+          discountEndDate: request.discountEndDate,
+        },
+      };
+    });
     deleteProduct.mockReset();
     deleteProduct.mockResolvedValue({
       success: true,
@@ -202,11 +218,13 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
   });
 
-  it('does not upload an image when the S3 base URL is missing', async () => {
+  it('registers an uploaded image object key without requiring an S3 base URL', async () => {
     const user = userEvent.setup();
     const imageFile = new File(['image'], 'product.png', { type: 'image/png' });
+    const uploadedImageObjectKey = 'tmp/PRODUCT_THUMBNAIL/product.png';
 
     vi.stubEnv('VITE_PUBLIC_S3_BASE_URL', '');
+    uploadProductImage.mockResolvedValueOnce(uploadedImageObjectKey);
     renderTodaySpecialRegistrationPage();
 
     await user.upload(screen.getByLabelText('상품 이미지'), imageFile);
@@ -217,11 +235,12 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
-    expect(uploadProductImage).not.toHaveBeenCalled();
-    expect(registerDailyProduct).not.toHaveBeenCalled();
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      '상품을 등록하지 못했습니다. 다시 시도해주세요.',
-    );
+    expect(uploadProductImage).toHaveBeenCalledWith(expect.objectContaining({ imageFile }));
+    expect(registerDailyProduct).toHaveBeenCalledWith({
+      marketId: 12,
+      request: expect.objectContaining({ thumbnailUrl: uploadedImageObjectKey }),
+    });
+    expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
   });
 
   it('keeps the page open and shows an error toast when image upload fails', async () => {
@@ -393,7 +412,11 @@ describe('TodaySpecialRegistrationPage', () => {
 
     expect(screen.getByLabelText('상품명')).toHaveValue('첫번째 상품');
     expect(screen.getByLabelText('상품명')).toBeEnabled();
-    expect(screen.getByRole('button', { name: '수정 완료' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: '등록 완료' })).toBeEnabled();
+    expect(screen.getByAltText('등록할 상품 이미지 미리보기')).toHaveAttribute(
+      'src',
+      expect.stringMatching(/^blob:/),
+    );
 
     await user.click(screen.getByRole('button', { name: '다음 상품' }));
 
@@ -478,7 +501,7 @@ describe('TodaySpecialRegistrationPage', () => {
 
     await user.clear(screen.getByLabelText('상품명'));
     await user.type(screen.getByLabelText('상품명'), '수정 후 상품');
-    await user.click(screen.getByRole('button', { name: '수정 완료' }));
+    await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
     await waitFor(() => {
       expect(updateProduct).toHaveBeenCalledWith({
@@ -492,7 +515,7 @@ describe('TodaySpecialRegistrationPage', () => {
           name: '수정 후 상품',
           originalPrice: 5000,
           promotionalPhrase: null,
-          thumbnailUrl: '/images/product-replace.svg',
+          thumbnailUrl: 'https://cdn.example.com/products/101.png',
           type: 'DAILY',
         },
       });
@@ -505,7 +528,7 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(screen.getByLabelText('상품명')).toHaveValue('수정 후 상품');
   });
 
-  it('sends a changed image object key and stores its public URL in the snapshot', async () => {
+  it('sends a changed image object key while keeping its local preview in the snapshot', async () => {
     const user = userEvent.setup();
     const updatedImage = new File(['updated'], 'updated.png', { type: 'image/png' });
 
@@ -519,7 +542,7 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
     await user.click(screen.getByRole('button', { name: '이전 상품' }));
     await user.upload(screen.getByLabelText('상품 이미지'), updatedImage);
-    await user.click(screen.getByRole('button', { name: '수정 완료' }));
+    await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
     await waitFor(() => expect(uploadProductThumbnail).toHaveBeenCalledWith(updatedImage));
     expect(updateProduct).toHaveBeenCalledWith(
@@ -533,7 +556,7 @@ describe('TodaySpecialRegistrationPage', () => {
     );
     expect(screen.getByAltText('등록할 상품 이미지 미리보기')).toHaveAttribute(
       'src',
-      'https://static.example.com/tmp/PRODUCT_THUMBNAIL/updated.png',
+      expect.stringMatching(/^blob:/),
     );
   });
 
@@ -558,9 +581,9 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '상품 계속 등록' }));
     await user.click(screen.getByRole('button', { name: '이전 상품' }));
-    await user.click(screen.getByRole('button', { name: '수정 완료' }));
+    await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
-    expect(await screen.findByRole('button', { name: '수정 중' })).toBeDisabled();
+    expect(await screen.findByRole('button', { name: '등록 중' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '상품 계속 등록' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '다음 상품' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '등록 상품 삭제' })).toBeDisabled();
@@ -573,7 +596,7 @@ describe('TodaySpecialRegistrationPage', () => {
       });
     });
 
-    expect(await screen.findByRole('button', { name: '수정 완료' })).toBeEnabled();
+    expect(await screen.findByRole('button', { name: '등록 완료' })).toBeEnabled();
   });
 
   it('keeps edited registered values when the update request fails', async () => {
@@ -598,11 +621,11 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.click(screen.getByRole('button', { name: '이전 상품' }));
     await user.clear(screen.getByLabelText('상품명'));
     await user.type(screen.getByLabelText('상품명'), '실패해도 유지할 값');
-    await user.click(screen.getByRole('button', { name: '수정 완료' }));
+    await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('상품 수정에 실패했습니다.');
     expect(screen.getByLabelText('상품명')).toHaveValue('실패해도 유지할 값');
-    expect(screen.getByRole('button', { name: '수정 완료' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: '등록 완료' })).toBeEnabled();
   });
 
   it('confirms registered product deletion and preserves the current draft after success', async () => {

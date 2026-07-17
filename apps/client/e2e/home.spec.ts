@@ -1,12 +1,66 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const routeShellTimeout = 30_000;
+const clientOrigin = process.env.CLIENT_E2E_ORIGIN ?? '';
 const marketProductsPath = '/markets/mangwon-fresh';
 const productDetailPath = `${marketProductsPath}/products/101`;
 const productDetailViewports = [
   { height: 812, width: 375 },
   { height: 932, width: 430 },
 ] as const;
+const marketShareSheetViewports = [
+  { height: 812, width: 375 },
+  { height: 932, width: 430 },
+  { height: 900, width: 900 },
+] as const;
+
+const createSuccessResponse = (data: unknown) => ({
+  code: 'SUCCESS',
+  data,
+  message: '요청에 성공했습니다.',
+  success: true,
+});
+
+const mockMarketProductsResponses = async (page: Page) => {
+  await page.route('**/api/markets/mangwon-fresh*', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: createSuccessResponse({
+        address: '서울 마포구 월드컵로 13길 1',
+        businessHours: [],
+        isHolidayClosed: false,
+        isOpenNow: true,
+        marketId: 1,
+        marketPhone1: '02-123-4567',
+        marketPhone2: null,
+        name: '망원 신선마트',
+        ownerPhone: '010-1234-5678',
+        thumbnailUrl: null,
+        top3: [],
+      }),
+      status: 200,
+    });
+  });
+  await page.route('**/api/markets/products/daily?*', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: createSuccessResponse({ products: [], totalCount: 0 }),
+      status: 200,
+    });
+  });
+  await page.route('**/api/markets/products/periodic?*', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      json: createSuccessResponse({
+        availableCategories: [],
+        content: [],
+        hasNext: false,
+        nextCursor: null,
+      }),
+      status: 200,
+    });
+  });
+};
 
 test('client root route redirects to login', async ({ page }) => {
   await page.goto('/');
@@ -33,6 +87,42 @@ test('client market products route shell renders', async ({ page }) => {
   await page.goto(marketProductsPath);
   await expect(page.getByRole('heading', { name: '전단보기' })).toBeVisible({
     timeout: routeShellTimeout,
+  });
+});
+
+test.describe('client market share sheet', () => {
+  test.use({ serviceWorkers: 'block' });
+
+  test('follows the mobile max width and exposes the close footer', async ({ page }) => {
+    await mockMarketProductsResponses(page);
+
+    for (const viewport of marketShareSheetViewports) {
+      await page.setViewportSize(viewport);
+      await page.goto(`${clientOrigin}${marketProductsPath}`);
+
+      const shareTrigger = page.getByRole('button', { name: '공유하기' });
+
+      await expect(shareTrigger).toBeVisible({ timeout: routeShellTimeout });
+      await shareTrigger.click();
+
+      const dialog = page.getByRole('dialog', { name: '전단 공유하기' });
+      const closeButton = dialog.getByRole('button', { name: '닫기' });
+      const footer = closeButton.locator('..');
+      const appShellBox = await page.locator('.client-app-shell').boundingBox();
+      const dialogBox = await dialog.boundingBox();
+
+      expect(appShellBox).not.toBeNull();
+      expect(dialogBox).not.toBeNull();
+      expect(dialogBox?.width).toBeCloseTo(appShellBox?.width ?? 0, 0);
+      expect(dialogBox?.x).toBeCloseTo(appShellBox?.x ?? 0, 0);
+      await expect(footer).toHaveCSS('border-top-width', '1px');
+      await expect(footer).toHaveCSS('border-top-color', 'rgb(229, 232, 235)');
+
+      await closeButton.click();
+
+      await expect(dialog).toBeHidden();
+      await expect(shareTrigger).toBeFocused();
+    }
   });
 });
 

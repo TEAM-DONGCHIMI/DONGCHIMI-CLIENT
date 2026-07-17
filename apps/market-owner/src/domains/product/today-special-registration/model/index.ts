@@ -9,7 +9,10 @@ export {
   sanitizeProductDescription,
   sanitizeProductName,
 } from './product-form.utils';
-export { createDailyProductRequest } from './create-daily-product-request';
+export {
+  createDailyProductRequest,
+  DEFAULT_PRODUCT_THUMBNAIL_URL,
+} from './create-daily-product-request';
 export { createTodaySpecialProductUpdateValues } from './create-today-special-product-update-values';
 export {
   todaySpecialProductFormSchema,

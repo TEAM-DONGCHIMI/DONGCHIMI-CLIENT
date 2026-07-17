@@ -60,6 +60,7 @@ describe('ProductDetailPage', () => {
 
     expect(await screen.findByRole('heading', { name: '삼겹살 500g' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '오늘의 특가' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: '상품 행사 정보' })).toHaveTextContent('오늘의 특가');
     expect(screen.getByAltText('삼겹살 500g 상품 이미지')).toHaveAttribute(
       'src',
       PRODUCT_DETAIL_API_RESPONSE_FIXTURE.data.thumbnailUrl,
@@ -67,6 +68,30 @@ describe('ProductDetailPage', () => {
     expect(screen.getByRole('note', { name: '점장 한마디' })).toHaveTextContent(
       '오늘 들어온 삼겹살입니다.',
     );
+  });
+
+  it('행사 할인 상품은 행사 품목과 기간 chip을 표시한다', async () => {
+    server.use(
+      http.get(PRODUCT_DETAIL_API_PATH, () => {
+        return HttpResponse.json({
+          ...PRODUCT_DETAIL_API_RESPONSE_FIXTURE,
+          data: {
+            ...PRODUCT_DETAIL_API_RESPONSE_FIXTURE.data,
+            dealType: 'PERIODIC',
+            discountEndDate: '2026-07-18',
+          },
+        });
+      }),
+    );
+
+    renderProductDetailPage();
+
+    expect(await screen.findByRole('heading', { name: '행사 할인 상품' })).toBeInTheDocument();
+
+    const promotionGroup = screen.getByRole('group', { name: '상품 행사 정보' });
+
+    expect(promotionGroup).toHaveTextContent('행사 할인 품목');
+    expect(promotionGroup).toHaveTextContent('7.16 ~ 7.18');
   });
 
   it('marketId를 해소하는 동안 상품 상세 요청을 시작하지 않는다', async () => {

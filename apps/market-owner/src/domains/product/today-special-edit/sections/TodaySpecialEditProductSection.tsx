@@ -66,7 +66,6 @@ const TodaySpecialEditProductList = ({
     autoOpenProductId,
     groups: productGroups,
     marketId,
-    selectionMode: selection.selectionMode,
     variant: 'todaySpecial',
     onAutoOpenProductMissing,
     onAutoOpenProductModalClose,

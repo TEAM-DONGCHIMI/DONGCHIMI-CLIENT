@@ -8,6 +8,7 @@ export interface KakaoLoginPayload {
 export interface KakaoLoginResponse {
   code: string;
   message: string;
+  redirectTo?: string;
   success: boolean;
 }
 

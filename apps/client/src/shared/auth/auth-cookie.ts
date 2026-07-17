@@ -2,6 +2,7 @@ import type { NextResponse } from 'next/server';
 
 export const AUTH_COOKIE_NAMES = {
   accessToken: 'access_token',
+  kakaoOAuthReturnTo: 'kakao_oauth_return_to',
   kakaoOAuthState: 'kakao_oauth_state',
   refreshToken: 'refreshToken',
 } as const;
@@ -17,6 +18,7 @@ const AUTH_COOKIE_PATHS = {
 } as const;
 
 const AUTH_COOKIE_MAX_AGES = {
+  kakaoOAuthReturnTo: 10 * 60,
   kakaoOAuthState: 10 * 60,
 } as const;
 
@@ -98,8 +100,41 @@ export const setKakaoOAuthStateCookie = (response: NextResponse, state: string) 
   });
 };
 
+export const setKakaoOAuthReturnToCookie = (response: NextResponse, returnTo: string) => {
+  response.cookies.set(AUTH_COOKIE_NAMES.kakaoOAuthReturnTo, returnTo, {
+    ...getBaseCookieOptions(),
+    maxAge: AUTH_COOKIE_MAX_AGES.kakaoOAuthReturnTo,
+    path: AUTH_COOKIE_PATHS.kakaoOAuth,
+  });
+};
+
+export const getKakaoOAuthReturnToCookie = (request: Request) => {
+  const cookieValue = getRequestCookie(request, AUTH_COOKIE_NAMES.kakaoOAuthReturnTo);
+
+  if (!cookieValue) {
+    return undefined;
+  }
+
+  try {
+    return decodeURIComponent(cookieValue);
+  } catch {
+    return undefined;
+  }
+};
+
 export const clearKakaoOAuthStateCookie = (response: NextResponse) => {
   response.cookies.set(AUTH_COOKIE_NAMES.kakaoOAuthState, '', {
+    ...getBaseCookieOptions(),
+    maxAge: 0,
+    path: AUTH_COOKIE_PATHS.kakaoOAuth,
+  });
+
+  return response;
+};
+
+export const clearKakaoOAuthCookies = (response: NextResponse) => {
+  clearKakaoOAuthStateCookie(response);
+  response.cookies.set(AUTH_COOKIE_NAMES.kakaoOAuthReturnTo, '', {
     ...getBaseCookieOptions(),
     maxAge: 0,
     path: AUTH_COOKIE_PATHS.kakaoOAuth,

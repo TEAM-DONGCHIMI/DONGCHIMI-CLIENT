@@ -34,7 +34,7 @@
 - invalid: 기존 등록 schema를 사용하며 필수값이 유효하지 않으면 수정 완료 버튼을 비활성화합니다.
 - dirty: 취소 또는 다른 route 이동 시 `저장하지 않고 나가시겠어요?` dialog를 표시합니다.
 - leave result: OverlayKit 확인 결과가 `true`이면 이동하고, `false`이면 현재 form과 route를 유지합니다.
-- success: 수정 완료 시 fixture submit 후 `정보가 변경되었습니다.` toast를 표시하고 현재 값을 pristine 기준으로 재설정합니다.
+- success: 수정 완료 시 `정보가 변경되었습니다.` toast를 1.5초 동안 표시하고 현재 값을 pristine 기준으로 재설정한 뒤 홈으로 replace 이동합니다. 저장 성공에 따른 이동은 dirty 이탈 확인을 표시하지 않습니다.
 
 ## Data
 
@@ -57,7 +57,7 @@
 - `PUT /v1/owners/markets/{marketId}`로 현재 폼 값을 전송합니다.
 - 공휴일 휴무 여부는 `isHolidayClosed` boolean으로 전송하며, 주간 휴무일은 `businessHours`의 비영업 슬롯으로 전송합니다.
 - 요청 중에는 수정 버튼을 비활성화하고 `수정 중...`을 표시합니다.
-- 성공하면 상세 query를 무효화하고 dirty 상태를 초기화한 뒤 서버 message Toast를 표시합니다.
+- 성공하면 상세 query를 무효화하고 dirty 상태를 초기화한 뒤 완료 Toast를 1.5초 동안 표시하고 홈으로 replace 이동합니다.
 - `INVALID_INPUT`, `MARKET_ACCESS_DENIED`, `MARKET_NOT_FOUND`, `MARKET_ALREADY_EXISTS`는 서버 message를 표시합니다.
 
 - [ ] `git diff --check`

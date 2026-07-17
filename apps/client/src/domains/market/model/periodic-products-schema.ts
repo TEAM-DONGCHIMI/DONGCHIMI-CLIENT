@@ -21,7 +21,10 @@ export const periodicProductCategorySchema = z.enum(PERIODIC_PRODUCT_CATEGORIES)
 export type PeriodicProductCategoryTypes = z.infer<typeof periodicProductCategorySchema>;
 
 // generated string[] 카테고리를 화면이 지원하는 enum으로 좁혀 검증한다.
-type PeriodicProductsPageContractTypes = UserApiTypes.PeriodicProductListResponse & {
+type PeriodicProductsPageContractTypes = Omit<
+  UserApiTypes.PeriodicProductListResponse,
+  'availableCategories'
+> & {
   availableCategories: PeriodicProductCategoryTypes[];
 };
 

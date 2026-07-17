@@ -79,6 +79,7 @@ interface ProductEditProductListWithActionsProps {
   autoOpenProductId?: string | null;
   editModalVariant?: ProductEditCardVariantTypes;
   groups: ProductEditProductGroup[];
+  selectionMode?: boolean;
   onAutoOpenProductMissing?: (productId: string) => void;
   onDeleteProduct?: (product: ProductEditCardProps) => void;
   onUpdateProduct?: (productId: number, product: ProductEditCardProps) => void;
@@ -88,6 +89,7 @@ const ProductEditProductListWithActions = ({
   autoOpenProductId,
   editModalVariant = 'todaySpecial',
   groups,
+  selectionMode = false,
   onAutoOpenProductMissing,
   onDeleteProduct,
   onUpdateProduct,
@@ -96,7 +98,6 @@ const ProductEditProductListWithActions = ({
     autoOpenProductId,
     groups,
     marketId: 1,
-    selectionMode: false,
     variant: editModalVariant,
     onAutoOpenProductMissing,
     onDeleteProduct,
@@ -109,6 +110,11 @@ const ProductEditProductListWithActions = ({
       ariaLabel='오늘의 특가 상품 수정 목록'
       groups={groups}
       registrationHref='/products/today-special/new'
+      selection={
+        selectionMode
+          ? { enabled: true, selectedProductIds: [], onToggleProduct: vi.fn() }
+          : undefined
+      }
     />
   );
 };
@@ -398,6 +404,41 @@ describe('ProductEditProductList', () => {
     expect(screen.getByRole('button', { name: '변경하기' })).toBeDisabled();
   });
 
+  it('opens a route-target edit modal when the product is outside the loaded groups', async () => {
+    const handleAutoOpenProductMissing = vi.fn();
+
+    render(
+      <MemoryRouter>
+        <ToastProvider defaultDurationMs={null}>
+          <OverlayProvider>
+            <ProductEditProductListWithActions
+              autoOpenProductId='999'
+              groups={[
+                {
+                  title: '2026년 8월 15일',
+                  products: [
+                    {
+                      productId: 101,
+                      productName: '딸기 2팩',
+                      salePrice: '4,500',
+                    },
+                  ],
+                },
+              ]}
+              onAutoOpenProductMissing={handleAutoOpenProductMissing}
+            />
+          </OverlayProvider>
+        </ToastProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).toBeInTheDocument();
+    expect(mockUseProductDetailQuery).toHaveBeenCalledWith({ marketId: 1, productId: 999 });
+    expect(handleAutoOpenProductMissing).not.toHaveBeenCalled();
+  });
+
   it('does not open edit modal when the product id is empty', async () => {
     const user = userEvent.setup();
     const handleAutoOpenProductMissing = vi.fn();
@@ -434,6 +475,57 @@ describe('ProductEditProductList', () => {
     await user.click(screen.getByRole('button', { name: '딸기 2팩 상품 수정' }));
 
     expect(mockUseProductDetailQuery).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('opens the searched product modal immediately while bulk selection mode is active', async () => {
+    const user = userEvent.setup();
+    const groups = [
+      {
+        title: '2026년 8월 15일',
+        products: [
+          {
+            categoryName: '채소/과일',
+            endDate: '2026. 8. 16',
+            originalPrice: '5,000',
+            productId: 101,
+            productName: '딸기 2팩',
+            salePrice: '4,500',
+          },
+        ],
+      },
+    ];
+    const { rerender } = render(
+      <MemoryRouter>
+        <ToastProvider defaultDurationMs={null}>
+          <OverlayProvider>
+            <ProductEditProductListWithActions
+              autoOpenProductId='101'
+              groups={groups}
+              selectionMode
+            />
+          </OverlayProvider>
+        </ToastProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      await screen.findByRole('dialog', { name: '판매 정보를 수정해주세요' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '딸기 2팩 상품 수정' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: '취소' }));
+
+    rerender(
+      <MemoryRouter>
+        <ToastProvider defaultDurationMs={null}>
+          <OverlayProvider>
+            <ProductEditProductListWithActions autoOpenProductId='101' groups={groups} />
+          </OverlayProvider>
+        </ToastProvider>
+      </MemoryRouter>,
+    );
+
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
@@ -474,14 +566,37 @@ describe('ProductEditProductList', () => {
     expect(screen.getByLabelText('행사 시작일')).toHaveValue('2026-08-12');
     expect(screen.getByLabelText('행사 종료일')).toHaveValue('2026-08-16');
 
-    await user.click(screen.getByRole('button', { name: '채소･과일' }));
+    const dialog = screen.getByRole('dialog', { name: '판매 정보를 수정해주세요' });
+    const categoryTrigger = screen.getByRole('button', { name: '채소･과일' });
+    vi.stubGlobal('innerHeight', 1000);
+    vi.spyOn(dialog, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 0, 1008, 600));
+    vi.spyOn(categoryTrigger, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(0, 460, 206, 40),
+    );
+
+    await user.click(categoryTrigger);
 
     const categoryDropdown = await screen.findByRole('group', { name: '상품 구분 선택' });
 
-    expect(
-      categoryDropdown.style.getPropertyValue('--product-category-dropdown-max-height'),
-    ).toMatch(/px$/);
+    expect(categoryDropdown.style.position).toBe('fixed');
+    expect(categoryDropdown.style.top).toBe('508px');
+    expect(categoryDropdown.style.getPropertyValue('--product-category-dropdown-max-height')).toBe(
+      '452px',
+    );
     expect(getComputedStyle(categoryDropdown).overflowY).toBe('auto');
+
+    vi.stubGlobal('innerHeight', 800);
+    vi.spyOn(categoryTrigger, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(0, 360, 206, 40),
+    );
+    fireEvent.resize(window);
+
+    await waitFor(() => {
+      expect(categoryDropdown.style.top).toBe('408px');
+      expect(
+        categoryDropdown.style.getPropertyValue('--product-category-dropdown-max-height'),
+      ).toBe('352px');
+    });
 
     fireEvent.scroll(categoryDropdown);
     fireEvent.scroll(document);

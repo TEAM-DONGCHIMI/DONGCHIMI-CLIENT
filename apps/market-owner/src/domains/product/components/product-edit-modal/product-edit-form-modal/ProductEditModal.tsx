@@ -21,7 +21,7 @@ import { useProductEditForm } from './use-product-edit-form';
 interface ProductEditModalProps {
   marketId: number;
   open: boolean;
-  product: ProductEditCardProps;
+  product?: ProductEditCardProps;
   productId: number;
   variant: ProductEditCardVariantTypes;
   onClose: () => void;
@@ -30,7 +30,7 @@ interface ProductEditModalProps {
 
 interface OpenProductEditModalParams {
   marketId: number;
-  product: ProductEditCardProps;
+  product?: ProductEditCardProps;
   productId: number;
   onClose?: () => void;
   onSubmit?: (product: ProductEditCardProps) => void;
@@ -178,7 +178,7 @@ export const ProductEditModal = ({
       values,
     });
 
-    if (result.success) {
+    if (result.success && product != null) {
       onSubmit?.(createUpdatedProductCard({ product, values, variant }));
     }
 

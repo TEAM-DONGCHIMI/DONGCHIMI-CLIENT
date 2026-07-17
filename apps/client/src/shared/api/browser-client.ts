@@ -1,5 +1,7 @@
 import ky, { type KyInstance, type Options } from 'ky';
 
+import { redirectToLoginForAuthRequired } from '@/shared/auth/auth-required-redirect';
+
 import { normalizeApiError } from './api-error';
 
 type HttpMethodTypes = 'delete' | 'get' | 'patch' | 'post' | 'put';
@@ -20,6 +22,10 @@ const AUTH_REFRESH_PATH = '/api/auth/token/refresh';
 let cachedBrowserApi: KyInstance | undefined;
 let refreshSessionPromise: Promise<boolean> | undefined;
 
+export interface CreateBrowserApiOptions {
+  onFinalUnauthorized?: () => Promise<void> | void;
+}
+
 const refreshSession = () => {
   refreshSessionPromise ??= ky
     .post(new URL(AUTH_REFRESH_PATH, window.location.origin), {
@@ -36,7 +42,26 @@ const refreshSession = () => {
   return refreshSessionPromise;
 };
 
-export const createBrowserApi = () => {
+export const createBrowserApi = (options: CreateBrowserApiOptions = {}) => {
+  const onFinalUnauthorized = options.onFinalUnauthorized ?? redirectToLoginForAuthRequired;
+  let authRedirectPromise: Promise<void> | undefined;
+
+  const notifyFinalUnauthorized = () => {
+    if (!authRedirectPromise) {
+      const redirectPromise = Promise.resolve().then(() => onFinalUnauthorized());
+      const clearRedirectPromise = () => {
+        if (authRedirectPromise === redirectPromise) {
+          authRedirectPromise = undefined;
+        }
+      };
+
+      authRedirectPromise = redirectPromise;
+      void redirectPromise.then(clearRedirectPromise, clearRedirectPromise);
+    }
+
+    return authRedirectPromise;
+  };
+
   return ky.create({
     credentials: 'include',
     prefix: new URL('/api/', window.location.origin).toString(),
@@ -56,13 +81,21 @@ export const createBrowserApi = () => {
         async ({ request, response, retryCount }) => {
           const isAuthRequest = new URL(request.url).pathname.startsWith(AUTH_API_PATH_PREFIX);
 
-          if (response.status !== 401 || retryCount > 0 || isAuthRequest) {
+          if (response.status !== 401 || isAuthRequest) {
+            return response;
+          }
+
+          if (retryCount > 0) {
+            await notifyFinalUnauthorized();
+
             return response;
           }
 
           const isSessionRefreshed = await refreshSession();
 
           if (!isSessionRefreshed) {
+            await notifyFinalUnauthorized();
+
             return response;
           }
 

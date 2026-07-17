@@ -4,6 +4,27 @@ import { GET } from './route';
 
 const KAKAO_REST_API_KEY = 'kakao-rest-api-key';
 const KAKAO_REDIRECT_URI = 'http://localhost/oauth/callback';
+const RETURN_TO = '/markets/mangwon-fresh/products/402?tab=detail';
+
+const getCookieHeader = (response: Response, name: string) => {
+  return response.headers.getSetCookie().find((cookie) => cookie.startsWith(`${name}=`));
+};
+
+const getDecodedCookieValue = (response: Response, name: string) => {
+  const cookieHeader = getCookieHeader(response, name);
+  const cookieValue = cookieHeader?.split(';')[0]?.slice(name.length + 1);
+
+  return cookieValue ? decodeURIComponent(cookieValue) : undefined;
+};
+
+const expectOAuthCookiesToBeDeleted = (response: Response) => {
+  expect(response.headers.getSetCookie()).toEqual(
+    expect.arrayContaining([
+      expect.stringMatching(/kakao_oauth_state=;.*Max-Age=0/),
+      expect.stringMatching(/kakao_oauth_return_to=;.*Max-Age=0/),
+    ]),
+  );
+};
 
 describe('GET /api/auth/kakao/authorize', () => {
   beforeEach(() => {
@@ -15,13 +36,15 @@ describe('GET /api/auth/kakao/authorize', () => {
     vi.unstubAllEnvs();
   });
 
-  it('REST API 인가 URL과 일치하는 state를 HttpOnly cookie에 저장한다', async () => {
-    const response = await GET(new Request('http://localhost/api/auth/kakao/authorize'));
+  it('REST API 인가 URL과 일치하는 state와 returnTo를 HttpOnly cookie에 저장한다', async () => {
+    const requestUrl = new URL('http://localhost/api/auth/kakao/authorize');
+    requestUrl.searchParams.set('returnTo', RETURN_TO);
+
+    const response = await GET(new Request(requestUrl));
     const location = new URL(response.headers.get('location') ?? '');
     const state = location.searchParams.get('state');
-    const stateCookie = response.headers
-      .getSetCookie()
-      .find((cookie) => cookie.startsWith('kakao_oauth_state='));
+    const stateCookie = getCookieHeader(response, 'kakao_oauth_state');
+    const returnToCookie = getCookieHeader(response, 'kakao_oauth_return_to');
 
     expect(response.status).toBe(307);
     expect(location.origin + location.pathname).toBe('https://kauth.kakao.com/oauth/authorize');
@@ -34,7 +57,26 @@ describe('GET /api/auth/kakao/authorize', () => {
     expect(stateCookie).toMatch(/SameSite=Lax/i);
     expect(stateCookie).toContain('Path=/api/auth/kakao');
     expect(stateCookie).toContain('Max-Age=600');
+    expect(getDecodedCookieValue(response, 'kakao_oauth_return_to')).toBe(RETURN_TO);
+    expect(returnToCookie).toContain('HttpOnly');
+    expect(returnToCookie).toMatch(/SameSite=Lax/i);
+    expect(returnToCookie).toContain('Path=/api/auth/kakao');
+    expect(returnToCookie).toContain('Max-Age=600');
     expect(response.headers.get('cache-control')).toBe('no-store');
+  });
+
+  it.each([
+    ['https://evil.example/markets'],
+    ['//evil.example/markets'],
+    ['/login'],
+    ['/markets-evil'],
+  ])('안전하지 않은 returnTo %s는 /markets로 대체해 저장한다', async (returnTo) => {
+    const requestUrl = new URL('http://localhost/api/auth/kakao/authorize');
+    requestUrl.searchParams.set('returnTo', returnTo);
+
+    const response = await GET(new Request(requestUrl));
+
+    expect(getDecodedCookieValue(response, 'kakao_oauth_return_to')).toBe('/markets');
   });
 
   it.each([
@@ -50,6 +92,6 @@ describe('GET /api/auth/kakao/authorize', () => {
 
     expect(location.origin + location.pathname).toBe('http://localhost/oauth/callback');
     expect(location.searchParams.get('error')).toBe('oauth_configuration_error');
-    expect(response.headers.getSetCookie()).toEqual([]);
+    expectOAuthCookiesToBeDeleted(response);
   });
 });

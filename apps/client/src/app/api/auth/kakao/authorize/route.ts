@@ -2,7 +2,12 @@ import { randomBytes } from 'node:crypto';
 
 import { NextResponse } from 'next/server';
 
-import { setKakaoOAuthStateCookie } from '@/shared/auth';
+import {
+  clearKakaoOAuthCookies,
+  setKakaoOAuthReturnToCookie,
+  setKakaoOAuthStateCookie,
+} from '@/shared/auth';
+import { normalizeAuthReturnTo } from '@/shared/auth/auth-return-to';
 import { getServerEnv } from '@/shared/config/server-env';
 import { CLIENT_ROUTES } from '@/shared/constants';
 
@@ -41,7 +46,7 @@ const createConfigurationErrorResponse = (request: Request) => {
   const response = NextResponse.redirect(callbackUrl);
   response.headers.set('Cache-Control', 'no-store');
 
-  return response;
+  return clearKakaoOAuthCookies(response);
 };
 
 export const GET = (request: Request) => {
@@ -53,6 +58,7 @@ export const GET = (request: Request) => {
   }
 
   const state = randomBytes(32).toString('base64url');
+  const returnTo = normalizeAuthReturnTo(new URL(request.url).searchParams.get('returnTo'));
   const authorizationUrl = new URL(KAKAO_AUTHORIZATION_ENDPOINT);
 
   authorizationUrl.searchParams.set('response_type', 'code');
@@ -63,6 +69,7 @@ export const GET = (request: Request) => {
   const response = NextResponse.redirect(authorizationUrl);
   response.headers.set('Cache-Control', 'no-store');
   setKakaoOAuthStateCookie(response, state);
+  setKakaoOAuthReturnToCookie(response, returnTo);
 
   return response;
 };

@@ -7,12 +7,78 @@ on:
       - main
       - develop
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
-  verify:
-    name: Verify
+  detect:
+    name: Detect affected targets
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.changes.outputs.packages }}
+      client: ${{ steps.changes.outputs.client }}
+      market_owner: ${{ steps.changes.outputs.market_owner }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed targets
+        id: changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          packages=false
+          client=false
+          market_owner=false
+          full=false
+
+          if [ -z "$BASE_SHA" ] || [[ "$BASE_SHA" =~ ^0+$ ]] || ! git cat-file -e "$BASE_SHA^{commit}"; then
+            full=true
+          else
+            while IFS= read -r file; do
+              case "$file" in
+                apps/client/*)
+                  client=true
+                  ;;
+                apps/market-owner/*)
+                  market_owner=true
+                  ;;
+                packages/*)
+                  packages=true
+                  ;;
+                docs/* | recipes/* | templates/* | *.md)
+                  ;;
+                *)
+                  full=true
+                  ;;
+              esac
+            done < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          fi
+
+          if [ "$packages" = "true" ] || [ "$full" = "true" ]; then
+            packages=true
+            client=true
+            market_owner=true
+          fi
+
+          {
+            echo "packages=$packages"
+            echo "client=$client"
+            echo "market_owner=$market_owner"
+          } | tee -a "$GITHUB_OUTPUT" >> "$GITHUB_STEP_SUMMARY"
+
+  hygiene:
+    name: Repository hygiene
     runs-on: ubuntu-latest
 
     steps:
@@ -35,17 +101,160 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
-      - name: Lint
-        run: pnpm lint
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Test
-        run: pnpm test
-
       - name: Check design-system icons
         run: pnpm check:icons
 
-      - name: Build
-        run: pnpm build
+  packages:
+    name: Packages
+    needs: detect
+    if: needs.detect.outputs.packages == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Analyze and test packages
+        run: >-
+          pnpm turbo run lint typecheck test --only
+          --filter=@dongchimi/design-system
+          --filter=@dongchimi/shared
+          --filter=@dongchimi/eslint-config
+          --filter=@dongchimi/typescript-config
+
+      - name: Build packages
+        run: >-
+          pnpm turbo run build --only
+          --filter=@dongchimi/design-system
+          --filter=@dongchimi/shared
+          --filter=@dongchimi/eslint-config
+          --filter=@dongchimi/typescript-config
+
+  client:
+    name: Client web
+    needs: detect
+    if: needs.detect.outputs.client == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Analyze and test client web
+        run: pnpm turbo run lint typecheck test --only --filter=client
+
+      - name: Build client web
+        run: pnpm turbo run build --only --filter=client
+
+  market_owner:
+    name: Market owner web
+    needs: detect
+    if: needs.detect.outputs.market_owner == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Analyze and test market owner web
+        run: pnpm turbo run lint typecheck test --only --filter=market-owner
+
+      - name: Build market owner web
+        run: pnpm turbo run build --only --filter=market-owner
+
+  verify:
+    name: Verify
+    needs:
+      - detect
+      - hygiene
+      - packages
+      - client
+      - market_owner
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verify required jobs
+        env:
+          DETECT_RESULT: ${{ needs.detect.result }}
+          HYGIENE_RESULT: ${{ needs.hygiene.result }}
+          PACKAGES_AFFECTED: ${{ needs.detect.outputs.packages }}
+          PACKAGES_RESULT: ${{ needs.packages.result }}
+          CLIENT_AFFECTED: ${{ needs.detect.outputs.client }}
+          CLIENT_RESULT: ${{ needs.client.result }}
+          MARKET_OWNER_AFFECTED: ${{ needs.detect.outputs.market_owner }}
+          MARKET_OWNER_RESULT: ${{ needs.market_owner.result }}
+        run: |
+          set -euo pipefail
+
+          failed=false
+
+          if [ "$DETECT_RESULT" != "success" ] || [ "$HYGIENE_RESULT" != "success" ]; then
+            echo "::error::CI failed: detect=$DETECT_RESULT hygiene=$HYGIENE_RESULT"
+            failed=true
+          fi
+
+          check_target() {
+            local name="$1"
+            local affected="$2"
+            local result="$3"
+            local expected="skipped"
+
+            if [ "$affected" = "true" ]; then
+              expected="success"
+            fi
+
+            if [ "$result" != "$expected" ]; then
+              echo "::error::CI target failed: $name affected=$affected result=$result expected=$expected"
+              failed=true
+            fi
+          }
+
+          check_target "packages" "$PACKAGES_AFFECTED" "$PACKAGES_RESULT"
+          check_target "client" "$CLIENT_AFFECTED" "$CLIENT_RESULT"
+          check_target "market-owner" "$MARKET_OWNER_AFFECTED" "$MARKET_OWNER_RESULT"
+
+          if [ "$failed" = "true" ]; then
+            exit 1
+          fi
+
+          echo "All required CI jobs passed."

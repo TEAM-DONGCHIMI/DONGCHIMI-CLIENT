@@ -20,7 +20,8 @@
 
 - `open`: OverlayKit controller가 전달하는 modal open 상태입니다.
 - `marketId`, `productId`: modal이 열린 뒤 상세 조회에 사용합니다.
-- `product`: 수정 완료 후 목록의 기존 카드 상태와 병합할 상품 props입니다.
+- `product`: 수정 완료 후 목록의 기존 카드 상태와 병합할 선택적 상품 props입니다. route target이 현재
+  pagination 목록에 없으면 생략하고, 상세 조회와 mutation은 `productId`만으로 진행합니다.
 - `variant`: `todaySpecial` 또는 `eventDiscount`로 가격/기간 입력 구성을 결정합니다.
 - `onClose`: OverlayKit `close`/`unmount` 흐름으로 modal을 닫는 handler입니다.
 - `onSubmit`: PUT 성공 후 수정된 카드 값을 호출부로 전달하는 handler입니다.
@@ -39,6 +40,8 @@
 
 - 수정 버튼 클릭은 `ProductEditProductList`가 `openProductEditModal`을 호출하고, helper가 `overlay.open`으로 선택 상품 modal을 엽니다.
 - modal이 열리면 `marketId`, `productId`로 상품 상세 API를 호출하고 상품명, 이미지, 카테고리, 가격, 홍보글, 기간을 form 초기값으로 사용합니다.
+- route target이 현재 목록에 없어 `product`가 전달되지 않아도 상세 조회 결과로 modal을 렌더링합니다.
+  이 경우 수정 성공 후 query invalidation으로 목록을 갱신하고, 로컬 카드 병합 callback은 생략합니다.
 - 변경 시 상세 응답의 `dealType`을 요청 `type`으로 사용해 기존 판매 유형을 유지합니다.
 - 오늘의 특가는 `originalPrice`를 포함하고, 행사 할인은 `originalPrice`를 전송하지 않습니다.
 - 홍보글을 비우면 `promotionalPhrase: null`을 전송합니다.
@@ -58,7 +61,9 @@
 - 종료일 field의 최소 날짜는 시작일과 오늘 중 더 늦은 날짜이며, 종료일이 시작일보다 이전이면 `변경하기`를 비활성화합니다.
 - 상품명은 공백을 포함해 최대 15자, 상품 한줄 홍보글은 공백을 포함해 최대 25자까지 입력할 수 있습니다.
 - 원가, 오늘의 특가, 판매가는 숫자만 입력할 수 있고 천 단위 콤마를 표시합니다.
-- 카테고리 dropdown은 viewport 하단과 40px 간격을 유지하고, modal scroll 시 현재 trigger 위치를 기준으로 최대 높이를 다시 계산합니다.
+- 카테고리 dropdown은 native popover top layer에 fixed 배치해 modal content의 `overflow-y: auto` 경계에 잘리지 않습니다.
+- dropdown은 trigger 하단 8px에 배치하고 viewport 하단 40px 여백을 떼어 놓으며, 옵션이 가용 높이를 넘으면 dropdown 내부를 스크롤합니다.
+- modal scroll과 viewport resize 시 현재 trigger의 viewport 좌표를 기준으로 fixed 위치와 최대 높이를 다시 계산합니다.
 - 텍스트/가격 입력은 design-system `InlineField`를 사용하고, 날짜 입력은 product domain 공용 `DateField`를 사용합니다.
 - 상품 이미지 영역은 product domain 공용 `ProductImageUploadField`를 사용합니다.
 

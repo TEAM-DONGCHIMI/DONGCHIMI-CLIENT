@@ -27,6 +27,7 @@ interface UpdateRegisteredProductParams {
 }
 
 interface ResetForNextProductParams {
+  previewUrl: string | null;
   productId: number;
   thumbnailUrl: string;
 }
@@ -95,15 +96,20 @@ export const useTodaySpecialForm = () => {
       }
     };
 
-  const resetForNextProduct = ({ productId, thumbnailUrl }: ResetForNextProductParams) => {
+  const resetForNextProduct = ({
+    previewUrl,
+    productId,
+    thumbnailUrl,
+  }: ResetForNextProductParams) => {
     const currentProducts = getValues('products');
     const registeredProducts = currentProducts.map((product, productIndex) =>
       productIndex === currentIndex
         ? {
             ...product,
             imageFile: null,
-            imagePreviewUrl: thumbnailUrl,
+            imagePreviewUrl: previewUrl ?? thumbnailUrl,
             productId,
+            thumbnailUrl,
           }
         : product,
     );
@@ -131,8 +137,9 @@ export const useTodaySpecialForm = () => {
         ? {
             ...product,
             imageFile: null,
-            imagePreviewUrl: thumbnailUrl,
+            imagePreviewUrl: product.imagePreviewUrl ?? thumbnailUrl,
             productId,
+            thumbnailUrl,
           }
         : item,
     );

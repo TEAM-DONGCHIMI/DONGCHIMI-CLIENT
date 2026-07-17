@@ -37,6 +37,7 @@
 ## States
 
 - default: title, description, share URL field, link copy action, QR action을 렌더링합니다.
+- hover: 링크 복사와 QR 보기 action은 pointer hover에서도 투명 배경과 기본 색상을 유지합니다.
 - disabled: 링크 field의 copy button, 링크 복사 action, QR 보기 action을 모두 native disabled로 렌더링합니다.
 - loading: none
 - error: none
@@ -55,6 +56,7 @@
 - action list: action icon-label gap `16px`, action vertical padding `8px`, action group gap `2px`
 - action icon circle: `40px`, border neutral 40, icon `20px`
 - action label: `body-2-semibold`, neutral 80
+- action hover: 링크 복사와 QR 보기 action에는 배경색 변경을 적용하지 않습니다.
 
 ## Accessibility
 
@@ -62,6 +64,7 @@
 - link field의 copy icon button은 `전단 공유 링크 복사` accessible name을 가집니다.
 - action은 native `button`으로 렌더링합니다.
 - action icons are decorative and use `aria-hidden="true"`.
+- keyboard focus는 action의 `focus-visible` outline으로 유지합니다.
 
 ## Verification
 

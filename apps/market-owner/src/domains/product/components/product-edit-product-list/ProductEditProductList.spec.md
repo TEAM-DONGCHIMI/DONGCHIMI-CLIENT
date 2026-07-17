@@ -42,7 +42,10 @@
 - 상품이 있는 그룹은 전달받은 순서를 유지하며, 카드의 accessible name은 주입된 `aria-label`을 우선 사용합니다.
 - 카드 수정·삭제 버튼은 `actions.onEditProduct`, `actions.onDeleteProduct`를 호출하며 modal 제어를 직접 알지 않습니다.
 - `useProductEditListActions`는 카드 클릭과 route 기반 자동 열기에 같은 수정 modal 흐름을 사용합니다.
-- 자동으로 열린 modal이 닫히거나 대상 상품이 없을 때는 호출부가 전달한 callback을 실행합니다.
+- 유효한 `autoOpenProductId`는 현재 pagination으로 불러온 `groups`에 대상 상품이 없어도 상품 상세 조회
+  기반 수정 modal을 엽니다. 대상 카드가 이미 있으면 수정 성공 값을 해당 목록 카드에도 반영합니다.
+- 자동으로 열린 modal이 닫히면 호출부가 전달한 close callback을 실행합니다. 유효하지 않은 상품 ID는
+  missing callback으로 전달하고, 상세 조회 실패는 modal의 error 정책으로 처리합니다.
 - bulk selection mode에서는 카드 수정/삭제 버튼을 disabled 처리하고, selection button만 `selection.onToggleProduct`로 동작합니다.
 - `actions.disabled`이면 카드별 수정/삭제 버튼을 비활성화해 중복 요청을 막습니다.
 - 다음 페이지가 있고 `pagination.status`가 `idle`이면 목록 하단 sentinel 진입 시 `pagination.onLoadNextPage`를 호출합니다.
@@ -63,6 +66,7 @@
 - [x] with products: grouped product cards render
 - [x] edit action opens product edit modal
 - [x] `autoOpenProductId` opens product edit modal
+- [x] `autoOpenProductId` opens product edit modal outside the loaded groups
 - [x] missing `autoOpenProductId` reports missing target
 - [x] today special edit modal extends end date by one day
 - [x] event discount edit modal hides one-day extension

@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21, DMCL-24, DCMCL-28
+- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21, DMCL-24, DCMCL-28, DCMCL-34, DCMCL-35, DCMCL-37
 - Figma: APPJAM, mobile web market leaflet flow
 - Route: `/markets/[slug]`
 - Owner: `apps/client`
@@ -19,6 +19,7 @@
 - 행사 상품은 전체 또는 서버 `ProductCategory` enum별 cursor pagination을 사용합니다.
 - 상품 카드는 `/markets/[slug]/products/[productId]`로 이동합니다.
 - 공유하기는 `MarketShareBottomSheet`를 재사용하고, 공유 시트의 `앱으로 전단보기`는 PWA 설치 안내 시트로 전환합니다.
+- 전단 공유 링크는 운영 canonical origin인 `https://app.dongchiimi.com`과 현재 마트 route를 조합합니다.
 - 전화걸기는 확인 modal 후 `tel:` URL로 이동합니다.
 
 ## Layout And Sections
@@ -28,6 +29,9 @@
 - `PopularProductsSection`: 조회수 기준 인기 상품 TOP3를 표시합니다.
 - `TodaySpecialProductsSection`: 오늘의 특가 API 상품을 기본 2개 표시하고 전체보기/접기를 제공합니다.
 - `EventDiscountProductsSection`: 행사 상품을 category chip과 3열 무한 목록으로 표시합니다.
+- 마트 정보 icon은 실제 `16 x 16`로 렌더링합니다.
+- 영업 종료 상태는 영업중과 구분되는 neutral subtle desktop chip을 `rounded=false`로 표시합니다.
+- 오늘의 특가 상품명은 `body-3-medium`, 취소선 원가는 `body-3-medium`으로 표시하고 가격 행은 세로 중앙 정렬합니다.
 
 ## API Contract
 
@@ -76,7 +80,8 @@
 - observer의 연속 intersection은 진행 중인 다음 페이지 요청을 중복 실행하지 않습니다.
 - TanStack Query의 abort signal을 browser request와 upstream request에 전달합니다.
 - 설치 가능한 브라우저의 `홈 화면에 추가하기`는 사용자 제스처 안에서 네이티브 설치 prompt를 호출합니다.
-- 직접 설치 prompt를 지원하지 않는 브라우저는 공유 메뉴를 통한 수동 설치 절차를 안내합니다.
+- 전단 공유 view는 footer 구분선과 `닫기` action을 제공하고, 닫힌 뒤 trigger로 focus를 복원합니다.
+- 설치 prompt 지원 여부나 설치 상태에 따라 디자인에 없는 앱 내부 후속 안내 view를 추가하지 않습니다.
 - 내용이 없는 중간 페이지라도 `hasNext`가 true이면 최종 빈 상태로 확정하지 않습니다.
 - 각 페이지 grid는 `content-visibility: auto`로 화면 밖 렌더링 비용을 줄입니다.
 - 무한 목록 상품 link는 viewport 진입만으로 상세 route를 대량 요청하지 않도록 prefetch를 비활성화합니다.
@@ -85,6 +90,9 @@
 - 오늘의 특가 상품에서 돌아오면 저장한 전체보기 펼침 상태를 먼저 적용해 클릭 상품 anchor를 다시 렌더링합니다.
 - 행사 할인 상품에서 돌아오면 저장한 category와 category 더보기 상태를 먼저 적용합니다.
 - 행사 할인 category 복원은 동일한 `marketId + category` query key를 다시 사용하므로 TanStack Query가 보유한 무한 목록 `pages/pageParams`를 그대로 렌더링합니다.
+- 인기 상품과 오늘의 특가 상품의 할인율이 `0` 이하이면 할인율 chip을 렌더링하지 않습니다.
+- 행사 할인 상품 영역은 한 행의 최소 높이를 예약하고, category 전환 요청 중에는 직전 상품 영역의 높이를 유지해 loading 문구로 교체될 때의 일시적인 layout shift를 방지합니다.
+- category 응답이 도착하면 직전 높이 예약을 해제하고 새 상품 수에 맞는 자연 높이를 사용합니다.
 - 행사 할인 무한 목록의 비활성 캐시는 상세 탐색 시간을 고려해 30분 동안 유지합니다.
 - 저장한 목록 history entry가 다시 활성화됐을 때만 snapshot을 복원하며 일반적인 목록 신규 진입에서는 과거 상태를 적용하지 않습니다.
 - Next App Router가 목록 컴포넌트를 재사용하는 경우에도 `popstate`를 구독해 snapshot을 React 상태로 반영합니다.

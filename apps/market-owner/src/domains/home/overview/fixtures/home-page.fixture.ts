@@ -16,14 +16,14 @@ interface HomeHeroActionFixtureTypes {
 
 const dailyProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
   discountRate: 10,
-  id: `daily-product-${index + 1}`,
+  id: String(101 + index),
   name: '풀무원 콩나물 500g',
   originalPriceText: '5,000원',
   priceText: '4,500원',
 }));
 
 const periodicProducts: ProductCardItemTypes[] = Array.from({ length: 6 }, (_, index) => ({
-  id: `periodic-product-${index + 1}`,
+  id: String(201 + index),
   name: '풀무원 콩나물 500g',
   priceText: '5,000원',
   rank: index + 1,
@@ -38,6 +38,7 @@ export const homeProductSummary = {
 
 export const homeProductSections: HomeProductSectionTypes[] = [
   {
+    dealType: 'DAILY',
     editRoute: MARKET_OWNER_ROUTES.todaySpecialEdit,
     id: 'daily',
     itemVariant: 'today',
@@ -46,6 +47,7 @@ export const homeProductSections: HomeProductSectionTypes[] = [
     totalCount: homeProductSummary.dailyCount,
   },
   {
+    dealType: 'PERIODIC',
     editRoute: MARKET_OWNER_ROUTES.eventDiscountEdit,
     id: 'periodic',
     itemVariant: 'period',

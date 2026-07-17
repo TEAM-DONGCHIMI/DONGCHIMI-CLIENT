@@ -1,11 +1,15 @@
 import { getCurrentBusinessCloseTime } from '@dongchimi/shared/business-hours';
 
+import { CLIENT_ROUTES } from '@/shared/constants';
+
 type CallModalDescriptionParamsTypes = Readonly<{
   closeTime: string | undefined;
   isOpenNow: boolean;
 }>;
 
 export { getCurrentBusinessCloseTime };
+
+const CLIENT_APP_ORIGIN = 'https://app.dongchiimi.com';
 
 export const getCallModalDescription = ({
   closeTime,
@@ -24,4 +28,4 @@ export const getCallModalDescription = ({
 
 export const getTelHref = (phoneNumber: string) => `tel:${phoneNumber.replaceAll('-', '')}`;
 
-export const getShareUrl = (slug: string) => `dongchimi.kr/${slug}`;
+export const getShareUrl = (slug: string) => `${CLIENT_APP_ORIGIN}${CLIENT_ROUTES.market(slug)}`;

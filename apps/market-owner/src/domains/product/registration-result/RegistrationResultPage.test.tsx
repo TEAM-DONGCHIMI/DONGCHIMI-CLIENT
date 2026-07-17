@@ -1,4 +1,5 @@
 import { RouterProvider, createMemoryRouter, useLocation } from 'react-router';
+import type * as TanStackReactQuery from '@tanstack/react-query';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppProviders } from '@/app/AppProviders';
@@ -14,6 +15,15 @@ import {
 import { useAuthStore } from '@/shared/stores/auth-store';
 import { render, screen, userEvent, within } from '@/test';
 import { RegistrationResultPage } from './RegistrationResultPage';
+
+const { invalidateQueries } = vi.hoisted(() => ({
+  invalidateQueries: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('@tanstack/react-query', async (importOriginal) => ({
+  ...(await importOriginal<typeof TanStackReactQuery>()),
+  useQueryClient: () => ({ invalidateQueries }),
+}));
 
 vi.mock('@/domains/product/hooks', () => ({
   usePreparedProductDraftsQuery: vi.fn(),
@@ -115,6 +125,7 @@ const renderPage = (initialState?: unknown) => {
 
 describe('RegistrationResultPage', () => {
   beforeEach(() => {
+    invalidateQueries.mockClear();
     mockedSavePreparedProductDrafts.mockReset().mockResolvedValue(undefined);
     mockedRefetchPreparedProductDrafts.mockReset().mockResolvedValue({
       data: preparedDraftsQueryData,
@@ -223,6 +234,9 @@ describe('RegistrationResultPage', () => {
       },
     });
     expect(mockedRefetchPreparedProductDrafts).toHaveBeenCalledTimes(1);
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ['leaflet-share', 'periodic-preview', 12],
+    });
     expect(
       await screen.findByRole('heading', { name: '오늘의 전단 최종 확인' }),
     ).toBeInTheDocument();

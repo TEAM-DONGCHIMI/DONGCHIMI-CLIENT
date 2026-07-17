@@ -5,6 +5,7 @@ import { atomic, semantic, typography } from '@dongchimi/design-system/tokens';
 import { cardMaxWidthVar as periodProductCardMaxWidthVar } from '@/shared/components/ui/period-product-card/PeriodProductCard.css';
 
 const focusOutlineColor = `color-mix(in srgb, ${semantic.primary.normal} 34%, transparent)`;
+const eventProductRowMinHeight = '14.8rem';
 
 export const pageClassName = style({
   minHeight: '100dvh',
@@ -123,6 +124,11 @@ export const marketMetaIconClassName = style({
   alignItems: 'center',
   justifyContent: 'center',
   color: atomic.neutral[60],
+});
+
+globalStyle(`${marketMetaIconClassName} > svg`, {
+  width: '1.6rem',
+  height: '1.6rem',
 });
 
 export const marketMetaTextClassName = style({
@@ -400,7 +406,7 @@ export const todayProductNameClassName = style({
 export const todayProductPriceRowClassName = style({
   display: 'flex',
   minWidth: 0,
-  alignItems: 'baseline',
+  alignItems: 'center',
   gap: '0.4rem',
 });
 
@@ -411,7 +417,7 @@ export const todayProductDiscountedPriceClassName = style({
 });
 
 export const todayProductOriginalPriceClassName = style({
-  ...typography['caption-1-regular'],
+  ...typography['body-3-medium'],
   minWidth: 0,
   overflow: 'hidden',
   color: atomic.neutral[40],
@@ -491,6 +497,10 @@ export const eventProductPagesClassName = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '1.2rem',
+});
+
+export const eventProductContentClassName = style({
+  minHeight: eventProductRowMinHeight,
 });
 
 export const eventProductCardClassName = style({

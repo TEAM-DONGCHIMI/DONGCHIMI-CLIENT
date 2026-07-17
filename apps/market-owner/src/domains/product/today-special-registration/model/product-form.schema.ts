@@ -41,6 +41,7 @@ export const todaySpecialProductFormSchema = z
     startDate: z.iso.date('행사 시작일을 선택해주세요.').refine(isTodaySpecialStartDateSelectable, {
       message: '오늘 이후 날짜를 선택해주세요.',
     }),
+    thumbnailUrl: z.string().nullable(),
   })
   .superRefine((product, context) => {
     const salePrice = parsePriceInput(product.salePrice);

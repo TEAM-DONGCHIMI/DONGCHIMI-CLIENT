@@ -7,6 +7,7 @@ import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const withVanillaExtract = createVanillaExtractPlugin();
 const isSentrySourceMapUploadEnabled = Boolean(process.env.SENTRY_AUTH_TOKEN);
+const svgUrlResourceQuery = /^\?url$/;
 const withSerwist = withSerwistInit({
   swSrc: 'src/app/sw.ts',
   swDest: 'public/sw.js',
@@ -76,6 +77,26 @@ const nextConfig = {
           }
         : undefined,
     });
+
+    const nextImageRule = config.module.rules.find(
+      (rule) => rule && typeof rule === 'object' && rule.loader === 'next-image-loader',
+    );
+    const nextImageResourceQuery =
+      nextImageRule && typeof nextImageRule === 'object' ? nextImageRule.resourceQuery : undefined;
+
+    if (
+      nextImageResourceQuery == null ||
+      typeof nextImageResourceQuery !== 'object' ||
+      !Array.isArray(nextImageResourceQuery.not)
+    ) {
+      throw new Error('Next image loader resource query exclusions are unavailable.');
+    }
+
+    // `*.svg?url` is an explicit raw-asset request. Without this exclusion,
+    // next-image-loader first turns the SVG into a JavaScript module and the
+    // asset module rule below emits that module again with an `.svg` suffix.
+    nextImageResourceQuery.not.push(svgUrlResourceQuery);
+
     config.module.rules.push({
       // Use a function (not a RegExp) for `test` here. Next.js scans
       // `module.rules` for any rule whose `test` is a RegExp matching
@@ -87,8 +108,22 @@ const nextConfig = {
       // tripping that `instanceof RegExp` check while still matching the
       // same files.
       test: (resourcePath) => /\.svg$/i.test(resourcePath),
-      type: 'asset/resource',
+      // Vanilla Extract does not emit this CSS-owned asset into Next's
+      // development media directory. Inline it in development so the CSS
+      // cannot reference a missing file; production keeps the emitted asset.
+      type: 'asset',
+      parser: {
+        dataUrlCondition: {
+          maxSize: dev ? Number.MAX_SAFE_INTEGER : 0,
+        },
+      },
       issuer: /\.css\.ts$/,
+      resourceQuery: svgUrlResourceQuery,
+    });
+
+    config.module.rules.push({
+      test: /\.wasm$/i,
+      type: 'asset/resource',
     });
 
     return config;
