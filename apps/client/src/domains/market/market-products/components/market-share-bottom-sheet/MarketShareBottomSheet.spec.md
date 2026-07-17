@@ -63,7 +63,7 @@
 - 링크 복사, 카카오톡 공유, 앱으로 전단보기는 각각 아이콘과 라벨을 함께 표시합니다.
 - 공유 view 하단은 `BottomSheet.Footer`와 `BottomSheet.Close`를 사용해 `1px neutral/20` 구분선, `body-2-semibold` / `neutral/70` 닫기 문구, `16px 20px 36px` 여백을 유지합니다.
 - 설치 안내 view는 Figma `263 x 177` illustration, 중앙 안내 문구, `웹으로 계속 이용하기` close action 순서를 유지하고 네이티브 설치 primary action은 표시하지 않습니다.
-- 설치 안내 본문은 `브라우저의 공유 메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 이용할 수 있어요.`를 표시하고, 작은 viewport에서도 고정 줄바꿈 없이 자연스럽게 wrapping합니다.
+- 설치 안내 본문은 `브라우저 공유메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 이용할 수 있어요.`를 표시하고, 작은 viewport에서도 고정 줄바꿈 없이 자연스럽게 wrapping합니다.
 - primary action 제거로 남는 빈 공간이 없도록 sheet 최소 높이를 `32.9rem`으로 줄이고, 안내 문구와 `웹으로 계속 이용하기` 사이의 상단 여백은 `1.2rem`을 사용합니다.
 - 페이지가 스크롤된 상태에서 열어도 디자인시스템 `BottomSheet`의 scroll lock을 통해 sheet 하단과 기존 문서 위치를 유지합니다.
 - 색상은 디자인시스템 `atomic`, `semantic` token을 사용합니다.
