@@ -16,6 +16,7 @@ import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/auth-store';
 
 import { confirmMarketInformationLeave } from './components';
+import { useMarketAddressSearch } from '../information-registration/hooks';
 import * as S from './MarketInformationManagementPage.css';
 
 const MARKET_INFORMATION_UPDATE_TOAST_DURATION_MS = 1500;
@@ -59,6 +60,7 @@ const MarketInformationManagementPageController = () => {
   const marketId = useAuthStore((state) => state.marketId);
   const marketDetailQuery = useOwnerMarketDetailQuery({ marketId });
   const updateOwnerMarketMutation = useUpdateOwnerMarketMutation();
+  const searchMarketAddress = useMarketAddressSearch();
   const [isDirty, setIsDirty] = useState(false);
   const isLeaveConfirmationOpenRef = useRef(false);
   const shouldBypassLeaveConfirmationRef = useRef(false);
@@ -139,6 +141,7 @@ const MarketInformationManagementPageController = () => {
       submitDisabled={!isDirty || updateOwnerMarketMutation.isPending}
       submitLabel={updateOwnerMarketMutation.isPending ? '수정 중...' : '수정 완료'}
       title='마트 정보 관리'
+      onAddressSearch={searchMarketAddress}
       onDirtyChange={handleDirtyChange}
       onSubmit={async (request, _form, reset) => {
         await updateOwnerMarketMutation.mutateAsync({ marketId, request });
