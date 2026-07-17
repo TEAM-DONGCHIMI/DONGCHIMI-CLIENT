@@ -56,7 +56,7 @@ export const productSummaryClassName = style({
   minWidth: 0,
   flexDirection: 'column',
   alignItems: 'flex-start',
-  gap: '0.8rem',
+  gap: 0,
 });
 
 export const marketNameClassName = style({
@@ -72,11 +72,24 @@ export const chipRowClassName = style({
   flexWrap: 'wrap',
   alignItems: 'center',
   gap: '0.4rem',
+  marginTop: '1.2rem',
+});
+
+export const promotionLabelChipClassName = style({
+  ...typography['caption-1-regular'],
+  padding: '0.2rem 0.8rem',
+  letterSpacing: '-0.024rem',
+});
+
+export const promotionPeriodChipClassName = style({
+  ...typography['caption-1-medium'],
+  padding: '0.2rem 0.8rem',
+  letterSpacing: '-0.024rem',
 });
 
 export const productNameClassName = style({
   ...typography['heading-3-medium'],
-  margin: 0,
+  margin: '0.8rem 0 0',
   color: atomic.neutral[90],
   letterSpacing: 0,
   wordBreak: 'keep-all',
@@ -88,6 +101,7 @@ export const priceRowClassName = style({
   flexWrap: 'wrap',
   alignItems: 'baseline',
   gap: '1rem',
+  margin: '0.2rem 0 0',
 });
 
 export const discountedPriceGroupClassName = style({
@@ -122,6 +136,7 @@ export const originalPriceClassName = style({
 
 export const singlePriceClassName = style({
   ...typography['heading-1-semibold'],
+  margin: '0.2rem 0 0',
   color: atomic.neutral[90],
   letterSpacing: 0,
   whiteSpace: 'nowrap',

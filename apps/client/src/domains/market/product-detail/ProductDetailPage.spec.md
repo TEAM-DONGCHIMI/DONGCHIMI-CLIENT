@@ -54,6 +54,9 @@
 - mart comment card: 점장 한마디가 있을 때만 표시
 - today special chip: `오늘의 특가`
 - event discount chips: `행사 할인 품목`, `M.D ~ M.D`
+- product summary spacing: 마트명→행사 label `1.2rem`, 행사 label→상품명 `0.8rem`, 상품명→가격 `0.2rem`
+- promotion label chip: `soft`, `desktop`, `rounded=true`, `caption-1-regular` (`1.2rem`, `400`, `140%`, `-0.024rem`)
+- promotion period chip: `Assistive Light`(`neutral/subtle`), `desktop`, `rounded=false`, `caption-1-medium` (`1.2rem`, `500`, `140%`, `-0.024rem`)
 - mart comment card background: `atomic.neutral[5]`
 
 ## States
