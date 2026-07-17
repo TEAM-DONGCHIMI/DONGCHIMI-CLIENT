@@ -18,6 +18,8 @@
   "dependencies": {
     "@dongchimi/design-system": "workspace:*",
     "@dongchimi/shared": "workspace:*",
+    "@lottiefiles/dotlottie-react": "^0.19.9",
+    "@lottiefiles/dotlottie-web": "0.77.1",
     "@sentry/nextjs": "catalog:",
     "@serwist/next": "catalog:",
     "@tanstack/react-query": "catalog:",

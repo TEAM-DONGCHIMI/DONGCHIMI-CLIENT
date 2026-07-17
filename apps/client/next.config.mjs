@@ -113,6 +113,11 @@ const nextConfig = {
       resourceQuery: svgUrlResourceQuery,
     });
 
+    config.module.rules.push({
+      test: /\.wasm$/i,
+      type: 'asset/resource',
+    });
+
     return config;
   },
 };
