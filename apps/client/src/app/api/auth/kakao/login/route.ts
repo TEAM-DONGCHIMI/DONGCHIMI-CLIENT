@@ -173,6 +173,17 @@ export async function POST(request: Request) {
     }
 
     const refreshCookies = getRefreshTokenSetCookieHeaders(upstreamResponse.headers);
+
+    if (refreshCookies.length === 0) {
+      return clearKakaoOAuthCookies(
+        createErrorResponse(
+          502,
+          'OAUTH_REFRESH_TOKEN_MISSING',
+          '로그인 응답에서 세션 갱신 정보를 확인할 수 없습니다.',
+        ),
+      );
+    }
+
     const response = NextResponse.json({
       code: upstreamBody.code,
       message: upstreamBody.message,

@@ -43,6 +43,25 @@ const expectOAuthCookiesToBeDeleted = (response: Response) => {
   );
 };
 
+const createSuccessfulUpstreamLoginResponse = ({ includeRefreshToken = true } = {}) => {
+  return HttpResponse.json(
+    {
+      code: 'SUCCESS',
+      data: { accessToken: 'access-token' },
+      message: '요청에 성공했습니다.',
+      success: true,
+    },
+    includeRefreshToken
+      ? {
+          headers: {
+            'Set-Cookie':
+              'refresh_token=refresh-token; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth/token/refresh',
+          },
+        }
+      : undefined,
+  );
+};
+
 describe('POST /api/auth/kakao/login', () => {
   beforeAll(() => {
     vi.stubEnv('API_BASE_URL', API_BASE_URL);
@@ -57,20 +76,7 @@ describe('POST /api/auth/kakao/login', () => {
       http.post(`${API_BASE_URL}/v1/users/login/oauth2/kakao`, async ({ request }) => {
         await expect(request.json()).resolves.toEqual({ code: 'authorization-code' });
 
-        return HttpResponse.json(
-          {
-            code: 'SUCCESS',
-            data: { accessToken: 'access-token' },
-            message: '요청에 성공했습니다.',
-            success: true,
-          },
-          {
-            headers: {
-              'Set-Cookie':
-                'refresh_token=refresh-token; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth/token/refresh',
-            },
-          },
-        );
+        return createSuccessfulUpstreamLoginResponse();
       }),
     );
 
@@ -97,30 +103,22 @@ describe('POST /api/auth/kakao/login', () => {
     expectOAuthCookiesToBeDeleted(response);
   });
 
-  it('백엔드가 refresh cookie를 주지 않아도 access token으로 로그인을 완료한다', async () => {
+  it('백엔드 성공 응답에 refresh cookie가 없으면 부분 로그인을 거부한다', async () => {
     server.use(
       http.post(`${API_BASE_URL}/v1/users/login/oauth2/kakao`, () => {
-        return HttpResponse.json({
-          code: 'SUCCESS',
-          data: { accessToken: 'access-token' },
-          message: '요청에 성공했습니다.',
-          success: true,
-        });
+        return createSuccessfulUpstreamLoginResponse({ includeRefreshToken: false });
       }),
     );
 
     const response = await POST(createLoginRequest());
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(502);
     await expect(response.json()).resolves.toEqual({
-      code: 'SUCCESS',
-      message: '요청에 성공했습니다.',
-      redirectTo: RETURN_TO,
-      success: true,
+      code: 'OAUTH_REFRESH_TOKEN_MISSING',
+      message: '로그인 응답에서 세션 갱신 정보를 확인할 수 없습니다.',
+      success: false,
     });
-    expect(response.headers.getSetCookie()).toEqual(
-      expect.arrayContaining([expect.stringContaining('access_token=access-token')]),
-    );
+    expect(response.headers.getSetCookie().join(';')).not.toContain('access_token=access-token');
     expectOAuthCookiesToBeDeleted(response);
   });
 
@@ -133,12 +131,7 @@ describe('POST /api/auth/kakao/login', () => {
   ])('returnTo cookie %s가 없거나 안전하지 않으면 /markets를 반환한다', async (returnTo) => {
     server.use(
       http.post(`${API_BASE_URL}/v1/users/login/oauth2/kakao`, () => {
-        return HttpResponse.json({
-          code: 'SUCCESS',
-          data: { accessToken: 'access-token' },
-          message: '요청에 성공했습니다.',
-          success: true,
-        });
+        return createSuccessfulUpstreamLoginResponse();
       }),
     );
 
@@ -154,12 +147,7 @@ describe('POST /api/auth/kakao/login', () => {
   it('decode할 수 없는 raw returnTo cookie는 /markets로 fallback한다', async () => {
     server.use(
       http.post(`${API_BASE_URL}/v1/users/login/oauth2/kakao`, () => {
-        return HttpResponse.json({
-          code: 'SUCCESS',
-          data: { accessToken: 'access-token' },
-          message: '요청에 성공했습니다.',
-          success: true,
-        });
+        return createSuccessfulUpstreamLoginResponse();
       }),
     );
 
@@ -283,11 +271,19 @@ describe('POST /api/auth/kakao/login', () => {
   it('성공 응답에 access token이 없으면 502를 반환한다', async () => {
     server.use(
       http.post(`${API_BASE_URL}/v1/users/login/oauth2/kakao`, () => {
-        return HttpResponse.json({
-          code: 'SUCCESS',
-          message: '요청에 성공했습니다.',
-          success: true,
-        });
+        return HttpResponse.json(
+          {
+            code: 'SUCCESS',
+            message: '요청에 성공했습니다.',
+            success: true,
+          },
+          {
+            headers: {
+              'Set-Cookie':
+                'refresh_token=refresh-token; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth/token/refresh',
+            },
+          },
+        );
       }),
     );
 

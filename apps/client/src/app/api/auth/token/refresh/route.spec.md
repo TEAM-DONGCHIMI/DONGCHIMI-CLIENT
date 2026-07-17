@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-17, DCMCL-22
+- Jira: DCMCL-17, DCMCL-22, DCMCL-41
 - Route: `POST /api/auth/token/refresh`
 - Upstream: `POST /v1/auth/token/refresh`
 - Status: Implemented
@@ -10,7 +10,7 @@
 ## Purpose
 
 - 브라우저 JavaScript에 token을 노출하지 않고 HttpOnly refresh cookie로 인증 token을 갱신합니다.
-- 갱신 실패 시 브라우저에 만료된 인증 cookie가 남지 않도록 정리합니다.
+- 인증이 확정적으로 만료된 경우에는 cookie를 정리하고, 일시적인 upstream 장애에서는 cookie를 유지합니다.
 
 ## Contract
 
@@ -33,9 +33,10 @@
 ## Error
 
 - refresh cookie가 없으면 `401 REFRESH_TOKEN_NOT_FOUND`로 응답하고 인증 cookie를 삭제합니다.
-- 백엔드의 `401 REFRESH_TOKEN_NOT_FOUND`, `401 INVALID_INPUT`, `401 REFRESH_TOKEN_EXPIRED`, `404 USER_NOT_FOUND` status와 error body를 전달하고 인증 cookie를 삭제합니다.
+- 백엔드의 `401 MISSING_REFRESH_TOKEN`, `401 INVALID_REFRESH_TOKEN` status와 error body를 전달하고 인증 cookie를 삭제합니다.
+- 백엔드의 `5xx` status와 error body는 전달하되, 아직 유효할 수 있는 인증 cookie는 유지합니다.
 - 성공 응답에 access token 또는 새 refresh cookie가 없으면 `502 REFRESH_TOKEN_RESPONSE_INVALID`로 응답하고 인증 cookie를 삭제합니다.
-- 백엔드 연결 또는 응답 처리에 실패하면 `502 REFRESH_UPSTREAM_FAILED`로 응답하고 인증 cookie를 삭제합니다.
+- 백엔드 연결 또는 응답 처리에 실패하면 `502 REFRESH_UPSTREAM_FAILED`로 응답하고 인증 cookie를 유지합니다.
 
 ## Verification
 

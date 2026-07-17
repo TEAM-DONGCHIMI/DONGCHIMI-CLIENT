@@ -136,11 +136,75 @@ describe('browser API auth refresh', () => {
     expect(onFinalUnauthorized).not.toHaveBeenCalled();
   });
 
+  it('사용 가능한 경우 same-origin Web Lock으로 refresh 요청을 직렬화한다', async () => {
+    const originalLocksDescriptor = Object.getOwnPropertyDescriptor(navigator, 'locks');
+    const requestLock = vi.fn((_name: string, callback: () => Promise<unknown>) => callback());
+    let protectedRequestCount = 0;
+
+    Object.defineProperty(navigator, 'locks', {
+      configurable: true,
+      value: {
+        request: requestLock,
+      },
+    });
+
+    try {
+      server.use(
+        http.get(`${window.location.origin}/api/protected`, () => {
+          protectedRequestCount += 1;
+
+          return HttpResponse.json(
+            { success: protectedRequestCount > 1 },
+            { status: protectedRequestCount > 1 ? 200 : 401 },
+          );
+        }),
+        http.post(`${window.location.origin}/api/auth/token/refresh`, () => {
+          return HttpResponse.json({ success: true });
+        }),
+      );
+
+      await expect(createBrowserApi().get('protected').json()).resolves.toEqual({ success: true });
+
+      expect(requestLock).toHaveBeenCalledTimes(1);
+      expect(requestLock.mock.calls[0]?.[0]).toBe('dongchimi:client-auth-refresh');
+    } finally {
+      if (originalLocksDescriptor) {
+        Object.defineProperty(navigator, 'locks', originalLocksDescriptor);
+      } else {
+        Reflect.deleteProperty(navigator, 'locks');
+      }
+    }
+  });
+
+  it('refresh 401 실패 시 원 요청을 재시도하지 않고 최종 401을 한 번 알린다', async () => {
+    let protectedRequestCount = 0;
+    let refreshRequestCount = 0;
+    const onFinalUnauthorized = vi.fn();
+
+    server.use(
+      http.get(`${window.location.origin}/api/protected`, () => {
+        protectedRequestCount += 1;
+
+        return HttpResponse.json({ success: false }, { status: 401 });
+      }),
+      http.post(`${window.location.origin}/api/auth/token/refresh`, () => {
+        refreshRequestCount += 1;
+
+        return HttpResponse.json({ success: false }, { status: 401 });
+      }),
+    );
+
+    const response = await createBrowserApi({ onFinalUnauthorized }).get('protected', {
+      throwHttpErrors: false,
+    });
+
+    expect(response.status).toBe(401);
+    expect(protectedRequestCount).toBe(1);
+    expect(refreshRequestCount).toBe(1);
+    expect(onFinalUnauthorized).toHaveBeenCalledTimes(1);
+  });
+
   it.each([
-    {
-      createRefreshResponse: () => HttpResponse.json({ success: false }, { status: 401 }),
-      name: '401',
-    },
     {
       createRefreshResponse: () => HttpResponse.json({ success: false }, { status: 500 }),
       name: '500',
@@ -150,7 +214,7 @@ describe('browser API auth refresh', () => {
       name: 'network 오류',
     },
   ])(
-    'refresh $name 실패 시 원 요청을 재시도하지 않고 최종 401을 한 번 알린다',
+    'refresh $name 실패 시 원 요청과 로그인 이동 없이 현재 인증 상태를 유지한다',
     async ({ createRefreshResponse }) => {
       let protectedRequestCount = 0;
       let refreshRequestCount = 0;
@@ -176,7 +240,7 @@ describe('browser API auth refresh', () => {
       expect(response.status).toBe(401);
       expect(protectedRequestCount).toBe(1);
       expect(refreshRequestCount).toBe(1);
-      expect(onFinalUnauthorized).toHaveBeenCalledTimes(1);
+      expect(onFinalUnauthorized).not.toHaveBeenCalled();
     },
   );
 
