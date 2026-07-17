@@ -43,7 +43,7 @@ describe('useKakaoReverseGeocoder', () => {
     vi.stubGlobal('kakao', { maps: { services: { Geocoder, Status: { OK: 'OK' } } } });
     const onAddressChange = vi.fn();
 
-    const { result } = renderHook(() =>
+    const { rerender, result } = renderHook(() =>
       useKakaoReverseGeocoder({
         coordinates: { lat: 37.5665, lng: 126.978 },
         onAddressChange,
@@ -55,6 +55,10 @@ describe('useKakaoReverseGeocoder', () => {
       expect(result.current.address).toBe('서울 마포구 망원로 1');
       expect(onAddressChange).toHaveBeenCalledWith('서울 마포구 망원로 1');
     });
+
+    rerender();
+
+    expect(onAddressChange).toHaveBeenCalledTimes(1);
   });
 
   it('reports null and clears the address when the coordinates cannot be reverse-geocoded', async () => {
