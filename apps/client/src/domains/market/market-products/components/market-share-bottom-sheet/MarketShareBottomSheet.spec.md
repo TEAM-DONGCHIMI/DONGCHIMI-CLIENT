@@ -40,7 +40,7 @@
   - bottom sheet open state와 share/install view 전환은 이 컴포넌트가 controlled state로 관리하고, modal/focus/portal 동작은 `BottomSheet` primitive에 위임합니다.
   - 링크 복사와 준비중 toast는 native dialog top-layer 위에 보이도록 bottom sheet dialog 내부의 local `ToastProvider`를 사용합니다.
   - app root의 `PwaInstallProvider`가 보관한 설치 prompt와 설치 상태를 `usePwaInstall`로 소비합니다.
-  - 공유 API 연동 시 호출부는 `slug`로 공유 URL을 만듭니다.
+  - 호출부는 운영 canonical origin과 `/markets/{slug}` route를 조합한 전체 URL을 전달합니다.
 
 ## States
 

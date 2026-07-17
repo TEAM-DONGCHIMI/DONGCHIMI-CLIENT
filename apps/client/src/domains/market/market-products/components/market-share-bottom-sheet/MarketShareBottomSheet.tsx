@@ -16,7 +16,7 @@ import { ToastProvider, useToast, type ToastStatusTypes } from '@dongchimi/share
 import { usePwaInstall } from '@/shared/pwa';
 
 import * as S from './MarketShareBottomSheet.css';
-import installGuideImage from './assets/pwa-install-guide.png';
+import installGuideImage from './assets/pwa-install-guide.svg';
 
 type MarketShareActionHandlerTypes = () => void | Promise<void>;
 
