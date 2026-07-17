@@ -114,7 +114,7 @@ const renderEventDiscountRegistrationPage = (
       },
       {
         path: MARKET_OWNER_ROUTES.registrationResult,
-        element: <h1>상품 결과 등록 확인</h1>,
+        element: <h1>상품 등록 결과 확인</h1>,
       },
     ],
     {
@@ -287,7 +287,7 @@ describe('EventDiscountRegistrationPage', () => {
     await user.click(screen.getByRole('button', { name: '파일 업로드' }));
     await user.click(screen.getByRole('button', { name: '분석 시작' }));
 
-    expect(await screen.findByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '상품 등록 결과 확인' })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe(MARKET_OWNER_ROUTES.registrationResult);
     expect(router.state.location.state).toEqual(
       createProductImportRouteState({

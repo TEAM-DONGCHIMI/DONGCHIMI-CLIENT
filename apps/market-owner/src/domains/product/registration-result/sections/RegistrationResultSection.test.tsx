@@ -82,7 +82,7 @@ describe('RegistrationResultSection', () => {
   it('renders Figma result confirmation heading, filters, list, and disabled register action', () => {
     renderSection();
 
-    expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '상품 등록 결과 확인' })).toBeInTheDocument();
     expect(screen.getByText(/AI가 상품 정보를 분석했습니다/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '총 상품 16' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '등록 완료 4' })).toBeInTheDocument();
