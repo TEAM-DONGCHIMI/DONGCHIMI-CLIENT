@@ -6,7 +6,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useKakaoLoginMutation } from '@/domains/auth/hooks/use-kakao-login-mutation';
 import { getKakaoOAuthCallbackErrorMessage } from '@/domains/auth/model/kakao-login-error';
+import { normalizeAuthReturnTo } from '@/shared/auth/auth-return-to';
 import { CLIENT_ROUTES } from '@/shared/constants';
+
+import { OAuthCallbackLoading } from './components/OAuthCallbackLoading';
 
 export const OAuthCallbackPage = () => {
   const router = useRouter();
@@ -37,8 +40,8 @@ export const OAuthCallbackPage = () => {
     mutate(
       { code, state },
       {
-        onSuccess: () => {
-          router.replace(CLIENT_ROUTES.markets);
+        onSuccess: ({ redirectTo }) => {
+          router.replace(normalizeAuthReturnTo(redirectTo));
         },
       },
     );
@@ -51,17 +54,15 @@ export const OAuthCallbackPage = () => {
     state,
   });
 
+  if (!errorMessage) {
+    return <OAuthCallbackLoading />;
+  }
+
   return (
     <main>
       <h1>카카오 로그인</h1>
-      {errorMessage ? (
-        <>
-          <p role='alert'>{errorMessage}</p>
-          <Link href={CLIENT_ROUTES.login}>로그인 화면으로 돌아가기</Link>
-        </>
-      ) : (
-        <p aria-live='polite'>로그인 정보를 확인하고 있습니다.</p>
-      )}
+      <p role='alert'>{errorMessage}</p>
+      <Link href={CLIENT_ROUTES.login}>로그인 화면으로 돌아가기</Link>
     </main>
   );
 };

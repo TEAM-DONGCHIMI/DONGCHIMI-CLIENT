@@ -17,6 +17,7 @@ describe('postKakaoLogin', () => {
         return HttpResponse.json({
           code: 'SUCCESS',
           message: '요청에 성공했습니다.',
+          redirectTo: '/markets/mangwon-fresh',
           success: true,
         });
       }),
@@ -27,6 +28,7 @@ describe('postKakaoLogin', () => {
     expect(result).toEqual({
       code: 'SUCCESS',
       message: '요청에 성공했습니다.',
+      redirectTo: '/markets/mangwon-fresh',
       success: true,
     });
   });
