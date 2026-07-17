@@ -155,11 +155,11 @@ describe('RegistrationResultPage', () => {
 
     expect(breadcrumb).toBeInTheDocument();
     expect(screen.getByText('행사 할인 상품 등록')).toBeInTheDocument();
-    expect(within(breadcrumb).getByText('상품 결과 등록 확인')).toHaveAttribute(
+    expect(within(breadcrumb).getByText('상품 등록 결과 확인')).toHaveAttribute(
       'aria-current',
       'page',
     );
-    expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '상품 등록 결과 확인' })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: '동치미' })).toHaveAttribute(
       'src',
       expect.stringContaining('Img_pavicon.svg'),
@@ -266,7 +266,7 @@ describe('RegistrationResultPage', () => {
       'data-placement',
       'top-center',
     );
-    expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '상품 등록 결과 확인' })).toBeInTheDocument();
   });
 
   it('stays on the result page when the refreshed server draft still fails', async () => {
@@ -289,7 +289,7 @@ describe('RegistrationResultPage', () => {
 
     expect(mockedSavePreparedProductDrafts).toHaveBeenCalledTimes(1);
     expect(mockedRefetchPreparedProductDrafts).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '상품 등록 결과 확인' })).toBeInTheDocument();
     expect(
       screen.queryByRole('heading', { name: '오늘의 전단 최종 확인' }),
     ).not.toBeInTheDocument();

@@ -27,6 +27,7 @@ type LeafletShareViewTypes = 'confirm' | 'share';
 
 const TOAST_DURATION_MS = 3000;
 const TOAST_ICON_SIZE = '2.4rem';
+const COPY_FEEDBACK_TOAST_ID = 'leaflet-share-copy-feedback';
 const QR_DOWNLOAD_MODAL_OVERLAY_ID = 'leaflet-share-qr-download-modal';
 const QR_DOWNLOAD_FILENAME = 'market-leaflet-qr.png';
 const QR_ISSUE_ERROR_MESSAGE = 'QR 코드를 불러오지 못했습니다. 다시 시도해주세요.';
@@ -117,6 +118,7 @@ export const LeafletSharePage = () => {
     toast.completed('전단 링크가 복사되었습니다.', {
       durationMs: TOAST_DURATION_MS,
       icon: <IcCircleCheckFill {...toastIconProps} />,
+      id: COPY_FEEDBACK_TOAST_ID,
     });
   };
   const showCopyErrorToast = () => {
@@ -129,6 +131,7 @@ export const LeafletSharePage = () => {
       {
         durationMs: TOAST_DURATION_MS,
         icon: <IcCircleExclamation {...toastIconProps} className={S.errorIconClassName} />,
+        id: COPY_FEEDBACK_TOAST_ID,
       },
     );
   };

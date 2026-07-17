@@ -62,6 +62,7 @@ const renderTodaySpecialRegistrationPage = () => {
             element={<div>오늘의 특가 상품 수정 페이지</div>}
             path={MARKET_OWNER_ROUTES.todaySpecialEdit}
           />
+          <Route element={<div>홈 페이지</div>} path={MARKET_OWNER_ROUTES.home} />
           <Route
             element={<div>마트 정보 등록 페이지</div>}
             path={MARKET_OWNER_ROUTES.marketInformationRegistration}
@@ -163,7 +164,7 @@ describe('TodaySpecialRegistrationPage', () => {
     expect(screen.getByRole('button', { name: '상품 계속 등록' })).toBeEnabled();
   });
 
-  it('navigates to today special edit after registration completes', async () => {
+  it('navigates to home after registration completes', async () => {
     const user = userEvent.setup();
 
     renderTodaySpecialRegistrationPage();
@@ -175,7 +176,7 @@ describe('TodaySpecialRegistrationPage', () => {
     await user.type(screen.getByLabelText('판매가'), '5000');
     await user.click(screen.getByRole('button', { name: '등록 완료' }));
 
-    expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
+    expect(await screen.findByText('홈 페이지')).toBeInTheDocument();
     expect(uploadProductImage).toHaveBeenCalledWith(
       expect.objectContaining({ imageFile: null, name: '딸기' }),
     );
@@ -215,7 +216,7 @@ describe('TodaySpecialRegistrationPage', () => {
         thumbnailUrl: 'tmp/PRODUCT_THUMBNAIL/product.png',
       }),
     });
-    expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
+    expect(await screen.findByText('홈 페이지')).toBeInTheDocument();
   });
 
   it('registers an uploaded image object key without requiring an S3 base URL', async () => {
@@ -240,7 +241,7 @@ describe('TodaySpecialRegistrationPage', () => {
       marketId: 12,
       request: expect.objectContaining({ thumbnailUrl: uploadedImageObjectKey }),
     });
-    expect(await screen.findByText('오늘의 특가 상품 수정 페이지')).toBeInTheDocument();
+    expect(await screen.findByText('홈 페이지')).toBeInTheDocument();
   });
 
   it('keeps the page open and shows an error toast when image upload fails', async () => {
