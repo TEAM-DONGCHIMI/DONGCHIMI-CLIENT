@@ -117,7 +117,7 @@ export const RegistrationResultPage = () => {
       <main className={S.pageRootClassName}>
         <DesktopHeader
           className={S.pageHeaderClassName}
-          currentLabel='상품 결과 등록 확인'
+          currentLabel='상품 등록 결과 확인'
           logo={
             <img
               alt='동치미'

@@ -22,7 +22,7 @@
 
 행사 할인 상품 등록 flow의 첫 진입 화면에서 등록 방식을 선택하고, 엑셀 파일 업로드 UI 상태를 거쳐 AI 분석 진행 화면으로 이어집니다.
 사장님 데스크탑 protected sidebar layout 안에서 렌더링하며, 다운로드 API와 분석 결과 확인 API는 후속 이슈에서 연결합니다.
-엑셀 파일 선택 또는 드롭 시 presigned URL 발급과 storage PUT을 완료하고, 모달의 `파일 업로드` CTA는 등록 파일 확인 단계로만 이동합니다. 확인 단계의 `분석 시작` CTA에서 파일 분석 시작 API를 호출하고, 발급받은 `jobId`로 실제 분석 진행 SSE를 구독한 뒤 완료 이벤트 수신 시 상품 결과 등록 확인 route로 이동합니다.
+엑셀 파일 선택 또는 드롭 시 presigned URL 발급과 storage PUT을 완료하고, 모달의 `파일 업로드` CTA는 등록 파일 확인 단계로만 이동합니다. 확인 단계의 `분석 시작` CTA에서 파일 분석 시작 API를 호출하고, 발급받은 `jobId`로 실제 분석 진행 SSE를 구독한 뒤 완료 이벤트 수신 시 상품 등록 결과 확인 route로 이동합니다.
 
 ## Ownership
 
@@ -71,7 +71,7 @@
 
 - initial/method: `/products/event-discount/new` first renders the registration method home with excel and leaflet upload cards.
 - modal/default: clicking `엑셀 업로드` opens `UploadModal` with two-line guidance copy, a file format tooltip, and a disabled upload button.
-- modal/upload: selecting or dropping a `.xlsx` or `.csv` file starts the presigned upload, shows the selected file name, and keeps the upload button disabled until the upload handoff value is ready.
+- modal/upload: selecting or dropping a `.xlsx` or `.csv` file starts the presigned upload, shows the selected file name, and keeps the upload button disabled until the upload handoff value is ready. Default-to-upload and upload-pending-to-ready rerenders keep the existing native dialog/top layer mounted so the content and overlay do not replay their enter animation.
 - modal/error: selecting or dropping a file outside `.xlsx` or `.csv` shows the upload modal error state and keeps the upload button disabled.
 - success/confirm: clicking the enabled upload button closes the modal without starting product import and renders `FileAnalysisConfirmSection` with the uploaded file name.
 - cancel/confirm: canceling analysis progress renders `FileAnalysisConfirmSection` with the uploaded file name so the owner can restart analysis or return to the method view.

@@ -120,7 +120,7 @@ test('registration result table keeps fixed columns while the viewport resizes',
   await signInMarketOwner(page);
   await page.goto('/products/registration-result');
 
-  await expect(page.getByRole('heading', { name: '상품 결과 등록 확인' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '상품 등록 결과 확인' })).toBeVisible();
 
   const desktopHeaderCellWidths = await getHeaderCellWidths(page);
   const tableHeader = getTableHeader(page);

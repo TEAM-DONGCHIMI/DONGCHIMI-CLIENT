@@ -34,7 +34,7 @@ export const RegistrationResultSectionLayout = ({
     >
       <Flex className={S.headingContainerClassName} direction='column'>
         <h1 className={S.titleClassName} id='registration-result-title'>
-          상품 결과 등록 확인
+          상품 등록 결과 확인
         </h1>
         <p className={S.descriptionClassName}>
           AI가 상품 정보를 분석했습니다. 등록 전 내용을 확인해주세요. (

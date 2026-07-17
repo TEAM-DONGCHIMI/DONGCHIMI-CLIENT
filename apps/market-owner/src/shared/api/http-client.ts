@@ -5,6 +5,8 @@ import { createApiConfigurationError, normalizeApiError } from './api-error';
 import {
   clearAuthSession,
   createAuthorizedRequestOptions,
+  isAuthSessionInvalidError,
+  isRefreshSessionInvalidError,
   refreshAccessToken,
   shouldRefreshAccessToken,
   type HttpClientOptionsTypes,
@@ -103,6 +105,20 @@ export const refreshAuthSession = () => {
   return refreshAccessToken(performRequest);
 };
 
+const handleAuthSessionError = (error: unknown) => {
+  const normalizedError = normalizeApiError(error);
+  const shouldClearSession = isAuthSessionInvalidError(normalizedError);
+
+  if (shouldClearSession) {
+    clearAuthSession();
+  }
+
+  return {
+    normalizedError,
+    shouldClearSession,
+  };
+};
+
 const requestWithAuthRefresh = async <ResponseDataTypes>(
   perform: (accessToken?: string) => Promise<ResponseDataTypes>,
   options?: HttpClientOptionsTypes,
@@ -110,8 +126,10 @@ const requestWithAuthRefresh = async <ResponseDataTypes>(
   try {
     return await perform();
   } catch (error) {
+    const normalizedError = normalizeApiError(error);
+
     if (!shouldRefreshAccessToken(error, options)) {
-      throw await normalizeApiError(error);
+      throw handleAuthSessionError(normalizedError).normalizedError;
     }
 
     let accessToken: string;
@@ -119,15 +137,19 @@ const requestWithAuthRefresh = async <ResponseDataTypes>(
     try {
       accessToken = await refreshAuthSession();
     } catch (refreshError) {
-      clearAuthSession();
+      const normalizedRefreshError = normalizeApiError(refreshError);
 
-      throw await normalizeApiError(refreshError);
+      if (isRefreshSessionInvalidError(normalizedRefreshError)) {
+        clearAuthSession();
+      }
+
+      throw normalizedRefreshError;
     }
 
     try {
       return await perform(accessToken);
     } catch (retryError) {
-      throw await normalizeApiError(retryError);
+      throw handleAuthSessionError(retryError).normalizedError;
     }
   }
 };
