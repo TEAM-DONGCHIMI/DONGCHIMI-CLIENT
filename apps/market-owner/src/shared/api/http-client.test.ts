@@ -48,6 +48,45 @@ describe('httpClient auth refresh', () => {
     useAuthStore.getState().clearSession();
   });
 
+  it.each([
+    { code: 'UNAUTHORIZED', status: 401 },
+    { code: 'FORBIDDEN', status: 403 },
+  ])(
+    'clears the auth session without refresh after a $status/$code response',
+    async ({ code, status }) => {
+      const { httpClient } = await import('./http-client');
+      const authError = new HTTPErrorMock(new Response(null, { status }), {
+        success: false,
+        code,
+        message: '인증 세션이 유효하지 않습니다.',
+      });
+
+      useAuthStore.getState().setAccessToken('active-access-token', {
+        account: {
+          email: 'owner@dongchiimi.com',
+          marketName: '동치미마트',
+        },
+        marketId: 12,
+      });
+      mockKyRequest.mockRejectedValueOnce(authError);
+
+      await expect(httpClient.get('/v1/protected')).rejects.toMatchObject({
+        code,
+        status,
+        type: 'auth',
+      });
+
+      expect(mockKyRequest).toHaveBeenCalledTimes(1);
+      expect(useAuthStore.getState()).toMatchObject({
+        accessToken: undefined,
+        account: undefined,
+        bootstrapStatus: 'unauthenticated',
+        isLoggedIn: false,
+        marketId: undefined,
+      });
+    },
+  );
+
   it('attaches the access token from the auth store', async () => {
     const { httpClient } = await import('./http-client');
 
@@ -96,6 +135,97 @@ describe('httpClient auth refresh', () => {
       'Bearer refreshed-access-token',
     );
     expect(useAuthStore.getState().accessToken).toBe('refreshed-access-token');
+  });
+
+  it.each([
+    { code: 'UNAUTHORIZED', status: 401 },
+    { code: 'FORBIDDEN', status: 403 },
+  ])(
+    'clears the auth session when the retry request returns $status/$code',
+    async ({ code, status }) => {
+      const { httpClient } = await import('./http-client');
+      const expiredAccessTokenError = new HTTPErrorMock(new Response(null, { status: 401 }), {
+        success: false,
+        code: 'INVALID_INPUT',
+        message: '유효하지 않은 토큰입니다.',
+      });
+      const retryAuthError = new HTTPErrorMock(new Response(null, { status }), {
+        success: false,
+        code,
+        message: '인증 세션이 유효하지 않습니다.',
+      });
+      const refreshResponse = {
+        success: true,
+        code: 'SUCCESS',
+        message: 'ok',
+        data: {
+          accessToken: 'refreshed-access-token',
+        },
+      };
+
+      useAuthStore.getState().setAccessToken('stale-access-token', {
+        account: {
+          email: 'owner@dongchiimi.com',
+          marketName: '동치미마트',
+        },
+        marketId: 12,
+      });
+      mockKyRequest
+        .mockRejectedValueOnce(expiredAccessTokenError)
+        .mockResolvedValueOnce(new Response(JSON.stringify(refreshResponse)))
+        .mockRejectedValueOnce(retryAuthError);
+
+      await expect(httpClient.get('/v1/protected')).rejects.toMatchObject({
+        code,
+        status,
+        type: 'auth',
+      });
+
+      expect(mockKyRequest).toHaveBeenCalledTimes(3);
+      expect(useAuthStore.getState()).toMatchObject({
+        accessToken: undefined,
+        account: undefined,
+        bootstrapStatus: 'unauthenticated',
+        isLoggedIn: false,
+        marketId: undefined,
+      });
+    },
+  );
+
+  it('keeps the auth session for a domain-specific 403 response', async () => {
+    const { httpClient } = await import('./http-client');
+    const forbiddenMarketError = new HTTPErrorMock(new Response(null, { status: 403 }), {
+      success: false,
+      code: 'FORBIDDEN_MARKET_ACCESS',
+      message: '해당 마트에 접근할 수 없습니다.',
+    });
+
+    useAuthStore.getState().setAccessToken('active-access-token', {
+      account: {
+        email: 'owner@dongchiimi.com',
+        marketName: '동치미마트',
+      },
+      marketId: 12,
+    });
+    mockKyRequest.mockRejectedValueOnce(forbiddenMarketError);
+
+    await expect(httpClient.get('/v1/protected')).rejects.toMatchObject({
+      code: 'FORBIDDEN_MARKET_ACCESS',
+      status: 403,
+      type: 'auth',
+    });
+
+    expect(mockKyRequest).toHaveBeenCalledTimes(1);
+    expect(useAuthStore.getState()).toMatchObject({
+      accessToken: 'active-access-token',
+      account: {
+        email: 'owner@dongchiimi.com',
+        marketName: '동치미마트',
+      },
+      bootstrapStatus: 'authenticated',
+      isLoggedIn: true,
+      marketId: 12,
+    });
   });
 
   it('shares one in-flight refresh request across concurrent callers', async () => {

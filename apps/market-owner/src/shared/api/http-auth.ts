@@ -2,6 +2,7 @@ import { API_ENDPOINTS, validateApiResponse } from '@dongchimi/shared/api';
 import { HTTPError, type Options } from 'ky';
 
 import { useAuthStore } from '../stores/auth-store';
+import type { ApiError } from './api-error';
 import { authRefreshResponseSchema } from './auth-refresh-schema';
 import { HTTP_STATUS } from './http-status';
 
@@ -109,6 +110,13 @@ export const shouldRefreshAccessToken = (error: unknown, options?: HttpClientOpt
     error instanceof HTTPError &&
     error.response.status === HTTP_STATUS.UNAUTHORIZED &&
     options?.auth?.skipRefresh !== true
+  );
+};
+
+export const isAuthSessionInvalidError = (error: ApiError) => {
+  return (
+    (error.status === HTTP_STATUS.UNAUTHORIZED && error.code === 'UNAUTHORIZED') ||
+    (error.status === HTTP_STATUS.FORBIDDEN && error.code === 'FORBIDDEN')
   );
 };
 
