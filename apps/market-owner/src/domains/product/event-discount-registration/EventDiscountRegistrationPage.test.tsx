@@ -492,17 +492,32 @@ describe('EventDiscountRegistrationPage', () => {
     renderEventDiscountRegistrationPage({ resolveExcelFileUrl });
 
     await user.click(screen.getByRole('button', { name: '엑셀 업로드' }));
+    const dialog = screen.getByRole('dialog', { name: '엑셀 파일 업로드' });
+    const close = vi.fn(() => dialog.removeAttribute('open'));
+    const showModal = vi.fn(() => dialog.setAttribute('open', ''));
+
+    Object.defineProperties(dialog, {
+      close: { configurable: true, value: close },
+      showModal: { configurable: true, value: showModal },
+    });
+
     await user.upload(screen.getByLabelText('파일 선택'), excelFile);
 
     const uploadButton = screen.getByRole('button', { name: '파일 업로드' });
 
+    expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBe(dialog);
     expect(uploadButton).toBeDisabled();
+    expect(close).not.toHaveBeenCalled();
+    expect(showModal).not.toHaveBeenCalled();
 
     deferredUpload.resolve('https://static.dongchimi.kr/test/products.xlsx');
 
     await waitFor(() => {
       expect(uploadButton).toBeEnabled();
     });
+    expect(screen.getByRole('dialog', { name: '엑셀 파일 업로드' })).toBe(dialog);
+    expect(close).not.toHaveBeenCalled();
+    expect(showModal).not.toHaveBeenCalled();
   });
 
   it('selects an excel file through drag and drop', async () => {

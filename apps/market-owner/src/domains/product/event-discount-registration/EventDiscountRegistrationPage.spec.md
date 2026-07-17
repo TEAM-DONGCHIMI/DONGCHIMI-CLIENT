@@ -71,7 +71,7 @@
 
 - initial/method: `/products/event-discount/new` first renders the registration method home with excel and leaflet upload cards.
 - modal/default: clicking `엑셀 업로드` opens `UploadModal` with two-line guidance copy, a file format tooltip, and a disabled upload button.
-- modal/upload: selecting or dropping a `.xlsx` or `.csv` file starts the presigned upload, shows the selected file name, and keeps the upload button disabled until the upload handoff value is ready.
+- modal/upload: selecting or dropping a `.xlsx` or `.csv` file starts the presigned upload, shows the selected file name, and keeps the upload button disabled until the upload handoff value is ready. Default-to-upload and upload-pending-to-ready rerenders keep the existing native dialog/top layer mounted so the content and overlay do not replay their enter animation.
 - modal/error: selecting or dropping a file outside `.xlsx` or `.csv` shows the upload modal error state and keeps the upload button disabled.
 - success/confirm: clicking the enabled upload button closes the modal without starting product import and renders `FileAnalysisConfirmSection` with the uploaded file name.
 - cancel/confirm: canceling analysis progress renders `FileAnalysisConfirmSection` with the uploaded file name so the owner can restart analysis or return to the method view.
