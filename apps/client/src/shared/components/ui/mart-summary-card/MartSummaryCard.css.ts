@@ -80,9 +80,25 @@ export const actionButtonClassName = style({
   width: '7.1rem',
   minWidth: '7.1rem',
   maxWidth: '7.1rem',
+  minInlineSize: '7.1rem',
+  maxInlineSize: '7.1rem',
   height: '3.8rem',
+  flexBasis: '7.1rem',
   flexShrink: 0,
   padding: 0,
+
+  selectors: {
+    '&&': {
+      width: '7.1rem',
+      minWidth: '7.1rem',
+      maxWidth: '7.1rem',
+      minInlineSize: '7.1rem',
+      maxInlineSize: '7.1rem',
+      height: '3.8rem',
+      flexBasis: '7.1rem',
+      padding: 0,
+    },
+  },
 });
 
 export const productScrollerClassName = style({

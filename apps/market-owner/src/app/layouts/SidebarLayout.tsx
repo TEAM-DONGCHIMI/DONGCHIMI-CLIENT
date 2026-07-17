@@ -16,10 +16,12 @@ import {
 } from '@dongchimi/design-system/icons';
 import { ToastProvider } from '@dongchimi/shared/toast';
 
+import { useOwnerMarketDetailQuery } from '@/domains/market/hooks';
+import type { OwnerMarketDetailTypes } from '@/domains/market/model';
 import { Sidebar, type SidebarItem, type SidebarSection } from '@/shared/components';
 import sidebarBrandLogo from '@/shared/assets/images/Img_pavicon.svg';
 import { MARKET_OWNER_ROUTES, type MarketOwnerRouteTypes } from '@/shared/constants/routes';
-import { useAuthStore } from '@/shared/stores/auth-store';
+import { useAuthStore, type AuthAccountTypes } from '@/shared/stores/auth-store';
 
 import * as S from './SidebarLayout.css';
 import { SIDEBAR_LAYOUT_TOAST_OFFSET_Y } from './SidebarLayout.constants';
@@ -158,16 +160,46 @@ const SidebarHelp = () => (
   </div>
 );
 
-const profileAvatarImageSrc = '/images/product-replace.svg';
+export const profileAvatarImageSrc = '/images/product-replace.svg';
 
-const getProfileAvatarImageSrc = (marketThumbnailUrl?: string) => {
-  return marketThumbnailUrl?.trim() ? marketThumbnailUrl : profileAvatarImageSrc;
+export const getProfileAvatarImageSrc = (marketThumbnailUrl?: string) => {
+  const normalizedMarketThumbnailUrl = marketThumbnailUrl?.trim();
+
+  if (!normalizedMarketThumbnailUrl) {
+    return profileAvatarImageSrc;
+  }
+
+  const isDisplayableImageSrc =
+    /^https?:\/\//.test(normalizedMarketThumbnailUrl) ||
+    /^\/(?!\/)/.test(normalizedMarketThumbnailUrl) ||
+    normalizedMarketThumbnailUrl.startsWith('blob:') ||
+    normalizedMarketThumbnailUrl.startsWith('data:image/');
+
+  return isDisplayableImageSrc ? normalizedMarketThumbnailUrl : profileAvatarImageSrc;
+};
+
+export const getSidebarProfileSource = ({
+  account,
+  market,
+}: {
+  account: AuthAccountTypes;
+  market?: OwnerMarketDetailTypes;
+}) => {
+  const marketName = market?.name ?? account.marketName;
+
+  return {
+    description: marketName ? account.email : undefined,
+    name: marketName ?? account.email,
+    thumbnailUrl: market?.thumbnailUrl ?? account.marketThumbnailUrl,
+  };
 };
 
 export const SidebarLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const account = useAuthStore((state) => state.account);
+  const marketId = useAuthStore((state) => state.marketId);
+  const marketDetailQuery = useOwnerMarketDetailQuery({ marketId });
   const activeItemId = getActiveSidebarItemId(location.pathname);
   const profile = useMemo(
     () => ({
@@ -181,25 +213,37 @@ export const SidebarLayout = () => {
     }),
     [],
   );
-  const accountProfile = useMemo(
-    () =>
-      account
-        ? {
-            avatar: (
-              <span aria-hidden='true' className={S.profileAvatarClassName}>
-                <img
-                  alt=''
-                  className={S.profileAvatarImageClassName}
-                  src={getProfileAvatarImageSrc(account.marketThumbnailUrl)}
-                />
-              </span>
-            ),
-            description: account.marketName ? account.email : undefined,
-            name: account.marketName ?? account.email,
-          }
-        : profile,
-    [account, profile],
-  );
+  const accountProfile = useMemo(() => {
+    if (!account) {
+      return profile;
+    }
+
+    const profileSource = getSidebarProfileSource({
+      account,
+      market: marketDetailQuery.data,
+    });
+
+    return {
+      avatar: (
+        <span aria-hidden='true' className={S.profileAvatarClassName}>
+          <img
+            alt=''
+            className={S.profileAvatarImageClassName}
+            src={getProfileAvatarImageSrc(profileSource.thumbnailUrl)}
+            onError={(event) => {
+              if (event.currentTarget.src.endsWith(profileAvatarImageSrc)) {
+                return;
+              }
+
+              event.currentTarget.src = profileAvatarImageSrc;
+            }}
+          />
+        </span>
+      ),
+      description: profileSource.description,
+      name: profileSource.name,
+    };
+  }, [account, marketDetailQuery.data, profile]);
 
   const handleSidebarItemSelect = (item: SidebarItem) => {
     if (item.href) {
