@@ -169,7 +169,7 @@ const MarketShareBottomSheetContent = ({
         </div>
       </BottomSheet.Body>
       <BottomSheet.Footer>
-        <BottomSheet.Close className={S.shareCloseButtonClassName}>닫기</BottomSheet.Close>
+        <BottomSheet.Close>닫기</BottomSheet.Close>
       </BottomSheet.Footer>
     </>
   );

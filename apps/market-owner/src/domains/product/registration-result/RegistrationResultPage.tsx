@@ -1,11 +1,13 @@
 import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { ToastProvider } from '@dongchimi/shared/toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 import dongchimiLogo from '@/shared/assets/images/Img_pavicon.svg';
 import { DesktopHeader } from '@/shared/components';
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
 import { useAuthStore } from '@/shared/stores/auth-store';
+import { leafletShareQueryKeys } from '@/domains/leaflet/share/query-keys';
 import {
   usePreparedProductDraftsQuery,
   usePresignedUploadMutation,
@@ -28,6 +30,7 @@ const REGISTRATION_RESULT_PAGE_SIZE = 10;
 export const RegistrationResultPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const marketId = useAuthStore((state) => state.marketId);
   const presignedUploadMutation = usePresignedUploadMutation();
   const savePreparedProductDraftsMutation = useSavePreparedProductDraftsMutation();
@@ -98,6 +101,16 @@ export const RegistrationResultPage = () => {
       state: fileConfirmation == null ? undefined : createProductImportRouteState(fileConfirmation),
     });
   };
+  const handleRegister = async () => {
+    if (marketId == null) {
+      return;
+    }
+
+    await queryClient.invalidateQueries({
+      queryKey: leafletShareQueryKeys.periodicPreview(marketId),
+    });
+    navigate(MARKET_OWNER_ROUTES.leafletShare);
+  };
 
   return (
     <ToastProvider offset='2.4rem' placement='top-center'>
@@ -125,7 +138,7 @@ export const RegistrationResultPage = () => {
           products={products}
           summary={summary}
           onPrevious={handlePrevious}
-          onRegister={() => navigate(MARKET_OWNER_ROUTES.leafletShare)}
+          onRegister={() => void handleRegister()}
           resolveProductImageFileObjectKey={resolveProductImageFileObjectKey}
           onSaveDrafts={handleSaveDrafts}
         />

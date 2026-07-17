@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-17, DCMCL-22
+- Jira: DCMCL-17, DCMCL-22, DCMCL-38
 - Route: `POST /api/auth/kakao/login`
 - Upstream: `POST /v1/users/login/oauth2/kakao`
 - Status: Implemented
@@ -12,13 +12,14 @@
 - 브라우저와 동치미 백엔드 사이의 인증 BFF 경계를 제공합니다.
 - 카카오 인가 코드와 `state`를 검증하고, 검증된 인가 코드만 백엔드로 전달합니다.
 - token을 client JavaScript에 노출하지 않습니다.
+- authorize 단계에서 저장한 `returnTo`를 재검증해 로그인 성공 응답으로 반환합니다.
 
 ## Contract
 
 - browser request: `{ code: string, state: string }`
-- browser cookie: `kakao_oauth_state`
+- browser cookies: `kakao_oauth_state`, `kakao_oauth_return_to`
 - upstream request: `{ code: string }`
-- success response: `{ success, code, message }`
+- success response: `{ success, code, message, redirectTo }`
 - upstream access token: `access_token` HttpOnly cookie로 변환
 - upstream refresh cookie: 응답에 포함된 경우 브라우저에 HttpOnly cookie로 전달
 - backend base URL: server-only `API_BASE_URL`
@@ -27,7 +28,14 @@
 
 - callback `state`와 HttpOnly cookie의 `state`가 모두 존재하고 일치해야 합니다.
 - 비교 실패 시 backend API를 호출하지 않고 `400 OAUTH_STATE_INVALID`를 반환합니다.
-- 성공/실패와 관계없이 검증 시도 후 state cookie를 삭제해 재사용을 막습니다.
+- 성공/실패와 관계없이 검증 시도 후 state/returnTo cookie를 삭제해 재사용을 막습니다.
+
+## Return Path Policy
+
+- `kakao_oauth_return_to` cookie는 URL decoding 후 공통 returnTo helper로 다시 검증합니다.
+- `/markets` 또는 `/markets/` 하위 pathname과 search params만 허용합니다.
+- cookie가 없거나 변조되었거나 허용 범위를 벗어나면 로그인은 실패시키지 않고 `/markets`를 반환합니다.
+- callback page는 응답의 `redirectTo`를 다시 검증한 뒤 replace 이동합니다.
 
 ## Cookie Policy
 

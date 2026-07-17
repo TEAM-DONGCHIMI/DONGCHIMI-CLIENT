@@ -34,10 +34,17 @@ vi.mock('@/domains/market/hooks', () => ({
 
 vi.mock('@/domains/market/components/market-information-form', () => ({
   MarketInformationForm: ({
+    onDirtyChange,
     onSubmit,
   }: {
+    onDirtyChange: (isDirty: boolean) => void;
     onSubmit: (request: unknown, form: unknown, reset: () => void) => Promise<void>;
-  }) => <button onClick={() => void onSubmit({}, {}, vi.fn())}>수정 완료</button>,
+  }) => (
+    <>
+      <button onClick={() => onDirtyChange(true)}>정보 변경</button>
+      <button onClick={() => void onSubmit({}, {}, vi.fn())}>수정 완료</button>
+    </>
+  ),
   MarketInformationFormToastProvider: ({ children }: { children: ReactNode }) => children,
 }));
 
@@ -55,6 +62,10 @@ const renderMarketInformationManagementPage = () => {
       {
         element: <MarketInformationManagementPage />,
         path: MARKET_OWNER_ROUTES.marketInformationManagement,
+      },
+      {
+        element: <div>홈 페이지</div>,
+        path: MARKET_OWNER_ROUTES.home,
       },
       {
         element: <div>마트 정보 등록 페이지</div>,
@@ -114,7 +125,7 @@ describe('MarketInformationManagementPage', () => {
     expect(screen.queryByText('마트 정보를 찾을 수 없습니다.')).not.toBeInTheDocument();
   });
 
-  it('마트 정보 수정에 성공하면 고정된 완료 메시지를 표시한다', async () => {
+  it('마트 정보 수정에 성공하면 완료 메시지를 표시하고 홈으로 이동한다', async () => {
     const user = userEvent.setup();
     useOwnerMarketDetailQuery.mockReturnValue({
       data: {},
@@ -126,12 +137,16 @@ describe('MarketInformationManagementPage', () => {
 
     renderMarketInformationManagementPage();
 
+    await user.click(screen.getByRole('button', { name: '정보 변경' }));
     await user.click(screen.getByRole('button', { name: '수정 완료' }));
 
     await waitFor(() => {
       expect(toastCompleted).toHaveBeenCalledWith('정보가 변경되었습니다.', {
+        durationMs: 1500,
         id: 'market-information-management-completed',
       });
     });
+    expect(screen.queryByText('홈 페이지')).not.toBeInTheDocument();
+    expect(await screen.findByText('홈 페이지', {}, { timeout: 2500 })).toBeInTheDocument();
   });
 });

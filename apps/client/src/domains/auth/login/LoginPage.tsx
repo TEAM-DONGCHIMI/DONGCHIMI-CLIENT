@@ -4,10 +4,17 @@ import mobileOnboardingImage from '@/shared/assets/images/img_mobile_onboarding.
 
 import * as S from './LoginPage.css';
 import { KakaoLoginLink } from './components/KakaoLoginLink';
+import { LoginRequiredToast } from './components/LoginRequiredToast';
 
-export const LoginPage = () => {
+type LoginPageProps = Readonly<{
+  isAuthRequired: boolean;
+  returnTo: string;
+}>;
+
+export const LoginPage = ({ isAuthRequired, returnTo }: LoginPageProps) => {
   return (
     <main className={S.pageClassName}>
+      <LoginRequiredToast enabled={isAuthRequired} />
       <h1 className={S.visuallyHiddenClassName}>동치미 로그인</h1>
 
       <Image
@@ -19,7 +26,7 @@ export const LoginPage = () => {
       />
 
       <section aria-label='로그인' className={S.loginSectionClassName}>
-        <KakaoLoginLink />
+        <KakaoLoginLink returnTo={returnTo} />
 
         <p className={S.termsClassName}>
           가입 시 이용약관 및 개인정보처리방침에
