@@ -36,10 +36,10 @@ export const businessHourSchema = z.discriminatedUnion('isOpen', [
     open: businessTimeSchema,
   }),
   z.object({
-    close: z.never().optional(),
+    close: z.null().optional(),
     days: z.array(businessDaySchema),
     isOpen: z.literal(false),
-    open: z.never().optional(),
+    open: z.null().optional(),
   }),
 ]);
 
