@@ -100,7 +100,8 @@ Dialog.Root
 4. dialog가 닫히면 focus가 이전 active element 또는 trigger로 복귀합니다.
 5. `Dialog.Title`과 `Dialog.Description`이 렌더링되면 dialog의 accessible name/description과 연결합니다.
 6. native dialog modal lifecycle은 `showModal()` / `close()`로 동기화합니다.
-7. 내부 콘텐츠, form validation, submit, API side effect는 호출부가 관리합니다.
+7. dialog가 열린 상태에서 children 또는 `onOpenChange` callback이 갱신되어도 native modal lifecycle을 다시 시작하지 않으며, content/backdrop 입장 애니메이션을 재실행하지 않습니다.
+8. 내부 콘텐츠, form validation, submit, API side effect는 호출부가 관리합니다.
 
 ## Styling
 

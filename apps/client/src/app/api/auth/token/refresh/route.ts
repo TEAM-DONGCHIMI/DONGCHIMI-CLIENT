@@ -37,7 +37,9 @@ export async function POST(request: Request) {
       (await upstreamResponse.json()) as CommonApiTypes.ApiResponseReissueTokenResponse;
 
     if (!upstreamResponse.ok) {
-      return clearAuthCookies(NextResponse.json(upstreamBody, { status: upstreamResponse.status }));
+      const response = NextResponse.json(upstreamBody, { status: upstreamResponse.status });
+
+      return upstreamResponse.status === 401 ? clearAuthCookies(response) : response;
     }
 
     const accessToken = upstreamBody.data?.accessToken;
@@ -64,8 +66,10 @@ export async function POST(request: Request) {
 
     return response;
   } catch {
-    return clearAuthCookies(
-      createErrorResponse(502, 'REFRESH_UPSTREAM_FAILED', '토큰 갱신 서버 연결에 실패했습니다.'),
+    return createErrorResponse(
+      502,
+      'REFRESH_UPSTREAM_FAILED',
+      '토큰 갱신 서버 연결에 실패했습니다.',
     );
   }
 }

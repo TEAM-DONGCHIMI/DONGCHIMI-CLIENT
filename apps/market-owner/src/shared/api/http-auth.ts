@@ -2,6 +2,7 @@ import { API_ENDPOINTS, validateApiResponse } from '@dongchimi/shared/api';
 import { HTTPError, type Options } from 'ky';
 
 import { useAuthStore } from '../stores/auth-store';
+import type { ApiError } from './api-error';
 import { authRefreshResponseSchema } from './auth-refresh-schema';
 import { HTTP_STATUS } from './http-status';
 
@@ -19,6 +20,8 @@ type HttpAuthRequestTypes = <ResponseDataTypes>(
   options?: HttpClientOptionsTypes,
   accessToken?: string,
 ) => Promise<ResponseDataTypes>;
+
+const AUTH_REFRESH_LOCK_NAME = 'dongchimi:market-owner-auth-refresh';
 
 let refreshAccessTokenPromise: Promise<string> | undefined;
 
@@ -88,8 +91,18 @@ const requestRefreshAccessToken = async (request: HttpAuthRequestTypes) => {
   return accessToken;
 };
 
+const requestRefreshAccessTokenWithLock = async (request: HttpAuthRequestTypes) => {
+  if (typeof navigator === 'undefined' || !navigator.locks) {
+    return await requestRefreshAccessToken(request);
+  }
+
+  return await navigator.locks.request<Promise<string>>(AUTH_REFRESH_LOCK_NAME, () =>
+    requestRefreshAccessToken(request),
+  );
+};
+
 export const refreshAccessToken = (request: HttpAuthRequestTypes) => {
-  refreshAccessTokenPromise ??= requestRefreshAccessToken(request)
+  refreshAccessTokenPromise ??= requestRefreshAccessTokenWithLock(request)
     .then((accessToken) => {
       if (useAuthStore.getState().isLoggedIn) {
         useAuthStore.getState().setAccessToken(accessToken);
@@ -110,6 +123,17 @@ export const shouldRefreshAccessToken = (error: unknown, options?: HttpClientOpt
     error.response.status === HTTP_STATUS.UNAUTHORIZED &&
     options?.auth?.skipRefresh !== true
   );
+};
+
+export const isAuthSessionInvalidError = (error: ApiError) => {
+  return (
+    (error.status === HTTP_STATUS.UNAUTHORIZED && error.code === 'UNAUTHORIZED') ||
+    (error.status === HTTP_STATUS.FORBIDDEN && error.code === 'FORBIDDEN')
+  );
+};
+
+export const isRefreshSessionInvalidError = (error: ApiError) => {
+  return error.status === HTTP_STATUS.UNAUTHORIZED;
 };
 
 export const clearAuthSession = () => {

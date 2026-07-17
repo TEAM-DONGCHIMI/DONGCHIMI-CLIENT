@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useEffectEvent,
   useId,
   useMemo,
   useRef,
@@ -210,6 +211,8 @@ const useDialogEffects = ({
   open,
   triggerRef,
 }: UseDialogEffectsOptions) => {
+  const handleBackdropMouseDown = useEffectEvent(onBackdropMouseDown);
+
   useEffect(() => {
     if (!open) {
       return;
@@ -226,7 +229,7 @@ const useDialogEffects = ({
     const unlockBodyScroll = lockBodyScroll();
     const handleDialogMouseDown = (event: globalThis.MouseEvent) => {
       if (isOutsideDialogRect(dialog, event.clientX, event.clientY)) {
-        onBackdropMouseDown();
+        handleBackdropMouseDown();
       }
     };
 
@@ -265,7 +268,7 @@ const useDialogEffects = ({
 
       triggerElement?.focus();
     };
-  }, [contentRef, onBackdropMouseDown, open, triggerRef]);
+  }, [contentRef, open, triggerRef]);
 };
 
 const DialogRoot = ({ children, defaultOpen = false, onOpenChange, open }: DialogProps) => {

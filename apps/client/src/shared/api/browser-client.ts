@@ -18,26 +18,49 @@ type BrowserApiTypes = Record<HttpMethodTypes, HttpRequestTypes> & {
 const REQUEST_TIMEOUT_MS = 10_000;
 const AUTH_API_PATH_PREFIX = '/api/auth/';
 const AUTH_REFRESH_PATH = '/api/auth/token/refresh';
+const AUTH_REFRESH_LOCK_NAME = 'dongchimi:client-auth-refresh';
+
+type RefreshSessionResultTypes = 'refreshed' | 'unavailable' | 'unauthenticated';
 
 let cachedBrowserApi: KyInstance | undefined;
-let refreshSessionPromise: Promise<boolean> | undefined;
+let refreshSessionPromise: Promise<RefreshSessionResultTypes> | undefined;
 
 export interface CreateBrowserApiOptions {
   onFinalUnauthorized?: () => Promise<void> | void;
 }
 
-const refreshSession = () => {
-  refreshSessionPromise ??= ky
+const requestRefreshSession = () => {
+  return ky
     .post(new URL(AUTH_REFRESH_PATH, window.location.origin), {
       credentials: 'include',
       retry: 0,
       throwHttpErrors: false,
     })
-    .then((response) => response.ok)
-    .catch(() => false)
-    .finally(() => {
-      refreshSessionPromise = undefined;
-    });
+    .then((response): RefreshSessionResultTypes => {
+      if (response.ok) {
+        return 'refreshed';
+      }
+
+      return response.status === 401 ? 'unauthenticated' : 'unavailable';
+    })
+    .catch((): RefreshSessionResultTypes => 'unavailable');
+};
+
+const requestRefreshSessionWithLock = async () => {
+  if (typeof navigator === 'undefined' || !navigator.locks) {
+    return await requestRefreshSession();
+  }
+
+  return await navigator.locks.request<Promise<RefreshSessionResultTypes>>(
+    AUTH_REFRESH_LOCK_NAME,
+    requestRefreshSession,
+  );
+};
+
+const refreshSession = () => {
+  refreshSessionPromise ??= requestRefreshSessionWithLock().finally(() => {
+    refreshSessionPromise = undefined;
+  });
 
   return refreshSessionPromise;
 };
@@ -91,11 +114,15 @@ export const createBrowserApi = (options: CreateBrowserApiOptions = {}) => {
             return response;
           }
 
-          const isSessionRefreshed = await refreshSession();
+          const refreshResult = await refreshSession();
 
-          if (!isSessionRefreshed) {
+          if (refreshResult === 'unauthenticated') {
             await notifyFinalUnauthorized();
 
+            return response;
+          }
+
+          if (refreshResult === 'unavailable') {
             return response;
           }
 

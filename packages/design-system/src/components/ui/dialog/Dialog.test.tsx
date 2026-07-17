@@ -114,6 +114,45 @@ describe('Dialog', () => {
     expect(handleOpenChange).not.toHaveBeenCalled();
   });
 
+  it('keeps the native modal lifecycle open when controlled content rerenders', () => {
+    const initialOpenChange = vi.fn();
+    const nextOpenChange = vi.fn();
+    const { rerender } = render(
+      <Dialog open onOpenChange={initialOpenChange}>
+        <Dialog.Content>
+          <Dialog.Title>Edit sale information</Dialog.Title>
+          <Dialog.Description>Initial description.</Dialog.Description>
+        </Dialog.Content>
+      </Dialog>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Edit sale information' });
+    const close = vi.fn(() => dialog.removeAttribute('open'));
+    const showModal = vi.fn(() => dialog.setAttribute('open', ''));
+
+    Object.defineProperties(dialog, {
+      close: { configurable: true, value: close },
+      showModal: { configurable: true, value: showModal },
+    });
+
+    rerender(
+      <Dialog open onOpenChange={nextOpenChange}>
+        <Dialog.Content>
+          <Dialog.Title>Edit sale information</Dialog.Title>
+          <Dialog.Description>Updated description.</Dialog.Description>
+        </Dialog.Content>
+      </Dialog>,
+    );
+
+    expect(screen.getByRole('dialog', { name: 'Edit sale information' })).toBe(dialog);
+    expect(close).not.toHaveBeenCalled();
+    expect(showModal).not.toHaveBeenCalled();
+
+    fireEvent.mouseDown(dialog, { clientX: -1, clientY: -1 });
+
+    expect(initialOpenChange).not.toHaveBeenCalled();
+    expect(nextOpenChange).toHaveBeenCalledWith(false);
+  });
+
   it('does not reference a missing description when description is omitted', async () => {
     render(
       <Dialog defaultOpen>

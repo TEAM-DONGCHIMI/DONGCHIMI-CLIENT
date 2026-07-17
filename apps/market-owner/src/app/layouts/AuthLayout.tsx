@@ -2,7 +2,7 @@ import { Outlet, useLocation } from 'react-router';
 import { ToastProvider } from '@dongchimi/shared/toast';
 
 import { MARKET_OWNER_ROUTES } from '@/shared/constants/routes';
-import onboardingImageUrl from '@/shared/assets/images/img_onboarding.svg';
+import onboardingImageUrl from '@/shared/assets/images/img_onboarding.webp';
 
 import * as S from './AuthLayout.css';
 
