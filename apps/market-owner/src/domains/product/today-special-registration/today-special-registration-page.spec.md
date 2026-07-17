@@ -94,7 +94,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - continue registration: 입력 유효성과 무관하게 `상품 계속 등록`을 활성화하고, 클릭 시 현재 form을 검증합니다.
 - disabled submit: 필수값이 비어 있거나 form completion 조건을 만족하지 않으면 `등록 완료`만 disabled 처리합니다.
 - submit pending: action button을 disabled 처리하고 submit button copy를 `등록 중`으로 변경합니다.
-- submit success: 선택 이미지를 임시 저장소에 업로드하고 상품 등록 API가 성공하면 오늘의 특가 상품 수정 route로 이동합니다.
+- submit success: 선택 이미지를 임시 저장소에 업로드하고 상품 등록 API가 성공하면 홈 route로 이동합니다.
 - field error: blur 또는 submit validation 이후 필드 아래에 icon과 error message를 표시합니다.
 - field error layout: field group의 layout 높이는 error 유무와 관계없이 `6.8rem`으로 유지합니다. error message는 input 아래로 노출되어 시각적 전체 영역이 `8.8rem`이 되지만 다음 field와 section의 배치 높이에는 더해지지 않아 action button 위치가 변하지 않습니다.
 - registration error: 일반 실패는 `상품을 등록하지 못했습니다. 다시 시도해주세요.`, 네트워크 실패는 `인터넷 연결을 확인한 후 다시 시도해주세요.` toast를 `IcCircleExclamation` 아이콘과 함께 표시하고 현재 페이지에 머뭅니다.
@@ -199,7 +199,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
   - 업로드 결과와 form 값을 상품 등록 payload로 변환해 auth store의 `marketId`로 등록 API를 호출합니다.
   - 업로드 중에는 중복 submit을 막습니다.
   - 등록 실패 시 오류 toast를 표시하고 이동하지 않습니다.
-  - 상품 등록 API가 성공하면 오늘의 특가 상품 수정 route로 이동합니다.
+  - 상품 등록 API가 성공하면 홈 route로 이동합니다.
 
 ## Accessibility
 
@@ -262,7 +262,7 @@ Client-side field validation error는 필드 아래 메시지로 표시합니다
 - [x] 이미 등록된 이전 상품은 등록 POST를 반복하지 않고 수정 가능한 상태로 표시한다
 - [x] `상품 계속 등록` 실패 시 현재 입력값을 유지한다
 - [x] 등록 요청 중 두 action이 disabled되어 중복 등록을 막는다
-- [x] valid `등록 완료` submit은 이미지 업로드와 상품 등록 API 성공 후 오늘의 특가 상품 수정 화면으로 이동한다
+- [x] valid `등록 완료` submit은 이미지 업로드와 상품 등록 API 성공 후 홈 화면으로 이동한다
 - [x] 두 등록 action은 auth store의 실제 `marketId`로 상품 등록 API를 호출한다
 - [x] 이미지가 있는 상품은 Presigned URL 발급 후 API가 요구한 header로 S3 PUT한다
 - [x] 이미지가 없는 상품은 업로드 요청을 보내지 않는다

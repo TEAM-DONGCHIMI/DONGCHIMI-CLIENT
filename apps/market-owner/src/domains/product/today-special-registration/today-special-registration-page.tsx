@@ -94,7 +94,7 @@ const TodaySpecialRegistrationPageContent = ({
     const result = await registerProduct(product);
 
     if (result.success) {
-      navigate(MARKET_OWNER_ROUTES.todaySpecialEdit);
+      navigate(MARKET_OWNER_ROUTES.home);
     }
   });
   const handleContinueRegistration = form.createCurrentProductSubmitHandler(async (product) => {
