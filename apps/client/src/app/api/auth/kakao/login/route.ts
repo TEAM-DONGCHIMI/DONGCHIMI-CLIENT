@@ -7,13 +7,15 @@ import { z } from 'zod';
 import {
   appendRefreshTokenCookies,
   AUTH_COOKIE_NAMES,
-  clearKakaoOAuthStateCookie,
+  clearKakaoOAuthCookies,
+  getKakaoOAuthReturnToCookie,
   getRefreshTokenSetCookieHeaders,
   getRequestCookie,
   setAccessTokenCookie,
 } from '@/shared/auth';
 import { normalizeApiError, type ApiErrorCategoryTypes } from '@/shared/api';
 import { createServerApi } from '@/shared/api/server-client';
+import { normalizeAuthReturnTo } from '@/shared/auth/auth-return-to';
 
 export const runtime = 'nodejs';
 
@@ -100,12 +102,13 @@ const isMatchingOAuthState = (cookieState: string | undefined, callbackState: st
 };
 
 export async function POST(request: Request) {
+  const redirectTo = normalizeAuthReturnTo(getKakaoOAuthReturnToCookie(request));
   let requestBody: unknown;
 
   try {
     requestBody = await request.json();
   } catch {
-    return clearKakaoOAuthStateCookie(
+    return clearKakaoOAuthCookies(
       createErrorResponse(400, 'INVALID_INPUT', '인가 코드와 state는 필수로 입력해 주세요.'),
     );
   }
@@ -113,7 +116,7 @@ export async function POST(request: Request) {
   const parsedRequestBody = loginRequestSchema.safeParse(requestBody);
 
   if (!parsedRequestBody.success) {
-    return clearKakaoOAuthStateCookie(
+    return clearKakaoOAuthCookies(
       createErrorResponse(400, 'INVALID_INPUT', '인가 코드와 state는 필수로 입력해 주세요.'),
     );
   }
@@ -122,7 +125,7 @@ export async function POST(request: Request) {
   const cookieState = getRequestCookie(request, AUTH_COOKIE_NAMES.kakaoOAuthState);
 
   if (!isMatchingOAuthState(cookieState, state)) {
-    return clearKakaoOAuthStateCookie(
+    return clearKakaoOAuthCookies(
       createErrorResponse(
         400,
         'OAUTH_STATE_INVALID',
@@ -140,7 +143,7 @@ export async function POST(request: Request) {
     const parsedUpstreamBody = await readUpstreamResponse(upstreamResponse);
 
     if (!parsedUpstreamBody?.success) {
-      return clearKakaoOAuthStateCookie(
+      return clearKakaoOAuthCookies(
         createErrorResponse(
           502,
           'OAUTH_UPSTREAM_INVALID_RESPONSE',
@@ -152,7 +155,7 @@ export async function POST(request: Request) {
     const upstreamBody = parsedUpstreamBody.data;
 
     if (!upstreamResponse.ok) {
-      return clearKakaoOAuthStateCookie(
+      return clearKakaoOAuthCookies(
         NextResponse.json(upstreamBody, { status: upstreamResponse.status }),
       );
     }
@@ -160,7 +163,7 @@ export async function POST(request: Request) {
     const accessToken = upstreamBody.data?.accessToken;
 
     if (!accessToken) {
-      return clearKakaoOAuthStateCookie(
+      return clearKakaoOAuthCookies(
         createErrorResponse(
           502,
           'OAUTH_TOKEN_MISSING',
@@ -173,15 +176,16 @@ export async function POST(request: Request) {
     const response = NextResponse.json({
       code: upstreamBody.code,
       message: upstreamBody.message,
+      redirectTo,
       success: true,
     });
 
     setAccessTokenCookie(response, accessToken);
-    clearKakaoOAuthStateCookie(response);
+    clearKakaoOAuthCookies(response);
     appendRefreshTokenCookies(response, refreshCookies);
 
     return response;
   } catch (error) {
-    return clearKakaoOAuthStateCookie(await createCaughtErrorResponse(error));
+    return clearKakaoOAuthCookies(await createCaughtErrorResponse(error));
   }
 }
