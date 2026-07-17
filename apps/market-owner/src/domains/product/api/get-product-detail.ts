@@ -1,44 +1,18 @@
-import { API_ENDPOINTS, validateApiResponse, z } from '@dongchimi/shared/api';
+import { API_ENDPOINTS, validateApiResponse } from '@dongchimi/shared/api';
 
-import { httpClient, type OwnerApiTypes } from '@/shared/api';
+import { httpClient } from '@/shared/api';
+
+import {
+  ownerProductDetailResponseSchema,
+  type OwnerProductDetailApiResponseTypes,
+} from './product-detail.schema';
 
 export interface GetProductDetailParams {
   marketId: number;
   productId: number;
 }
 
-const productCategorySchema = z.enum([
-  'VEGETABLE_FRUIT',
-  'MEAT_EGG',
-  'SEAFOOD',
-  'DAIRY',
-  'CONVENIENCE_FOOD',
-  'PROCESSED_FOOD',
-  'BEVERAGE_ALCOHOL',
-  'HOUSEHOLD_GOODS',
-  'ETC',
-]) satisfies z.ZodType<OwnerApiTypes.OwnerProductDetailResponse['category']>;
-
-const productDetailResponseSchema = z.object({
-  success: z.literal(true),
-  code: z.literal('SUCCESS'),
-  message: z.string(),
-  data: z.object({
-    productId: z.number(),
-    name: z.string(),
-    dealType: z.enum(['PERIODIC', 'DAILY']),
-    thumbnailUrl: z.string().nullable().optional(),
-    originalPrice: z.number(),
-    discountedPrice: z.number(),
-    category: productCategorySchema,
-    categoryName: z.string(),
-    promotionalPhrase: z.string().nullable().optional(),
-    discountStartDate: z.string(),
-    discountEndDate: z.string(),
-  }),
-}) satisfies z.ZodType<OwnerApiTypes.GetDetail1Data>;
-
-export type GetProductDetailResponseTypes = z.infer<typeof productDetailResponseSchema>;
+export type GetProductDetailResponseTypes = OwnerProductDetailApiResponseTypes;
 
 export const getProductDetail = async ({
   marketId,
@@ -47,7 +21,7 @@ export const getProductDetail = async ({
   const endpoint = API_ENDPOINTS.owner.products.detail(marketId, productId);
   const response = await httpClient.get<unknown>(endpoint);
 
-  return validateApiResponse(productDetailResponseSchema, response, {
+  return validateApiResponse(ownerProductDetailResponseSchema, response, {
     endpoint,
     schemaDescription: 'Owner product detail response',
   });

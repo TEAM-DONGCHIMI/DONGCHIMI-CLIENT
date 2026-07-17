@@ -364,19 +364,54 @@ export interface DailyProductRegisterRequest {
   discountEndDate: string;
 }
 
-export interface ApiResponseDailyProductRegisterResponse {
+export interface ApiResponseOwnerProductDetailResponse {
   success: boolean;
   code: string;
   message: string;
-  data?: DailyProductRegisterResponse | null;
+  data?: OwnerProductDetailResponse | null;
 }
 
-export interface DailyProductRegisterResponse {
+export interface OwnerProductDetailResponse {
   /**
-   * 등록된 상품 아이디
+   * 상품 id
    * @format int64
    */
   productId: number;
+  /** 상품명 */
+  name: string;
+  /** PERIODIC(기간 할인) / DAILY(오늘의 특가) */
+  dealType: 'PERIODIC' | 'DAILY';
+  /** 상품 썸네일 이미지 URL (없으면 null) */
+  thumbnailUrl?: string | null;
+  /** 정가 */
+  originalPrice: number;
+  /** 할인가 */
+  discountedPrice: number;
+  /** 카테고리 코드 */
+  category:
+    | 'VEGETABLE_FRUIT'
+    | 'MEAT_EGG'
+    | 'SEAFOOD'
+    | 'DAIRY'
+    | 'CONVENIENCE_FOOD'
+    | 'PROCESSED_FOOD'
+    | 'BEVERAGE_ALCOHOL'
+    | 'HOUSEHOLD_GOODS'
+    | 'ETC';
+  /** 카테고리 표시명 */
+  categoryName: string;
+  /** 홍보 문구 (없으면 null) */
+  promotionalPhrase?: string | null;
+  /**
+   * 할인 시작일 (YYYY-MM-DD)
+   * @format date
+   */
+  discountStartDate: string;
+  /**
+   * 할인 종료일 (YYYY-MM-DD)
+   * @format date
+   */
+  discountEndDate: string;
 }
 
 export interface ApiResponseFlyerPublishResponse {
@@ -550,56 +585,6 @@ export interface OwnerProductListItemResponse {
    * @format date-time
    */
   createdAt: string;
-}
-
-export interface ApiResponseOwnerProductDetailResponse {
-  success: boolean;
-  code: string;
-  message: string;
-  data?: OwnerProductDetailResponse | null;
-}
-
-export interface OwnerProductDetailResponse {
-  /**
-   * 상품 id
-   * @format int64
-   */
-  productId: number;
-  /** 상품명 */
-  name: string;
-  /** PERIODIC(기간 할인) / DAILY(오늘의 특가) */
-  dealType: 'PERIODIC' | 'DAILY';
-  /** 상품 썸네일 이미지 URL (없으면 null) */
-  thumbnailUrl?: string | null;
-  /** 정가 */
-  originalPrice: number;
-  /** 할인가 */
-  discountedPrice: number;
-  /** 카테고리 코드 */
-  category:
-    | 'VEGETABLE_FRUIT'
-    | 'MEAT_EGG'
-    | 'SEAFOOD'
-    | 'DAIRY'
-    | 'CONVENIENCE_FOOD'
-    | 'PROCESSED_FOOD'
-    | 'BEVERAGE_ALCOHOL'
-    | 'HOUSEHOLD_GOODS'
-    | 'ETC';
-  /** 카테고리 표시명 */
-  categoryName: string;
-  /** 홍보 문구 (없으면 null) */
-  promotionalPhrase?: string | null;
-  /**
-   * 할인 시작일 (YYYY-MM-DD)
-   * @format date
-   */
-  discountStartDate: string;
-  /**
-   * 할인 종료일 (YYYY-MM-DD)
-   * @format date
-   */
-  discountEndDate: string;
 }
 
 export interface ApiResponseProductSearchResponse {
@@ -980,7 +965,7 @@ export type CancelImportData = ApiResponseUnit;
 
 export type ImportSyncData = ApiResponseProductImportSyncResponse;
 
-export type RegisterDailyProductData = ApiResponseDailyProductRegisterResponse;
+export type RegisterDailyProductData = ApiResponseOwnerProductDetailResponse;
 
 export type PublishData = ApiResponseFlyerPublishResponse;
 

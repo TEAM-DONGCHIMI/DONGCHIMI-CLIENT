@@ -17,6 +17,25 @@ vi.mock('@/shared/api', () => ({
 
 const mockedPost = vi.mocked(httpClient.post);
 
+const registeredProductResponse = {
+  success: true,
+  code: 'SUCCESS',
+  message: '요청에 성공했습니다.',
+  data: {
+    productId: 101,
+    name: '토마토',
+    dealType: 'DAILY',
+    thumbnailUrl: 'https://cdn.example.com/products/101.png',
+    originalPrice: 5000,
+    discountedPrice: 4500,
+    category: 'VEGETABLE_FRUIT',
+    categoryName: '채소/과일',
+    promotionalPhrase: '멋쟁이 토마토',
+    discountStartDate: '2026-06-30',
+    discountEndDate: '2026-06-30',
+  },
+} as const;
+
 describe('registerDailyProduct', () => {
   beforeEach(() => {
     mockedPost.mockReset();
@@ -33,12 +52,7 @@ describe('registerDailyProduct', () => {
       discountStartDate: '2026-06-30',
       discountEndDate: '2026-06-30',
     };
-    const response = {
-      success: true,
-      code: 'SUCCESS',
-      message: '요청에 성공했습니다.',
-      data: { productId: 101 },
-    };
+    const response = registeredProductResponse;
 
     mockedPost.mockResolvedValue(response);
 
@@ -75,6 +89,29 @@ describe('registerDailyProduct', () => {
       success: true,
       code: 'SUCCESS',
       message: '요청에 성공했습니다.',
+    });
+
+    await expect(
+      registerDailyProduct({
+        marketId: 12,
+        request: {
+          name: '토마토',
+          category: 'VEGETABLE_FRUIT',
+          originalPrice: 5000,
+          discountedPrice: 4500,
+          discountStartDate: '2026-06-30',
+          discountEndDate: '2026-06-30',
+        },
+      }),
+    ).rejects.toSatisfy(isApiResponseValidationError);
+  });
+
+  it('rejects a success response without the registered product detail fields', async () => {
+    mockedPost.mockResolvedValue({
+      ...registeredProductResponse,
+      data: {
+        productId: 101,
+      },
     });
 
     await expect(

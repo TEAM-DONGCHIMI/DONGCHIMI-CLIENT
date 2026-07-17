@@ -44,13 +44,18 @@
 - 검색 API 오류는 현재 route를 유지하고 검색 패널 error 상태로 표시합니다.
 - 헤더 검색에서 상품을 선택하면 `DAILY`는 오늘의 특가 수정 route, `PERIODIC`은 행사 할인 수정 route로
   `productId` search param을 붙여 이동합니다.
+- 일괄 삭제 또는 기간 일괄 수정 selection mode에서도 헤더 검색으로 선택한 상품의 `productId`를 즉시 처리해
+  개별 수정 modal을 열며, selection mode 종료 시점까지 modal open을 보류하지 않습니다.
 - tab은 상품이 있는 경우 `TabNav.Item as={Link}`로 렌더링해 `/products/today-special/edit`, `/products/event-discount/edit` 사이를 route 이동합니다.
 - 등록 상품 수가 0인 tab은 disabled item으로 렌더링해 route 이동을 막습니다.
 - `카테고리별` filter는 행사 할인 수정 페이지에만 노출되며, trigger 아래에 category dropdown을 엽니다.
+- category dropdown은 trigger 하단 8px부터 viewport 하단 40px 전까지를 최대 높이로 사용하고, option이 넘치면 dropdown 내부만 세로 스크롤합니다.
+- dropdown 내부 스크롤이 끝에 닿아도 뒤쪽 상품 목록 scroll container로 스크롤을 전달하지 않습니다.
 - category dropdown이 열려 있으면 trigger icon은 chevron up, 닫혀 있으면 chevron down을 표시합니다.
 - dropdown open/close는 `overlay.open`, `overlay.close`, `overlay.unmount`로 처리하고, 바깥 클릭 또는 Escape 입력 시 닫습니다.
 - 카테고리 trigger를 클릭하는 것만으로는 상품 목록 grouping을 바꾸지 않고, dropdown option을 선택한 뒤 `카테고리별` selected 상태와 카테고리별 목록을 표시합니다.
 - 카테고리 trigger label은 카테고리 선택 전에는 `카테고리별`, 선택 후에는 선택된 카테고리 이름을 표시합니다.
+- 카테고리를 선택한 뒤 `상품 등록 순` 또는 `조회수 순`을 선택하면 선택 카테고리를 초기화하고 category trigger label을 `카테고리별`로 되돌립니다.
 - 행사 할인 filter pill button은 `카테고리별`, `상품 등록 순`, `조회수 순` 중 하나만 selected 상태로 표시합니다.
 - 오늘의 특가 filter pill button은 `상품 등록 순`, `조회수 순` 중 하나만 selected 상태로 표시합니다.
 - 기본 selected 상태는 행사 할인 수정 페이지에서는 `카테고리별`, 오늘의 특가 수정 페이지에서는 `상품 등록 순`이며, 사용자가 선택한 항목을 filled 상태와 `aria-pressed`로 표시합니다.
@@ -76,6 +81,8 @@
 - 삭제 mutation 중에는 기간 일괄 수정, 일괄 삭제, 초기화 action을 비활성화합니다.
 - 수정 유형 tab의 label과 하단 underline 사이는 design-system `TabNav`의 `0.8rem` 간격을 사용합니다.
 - `productId` search param 기반 개별 수정 modal open/close는 children 영역의 상품 목록 컴포넌트가 담당합니다.
+- URL 대상 상품이 현재 pagination 목록에 없어도 유효한 `productId`이면 상품 상세 조회 기반 modal을
+  열고, 상세 조회 실패 시 error toast와 함께 search param을 제거합니다.
 
 ## Accessibility
 
@@ -89,5 +96,6 @@
 
 - [x] 현재 수정 페이지의 header search에서 다른 `dealType` 상품을 선택하면 해당 수정 route와
       `productId` search param으로 이동하고 개별 수정 modal을 엽니다.
+- [x] bulk selection mode 중에도 header search로 선택한 상품의 개별 수정 modal을 즉시 엽니다.
 - [x] 빈 검색어에서는 검색 API를 호출하지 않습니다.
 - [x] header search API 오류는 현재 route를 유지하고 error 상태를 표시합니다.

@@ -214,6 +214,8 @@ export const EventDiscountProductsSection = ({
   const [isCategoryExpanded, setIsCategoryExpanded] = useState(
     restorationState?.isCategoryExpanded ?? false,
   );
+  const eventProductContentRef = useRef<HTMLDivElement>(null);
+  const [pendingProductContentHeight, setPendingProductContentHeight] = useState<number>();
   const [selectedCategoryId, setSelectedCategoryId] = useState(restoredCategoryId);
   const selectedCategory = EVENT_DISCOUNT_CATEGORIES.find(
     (category) => category.categoryId === selectedCategoryId,
@@ -260,6 +262,13 @@ export const EventDiscountProductsSection = ({
     if (categoryId === selectedCategoryId) {
       return;
     }
+
+    const currentProductContentHeight =
+      eventProductContentRef.current?.getBoundingClientRect().height ?? 0;
+
+    setPendingProductContentHeight(
+      currentProductContentHeight > 0 ? currentProductContentHeight : undefined,
+    );
 
     if (responseAvailableCategories != null) {
       setAvailableCategorySnapshot({
@@ -376,18 +385,31 @@ export const EventDiscountProductsSection = ({
         )}
       </div>
 
-      <EventDiscountProductsContent
-        hasNextPage={Boolean(hasNextPage)}
-        isCategoryExpanded={isCategoryExpanded}
-        isError={isError}
-        isFetchNextPageError={isFetchNextPageError}
-        isPending={isPending}
-        marketSlug={marketSlug}
-        onRetry={() => void refetch()}
-        pageParams={pageParams}
-        productPages={productPages}
-        selectedCategoryId={selectedCategoryId}
-      />
+      <div
+        ref={eventProductContentRef}
+        aria-busy={isPending}
+        aria-label='행사 할인 상품 목록'
+        className={S.eventProductContentClassName}
+        role='region'
+        style={
+          isPending && pendingProductContentHeight != null
+            ? { minHeight: pendingProductContentHeight }
+            : undefined
+        }
+      >
+        <EventDiscountProductsContent
+          hasNextPage={Boolean(hasNextPage)}
+          isCategoryExpanded={isCategoryExpanded}
+          isError={isError}
+          isFetchNextPageError={isFetchNextPageError}
+          isPending={isPending}
+          marketSlug={marketSlug}
+          onRetry={() => void refetch()}
+          pageParams={pageParams}
+          productPages={productPages}
+          selectedCategoryId={selectedCategoryId}
+        />
+      </div>
 
       {hasNextPage && !isFetchNextPageError && (
         <div

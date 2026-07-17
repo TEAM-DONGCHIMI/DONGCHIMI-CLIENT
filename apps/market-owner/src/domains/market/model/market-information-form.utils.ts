@@ -6,6 +6,7 @@ import {
 const businessRegistrationNumberDigitPattern = /\D/g;
 const businessTimeDigitPattern = /\D/g;
 const phoneDigitPattern = /\D/g;
+const regionalPhonePattern = /^0(?:31|32|33|41|42|43|44|51|52|53|54|55|61|62|63|64)-\d{3}-\d{4}$/;
 const businessDayToApiDayMap: Record<string, string> = {
   월요일: 'MONDAY',
   화요일: 'TUESDAY',
@@ -146,17 +147,15 @@ export const isValidOwnerPhone = (ownerPhone: string) => {
 };
 
 export const isValidMarketPhone = (marketPhone: string) => {
-  const digits = marketPhone.replace(phoneDigitPattern, '');
-
-  if (digits.length === 0) {
+  if (marketPhone.length === 0) {
     return true;
   }
 
   return (
-    /^02\d{7,8}$/.test(digits) ||
-    /^0[3-6][1-5]\d{7}$/.test(digits) ||
-    /^01[016789]\d{7,8}$/.test(digits) ||
-    /^070\d{8}$/.test(digits)
+    /^02-\d{3,4}-\d{4}$/.test(marketPhone) ||
+    regionalPhonePattern.test(marketPhone) ||
+    /^010-\d{4}-\d{4}$/.test(marketPhone) ||
+    /^070-\d{4}-\d{4}$/.test(marketPhone)
   );
 };
 

@@ -11,7 +11,12 @@ export const useDailyProductRegistrationMutation = () => {
 
   return useMutation({
     mutationFn: (params: RegisterDailyProductParams) => registerDailyProduct(params),
-    onSuccess: () => {
+    onSuccess: (response, { marketId }) => {
+      queryClient.setQueryData(
+        productQueryKeys.detail({ marketId, productId: response.data.productId }),
+        response,
+      );
+
       return queryClient.invalidateQueries({ queryKey: productQueryKeys.listRoot });
     },
   });

@@ -3,10 +3,13 @@ import { useToast } from '@dongchimi/shared/toast';
 import { createElement, type SVGProps } from 'react';
 
 import { normalizeApiError } from '@/shared/api';
-import { getMarketOwnerEnv } from '@/shared/config';
 
 import { useDailyProductRegistrationMutation } from '../../hooks/use-daily-product-registration-mutation';
-import { createDailyProductRequest, type TodaySpecialProductFormTypes } from '../model';
+import {
+  createDailyProductRequest,
+  DEFAULT_PRODUCT_THUMBNAIL_URL,
+  type TodaySpecialProductFormTypes,
+} from '../model';
 import { useTodaySpecialImageUpload } from './use-today-special-image-upload';
 
 const registrationErrorMessages = {
@@ -18,10 +21,6 @@ type RegistrationResultTypes =
   | { productId: number; success: true; thumbnailUrl: string }
   | { success: false };
 
-const createPublicProductThumbnailUrl = (s3BaseUrl: string, objectKey: string) => {
-  return `${s3BaseUrl.replace(/\/+$/, '')}/${objectKey.replace(/^\/+/, '')}`;
-};
-
 export const useTodaySpecialProductRegistration = (marketId: number) => {
   const toast = useToast();
   const { uploadProductImage } = useTodaySpecialImageUpload();
@@ -31,20 +30,12 @@ export const useTodaySpecialProductRegistration = (marketId: number) => {
     product: TodaySpecialProductFormTypes,
   ): Promise<RegistrationResultTypes> => {
     try {
-      const { s3BaseUrl } = getMarketOwnerEnv();
-
-      if (product.imageFile != null && s3BaseUrl == null) {
-        throw new Error('VITE_PUBLIC_S3_BASE_URL is not configured.');
-      }
-
       const uploadedImageObjectKey = await uploadProductImage(product);
 
       const request = createDailyProductRequest({ product, uploadedImageObjectKey });
-      const thumbnailUrl = uploadedImageObjectKey
-        ? createPublicProductThumbnailUrl(s3BaseUrl!, uploadedImageObjectKey)
-        : request.thumbnailUrl;
+      const requestThumbnailUrl = request.thumbnailUrl;
 
-      if (thumbnailUrl == null) {
+      if (requestThumbnailUrl == null) {
         throw new Error('Product thumbnail URL is required.');
       }
 
@@ -56,7 +47,7 @@ export const useTodaySpecialProductRegistration = (marketId: number) => {
       return {
         productId: response.data.productId,
         success: true,
-        thumbnailUrl,
+        thumbnailUrl: response.data.thumbnailUrl ?? DEFAULT_PRODUCT_THUMBNAIL_URL,
       };
     } catch (error) {
       const normalizedError = await normalizeApiError(error);

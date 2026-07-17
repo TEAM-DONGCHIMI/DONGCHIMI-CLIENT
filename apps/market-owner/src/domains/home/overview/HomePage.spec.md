@@ -10,7 +10,7 @@
 - Jira: DCMSM-27
 - Related Jira: DCMSM-32 홈 상품 0건 딤드 상태 UI, DCMSM-38 헤더 상품 검색 공통화,
   DCMSM-57 사장님 홈 화면 조회 API 연동, DCMSM-73 상품 검색 API 연동,
-  DCMSM-76 홈 QR 코드 모달 연동
+  DCMSM-76 홈 QR 코드 모달 연동, DCMSM-110 홈 상품 카드 수정 모달 연결
 - Related Jira: DCMSM-15 route scaffold
 - Status: Implemented
 
@@ -68,7 +68,7 @@
 ## Out Of Scope
 
 - 상품 검색 외 상품 등록/수정 mutation과 cache invalidation
-- 상품 수정 페이지에서 `productId` search param을 소비해 특정 상품 form/modal을 여는 상세 동작
+- 상품 수정 모달 내부 form, mutation, cache 동작 변경
 - 홈에서 QR 발급 API를 새로 호출하는 흐름
 - 카카오/문자 실제 공유 연동
 - 인증 토큰 저장, 주입, 갱신과 공통 HTTP client 정책 변경
@@ -192,7 +192,8 @@ HomePage(main)
 - 홈 조회 API는 도메인 API helper에서 `httpClient`와 `validateApiResponse`를 통해 호출합니다. 인증 header는
   공통 인증 계층이 준비되기 전까지 이 작업에서 직접 주입하지 않습니다.
 - hero quick action은 오늘의 특가 등록, 행사 할인 등록, 상품 수정 route로 이동합니다.
-- 상품 카드 row를 클릭하면 해당 카드 종류의 수정 route로 이동합니다.
+- 상품 카드 row를 클릭하면 헤더 검색과 같은 경로 생성 규칙으로 해당 카드 종류의 수정 route에
+  `productId` search param을 붙여 이동하고 대상 상품 수정 모달을 엽니다.
 - `등록한 상품 전체보기` action은 `ProductCard`의 desktop actionSlot으로 주입하고, 오늘의 특가 상품
   카드는 `[오늘의 특가 상품] 수정하기` route, 행사 할인 상품 카드는 `[행사 할인 상품] 수정하기` route로
   이동합니다.
@@ -278,7 +279,7 @@ HomePage(main)
 - [x] hero quick action buttons render from fixture data
 - [x] daily and periodic `ProductCard` sections render from fixture data
 - [x] daily and periodic cards independently render a disabled dimmed state when their count is 0
-- [x] product row click navigates to each edit page
+- [x] product row click navigates to each edit page with `productId` and opens the target modal
 - [x] product summary action buttons navigate to each edit page
 - [x] share card renders share URL, copy action, and QR action
 - [x] null flyer state dims the share card, clears only its URL text, and disables all share actions

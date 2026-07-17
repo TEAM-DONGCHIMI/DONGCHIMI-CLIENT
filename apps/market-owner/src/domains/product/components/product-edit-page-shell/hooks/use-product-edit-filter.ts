@@ -5,7 +5,7 @@ import {
   type ProductEditFilterTypes,
   type ProductEditTypeTypes,
 } from '../ProductEditPageShell.constants';
-import { useProductCategoryDropdown } from '../../../hooks';
+import { useProductCategoryDropdown, useProductCategoryDropdownLayout } from '../../../hooks';
 
 interface UseProductEditFilterParams {
   activeType: ProductEditTypeTypes;
@@ -20,14 +20,15 @@ export const useProductEditFilter = ({ activeType }: UseProductEditFilterParams)
     getDefaultSelectedFilter(activeType),
   );
   const categoryFilterRef = useRef<HTMLDivElement>(null);
+  const categoryTriggerRef = useRef<HTMLButtonElement>(null);
   const showCategoryFilter = activeType === 'eventDiscount';
-  const {
-    closeCategoryDropdown,
-    isCategoryDropdownOpen,
-    selectCategory,
-    selectedCategory,
-    toggleCategoryDropdown,
-  } = useProductCategoryDropdown(categoryFilterRef);
+  const { isCategoryDropdownOpen, selectCategory, selectedCategory, toggleCategoryDropdown } =
+    useProductCategoryDropdown(categoryFilterRef);
+  const categoryDropdownStyle = useProductCategoryDropdownLayout({
+    containerRef: categoryFilterRef,
+    isOpen: isCategoryDropdownOpen,
+    triggerRef: categoryTriggerRef,
+  });
   const visibleSelectedFilter =
     !showCategoryFilter && selectedFilter === 'category' ? 'registered' : selectedFilter;
   const isCategorySelected = visibleSelectedFilter === 'category';
@@ -42,12 +43,14 @@ export const useProductEditFilter = ({ activeType }: UseProductEditFilterParams)
   };
 
   const selectSortFilter = (value: ProductEditFilterTypes) => {
+    selectCategory(null);
     setSelectedFilter(value);
-    closeCategoryDropdown();
   };
 
   return {
+    categoryDropdownStyle,
     categoryFilterRef,
+    categoryTriggerRef,
     isCategoryDropdownOpen,
     isCategorySelected,
     selectedCategory,

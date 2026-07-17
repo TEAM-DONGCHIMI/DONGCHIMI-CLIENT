@@ -30,8 +30,10 @@ import {
   saveMarketProductsScrollRestoration,
 } from './hooks/market-products-scroll-restoration';
 import { calculateFirstRowCategoryCount } from './hooks/useEventDiscountCategoryLayout';
+import { PopularProductsSection } from './sections/PopularProductsSection';
+import { TodaySpecialProductsSection } from './sections/TodaySpecialProductsSection';
 import { formatPrice } from './utils/format-price';
-import { getCurrentBusinessCloseTime } from './utils/market-actions';
+import { getCurrentBusinessCloseTime, getShareUrl } from './utils/market-actions';
 
 const router = {
   back: vi.fn(),
@@ -219,6 +221,38 @@ describe('MarketProductsPage', () => {
     expect(screen.getByRole('heading', { name: '오늘의 특가 상품' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '행사 할인 상품' })).toBeInTheDocument();
     expect(await screen.findByText('대추방울토마토 500G')).toBeInTheDocument();
+  });
+
+  it('할인율이 0인 인기 상품과 오늘의 특가 상품에는 할인율 chip을 표시하지 않는다', () => {
+    const popularProducts = MARKET_DETAIL_API_RESPONSE_FIXTURE.data.top3.map((product, index) => ({
+      ...product,
+      discountRate: index === 0 ? 0 : product.discountRate,
+    }));
+    const todaySpecialProducts = DAILY_PRODUCTS_API_RESPONSE_FIXTURE.data.products.map(
+      (product, index) => ({
+        ...product,
+        discountRate: index === 0 ? 0 : product.discountRate,
+      }),
+    );
+
+    renderWithProviders(
+      <>
+        <PopularProductsSection marketSlug={MARKET_SLUG} products={popularProducts} />
+        <TodaySpecialProductsSection
+          marketSlug={MARKET_SLUG}
+          products={todaySpecialProducts}
+          totalCount={todaySpecialProducts.length}
+        />
+      </>,
+    );
+
+    const popularSection = getSectionQueries('지금 가장 인기 있는 상품 TOP 3');
+    const todaySection = getSectionQueries('오늘의 특가 상품');
+
+    expect(popularSection.queryByText('0%')).not.toBeInTheDocument();
+    expect(todaySection.queryByText('0%')).not.toBeInTheDocument();
+    expect(popularSection.getByText('15%')).toBeInTheDocument();
+    expect(todaySection.getByText('20%')).toBeInTheDocument();
   });
 
   it('TOP3 상품을 클릭하면 상품 상대 위치를 저장한다', async () => {
@@ -508,7 +542,7 @@ describe('MarketProductsPage', () => {
 
     await user.click(within(dialog).getByRole('button', { name: '링크 복사' }));
 
-    expect(writeText).toHaveBeenCalledWith('dongchimi.kr/mangwon-fresh');
+    expect(writeText).toHaveBeenCalledWith('https://app.dongchiimi.com/markets/mangwon-fresh');
     expect(await within(dialog).findByRole('status')).toHaveTextContent(
       '전단 링크가 복사되었습니다.',
     );
@@ -567,7 +601,7 @@ describe('MarketProductsPage', () => {
     });
   });
 
-  it('guides manual installation when a native PWA prompt is unavailable', async () => {
+  it('keeps the designed install guide unchanged when the native prompt is unavailable', async () => {
     const user = userEvent.setup();
 
     await renderMarketProductsPage();
@@ -585,15 +619,37 @@ describe('MarketProductsPage', () => {
 
     await user.click(within(installDialog).getByRole('button', { name: '홈 화면에 추가하기' }));
 
-    expect(within(installDialog).getByText(/브라우저의 공유 버튼을 누른 뒤/)).toBeVisible();
+    expect(installDialog).toBeVisible();
+    expect(within(installDialog).getByText(/홈 화면에 추가하기 버튼을 누르면/)).toBeVisible();
+    expect(within(installDialog).queryByText(/브라우저의 공유 버튼을 누른 뒤/)).toBeNull();
+    expect(within(installDialog).queryByRole('button', { name: '확인' })).toBeNull();
+  });
 
-    await user.click(within(installDialog).getByRole('button', { name: '확인' }));
+  it('does not add an installed confirmation view to the install guide', async () => {
+    const user = userEvent.setup();
 
-    await waitFor(() => {
-      expect(
-        screen.queryByRole('dialog', { name: '홈 화면에 추가하기 안내' }),
-      ).not.toBeInTheDocument();
+    await renderMarketProductsPage();
+
+    act(() => {
+      window.dispatchEvent(new Event('appinstalled'));
     });
+
+    await user.click(screen.getByRole('button', { name: '공유하기' }));
+    await user.click(
+      within(await screen.findByRole('dialog', { name: '전단 공유하기' })).getByRole('button', {
+        name: '앱으로 전단보기',
+      }),
+    );
+
+    const installDialog = await screen.findByRole('dialog', {
+      name: '홈 화면에 추가하기 안내',
+    });
+
+    await user.click(within(installDialog).getByRole('button', { name: '홈 화면에 추가하기' }));
+
+    expect(installDialog).toBeVisible();
+    expect(within(installDialog).queryByText(/이미 홈 화면에 추가되어/)).toBeNull();
+    expect(within(installDialog).queryByRole('button', { name: '확인' })).toBeNull();
   });
 
   it('행사 할인 상품을 서버 category enum으로 필터링한다', async () => {
@@ -618,6 +674,79 @@ describe('MarketProductsPage', () => {
 
     expect(await eventSection.findByText('손질 고등어 1팩')).toBeInTheDocument();
     expect(eventSection.getAllByRole('link')).toHaveLength(1);
+  });
+
+  it('카테고리 전환 요청 중 직전 상품 영역 높이를 유지한다', async () => {
+    const user = userEvent.setup();
+    let releaseCategoryRequest: (() => void) | undefined;
+    const categoryRequest = new Promise<void>((resolve) => {
+      releaseCategoryRequest = resolve;
+    });
+
+    server.use(
+      http.get(PERIODIC_PRODUCTS_API_PATH, async ({ request }) => {
+        const category = new URL(request.url).searchParams.get('category');
+
+        if (category === 'MEAT_EGG') {
+          await categoryRequest;
+
+          return HttpResponse.json({
+            code: 'SUCCESS',
+            data: {
+              availableCategories:
+                PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE.data.availableCategories,
+              content: categoryProducts.MEAT_EGG,
+              hasNext: false,
+              nextCursor: null,
+            },
+            message: '요청에 성공했습니다.',
+            success: true,
+          });
+        }
+
+        return HttpResponse.json(PERIODIC_PRODUCTS_FIRST_PAGE_RESPONSE_FIXTURE);
+      }),
+    );
+
+    await renderMarketProductsPage();
+
+    const eventSection = getSectionQueries('행사 할인 상품');
+
+    expect(await eventSection.findByText('대추방울토마토 500G')).toBeInTheDocument();
+
+    const productContentRegion = eventSection.getByRole('region', {
+      name: '행사 할인 상품 목록',
+    });
+
+    vi.spyOn(productContentRegion, 'getBoundingClientRect').mockReturnValue({
+      bottom: 680,
+      height: 480,
+      left: 0,
+      right: 300,
+      toJSON: () => ({}),
+      top: 200,
+      width: 300,
+      x: 0,
+      y: 200,
+    });
+
+    await user.click(eventSection.getByRole('button', { name: '정육·달걀' }));
+
+    expect(await eventSection.findByRole('status')).toHaveTextContent(
+      '행사 상품을 불러오는 중이에요.',
+    );
+    expect(productContentRegion).toHaveStyle({ minHeight: '480px' });
+    expect(productContentRegion).toHaveAttribute('aria-busy', 'true');
+
+    act(() => {
+      releaseCategoryRequest?.();
+    });
+
+    expect(await eventSection.findByText('삼겹살 500G')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(productContentRegion.style.minHeight).toBe('');
+      expect(productContentRegion).toHaveAttribute('aria-busy', 'false');
+    });
   });
 
   it('행사 상품을 클릭하면 category와 상품 상대 위치를 저장한다', async () => {
@@ -1098,5 +1227,13 @@ describe('getCurrentBusinessCloseTime', () => {
 
   it('현재 휴무일이면 종료 시간을 반환하지 않는다', () => {
     expect(getCurrentBusinessCloseTime(businessHours, new Date(2026, 6, 12))).toBeUndefined();
+  });
+});
+
+describe('getShareUrl', () => {
+  it('운영 client origin과 인코딩된 마트 route를 조합한다', () => {
+    expect(getShareUrl('망원 fresh')).toBe(
+      'https://app.dongchiimi.com/markets/%EB%A7%9D%EC%9B%90%20fresh',
+    );
   });
 });

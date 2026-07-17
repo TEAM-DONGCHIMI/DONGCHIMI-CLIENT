@@ -11,7 +11,6 @@ interface UseProductEditListActionsParams {
   autoOpenProductId?: string | null;
   groups: ProductEditProductGroup[];
   marketId: number;
-  selectionMode: boolean;
   variant: ProductEditCardVariantTypes;
   onAutoOpenProductMissing?: (productId: string) => void;
   onAutoOpenProductModalClose?: () => void;
@@ -33,7 +32,6 @@ export const useProductEditListActions = ({
   autoOpenProductId,
   groups,
   marketId,
-  selectionMode,
   variant,
   onAutoOpenProductMissing,
   onAutoOpenProductModalClose,
@@ -41,6 +39,20 @@ export const useProductEditListActions = ({
   onUpdateProduct,
 }: UseProductEditListActionsParams) => {
   const openedProductIdRef = useRef<string | null>(null);
+
+  const openEditProductById = useCallback(
+    (productId: number, product?: ProductEditCardProps, onClose?: () => void) => {
+      openProductEditModal({
+        marketId,
+        product,
+        productId,
+        variant,
+        onClose,
+        onSubmit: (updatedProduct) => onUpdateProduct?.(productId, updatedProduct),
+      });
+    },
+    [marketId, onUpdateProduct, variant],
+  );
 
   const openEditProduct = useCallback(
     (product: ProductEditCardProps, onClose?: () => void) => {
@@ -50,18 +62,11 @@ export const useProductEditListActions = ({
         return false;
       }
 
-      openProductEditModal({
-        marketId,
-        product,
-        productId,
-        variant,
-        onClose,
-        onSubmit: (updatedProduct) => onUpdateProduct?.(productId, updatedProduct),
-      });
+      openEditProductById(productId, product, onClose);
 
       return true;
     },
-    [marketId, onUpdateProduct, variant],
+    [openEditProductById],
   );
 
   useEffect(() => {
@@ -71,26 +76,30 @@ export const useProductEditListActions = ({
       return;
     }
 
-    if (selectionMode || openedProductIdRef.current === autoOpenProductId) {
+    if (openedProductIdRef.current === autoOpenProductId) {
       return;
     }
 
     const targetProduct = groups
       .flatMap((group) => group.products)
       .find((product) => String(product.productId) === autoOpenProductId);
+    const targetProductId = parseProductId(autoOpenProductId);
 
     openedProductIdRef.current = autoOpenProductId;
 
-    if (targetProduct == null || !openEditProduct(targetProduct, onAutoOpenProductModalClose)) {
+    if (targetProductId == null) {
       onAutoOpenProductMissing?.(autoOpenProductId);
+
+      return;
     }
+
+    openEditProductById(targetProductId, targetProduct, onAutoOpenProductModalClose);
   }, [
     autoOpenProductId,
     groups,
     onAutoOpenProductMissing,
     onAutoOpenProductModalClose,
-    openEditProduct,
-    selectionMode,
+    openEditProductById,
   ]);
 
   const requestDeleteProduct = useCallback(

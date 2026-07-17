@@ -72,6 +72,7 @@ export const ProductInfoSection = ({
                 className={S.categoryDropdownClassName}
                 id={PRODUCT_EDIT_MODAL_CATEGORY_OVERLAY_ID}
                 options={productSelectableCategoryOptions}
+                renderInTopLayer
                 selectedCategory={values.categoryName}
                 style={categoryDropdownStyle}
                 onSelect={selectCategory}

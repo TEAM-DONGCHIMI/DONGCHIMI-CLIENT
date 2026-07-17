@@ -10,6 +10,7 @@ describe('createHomeDashboardViewModel', () => {
 
     expect(viewModel.sections).toEqual([
       expect.objectContaining({
+        dealType: 'DAILY',
         id: 'daily',
         itemVariant: 'today',
         totalCount: 1,
@@ -23,6 +24,7 @@ describe('createHomeDashboardViewModel', () => {
         ],
       }),
       expect.objectContaining({
+        dealType: 'PERIODIC',
         id: 'periodic',
         itemVariant: 'period',
         totalCount: 1,
