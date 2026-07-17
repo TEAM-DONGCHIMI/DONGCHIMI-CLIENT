@@ -5,6 +5,7 @@
 - App: `client`
 - Domain: `market`
 - Page: `market-products`
+- Jira: `DCMCL-39`
 - Path: `apps/client/src/domains/market/market-products/components/market-share-bottom-sheet/MarketShareBottomSheet.tsx`
 - Status: Implemented
 
@@ -16,10 +17,10 @@
 
 ## Source Of Truth
 
-- Share Figma: `APPJAM`, node `342:10904`
+- Share Figma: `APPJAM`, node `3799:104604`
 - Install guide Figma: `APPJAM`, node `4190:55134` / bottom sheet `4190:55194`
 - Component name: `Mobile Share Bottom Sheet`, `마트 전단 바텀시트`
-- Size reference: share `375 x 430`, install guide `375 x 397`
+- Size reference: share `375 x 430`, install guide `375 x 397`; 구현 폭은 고정 `375px`이 아니라 Client mobile max-width를 상한으로 사용
 - Share API draft: `{ marketId, marketName, slug, qrCode }`
 
 ## Public API
@@ -45,6 +46,7 @@
 ## States
 
 - default: trigger를 누르면 공유 bottom sheet를 엽니다.
+- closed: 공유 view 하단의 `닫기` action을 누르면 sheet를 닫고 focus를 trigger로 복귀시킵니다.
 - copied: 링크 복사 fallback이 성공하면 bottom-center completed toast를 표시합니다.
 - pending: Kakao SDK 연동 전까지 카카오톡 공유를 누르면 bottom-center error toast로 `아직 준비중인 기능이에요.`를 표시합니다.
 - installGuide: `앱으로 전단보기`를 누르면 같은 modal context 안에서 설치 안내 view로 전환합니다.
@@ -55,10 +57,11 @@
 
 ## Styling
 
-- Figma 기준 `375 x 430` 모바일 시트 형태를 따르되, 실제 route에서는 bottom sheet가 viewport 하단을 채우도록 `width: 100%`를 사용합니다.
-- handle은 `40 x 4`, 상단 radius는 약 `27px` 기준입니다.
+- Figma 기준 `375 x 430` 모바일 시트 형태를 따르되 `375px`을 고정하지 않습니다. 작은 viewport에서는 `width: 100%`, 넓은 viewport에서는 전역 `--client-mobile-max-width`를 상한으로 사용하고 viewport 중앙에 배치합니다.
+- handle은 `40 x 4`, 상단 radius는 Figma 기준 `26px`입니다.
 - title은 `heading-3-semibold`, description/link는 `body-3`, action은 `body-2-semibold` 토큰을 사용합니다.
 - 링크 복사, 카카오톡 공유, 앱으로 전단보기는 각각 아이콘과 라벨을 함께 표시합니다.
+- 공유 view 하단은 `BottomSheet.Footer`와 `BottomSheet.Close`를 사용해 `1px neutral/20` 구분선, `body-2-semibold` / `neutral/70` 닫기 문구, `16px 20px 36px` 여백을 유지합니다.
 - 설치 안내 view는 Figma `263 x 177` illustration, 중앙 안내 문구, `263 x 44` primary action, secondary close action 순서를 유지합니다.
 - 페이지가 스크롤된 상태에서 열어도 디자인시스템 `BottomSheet`의 scroll lock을 통해 sheet 하단과 기존 문서 위치를 유지합니다.
 - 색상은 디자인시스템 `atomic`, `semantic` token을 사용합니다.
@@ -69,6 +72,7 @@
 - `BottomSheet.Title`과 `BottomSheet.Description`으로 dialog name/description을 연결합니다.
 - 링크 박스의 복사 icon button에는 `aria-label="전단 링크 복사"`를 제공합니다.
 - 액션 버튼은 실제 `button` element로 렌더링합니다.
+- 공유 view의 `닫기`는 `BottomSheet.Close` button semantics를 사용하고 닫힌 뒤 trigger로 focus를 복귀시킵니다.
 - 시각적 제목이 없는 설치 안내 view도 visually-hidden `BottomSheet.Title`로 dialog name을 제공합니다.
 - 설치 안내 문구와 CTA label은 첨부 디자인의 단일 상태로 유지합니다.
 
@@ -80,6 +84,6 @@
 - [x] `pnpm --filter client test`
 - [x] `pnpm --filter client build`
 - [x] `pnpm --filter client build-storybook`
-- [x] Figma nodes `342:10904`, `4190:55134` spacing/typography reference checked
-- [x] Playwright 375px exact sheet geometry and 320px overflow checked
+- [x] Figma nodes `3799:104604`, `4190:55134` spacing/typography reference checked
+- [x] Playwright Chromium 375px, 430px, 900px에서 app shell과 sheet geometry 일치, 중앙 정렬, 닫기 footer 확인
 - [x] Playwright WebKit 375px scrolled-page open/close에서 viewport bottom 고정과 scroll 위치 복원 확인
