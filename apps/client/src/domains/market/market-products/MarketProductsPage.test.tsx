@@ -620,12 +620,14 @@ describe('MarketProductsPage', () => {
     });
   });
 
-  it('keeps the designed install guide unchanged when the native prompt is unavailable', async () => {
+  it('shows the manual browser install path when the native prompt is unavailable', async () => {
     const user = userEvent.setup();
 
     await renderMarketProductsPage();
 
-    await user.click(screen.getByRole('button', { name: '공유하기' }));
+    const shareButton = screen.getByRole('button', { name: '공유하기' });
+
+    await user.click(shareButton);
     await user.click(
       within(await screen.findByRole('dialog', { name: '전단 공유하기' })).getByRole('button', {
         name: '앱으로 전단보기',
@@ -639,9 +641,21 @@ describe('MarketProductsPage', () => {
     await user.click(within(installDialog).getByRole('button', { name: '홈 화면에 추가하기' }));
 
     expect(installDialog).toBeVisible();
-    expect(within(installDialog).getByText(/홈 화면에 추가하기 버튼을 누르면/)).toBeVisible();
-    expect(within(installDialog).queryByText(/브라우저의 공유 버튼을 누른 뒤/)).toBeNull();
+    expect(
+      within(installDialog).getByText(
+        '브라우저의 공유 메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 편리하게 이용할 수 있어요.',
+      ),
+    ).toBeVisible();
     expect(within(installDialog).queryByRole('button', { name: '확인' })).toBeNull();
+
+    await user.click(within(installDialog).getByRole('button', { name: '웹으로 계속 이용하기' }));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('dialog', { name: '홈 화면에 추가하기 안내' }),
+      ).not.toBeInTheDocument();
+    });
+    expect(shareButton).toHaveFocus();
   });
 
   it('does not add an installed confirmation view to the install guide', async () => {

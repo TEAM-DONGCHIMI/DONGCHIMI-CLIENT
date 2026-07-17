@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-28, DCMCL-34
+- Jira: DCMCL-28, DCMCL-34, DCMCL-42
 - Route: app-wide, `/offline`
 - Owner: `apps/client`
 - Status: Implemented
@@ -47,7 +47,9 @@
 - `/markets/[slug]` 공유 바텀시트의 `앱으로 전단보기`에서 Figma 설치 안내 시트로 전환합니다.
 - 지원 브라우저의 `홈 화면에 추가하기`는 보관한 네이티브 설치 프롬프트를 호출합니다.
 - prompt 미지원 또는 이미 설치된 환경에서도 디자인에 없는 앱 내부 후속 안내 view를 추가하지 않습니다.
-- iOS Safari는 프로그래밍 방식 설치 프롬프트를 지원하지 않으며, 이번 범위에서는 별도 수동 설치 안내 UI를 제공하지 않습니다.
+- 설치 안내 본문은 브라우저 공유 메뉴에서 `홈 화면에 추가`를 선택하는 수동 설치 경로를 함께 설명합니다.
+- secondary close action은 `웹으로 계속 이용하기`로 안내하고, 실행하면 설치 안내를 닫아 기존 웹 흐름을 이어갑니다.
+- iOS Safari는 프로그래밍 방식 설치 프롬프트를 지원하지 않으므로 동일 바텀시트의 안내 문구로 수동 설치 경로를 제공합니다. 별도 단계형 안내 UI는 추가하지 않습니다.
 
 ## Cache Policy
 
@@ -111,6 +113,8 @@
 - [x] `/markets/[slug]` share sheet transitions to the Figma install guide
 - [x] simulated `beforeinstallprompt` is deferred until the install CTA and invoked once
 - [x] prompt-unavailable and installed states do not introduce an additional app-side install view
+- [x] install guide describes the browser share-menu path without changing the native prompt CTA
+- [x] `웹으로 계속 이용하기` closes the install guide and restores focus to its trigger
 - [x] viewport and manifest theme colors use `common/0` (`#FFFFFF`)
 - [x] install guide matches `375 x 397` and has no horizontal overflow at 320px
 - [ ] Android Chrome and iOS Safari real-device installation smoke test

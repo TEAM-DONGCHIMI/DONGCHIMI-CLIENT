@@ -205,9 +205,7 @@ const PwaInstallGuideContent = ({ onClose }: PwaInstallGuideContentProps) => {
           width={263}
         />
         <BottomSheet.Description className={S.installDescriptionClassName}>
-          홈 화면에 추가하기 버튼을 누르면
-          <br />
-          마트 할인 정보를 빠르게 확인할 수 있어요.
+          브라우저의 공유 메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 편리하게 이용할 수 있어요.
         </BottomSheet.Description>
         <button
           autoFocus
@@ -220,7 +218,9 @@ const PwaInstallGuideContent = ({ onClose }: PwaInstallGuideContentProps) => {
           홈 화면에 추가하기
         </button>
       </BottomSheet.Body>
-      <BottomSheet.Close className={S.installLaterButtonClassName}>다음에 하기</BottomSheet.Close>
+      <BottomSheet.Close className={S.installLaterButtonClassName}>
+        웹으로 계속 이용하기
+      </BottomSheet.Close>
     </>
   );
 };
