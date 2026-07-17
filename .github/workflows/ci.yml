@@ -167,6 +167,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Analyze and test client web
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
         run: pnpm turbo run lint typecheck test --only --filter=client
 
       - name: Build client web
