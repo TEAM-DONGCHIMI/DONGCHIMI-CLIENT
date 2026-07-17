@@ -5,7 +5,7 @@
 - App: `client`
 - Domain: `market`
 - Page: `market-products`
-- Jira: `DCMCL-39`
+- Jira: `DCMCL-39`, `DCMCL-42`
 - Path: `apps/client/src/domains/market/market-products/components/market-share-bottom-sheet/MarketShareBottomSheet.tsx`
 - Status: Implemented
 
@@ -20,13 +20,13 @@
 - Share Figma: `APPJAM`, node `3799:104604`
 - Install guide Figma: `APPJAM`, node `4190:55134` / bottom sheet `4190:55194`
 - Component name: `Mobile Share Bottom Sheet`, `마트 전단 바텀시트`
-- Size reference: share `375 x 430`, install guide `375 x 397`; 구현 폭은 고정 `375px`이 아니라 Client mobile max-width를 상한으로 사용
+- Size reference: share `375 x 430`, install guide Figma `375 x 397`; 후속 CTA 제거 요구사항에 따라 install guide 구현은 `32.9rem` minimum height를 사용하며, 폭은 고정 `375px`이 아니라 Client mobile max-width를 상한으로 사용
 - Share API draft: `{ marketId, marketName, slug, qrCode }`
 
 ## Public API
 
 - `MarketShareBottomSheet`와 `MarketShareBottomSheetProps`만 page-local index에서 export합니다.
-- PWA prompt 상태와 설치 안내 view는 public prop으로 노출하지 않고 앱 공용 `usePwaInstall`과 컴포넌트 내부 상태로 조합합니다.
+- 설치 안내 view는 public prop으로 노출하지 않고 컴포넌트 내부 상태로 조합합니다.
 
 ## Inputs
 
@@ -40,7 +40,6 @@
 - external state:
   - bottom sheet open state와 share/install view 전환은 이 컴포넌트가 controlled state로 관리하고, modal/focus/portal 동작은 `BottomSheet` primitive에 위임합니다.
   - 링크 복사와 준비중 toast는 native dialog top-layer 위에 보이도록 bottom sheet dialog 내부의 local `ToastProvider`를 사용합니다.
-  - app root의 `PwaInstallProvider`가 보관한 설치 prompt와 설치 상태를 `usePwaInstall`로 소비합니다.
   - 호출부는 운영 canonical origin과 `/markets/{slug}` route를 조합한 전체 URL을 전달합니다.
 
 ## States
@@ -51,8 +50,8 @@
 - pending: Kakao SDK 연동 전까지 카카오톡 공유를 누르면 bottom-center error toast로 `아직 준비중인 기능이에요.`를 표시합니다.
 - closed: 공유 view의 `닫기` action을 실행하면 sheet를 닫고 trigger로 focus를 복원합니다.
 - installGuide: `앱으로 전단보기`를 누르면 같은 modal context 안에서 설치 안내 view로 전환합니다.
-- installPrompt: prompt 지원 브라우저에서 `홈 화면에 추가하기`를 누르면 네이티브 설치 UI를 호출합니다.
-- promptUnavailable: prompt 미지원 또는 이미 설치된 환경에서도 첨부 디자인의 설치 안내 view를 유지하며 별도 앱 내부 후속 안내를 표시하지 않습니다.
+- manualInstallGuide: prompt 지원 여부나 설치 상태와 관계없이 네이티브 설치 CTA를 노출하지 않고, 브라우저 공유 메뉴의 `홈 화면에 추가`를 선택하는 수동 설치 경로를 본문에서 안내합니다.
+- installDismissed: `웹으로 계속 이용하기`를 누르면 sheet를 닫고 공유하기 trigger로 focus를 복원합니다.
 - empty: 지원하지 않습니다. `marketName`, `shareUrl`은 필수입니다.
 - error: clipboard fallback 실패 시 bottom-center error toast를 표시합니다.
 
@@ -63,7 +62,9 @@
 - title은 `heading-3-semibold`, description/link는 `body-3`, action은 `body-2-semibold` 토큰을 사용합니다.
 - 링크 복사, 카카오톡 공유, 앱으로 전단보기는 각각 아이콘과 라벨을 함께 표시합니다.
 - 공유 view 하단은 `BottomSheet.Footer`와 `BottomSheet.Close`를 사용해 `1px neutral/20` 구분선, `body-2-semibold` / `neutral/70` 닫기 문구, `16px 20px 36px` 여백을 유지합니다.
-- 설치 안내 view는 Figma `263 x 177` illustration, 중앙 안내 문구, `263 x 44` primary action, secondary close action 순서를 유지합니다.
+- 설치 안내 view는 Figma `263 x 177` illustration, 중앙 안내 문구, `웹으로 계속 이용하기` close action 순서를 유지하고 네이티브 설치 primary action은 표시하지 않습니다.
+- 설치 안내 본문은 `브라우저 공유메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 이용할 수 있어요.`를 표시하고, 작은 viewport에서도 고정 줄바꿈 없이 자연스럽게 wrapping합니다.
+- primary action 제거로 남는 빈 공간이 없도록 sheet 최소 높이를 `32.9rem`으로 줄이고, 안내 문구와 `웹으로 계속 이용하기` 사이의 상단 여백은 `1.2rem`을 사용합니다.
 - 페이지가 스크롤된 상태에서 열어도 디자인시스템 `BottomSheet`의 scroll lock을 통해 sheet 하단과 기존 문서 위치를 유지합니다.
 - 색상은 디자인시스템 `atomic`, `semantic` token을 사용합니다.
 - 완료 toast icon은 기존 `IcCircleCheckFillSizeSmall`을 유지하고, 오류 toast는 디자인시스템 `Toast`의 기본 `IcCircleExclamation`을 사용합니다.
@@ -74,8 +75,9 @@
 - 링크 박스의 복사 icon button에는 `aria-label="전단 링크 복사"`를 제공합니다.
 - 액션 버튼은 실제 `button` element로 렌더링합니다.
 - 공유 view의 `닫기`는 `BottomSheet.Close` button semantics를 사용하고 닫힌 뒤 trigger로 focus를 복귀시킵니다.
+- 설치 안내의 `웹으로 계속 이용하기`도 `BottomSheet.Close` semantics와 focus 복원을 유지합니다.
 - 시각적 제목이 없는 설치 안내 view도 visually-hidden `BottomSheet.Title`로 dialog name을 제공합니다.
-- 설치 안내 문구와 CTA label은 첨부 디자인의 단일 상태로 유지합니다.
+- 설치 안내 문구와 `웹으로 계속 이용하기`는 prompt 지원 여부와 관계없이 동일하게 제공합니다.
 
 ## Verification
 
