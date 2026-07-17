@@ -48,44 +48,38 @@ describe('httpClient auth refresh', () => {
     useAuthStore.getState().clearSession();
   });
 
-  it.each([
-    { code: 'UNAUTHORIZED', status: 401 },
-    { code: 'FORBIDDEN', status: 403 },
-  ])(
-    'clears the auth session without refresh after a $status/$code response',
-    async ({ code, status }) => {
-      const { httpClient } = await import('./http-client');
-      const authError = new HTTPErrorMock(new Response(null, { status }), {
-        success: false,
-        code,
-        message: '인증 세션이 유효하지 않습니다.',
-      });
+  it('clears the auth session without refresh after a 403/FORBIDDEN response', async () => {
+    const { httpClient } = await import('./http-client');
+    const forbiddenError = new HTTPErrorMock(new Response(null, { status: 403 }), {
+      success: false,
+      code: 'FORBIDDEN',
+      message: '인증 세션이 유효하지 않습니다.',
+    });
 
-      useAuthStore.getState().setAccessToken('active-access-token', {
-        account: {
-          email: 'owner@dongchiimi.com',
-          marketName: '동치미마트',
-        },
-        marketId: 12,
-      });
-      mockKyRequest.mockRejectedValueOnce(authError);
+    useAuthStore.getState().setAccessToken('active-access-token', {
+      account: {
+        email: 'owner@dongchiimi.com',
+        marketName: '동치미마트',
+      },
+      marketId: 12,
+    });
+    mockKyRequest.mockRejectedValueOnce(forbiddenError);
 
-      await expect(httpClient.get('/v1/protected')).rejects.toMatchObject({
-        code,
-        status,
-        type: 'auth',
-      });
+    await expect(httpClient.get('/v1/protected')).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+      status: 403,
+      type: 'auth',
+    });
 
-      expect(mockKyRequest).toHaveBeenCalledTimes(1);
-      expect(useAuthStore.getState()).toMatchObject({
-        accessToken: undefined,
-        account: undefined,
-        bootstrapStatus: 'unauthenticated',
-        isLoggedIn: false,
-        marketId: undefined,
-      });
-    },
-  );
+    expect(mockKyRequest).toHaveBeenCalledTimes(1);
+    expect(useAuthStore.getState()).toMatchObject({
+      accessToken: undefined,
+      account: undefined,
+      bootstrapStatus: 'unauthenticated',
+      isLoggedIn: false,
+      marketId: undefined,
+    });
+  });
 
   it('attaches the access token from the auth store', async () => {
     const { httpClient } = await import('./http-client');
@@ -104,8 +98,8 @@ describe('httpClient auth refresh', () => {
     const { httpClient } = await import('./http-client');
     const unauthorizedError = new HTTPErrorMock(new Response(null, { status: 401 }), {
       success: false,
-      code: 'INVALID_INPUT',
-      message: '유효하지 않은 토큰입니다.',
+      code: 'UNAUTHORIZED',
+      message: '인증이 필요합니다.',
     });
     const refreshResponse = {
       success: true,
@@ -146,8 +140,8 @@ describe('httpClient auth refresh', () => {
       const { httpClient } = await import('./http-client');
       const expiredAccessTokenError = new HTTPErrorMock(new Response(null, { status: 401 }), {
         success: false,
-        code: 'INVALID_INPUT',
-        message: '유효하지 않은 토큰입니다.',
+        code: 'UNAUTHORIZED',
+        message: '인증이 필요합니다.',
       });
       const retryAuthError = new HTTPErrorMock(new Response(null, { status }), {
         success: false,
@@ -191,6 +185,89 @@ describe('httpClient auth refresh', () => {
       });
     },
   );
+
+  it('clears the auth session when refresh returns 401/INVALID_REFRESH_TOKEN', async () => {
+    const { httpClient } = await import('./http-client');
+    const expiredAccessTokenError = new HTTPErrorMock(new Response(null, { status: 401 }), {
+      success: false,
+      code: 'UNAUTHORIZED',
+      message: '인증이 필요합니다.',
+    });
+    const invalidRefreshTokenError = new HTTPErrorMock(new Response(null, { status: 401 }), {
+      success: false,
+      code: 'INVALID_REFRESH_TOKEN',
+      message: '유효하지 않은 리프레시 토큰입니다.',
+    });
+
+    useAuthStore.getState().setAccessToken('stale-access-token', {
+      account: {
+        email: 'owner@dongchiimi.com',
+        marketName: '동치미마트',
+      },
+      marketId: 12,
+    });
+    mockKyRequest
+      .mockRejectedValueOnce(expiredAccessTokenError)
+      .mockRejectedValueOnce(invalidRefreshTokenError);
+
+    await expect(httpClient.get('/v1/protected')).rejects.toMatchObject({
+      code: 'INVALID_REFRESH_TOKEN',
+      status: 401,
+      type: 'auth',
+    });
+
+    expect(mockKyRequest).toHaveBeenCalledTimes(2);
+    expect(useAuthStore.getState()).toMatchObject({
+      accessToken: undefined,
+      account: undefined,
+      bootstrapStatus: 'unauthenticated',
+      isLoggedIn: false,
+      marketId: undefined,
+    });
+  });
+
+  it('keeps the auth session when refresh fails with a transient server error', async () => {
+    const { httpClient } = await import('./http-client');
+    const expiredAccessTokenError = new HTTPErrorMock(new Response(null, { status: 401 }), {
+      success: false,
+      code: 'UNAUTHORIZED',
+      message: '인증이 필요합니다.',
+    });
+    const refreshServerError = new HTTPErrorMock(new Response(null, { status: 503 }), {
+      success: false,
+      code: 'SERVICE_UNAVAILABLE',
+      message: '현재 인증 서버를 사용할 수 없습니다.',
+    });
+
+    useAuthStore.getState().setAccessToken('stale-access-token', {
+      account: {
+        email: 'owner@dongchiimi.com',
+        marketName: '동치미마트',
+      },
+      marketId: 12,
+    });
+    mockKyRequest
+      .mockRejectedValueOnce(expiredAccessTokenError)
+      .mockRejectedValueOnce(refreshServerError);
+
+    await expect(httpClient.get('/v1/protected')).rejects.toMatchObject({
+      code: 'SERVICE_UNAVAILABLE',
+      status: 503,
+      type: 'server',
+    });
+
+    expect(mockKyRequest).toHaveBeenCalledTimes(2);
+    expect(useAuthStore.getState()).toMatchObject({
+      accessToken: 'stale-access-token',
+      account: {
+        email: 'owner@dongchiimi.com',
+        marketName: '동치미마트',
+      },
+      bootstrapStatus: 'authenticated',
+      isLoggedIn: true,
+      marketId: 12,
+    });
+  });
 
   it('keeps the auth session for a domain-specific 403 response', async () => {
     const { httpClient } = await import('./http-client');
@@ -262,6 +339,46 @@ describe('httpClient auth refresh', () => {
       'shared-access-token',
     ]);
     expect(useAuthStore.getState().accessToken).toBe('shared-access-token');
+  });
+
+  it('serializes refresh requests with a same-origin Web Lock when available', async () => {
+    const { refreshAuthSession } = await import('./http-client');
+    const originalLocksDescriptor = Object.getOwnPropertyDescriptor(navigator, 'locks');
+    const requestLock = vi.fn((_name: string, callback: () => Promise<unknown>) => callback());
+
+    Object.defineProperty(navigator, 'locks', {
+      configurable: true,
+      value: {
+        request: requestLock,
+      },
+    });
+
+    try {
+      useAuthStore.getState().setLoggedIn(true);
+      mockKyRequest.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            code: 'SUCCESS',
+            message: 'ok',
+            data: {
+              accessToken: 'locked-access-token',
+            },
+          }),
+        ),
+      );
+
+      await expect(refreshAuthSession()).resolves.toBe('locked-access-token');
+
+      expect(requestLock).toHaveBeenCalledTimes(1);
+      expect(requestLock.mock.calls[0]?.[0]).toBe('dongchimi:market-owner-auth-refresh');
+    } finally {
+      if (originalLocksDescriptor) {
+        Object.defineProperty(navigator, 'locks', originalLocksDescriptor);
+      } else {
+        Reflect.deleteProperty(navigator, 'locks');
+      }
+    }
   });
 
   it('does not restore the auth session when refresh completes after logout', async () => {

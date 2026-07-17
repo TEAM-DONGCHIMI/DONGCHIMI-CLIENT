@@ -6,6 +6,7 @@ import {
   clearAuthSession,
   createAuthorizedRequestOptions,
   isAuthSessionInvalidError,
+  isRefreshSessionInvalidError,
   refreshAccessToken,
   shouldRefreshAccessToken,
   type HttpClientOptionsTypes,
@@ -125,10 +126,10 @@ const requestWithAuthRefresh = async <ResponseDataTypes>(
   try {
     return await perform();
   } catch (error) {
-    const { normalizedError, shouldClearSession } = handleAuthSessionError(error);
+    const normalizedError = normalizeApiError(error);
 
-    if (shouldClearSession || !shouldRefreshAccessToken(error, options)) {
-      throw normalizedError;
+    if (!shouldRefreshAccessToken(error, options)) {
+      throw handleAuthSessionError(normalizedError).normalizedError;
     }
 
     let accessToken: string;
@@ -136,9 +137,13 @@ const requestWithAuthRefresh = async <ResponseDataTypes>(
     try {
       accessToken = await refreshAuthSession();
     } catch (refreshError) {
-      clearAuthSession();
+      const normalizedRefreshError = normalizeApiError(refreshError);
 
-      throw normalizeApiError(refreshError);
+      if (isRefreshSessionInvalidError(normalizedRefreshError)) {
+        clearAuthSession();
+      }
+
+      throw normalizedRefreshError;
     }
 
     try {

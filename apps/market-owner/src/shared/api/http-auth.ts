@@ -21,6 +21,8 @@ type HttpAuthRequestTypes = <ResponseDataTypes>(
   accessToken?: string,
 ) => Promise<ResponseDataTypes>;
 
+const AUTH_REFRESH_LOCK_NAME = 'dongchimi:market-owner-auth-refresh';
+
 let refreshAccessTokenPromise: Promise<string> | undefined;
 
 const createHeaders = (headers: Options['headers']) => {
@@ -89,8 +91,18 @@ const requestRefreshAccessToken = async (request: HttpAuthRequestTypes) => {
   return accessToken;
 };
 
+const requestRefreshAccessTokenWithLock = async (request: HttpAuthRequestTypes) => {
+  if (typeof navigator === 'undefined' || !navigator.locks) {
+    return await requestRefreshAccessToken(request);
+  }
+
+  return await navigator.locks.request<Promise<string>>(AUTH_REFRESH_LOCK_NAME, () =>
+    requestRefreshAccessToken(request),
+  );
+};
+
 export const refreshAccessToken = (request: HttpAuthRequestTypes) => {
-  refreshAccessTokenPromise ??= requestRefreshAccessToken(request)
+  refreshAccessTokenPromise ??= requestRefreshAccessTokenWithLock(request)
     .then((accessToken) => {
       if (useAuthStore.getState().isLoggedIn) {
         useAuthStore.getState().setAccessToken(accessToken);
@@ -118,6 +130,10 @@ export const isAuthSessionInvalidError = (error: ApiError) => {
     (error.status === HTTP_STATUS.UNAUTHORIZED && error.code === 'UNAUTHORIZED') ||
     (error.status === HTTP_STATUS.FORBIDDEN && error.code === 'FORBIDDEN')
   );
+};
+
+export const isRefreshSessionInvalidError = (error: ApiError) => {
+  return error.status === HTTP_STATUS.UNAUTHORIZED;
 };
 
 export const clearAuthSession = () => {
