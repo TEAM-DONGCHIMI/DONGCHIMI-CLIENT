@@ -54,7 +54,10 @@ const MarketInformationManagementPageController = () => {
   const updateOwnerMarketMutation = useUpdateOwnerMarketMutation();
   const [isDirty, setIsDirty] = useState(false);
   const isLeaveConfirmationOpenRef = useRef(false);
-  const blocker = useBlocker(isDirty);
+  const shouldBypassLeaveConfirmationRef = useRef(false);
+  const blocker = useBlocker(
+    useCallback(() => isDirty && !shouldBypassLeaveConfirmationRef.current, [isDirty]),
+  );
 
   useEffect(() => {
     if (blocker.state !== 'blocked' || isLeaveConfirmationOpenRef.current) return;
@@ -137,6 +140,8 @@ const MarketInformationManagementPageController = () => {
         toast.completed('정보가 변경되었습니다.', {
           id: 'market-information-management-completed',
         });
+        shouldBypassLeaveConfirmationRef.current = true;
+        navigate(MARKET_OWNER_ROUTES.home, { replace: true });
       }}
     />
   );
