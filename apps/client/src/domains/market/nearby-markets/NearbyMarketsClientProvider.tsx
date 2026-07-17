@@ -28,7 +28,7 @@ const LOCATION_PERMISSION_ERROR_TOAST_ID = 'nearby-markets-location-permission-e
 const POSTCODE_SEARCH_ERROR_TOAST_ID = 'nearby-markets-postcode-search-error';
 const POSTCODE_SEARCH_ERROR_MESSAGE = '우편번호 검색을 불러올 수 없어요';
 const LOCATION_PERMISSION_ERROR_MESSAGE = '위치 접근 허용에 실패했어요';
-const LOCATION_SEARCH_PLACEHOLDER = '현재 위치를 검색해주세요'
+const LOCATION_SEARCH_PLACEHOLDER = '현재 위치를 검색해주세요';
 
 type NearbyMarketsListQueryTypes = Pick<
   ReturnType<typeof useGetNearbyMarketsInfiniteQuery>,

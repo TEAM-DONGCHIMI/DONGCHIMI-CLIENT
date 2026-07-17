@@ -33,11 +33,7 @@ describe('useDaumPostcodeSearch', () => {
     const onSelectAddress = vi.fn();
 
     class Postcode {
-      constructor({
-        oncomplete,
-      }: {
-        oncomplete: (data: typeof postcodeData) => void;
-      }) {
+      constructor({ oncomplete }: { oncomplete: (data: typeof postcodeData) => void }) {
         oncomplete(postcodeData);
       }
 

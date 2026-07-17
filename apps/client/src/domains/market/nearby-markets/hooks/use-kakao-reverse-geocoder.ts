@@ -62,8 +62,7 @@ export const useKakaoReverseGeocoder = ({
 
       const [firstResult] = result;
       // 도로명 주소를 우선하고, 없으면 지번 주소를 사용합니다.
-      const address =
-        firstResult?.road_address?.address_name || firstResult?.address?.address_name;
+      const address = firstResult?.road_address?.address_name || firstResult?.address?.address_name;
 
       // 검색 실패, 결과 없음, 주소 텍스트가 비어 있으면 현재 위치 주소를 노출하지 않습니다.
       if (status !== okStatus || !address) {
@@ -87,9 +86,10 @@ export const useKakaoReverseGeocoder = ({
     resolved?.coordinates ?? null,
     coordinates,
   );
+  // 이전 좌표의 주소가 새 좌표 결과처럼 보이지 않도록 현재 coordinates와 일치할 때만 노출합니다.
+  const resolvedAddress = isResolvedForCurrentCoordinates ? resolved?.address : undefined;
 
   return {
-    // 이전 좌표의 주소가 새 좌표 결과처럼 보이지 않도록 현재 coordinates와 일치할 때만 반환합니다.
-    address: isResolvedForCurrentCoordinates ? (resolved?.address ?? null) : null,
+    address: resolvedAddress ?? null,
   };
 };
