@@ -18,6 +18,13 @@ import { useAuthStore } from '@/shared/stores/auth-store';
 import { confirmMarketInformationLeave } from './components';
 import * as S from './MarketInformationManagementPage.css';
 
+const MARKET_INFORMATION_UPDATE_TOAST_DURATION_MS = 1500;
+
+const waitForUpdateToast = () =>
+  new Promise<void>((resolve) => {
+    window.setTimeout(resolve, MARKET_INFORMATION_UPDATE_TOAST_DURATION_MS);
+  });
+
 const getMarketDetailErrorMessage = (error: unknown) => {
   if (isApiError(error)) {
     if (error.code === 'MARKET_ACCESS_DENIED') {
@@ -138,8 +145,10 @@ const MarketInformationManagementPageController = () => {
 
         reset();
         toast.completed('정보가 변경되었습니다.', {
+          durationMs: MARKET_INFORMATION_UPDATE_TOAST_DURATION_MS,
           id: 'market-information-management-completed',
         });
+        await waitForUpdateToast();
         shouldBypassLeaveConfirmationRef.current = true;
         navigate(MARKET_OWNER_ROUTES.home, { replace: true });
       }}

@@ -142,9 +142,11 @@ describe('MarketInformationManagementPage', () => {
 
     await waitFor(() => {
       expect(toastCompleted).toHaveBeenCalledWith('정보가 변경되었습니다.', {
+        durationMs: 1500,
         id: 'market-information-management-completed',
       });
     });
-    expect(await screen.findByText('홈 페이지')).toBeInTheDocument();
+    expect(screen.queryByText('홈 페이지')).not.toBeInTheDocument();
+    expect(await screen.findByText('홈 페이지', {}, { timeout: 2500 })).toBeInTheDocument();
   });
 });
