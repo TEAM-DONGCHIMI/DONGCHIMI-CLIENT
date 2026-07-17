@@ -31,15 +31,16 @@ export const sheetClassName = style({
   bottom: 0,
   left: '50%',
   width: '100%',
-  maxWidth: 'none',
+  maxWidth: 'var(--client-mobile-max-width)',
   minHeight: '43rem',
   margin: 0,
+  borderRadius: '2.6rem 2.6rem 0 0',
   boxShadow: 'none',
   transform: 'translate3d(-50%, 0, 0)',
   selectors: {
     '&&': {
       width: '100%',
-      maxWidth: 'none',
+      maxWidth: 'var(--client-mobile-max-width)',
     },
   },
 });
