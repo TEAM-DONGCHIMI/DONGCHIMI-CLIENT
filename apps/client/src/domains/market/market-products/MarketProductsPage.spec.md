@@ -79,7 +79,7 @@
 - 이미 사용한 `nextCursor`가 반환되면 반복 요청을 중단합니다.
 - observer의 연속 intersection은 진행 중인 다음 페이지 요청을 중복 실행하지 않습니다.
 - TanStack Query의 abort signal을 browser request와 upstream request에 전달합니다.
-- 설치 가능한 브라우저의 `홈 화면에 추가하기`는 사용자 제스처 안에서 네이티브 설치 prompt를 호출합니다.
+- 설치 안내 view는 네이티브 prompt를 호출하는 `홈 화면에 추가하기` 버튼을 노출하지 않습니다.
 - 설치 안내 본문은 브라우저 공유 메뉴의 `홈 화면에 추가`를 선택하는 수동 설치 경로를 함께 설명합니다.
 - 설치 안내의 `웹으로 계속 이용하기`는 sheet를 닫고 공유하기 trigger로 focus를 복원합니다.
 - 전단 공유 view는 footer 구분선과 `닫기` action을 제공하고, 닫힌 뒤 trigger로 focus를 복원합니다.

@@ -45,7 +45,7 @@
 - generated service worker files are ignored; source, config, manifest, offline route, and icon assets are committed.
 - app root의 `PwaInstallProvider`가 `beforeinstallprompt`를 보관하고 standalone/appinstalled 상태를 동기화합니다.
 - `/markets/[slug]` 공유 바텀시트의 `앱으로 전단보기`에서 Figma 설치 안내 시트로 전환합니다.
-- 지원 브라우저의 `홈 화면에 추가하기`는 보관한 네이티브 설치 프롬프트를 호출합니다.
+- 설치 안내 시트는 네이티브 prompt를 호출하는 `홈 화면에 추가하기` 버튼을 노출하지 않습니다.
 - prompt 미지원 또는 이미 설치된 환경에서도 디자인에 없는 앱 내부 후속 안내 view를 추가하지 않습니다.
 - 설치 안내 본문은 브라우저 공유 메뉴에서 `홈 화면에 추가`를 선택하는 수동 설치 경로를 함께 설명합니다.
 - secondary close action은 `웹으로 계속 이용하기`로 안내하고, 실행하면 설치 안내를 닫아 기존 웹 흐름을 이어갑니다.
@@ -111,12 +111,12 @@
 - [x] offline document navigation renders `/offline` after an online warm-up
 - [x] `/api/**`, OAuth, and user-specific responses do not appear in Cache Storage
 - [x] `/markets/[slug]` share sheet transitions to the Figma install guide
-- [x] simulated `beforeinstallprompt` is deferred until the install CTA and invoked once
+- [x] install guide does not expose a native install CTA even when `beforeinstallprompt` is available
 - [x] prompt-unavailable and installed states do not introduce an additional app-side install view
-- [x] install guide describes the browser share-menu path without changing the native prompt CTA
+- [x] install guide describes the browser share-menu path
 - [x] `웹으로 계속 이용하기` closes the install guide and restores focus to its trigger
 - [x] viewport and manifest theme colors use `common/0` (`#FFFFFF`)
-- [x] install guide matches `375 x 397` and has no horizontal overflow at 320px
+- [x] install guide uses a responsive `32.9rem` minimum height and has no horizontal overflow at 320px
 - [ ] Android Chrome and iOS Safari real-device installation smoke test
 
 ## Open Questions

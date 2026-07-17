@@ -583,7 +583,7 @@ describe('MarketProductsPage', () => {
     expect(shareTrigger).toHaveFocus();
   });
 
-  it('opens the native PWA install prompt from the leaflet share sheet', async () => {
+  it('does not expose a native install CTA when the install prompt is available', async () => {
     const user = userEvent.setup();
     const { event, prompt } = createBeforeInstallPromptEvent();
 
@@ -609,15 +609,13 @@ describe('MarketProductsPage', () => {
         name: '동치미 앱 아이콘이 표시된 홈 화면 예시',
       }),
     ).toBeVisible();
-
-    await user.click(within(installDialog).getByRole('button', { name: '홈 화면에 추가하기' }));
-
-    expect(prompt).toHaveBeenCalledTimes(1);
-    await waitFor(() => {
-      expect(
-        screen.queryByRole('dialog', { name: '홈 화면에 추가하기 안내' }),
-      ).not.toBeInTheDocument();
-    });
+    expect(
+      within(installDialog).queryByRole('button', { name: '홈 화면에 추가하기' }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(installDialog).getByRole('button', { name: '웹으로 계속 이용하기' }),
+    ).toBeVisible();
+    expect(prompt).not.toHaveBeenCalled();
   });
 
   it('shows the manual browser install path when the native prompt is unavailable', async () => {
@@ -637,8 +635,6 @@ describe('MarketProductsPage', () => {
     const installDialog = await screen.findByRole('dialog', {
       name: '홈 화면에 추가하기 안내',
     });
-
-    await user.click(within(installDialog).getByRole('button', { name: '홈 화면에 추가하기' }));
 
     expect(installDialog).toBeVisible();
     expect(
@@ -678,9 +674,10 @@ describe('MarketProductsPage', () => {
       name: '홈 화면에 추가하기 안내',
     });
 
-    await user.click(within(installDialog).getByRole('button', { name: '홈 화면에 추가하기' }));
-
     expect(installDialog).toBeVisible();
+    expect(
+      within(installDialog).queryByRole('button', { name: '홈 화면에 추가하기' }),
+    ).not.toBeInTheDocument();
     expect(within(installDialog).queryByText(/이미 홈 화면에 추가되어/)).toBeNull();
     expect(within(installDialog).queryByRole('button', { name: '확인' })).toBeNull();
   });

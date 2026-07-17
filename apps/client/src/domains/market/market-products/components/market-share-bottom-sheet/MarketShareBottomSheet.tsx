@@ -13,8 +13,6 @@ import {
 } from '@dongchimi/design-system/icons';
 import { ToastProvider, useToast, type ToastStatusTypes } from '@dongchimi/shared/toast';
 
-import { usePwaInstall } from '@/shared/pwa';
-
 import * as S from './MarketShareBottomSheet.css';
 import installGuideImage from './assets/pwa-install-guide.svg';
 
@@ -175,55 +173,29 @@ const MarketShareBottomSheetContent = ({
   );
 };
 
-interface PwaInstallGuideContentProps {
-  onClose: () => void;
-}
-
-const PwaInstallGuideContent = ({ onClose }: PwaInstallGuideContentProps) => {
-  const { requestInstall } = usePwaInstall();
-
-  const handleInstall = async () => {
-    const result = await requestInstall();
-
-    if (result === 'accepted' || result === 'dismissed') {
-      onClose();
-    }
-  };
-
-  return (
-    <>
-      <BottomSheet.Handle />
-      <BottomSheet.Title className={S.visuallyHiddenClassName}>
-        홈 화면에 추가하기 안내
-      </BottomSheet.Title>
-      <BottomSheet.Body className={S.installBodyClassName}>
-        <Image
-          alt='동치미 앱 아이콘이 표시된 홈 화면 예시'
-          className={S.installImageClassName}
-          height={177}
-          src={installGuideImage}
-          width={263}
-        />
-        <BottomSheet.Description className={S.installDescriptionClassName}>
-          브라우저의 공유 메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 편리하게 이용할 수 있어요.
-        </BottomSheet.Description>
-        <button
-          autoFocus
-          className={S.installButtonClassName}
-          onClick={() => {
-            void handleInstall();
-          }}
-          type='button'
-        >
-          홈 화면에 추가하기
-        </button>
-      </BottomSheet.Body>
-      <BottomSheet.Close className={S.installLaterButtonClassName}>
-        웹으로 계속 이용하기
-      </BottomSheet.Close>
-    </>
-  );
-};
+const PwaInstallGuideContent = () => (
+  <>
+    <BottomSheet.Handle />
+    <BottomSheet.Title className={S.visuallyHiddenClassName}>
+      홈 화면에 추가하기 안내
+    </BottomSheet.Title>
+    <BottomSheet.Body className={S.installBodyClassName}>
+      <Image
+        alt='동치미 앱 아이콘이 표시된 홈 화면 예시'
+        className={S.installImageClassName}
+        height={177}
+        src={installGuideImage}
+        width={263}
+      />
+      <BottomSheet.Description className={S.installDescriptionClassName}>
+        브라우저의 공유 메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 편리하게 이용할 수 있어요.
+      </BottomSheet.Description>
+    </BottomSheet.Body>
+    <BottomSheet.Close className={S.installLaterButtonClassName}>
+      웹으로 계속 이용하기
+    </BottomSheet.Close>
+  </>
+);
 
 export const MarketShareBottomSheet = ({
   marketName,
@@ -264,7 +236,7 @@ export const MarketShareBottomSheet = ({
               shareUrl={shareUrl}
             />
           ) : (
-            <PwaInstallGuideContent onClose={() => handleOpenChange(false)} />
+            <PwaInstallGuideContent />
           )}
         </ToastProvider>
       </BottomSheet.Content>
