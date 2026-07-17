@@ -2,18 +2,25 @@
 
 import { useEffect, useState } from 'react';
 
-type MapCoordinatesTypes = Readonly<{ lat: number; lng: number }>;
+import type { CoordinatesTypes } from '@/shared/hooks';
 
 type KakaoGeocoderResultTypes = Readonly<{
   x: string;
   y: string;
 }>;
 
-type ResolvedAddressCoordinatesTypes = Readonly<{
-  address: string;
-  coordinates: MapCoordinatesTypes;
+type KakaoCoord2AddressResultTypes = Readonly<{
+  address: Readonly<{ address_name: string }> | null;
+  road_address: Readonly<{ address_name: string }> | null;
 }>;
 
+type ResolvedAddressCoordinatesTypes = Readonly<{
+  address: string;
+  coordinates: CoordinatesTypes;
+}>;
+
+// Kakao Maps Geocoder 전역 타입입니다. 주소→좌표(addressSearch)와 좌표→주소(coord2Address)를
+// 모두 여기서 선언해, 두 geocoder hook이 같은 전역 타입을 공유하며 충돌하지 않게 합니다.
 declare global {
   interface Window {
     kakao?: {
@@ -23,6 +30,11 @@ declare global {
             addressSearch: (
               address: string,
               callback: (result: KakaoGeocoderResultTypes[], status: string) => void,
+            ) => void;
+            coord2Address: (
+              lng: number,
+              lat: number,
+              callback: (result: KakaoCoord2AddressResultTypes[], status: string) => void,
             ) => void;
           };
           Status: {
@@ -38,7 +50,7 @@ type UseKakaoAddressGeocoderOptionsTypes = Readonly<{
   // Daum 우편번호 검색에서 선택한 도로명/지번 주소입니다.
   address: string | null;
   // 변환된 좌표를 provider에 올려 목록/마커 query 기준 좌표로 쓰게 합니다.
-  onCoordinatesChange: (coordinates: MapCoordinatesTypes | null) => void;
+  onCoordinatesChange: (coordinates: CoordinatesTypes | null) => void;
   // Kakao SDK와 services 라이브러리가 준비됐는지 나타냅니다.
   ready: boolean;
 }>;

@@ -11,7 +11,7 @@ import type {
   UseGeolocationResultTypes,
 } from './use-geolocation.types';
 
-export type { GeolocationErrorCodeTypes } from './use-geolocation.types';
+export type { CoordinatesTypes, GeolocationErrorCodeTypes } from './use-geolocation.types';
 
 export const useGeolocation = ({
   enableHighAccuracy = true,
