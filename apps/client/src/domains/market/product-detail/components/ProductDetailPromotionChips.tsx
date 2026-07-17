@@ -20,7 +20,7 @@ const EventPeriodChip = ({ promotion }: EventPeriodChipProps) => {
   }
 
   return (
-    <Chip color='neutral' rounded={false} size='desktop' variant='subtle'>
+    <Chip color='neutral' rounded={false} size='mobile' variant='subtle'>
       {promotion.periodText}
     </Chip>
   );
@@ -32,7 +32,7 @@ export const ProductDetailPromotionChips = ({
 }: ProductDetailPromotionChipsProps) => {
   return (
     <div aria-label='상품 행사 정보' className={S.chipRowClassName} role='group'>
-      <Chip color='primary' size='desktop' variant='soft'>
+      <Chip color='primary' size='mobile' variant='soft'>
         {label}
       </Chip>
       <EventPeriodChip promotion={promotion} />
