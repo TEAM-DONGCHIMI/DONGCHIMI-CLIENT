@@ -67,7 +67,7 @@ describe('POST /api/auth/kakao/login', () => {
           {
             headers: {
               'Set-Cookie':
-                'refreshToken=refresh-token; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth/token/refresh',
+                'refresh_token=refresh-token; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth/token/refresh',
             },
           },
         );
@@ -91,6 +91,7 @@ describe('POST /api/auth/kakao/login', () => {
         expect.stringContaining('refreshToken=refresh-token'),
       ]),
     );
+    expect(setCookieHeaders.join(';')).not.toContain('refresh_token=refresh-token');
     expect(setCookieHeaders.join(';')).toContain('Path=/api/auth/token/refresh');
     expect(setCookieHeaders.join(';')).toContain('HttpOnly');
     expectOAuthCookiesToBeDeleted(response);

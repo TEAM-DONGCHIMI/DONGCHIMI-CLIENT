@@ -40,7 +40,7 @@
 ## Cookie Policy
 
 - `access_token`: 공통 auth cookie helper의 `HttpOnly`, production `Secure`, `SameSite=Lax`, `Path=/` 정책
-- `refreshToken`: upstream이 제공할 때만 공통 auth cookie helper가 수명 속성을 보존하고 `Path=/api/auth/token/refresh`로 정규화
+- `refreshToken`: upstream `refresh_token`을 공통 auth cookie helper가 browser cookie 이름으로 변환하고 수명 속성을 보존한 채 `Path=/api/auth/token/refresh`로 정규화
 - client component는 두 token을 읽거나 저장하지 않습니다.
 
 ## Error

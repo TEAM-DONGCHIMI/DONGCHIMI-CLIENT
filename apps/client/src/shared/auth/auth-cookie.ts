@@ -8,7 +8,7 @@ export const AUTH_COOKIE_NAMES = {
 } as const;
 
 export const UPSTREAM_AUTH_COOKIE_NAMES = {
-  refreshToken: 'RefreshToken',
+  refreshToken: 'refresh_token',
 } as const;
 
 const AUTH_COOKIE_PATHS = {
@@ -54,19 +54,20 @@ const getSetCookieHeaders = (headers: Headers) => {
 
 export const getRefreshTokenSetCookieHeaders = (headers: Headers) => {
   return getSetCookieHeaders(headers).filter((cookie) =>
-    new RegExp(`^${AUTH_COOKIE_NAMES.refreshToken}=`, 'i').test(cookie),
+    new RegExp(`^${UPSTREAM_AUTH_COOKIE_NAMES.refreshToken}=`, 'i').test(cookie),
   );
 };
 
 const rewriteRefreshTokenCookie = (setCookieHeader: string) => {
-  const preservedAttributes = setCookieHeader
+  const [upstreamCookie, ...attributes] = setCookieHeader
     .split(';')
-    .map((attribute) => attribute.trim())
-    .filter(
-      (attribute, index) =>
-        index === 0 || !/^(Domain|HttpOnly|Path|SameSite|Secure)(?:=|$)/i.test(attribute),
-    );
+    .map((attribute) => attribute.trim());
+  const refreshTokenValue = upstreamCookie.slice(upstreamCookie.indexOf('=') + 1);
+  const preservedAttributes = attributes.filter(
+    (attribute) => !/^(Domain|HttpOnly|Path|SameSite|Secure)(?:=|$)/i.test(attribute),
+  );
 
+  preservedAttributes.unshift(`${AUTH_COOKIE_NAMES.refreshToken}=${refreshTokenValue}`);
   preservedAttributes.push(`Path=${AUTH_COOKIE_PATHS.refresh}`, 'HttpOnly', 'SameSite=Lax');
 
   if (getSecureCookieOption()) {

@@ -34,7 +34,7 @@ describe('POST /api/auth/token/refresh', () => {
   it('refresh cookie로 token을 갱신하고 새 token을 HttpOnly cookie로 전달한다', async () => {
     server.use(
       http.post(`${API_BASE_URL}/v1/auth/token/refresh`, ({ request }) => {
-        expect(request.headers.get('cookie')).toBe('RefreshToken=old-refresh-token');
+        expect(request.headers.get('cookie')).toBe('refresh_token=old-refresh-token');
 
         return HttpResponse.json(
           {
@@ -46,7 +46,7 @@ describe('POST /api/auth/token/refresh', () => {
           {
             headers: {
               'Set-Cookie':
-                'refreshToken=new-refresh-token; HttpOnly; Secure; SameSite=Strict; Path=/v1/auth/token/refresh',
+                'refresh_token=new-refresh-token; HttpOnly; Secure; SameSite=Strict; Path=/v1/auth/token/refresh',
             },
           },
         );
@@ -70,6 +70,7 @@ describe('POST /api/auth/token/refresh', () => {
         expect.stringContaining('refreshToken=new-refresh-token'),
       ]),
     );
+    expect(setCookieHeaders.join(';')).not.toContain('refresh_token=new-refresh-token');
     expect(setCookieHeaders.join(';')).toContain('Path=/api/auth/token/refresh');
     expect(setCookieHeaders.join(';')).toContain('HttpOnly');
     expect(setCookieHeaders.join(';')).toContain('SameSite=Lax');

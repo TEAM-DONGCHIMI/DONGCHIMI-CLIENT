@@ -16,15 +16,16 @@
 
 - request body: 없음
 - browser request cookie: `refreshToken`
-- upstream request cookie: `RefreshToken`
+- upstream request cookie: `refresh_token`
 - success response: `{ success, code, message }`
 - upstream access token: `access_token` HttpOnly cookie로 변환
-- upstream refresh cookie: 안전한 cookie 속성과 BFF refresh route path로 다시 전달
+- upstream `refresh_token` cookie: browser `refreshToken` 이름과 안전한 BFF cookie 속성으로 변환
 
 ## Cookie Policy
 
 - `access_token`: `HttpOnly`, production `Secure`, `SameSite=Lax`, `Path=/`
 - `refreshToken`: `HttpOnly`, production `Secure`, `SameSite=Lax`, `Path=/api/auth/token/refresh`
+- BFF는 browser `refreshToken`과 upstream `refresh_token` 이름을 명시적으로 변환합니다.
 - upstream cookie의 `Expires`, `Max-Age` 등 수명 속성은 유지합니다.
 - 로그인 Route Handler와 동일한 auth cookie helper를 사용합니다.
 - client component는 두 token을 읽거나 저장하지 않습니다.
