@@ -188,7 +188,7 @@ const PwaInstallGuideContent = () => (
         width={263}
       />
       <BottomSheet.Description className={S.installDescriptionClassName}>
-        브라우저의 공유 메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 편리하게 이용할 수 있어요.
+        브라우저의 공유 메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 이용할 수 있어요.
       </BottomSheet.Description>
     </BottomSheet.Body>
     <BottomSheet.Close className={S.installLaterButtonClassName}>

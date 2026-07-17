@@ -639,7 +639,7 @@ describe('MarketProductsPage', () => {
     expect(installDialog).toBeVisible();
     expect(
       within(installDialog).getByText(
-        '브라우저의 공유 메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 편리하게 이용할 수 있어요.',
+        '브라우저의 공유 메뉴에서 ‘홈 화면에 추가’를 선택하면 앱처럼 이용할 수 있어요.',
       ),
     ).toBeVisible();
     expect(within(installDialog).queryByRole('button', { name: '확인' })).toBeNull();
