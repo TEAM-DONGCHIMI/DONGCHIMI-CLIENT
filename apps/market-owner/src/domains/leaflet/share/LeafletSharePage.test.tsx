@@ -365,6 +365,29 @@ describe('LeafletSharePage', () => {
     },
   );
 
+  it('keeps a single completed toast when the share link is copied repeatedly', async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    mockedPublishLeaflet.mockResolvedValueOnce({ slug: 'VQ6EAOKbQdSnFkRlVUQAAA' });
+    render(<LeafletSharePage />, { wrapper: createWrapper() });
+
+    await user.click(await screen.findByRole('button', { name: '전단 공유하기' }));
+
+    const copyButton = await screen.findByRole('button', { name: '링크 복사' });
+    await user.click(copyButton);
+    await user.click(copyButton);
+    await user.click(copyButton);
+
+    expect(writeText).toHaveBeenCalledTimes(3);
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('전단 링크가 복사되었습니다.');
+  });
+
   it('shows an error toast when the share link icon cannot use the clipboard', async () => {
     const user = userEvent.setup();
 
