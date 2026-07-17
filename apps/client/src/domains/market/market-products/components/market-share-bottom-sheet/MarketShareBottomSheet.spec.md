@@ -49,6 +49,7 @@
 - closed: 공유 view 하단의 `닫기` action을 누르면 sheet를 닫고 focus를 trigger로 복귀시킵니다.
 - copied: 링크 복사 fallback이 성공하면 bottom-center completed toast를 표시합니다.
 - pending: Kakao SDK 연동 전까지 카카오톡 공유를 누르면 bottom-center error toast로 `아직 준비중인 기능이에요.`를 표시합니다.
+- closed: 공유 view의 `닫기` action을 실행하면 sheet를 닫고 trigger로 focus를 복원합니다.
 - installGuide: `앱으로 전단보기`를 누르면 같은 modal context 안에서 설치 안내 view로 전환합니다.
 - installPrompt: prompt 지원 브라우저에서 `홈 화면에 추가하기`를 누르면 네이티브 설치 UI를 호출합니다.
 - promptUnavailable: prompt 미지원 또는 이미 설치된 환경에서도 첨부 디자인의 설치 안내 view를 유지하며 별도 앱 내부 후속 안내를 표시하지 않습니다.

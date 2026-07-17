@@ -113,7 +113,36 @@ describe('getMarketDetail', () => {
     expect(() => resolveMarketDetailResponse(response)).toThrow(ApiResponseValidationError);
   });
 
-  it('휴무일에는 open과 close를 허용하지 않는다', () => {
+  it.each([
+    {
+      businessHour: {
+        close: null,
+        days: ['SUNDAY'],
+        isOpen: false,
+        open: null,
+      },
+      fieldShape: 'null',
+    },
+    {
+      businessHour: {
+        days: ['SUNDAY'],
+        isOpen: false,
+      },
+      fieldShape: '생략',
+    },
+  ])('휴무일의 open과 close가 $fieldShape인 응답을 허용한다', ({ businessHour }) => {
+    const response = {
+      ...MARKET_DETAIL_API_RESPONSE_FIXTURE,
+      data: {
+        ...MARKET_DETAIL_API_RESPONSE_FIXTURE.data,
+        businessHours: [businessHour],
+      },
+    };
+
+    expect(resolveMarketDetailResponse(response).businessHours).toEqual([businessHour]);
+  });
+
+  it('휴무일에는 null이 아닌 open과 close를 허용하지 않는다', () => {
     const response = {
       ...MARKET_DETAIL_API_RESPONSE_FIXTURE,
       data: {

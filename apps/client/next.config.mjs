@@ -94,7 +94,7 @@ const nextConfig = {
 
     // `*.svg?url` is an explicit raw-asset request. Without this exclusion,
     // next-image-loader first turns the SVG into a JavaScript module and the
-    // asset/resource rule below emits that module again with an `.svg` suffix.
+    // asset module rule below emits that module again with an `.svg` suffix.
     nextImageResourceQuery.not.push(svgUrlResourceQuery);
 
     config.module.rules.push({
@@ -108,7 +108,15 @@ const nextConfig = {
       // tripping that `instanceof RegExp` check while still matching the
       // same files.
       test: (resourcePath) => /\.svg$/i.test(resourcePath),
-      type: 'asset/resource',
+      // Vanilla Extract does not emit this CSS-owned asset into Next's
+      // development media directory. Inline it in development so the CSS
+      // cannot reference a missing file; production keeps the emitted asset.
+      type: 'asset',
+      parser: {
+        dataUrlCondition: {
+          maxSize: dev ? Number.MAX_SAFE_INTEGER : 0,
+        },
+      },
       issuer: /\.css\.ts$/,
       resourceQuery: svgUrlResourceQuery,
     });

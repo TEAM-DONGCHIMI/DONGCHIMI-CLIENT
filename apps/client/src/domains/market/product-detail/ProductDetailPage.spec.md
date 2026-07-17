@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-10
+- Jira: DCMCL-10, DCMCL-37
 - Related Jira: DCMCL-13
 - Screen ID: APPJAM `1972:129194` `상품 상세_[오늘의 특가 상품]`, APPJAM `1972:129231` `상품 상세_[행사 할인 상품]`
 - Route: `/markets/[slug]/products/[productId]`
@@ -16,7 +16,8 @@
 
 ## Source Of Truth
 
-- Figma: APPJAM `1972:129194`, `1972:129231`
+- Figma: APPJAM `1972:129194`, `1972:129231` (기존 frame은 2026-07-17 기준 삭제됨)
+- 화면 설계서: `743:32731` 오늘의 특가, `751:32751` 행사 할인 상품
 - API: `GET /v1/users/markets/{marketId}/products/{productId}`
 - Related Jira: DCMCL-10, DCMCL-13
 
@@ -47,10 +48,16 @@
 
 - mobile header: 뒤로가기 button과 상품 유형 title
 - product image: viewport width 기준 정사각형 이미지 또는 fallback
-- product summary: 마트명, 행사 chip, 상품명, 가격
+- product summary: 마트명, mobile 행사 chip, 상품명, 가격
 - today special price: 할인율, 판매가, 원가 취소선 가격
 - event discount price: 행사 chip, 기간 chip, 판매가
 - mart comment card: 점장 한마디가 있을 때만 표시
+- today special chip: `오늘의 특가`
+- event discount chips: `행사 할인 품목`, `M.D ~ M.D`
+- product summary spacing: 마트명→행사 label `1.2rem`, 행사 label→상품명 `0.8rem`, 상품명→가격 `0.2rem`
+- promotion label chip: `soft`, `desktop`, `rounded=true`, `caption-1-regular` (`1.2rem`, `400`, `140%`, `-0.024rem`)
+- promotion period chip: `Assistive Light`(`neutral/subtle`), `desktop`, `rounded=false`, `caption-1-medium` (`1.2rem`, `500`, `140%`, `-0.024rem`)
+- mart comment card background: `atomic.neutral[5]`
 
 ## States
 
@@ -72,6 +79,7 @@
 - API 상태는 `status` 또는 `alert` live region으로 전달합니다.
 - 상품 이미지는 API 상품명을 포함한 대체 텍스트를 사용하고 fallback도 같은 의미를 숨김 텍스트로 제공합니다.
 - 상품명은 content section heading입니다.
+- 행사 정보 chip group은 텍스트 정보를 그대로 읽을 수 있는 비인터랙티브 `span`을 사용합니다.
 
 ## Responsive
 

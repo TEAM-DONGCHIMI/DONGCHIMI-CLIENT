@@ -126,6 +126,11 @@ export const marketMetaIconClassName = style({
   color: atomic.neutral[60],
 });
 
+globalStyle(`${marketMetaIconClassName} > svg`, {
+  width: '1.6rem',
+  height: '1.6rem',
+});
+
 export const marketMetaTextClassName = style({
   minWidth: 0,
   margin: 0,
@@ -401,7 +406,7 @@ export const todayProductNameClassName = style({
 export const todayProductPriceRowClassName = style({
   display: 'flex',
   minWidth: 0,
-  alignItems: 'baseline',
+  alignItems: 'center',
   gap: '0.4rem',
 });
 
@@ -412,7 +417,7 @@ export const todayProductDiscountedPriceClassName = style({
 });
 
 export const todayProductOriginalPriceClassName = style({
-  ...typography['caption-1-regular'],
+  ...typography['body-3-medium'],
   minWidth: 0,
   overflow: 'hidden',
   color: atomic.neutral[40],

@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21, DMCL-24, DCMCL-28, DCMCL-34, DCMCL-35
+- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21, DMCL-24, DCMCL-28, DCMCL-34, DCMCL-35, DCMCL-37
 - Figma: APPJAM, mobile web market leaflet flow
 - Route: `/markets/[slug]`
 - Owner: `apps/client`
@@ -29,6 +29,9 @@
 - `PopularProductsSection`: 조회수 기준 인기 상품 TOP3를 표시합니다.
 - `TodaySpecialProductsSection`: 오늘의 특가 API 상품을 기본 2개 표시하고 전체보기/접기를 제공합니다.
 - `EventDiscountProductsSection`: 행사 상품을 category chip과 3열 무한 목록으로 표시합니다.
+- 마트 정보 icon은 실제 `16 x 16`로 렌더링합니다.
+- 영업 종료 상태는 영업중과 구분되는 neutral subtle desktop chip을 `rounded=false`로 표시합니다.
+- 오늘의 특가 상품명은 `body-3-medium`, 취소선 원가는 `body-3-medium`으로 표시하고 가격 행은 세로 중앙 정렬합니다.
 
 ## API Contract
 
@@ -77,6 +80,7 @@
 - observer의 연속 intersection은 진행 중인 다음 페이지 요청을 중복 실행하지 않습니다.
 - TanStack Query의 abort signal을 browser request와 upstream request에 전달합니다.
 - 설치 가능한 브라우저의 `홈 화면에 추가하기`는 사용자 제스처 안에서 네이티브 설치 prompt를 호출합니다.
+- 전단 공유 view는 footer 구분선과 `닫기` action을 제공하고, 닫힌 뒤 trigger로 focus를 복원합니다.
 - 설치 prompt 지원 여부나 설치 상태에 따라 디자인에 없는 앱 내부 후속 안내 view를 추가하지 않습니다.
 - 내용이 없는 중간 페이지라도 `hasNext`가 true이면 최종 빈 상태로 확정하지 않습니다.
 - 각 페이지 grid는 `content-visibility: auto`로 화면 밖 렌더링 비용을 줄입니다.

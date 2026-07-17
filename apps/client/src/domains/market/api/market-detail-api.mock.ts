@@ -10,8 +10,10 @@ export const MARKET_DETAIL_API_RESPONSE_FIXTURE = {
         open: '13:00',
       },
       {
+        close: null,
         days: ['SUNDAY'],
         isOpen: false,
+        open: null,
       },
     ],
     isHolidayClosed: false,
