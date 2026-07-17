@@ -126,6 +126,11 @@ export const marketMetaIconClassName = style({
   color: atomic.neutral[60],
 });
 
+globalStyle(`${marketMetaIconClassName} > svg`, {
+  width: '1.6rem',
+  height: '1.6rem',
+});
+
 export const marketMetaTextClassName = style({
   minWidth: 0,
   margin: 0,
