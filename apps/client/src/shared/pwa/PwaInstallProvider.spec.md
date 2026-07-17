@@ -4,7 +4,7 @@
 
 - App: `client`
 - Path: `apps/client/src/shared/pwa/PwaInstallProvider.tsx`
-- Jira: DCMCL-28, DCMCL-34
+- Jira: DCMCL-28, DCMCL-34, DCMCL-42
 - Status: Implemented
 
 ## Purpose
@@ -19,7 +19,7 @@
 - `usePwaInstall()`:
   - `availability`: `prompt`, `unavailable`, `installed` 중 현재 상태입니다.
   - `requestInstall()`: 보관한 프롬프트를 한 번 호출하고 `accepted`, `dismissed`, `unavailable`, `already-installed` 결과를 반환합니다.
-- 제품 UI는 `requestInstall()`을 사용자 CTA에서 직접 호출하며, prompt 미지원 상태를 별도 앱 내부 설치 플로우로 확장하지 않습니다.
+- 소비 UI가 `requestInstall()`을 사용할 때는 사용자 CTA에서 직접 호출합니다. 현재 마트 설치 안내 view는 native install CTA를 노출하지 않고 브라우저 수동 설치 경로만 안내합니다.
 
 ## States
 

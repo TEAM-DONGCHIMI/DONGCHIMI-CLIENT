@@ -48,7 +48,7 @@ export const sheetClassName = style({
 export const installSheetClassName = style([
   sheetClassName,
   {
-    minHeight: '39.7rem',
+    minHeight: '32.9rem',
   },
 ]);
 
@@ -214,38 +214,12 @@ export const installDescriptionClassName = style({
   },
 });
 
-export const installButtonClassName = style({
-  ...typography['body-3-semibold'],
-  display: 'inline-flex',
-  width: 'min(26.3rem, 100%)',
-  minHeight: '4.4rem',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginTop: '2rem',
-  border: 0,
-  borderRadius: 8,
-  padding: '1.2rem 2rem',
-  backgroundColor: semantic.primary.normal,
-  color: atomic.common[0],
-  cursor: 'pointer',
-  selectors: {
-    '&:focus-visible': {
-      outline: `3px solid ${focusOutlineColor}`,
-      outlineOffset: 2,
-    },
-    '&:disabled': {
-      cursor: 'wait',
-      opacity: 0.7,
-    },
-  },
-});
-
 export const installLaterButtonClassName = style({
   selectors: {
     '&&': {
       ...typography['body-3-semibold'],
-      minHeight: '6.2rem',
-      padding: '1.6rem 2rem 2.6rem',
+      minHeight: '5.8rem',
+      padding: '1.2rem 2rem 2.6rem',
       color: atomic.neutral[50],
     },
   },

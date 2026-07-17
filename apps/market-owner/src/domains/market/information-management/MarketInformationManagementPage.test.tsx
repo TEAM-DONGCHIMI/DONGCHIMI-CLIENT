@@ -11,12 +11,14 @@ import { MarketInformationManagementPage } from './MarketInformationManagementPa
 
 const {
   authState,
+  searchMarketAddress,
   toastCompleted,
   updateOwnerMarket,
   useOwnerMarketDetailQuery,
   useUpdateOwnerMarketMutation,
 } = vi.hoisted(() => ({
   authState: { marketId: 12 as number | undefined },
+  searchMarketAddress: vi.fn(),
   toastCompleted: vi.fn(),
   updateOwnerMarket: vi.fn(),
   useOwnerMarketDetailQuery: vi.fn(),
@@ -32,15 +34,22 @@ vi.mock('@/domains/market/hooks', () => ({
   useUpdateOwnerMarketMutation,
 }));
 
+vi.mock('../information-registration/hooks', () => ({
+  useMarketAddressSearch: () => searchMarketAddress,
+}));
+
 vi.mock('@/domains/market/components/market-information-form', () => ({
   MarketInformationForm: ({
+    onAddressSearch,
     onDirtyChange,
     onSubmit,
   }: {
+    onAddressSearch: () => void;
     onDirtyChange: (isDirty: boolean) => void;
     onSubmit: (request: unknown, form: unknown, reset: () => void) => Promise<void>;
   }) => (
     <>
+      <button onClick={onAddressSearch}>주소 찾기</button>
       <button onClick={() => onDirtyChange(true)}>정보 변경</button>
       <button onClick={() => void onSubmit({}, {}, vi.fn())}>수정 완료</button>
     </>
@@ -81,6 +90,7 @@ const renderMarketInformationManagementPage = () => {
 describe('MarketInformationManagementPage', () => {
   beforeEach(() => {
     authState.marketId = 12;
+    searchMarketAddress.mockReset();
     toastCompleted.mockReset();
     updateOwnerMarket.mockReset();
     updateOwnerMarket.mockResolvedValue({ message: '서버 응답 메시지' });
@@ -95,6 +105,23 @@ describe('MarketInformationManagementPage', () => {
       isPending: false,
       mutateAsync: updateOwnerMarket,
     });
+  });
+
+  it('주소 찾기를 실행하면 마트 주소 검색을 호출한다', async () => {
+    const user = userEvent.setup();
+    useOwnerMarketDetailQuery.mockReturnValue({
+      data: {},
+      error: null,
+      isError: false,
+      isPending: false,
+      refetch: vi.fn(),
+    });
+
+    renderMarketInformationManagementPage();
+
+    await user.click(screen.getByRole('button', { name: '주소 찾기' }));
+
+    expect(searchMarketAddress).toHaveBeenCalledOnce();
   });
 
   it('marketId가 없으면 마트 정보 등록 페이지로 이동한다', async () => {
