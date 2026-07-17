@@ -11,28 +11,24 @@ import {
 } from 'react';
 
 import { useToast } from '@dongchimi/shared/toast';
-import { useDebouncedValue, useGeolocation } from '@/shared/hooks';
+import { type CoordinatesTypes, useDebouncedValue, useGeolocation } from '@/shared/hooks';
 
 import { useGetNearbyMarketMarkersQuery } from '../hooks/use-nearby-market-markers-query';
 import { useGetNearbyMarketsInfiniteQuery } from '../hooks/use-nearby-markets-infinite-query';
 import type { NearbyMarketDtoTypes } from '../model/nearby-markets-schema';
-import {
-  DEFAULT_LOCATION_ADDRESS_TEXT,
-  LOCATION_PERMISSION_DENIED_PLACEHOLDER,
-} from './NearbyMarketsPage.constants';
 import { useDaumPostcodeSearch } from './hooks/use-daum-postcode-search';
 import {
   filterVisibleNearbyMarkets,
   getPrioritizedVisibleNearbyMarkets,
 } from './utils/filter-visible-nearby-markets';
 import { flattenNearbyMarketsPages } from './utils/flatten-nearby-markets-pages';
+import { resolvePreferredCoordinates } from './utils/resolve-preferred-coordinates';
 
 const LOCATION_PERMISSION_ERROR_TOAST_ID = 'nearby-markets-location-permission-error';
 const POSTCODE_SEARCH_ERROR_TOAST_ID = 'nearby-markets-postcode-search-error';
 const POSTCODE_SEARCH_ERROR_MESSAGE = '우편번호 검색을 불러올 수 없어요';
 const LOCATION_PERMISSION_ERROR_MESSAGE = '위치 접근 허용에 실패했어요';
-
-type MapCoordinatesTypes = Readonly<{ lat: number; lng: number }>;
+const LOCATION_SEARCH_PLACEHOLDER = '현재 위치를 검색해주세요';
 
 type NearbyMarketsListQueryTypes = Pick<
   ReturnType<typeof useGetNearbyMarketsInfiniteQuery>,
@@ -41,11 +37,12 @@ type NearbyMarketsListQueryTypes = Pick<
 
 type NearbyMarketsClientContextValueTypes = Readonly<{
   map: {
-    coordinates: MapCoordinatesTypes | null;
+    coordinates: CoordinatesTypes | null;
     errorCode: ReturnType<typeof useGeolocation>['errorCode'];
     isMarketsError: boolean;
     markets: NearbyMarketDtoTypes[];
-    onSelectedCoordinatesChange: (coordinates: MapCoordinatesTypes | null) => void;
+    onCurrentLocationAddressChange: (address: string | null) => void;
+    onSelectedCoordinatesChange: (coordinates: CoordinatesTypes | null) => void;
     selectedMapAddress: string | null;
   };
   marketList: NearbyMarketsListQueryTypes & {
@@ -70,13 +67,13 @@ type NearbyMarketsClientProviderProps = Readonly<{
 export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientProviderProps) => {
   const toast = useToast();
   const [keyword, setKeyword] = useState('');
-  const [hasEditedKeyword, setHasEditedKeyword] = useState(false);
   const [selectedMapAddress, setSelectedMapAddress] = useState<string | null>(null);
-  const [selectedCoordinates, setSelectedCoordinates] = useState<MapCoordinatesTypes | null>(null);
+  const [selectedCoordinates, setSelectedCoordinates] = useState<CoordinatesTypes | null>(null);
+  // 위치 권한이 허용됐을 때 현재 위치를 역geocoding한 주소 텍스트입니다. 검색 input 기본 표시값으로만 사용합니다.
+  const [currentLocationAddress, setCurrentLocationAddress] = useState<string | null>(null);
   const debouncedKeyword = useDebouncedValue(keyword);
   const { coordinates, errorCode } = useGeolocation();
-  const shouldOpenPostcodeSearch = errorCode === 'PERMISSION_DENIED';
-  const searchCoordinates = selectedCoordinates ?? coordinates;
+  const searchCoordinates = resolvePreferredCoordinates(selectedCoordinates, coordinates);
   const marketSearchKeyword = selectedMapAddress == null ? debouncedKeyword : undefined;
   const nearbyMarketsParams = {
     lat: searchCoordinates?.lat,
@@ -132,7 +129,6 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
   ]);
 
   const handleKeywordChange = useCallback((value: string) => {
-    setHasEditedKeyword(true);
     setSelectedMapAddress(null);
     setSelectedCoordinates(null);
     setKeyword(value);
@@ -151,7 +147,6 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
 
   const handlePostcodeAddressSelect = useCallback(
     (address: { mapAddress: string; searchKeyword: string }) => {
-      setHasEditedKeyword(true);
       setSelectedMapAddress(address.mapAddress);
       setSelectedCoordinates(null);
       setKeyword(address.searchKeyword);
@@ -159,14 +154,12 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
     [],
   );
 
+  // 위치 권한 허용 여부와 관계없이 항상 우편번호 검색 모달로 검색합니다.
   const openPostcodeSearch = useDaumPostcodeSearch({
-    enabled: shouldOpenPostcodeSearch,
+    enabled: true,
     onError: handlePostcodeSearchError,
     onSelectAddress: handlePostcodeAddressSelect,
   });
-
-  const displayValue =
-    !hasEditedKeyword && coordinates != null ? DEFAULT_LOCATION_ADDRESS_TEXT : keyword;
 
   const mapValue = useMemo<NearbyMarketsClientContextValueTypes['map']>(
     () => ({
@@ -174,6 +167,7 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
       errorCode,
       isMarketsError: isMarkerMarketsError,
       markets: mapMarkets,
+      onCurrentLocationAddressChange: setCurrentLocationAddress,
       onSelectedCoordinatesChange: setSelectedCoordinates,
       selectedMapAddress,
     }),
@@ -203,15 +197,19 @@ export const NearbyMarketsClientProvider = ({ children }: NearbyMarketsClientPro
     ],
   );
 
+  // 우편번호 검색으로 고른 주소(keyword)가 있으면 그 텍스트를 우선하고,
+  // 없을 때만 위치 권한이 허용된 경우의 현재 위치 주소 텍스트를 그대로 보여줍니다.
+  const displayKeyword = keyword || currentLocationAddress || '';
+
   const searchValue = useMemo<NearbyMarketsClientContextValueTypes['search']>(
     () => ({
-      keyword: displayValue,
-      onKeywordClick: shouldOpenPostcodeSearch ? openPostcodeSearch : undefined,
+      keyword: displayKeyword,
+      onKeywordClick: openPostcodeSearch,
       onKeywordChange: handleKeywordChange,
-      placeholder: LOCATION_PERMISSION_DENIED_PLACEHOLDER,
-      readOnly: shouldOpenPostcodeSearch,
+      placeholder: LOCATION_SEARCH_PLACEHOLDER,
+      readOnly: true,
     }),
-    [displayValue, handleKeywordChange, openPostcodeSearch, shouldOpenPostcodeSearch],
+    [displayKeyword, handleKeywordChange, openPostcodeSearch],
   );
 
   const contextValue = useMemo<NearbyMarketsClientContextValueTypes>(

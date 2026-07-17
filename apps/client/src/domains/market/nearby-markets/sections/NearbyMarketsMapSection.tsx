@@ -9,6 +9,8 @@ import type { GeolocationErrorCodeTypes } from '@/shared/hooks';
 import { useNearbyMarketsMap } from '../NearbyMarketsClientProvider';
 import * as S from '../NearbyMarketsPage.css';
 import { useKakaoAddressGeocoder } from '../hooks/use-kakao-address-geocoder';
+import { useKakaoReverseGeocoder } from '../hooks/use-kakao-reverse-geocoder';
+import { resolvePreferredCoordinates } from '../utils/resolve-preferred-coordinates';
 import {
   ADDRESS_SEARCH_ERROR_MESSAGE,
   CURRENT_LOCATION_ARIA_LABEL,
@@ -21,7 +23,6 @@ import {
   MAP_ZOOM_LEVEL,
   PERMISSION_DENIED_MESSAGE,
   SELECTED_LOCATION_ARIA_LABEL,
-  SELECTED_LOCATION_MARKER_IMAGE,
 } from './NearbyMarketsMapSection.constants';
 
 const resolveStatusMessage = (
@@ -46,6 +47,7 @@ export const NearbyMarketsMapSection = () => {
     errorCode,
     isMarketsError,
     markets,
+    onCurrentLocationAddressChange,
     onSelectedCoordinatesChange,
     selectedMapAddress,
   } = useNearbyMarketsMap();
@@ -61,6 +63,12 @@ export const NearbyMarketsMapSection = () => {
       onCoordinatesChange: onSelectedCoordinatesChange,
       ready: !loading && !error,
     });
+  // 위치 권한이 허용된 현재 위치 좌표를 주소 텍스트로 바꿔 검색 input 기본 표시값으로 올립니다.
+  useKakaoReverseGeocoder({
+    coordinates,
+    onAddressChange: onCurrentLocationAddressChange,
+    ready: !loading && !error,
+  });
 
   // 선택된 마트 핀의 정보창을 열기 위한 상태입니다.
   const [selectedMarketId, setSelectedMarketId] = useState<number | null>(null);
@@ -87,8 +95,10 @@ export const NearbyMarketsMapSection = () => {
   // 선택된 마트 id와 실제 마트 데이터를 연결해 정보창 위치/이름을 만듭니다.
   const selectedMarket = markets.find((market) => market.marketId === selectedMarketId) ?? null;
   const statusMessage = resolveStatusMessage(errorCode, isMarketsError);
-  // 주소 검색 좌표가 있으면 지도 중심은 검색 위치를 우선하고, 없을 때만 현위치를 사용합니다.
-  const center = selectedCoordinates ?? coordinates ?? DEFAULT_CENTER;
+  // 검색 위치가 있으면 검색 위치를, 없으면 현재 위치를 지도 중심/마커 기준으로 사용합니다.
+  // provider의 목록/마커 조회 기준 좌표와 같은 규칙(resolvePreferredCoordinates)을 공유합니다.
+  const activeCoordinates = resolvePreferredCoordinates(selectedCoordinates, coordinates);
+  const center = activeCoordinates ?? DEFAULT_CENTER;
 
   return (
     <section aria-label={MAP_SECTION_ARIA_LABEL} className={S.mapSectionClassName}>
@@ -98,16 +108,13 @@ export const NearbyMarketsMapSection = () => {
         level={MAP_ZOOM_LEVEL}
         onClick={() => setSelectedMarketId(null)}
       >
-        {/* 검색 주소 위치 마커입니다. */}
-        {selectedCoordinates && (
+        {/* 위치 마커입니다. 검색한 위치가 있으면 검색 위치를, 없으면 현재 위치를 표시합니다. 항상 Kakao Maps 기본 마커를 사용합니다. */}
+        {activeCoordinates && (
           <MapMarker
-            image={SELECTED_LOCATION_MARKER_IMAGE}
-            position={selectedCoordinates}
-            title={SELECTED_LOCATION_ARIA_LABEL}
+            position={activeCoordinates}
+            title={selectedCoordinates ? SELECTED_LOCATION_ARIA_LABEL : CURRENT_LOCATION_ARIA_LABEL}
           />
         )}
-        {/* 현재 위치 마커입니다. Kakao Maps 기본 마커를 사용합니다. */}
-        {coordinates && <MapMarker position={coordinates} title={CURRENT_LOCATION_ARIA_LABEL} />}
 
         {/* 주변 마트 마커입니다. 현재 위치/검색 위치 마커와 다른 이미지를 사용합니다. */}
         {markets.map((market) => (
