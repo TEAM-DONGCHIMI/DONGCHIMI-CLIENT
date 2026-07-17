@@ -13,13 +13,6 @@ export const MAP_LOADING_MESSAGE = '지도를 불러오는 중이에요';
 export const LOAD_ERROR_MESSAGE = '마트를 불러올 수 없어요';
 export const PERMISSION_DENIED_MESSAGE = '위치 검색 결과를 기준으로 마트를 보여드릴게요';
 
-const SELECTED_LOCATION_MARKER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M12 22s7-6.04 7-12a7 7 0 1 0-14 0c0 5.96 7 12 7 12Z" fill="#2563EB" stroke="#FFFFFF" stroke-width="2"/><circle cx="12" cy="10" r="2.6" fill="#FFFFFF"/></svg>`;
-
-export const SELECTED_LOCATION_MARKER_IMAGE = {
-  src: `data:image/svg+xml;utf8,${encodeURIComponent(SELECTED_LOCATION_MARKER_SVG)}`,
-  size: { width: 24, height: 24 },
-};
-
 export const MARKET_MARKER_IMAGE = {
   src: '/images/img_map.svg',
   size: { width: 72, height: 72 },

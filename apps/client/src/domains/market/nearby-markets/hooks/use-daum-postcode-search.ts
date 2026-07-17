@@ -3,12 +3,10 @@
 import { useCallback, useEffect } from 'react';
 
 type DaumPostcodeCompleteDataTypes = Readonly<{
+  // 사용자가 선택한 유형(도로명/지번)에 맞춰 Daum이 골라주는 기본 주소입니다. input 표시값으로 그대로 사용합니다.
   address: string;
-  bname: string;
   jibunAddress: string;
   roadAddress: string;
-  sido: string;
-  sigungu: string;
 }>;
 
 type DaumPostcodeConstructorTypes = new (options: {
@@ -34,16 +32,6 @@ let daumPostcodeScriptPromise: Promise<void> | null = null;
 // onError가 없을 때 promise rejection을 삼키기 위한 기본 handler입니다.
 const noop = (error: Error) => {
   void error;
-};
-
-// input에 표시할 "00시 00구 00동" 형태의 행정동 검색어를 Daum 응답에서 만듭니다.
-export const formatDaumPostcodeAdministrativeAddress = ({
-  address,
-  bname,
-  sido,
-  sigungu,
-}: DaumPostcodeCompleteDataTypes) => {
-  return [sido, sigungu, bname].filter(Boolean).join(' ') || address;
 };
 
 // Kakao geocoder에 넘길 지도 좌표 변환용 주소를 고릅니다.
@@ -107,7 +95,7 @@ type UseDaumPostcodeSearchOptionsTypes = Readonly<{
   onSelectAddress: (address: { mapAddress: string; searchKeyword: string }) => void;
 }>;
 
-// 위치 권한 미허용 상태에서 Daum 우편번호 검색 팝업을 열 수 있는 click handler를 만듭니다.
+// 위치 권한 허용 여부와 관계없이 input 클릭 시 Daum 우편번호 검색 팝업을 열 수 있는 click handler를 만듭니다.
 export const useDaumPostcodeSearch = ({
   enabled,
   onError,
@@ -118,13 +106,12 @@ export const useDaumPostcodeSearch = ({
       return;
     }
 
-    // 위치 권한 거부 상태에서는 첫 클릭 전에 script를 미리 로드합니다.
+    // 첫 클릭 전에 script를 미리 로드해둡니다.
     void loadDaumPostcodeScript().catch(onError ?? noop);
   }, [enabled, onError]);
 
   // input 클릭 시 실행되는 함수입니다.
   return useCallback(() => {
-    // 권한 허용 상태에서는 기존 자동 위치 플로우를 유지하기 위해 아무 일도 하지 않습니다.
     if (!enabled) {
       return;
     }
@@ -143,12 +130,12 @@ export const useDaumPostcodeSearch = ({
 
         new Postcode({
           oncomplete: (data) => {
-            // input에는 행정동 검색어를 보여줍니다.
             onSelectAddress({
               // 지도에는 geocoder에 적합한 주소를 따로 넘깁니다.
               mapAddress: resolveDaumPostcodeMapAddress(data),
-              // 검색 결과 선택 후 input에 노출할 표시값입니다.
-              searchKeyword: formatDaumPostcodeAdministrativeAddress(data),
+              // input에는 사용자가 클릭한 주소 텍스트를 그대로 보여줍니다. Daum이 선택된 유형(도로명/지번)에
+              // 맞춰 반환하는 기본 address 값을 그대로 사용합니다.
+              searchKeyword: data.address,
             });
           },
         }).open();
