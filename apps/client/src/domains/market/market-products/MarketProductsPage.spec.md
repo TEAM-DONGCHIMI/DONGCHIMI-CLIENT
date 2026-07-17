@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21, DMCL-24, DCMCL-28, DCMCL-34
+- Jira: DCMCL-9, DCMCL-18, DCMCL-20, DCMCL-21, DMCL-24, DCMCL-28, DCMCL-34, DCMCL-35
 - Figma: APPJAM, mobile web market leaflet flow
 - Route: `/markets/[slug]`
 - Owner: `apps/client`
@@ -19,6 +19,7 @@
 - 행사 상품은 전체 또는 서버 `ProductCategory` enum별 cursor pagination을 사용합니다.
 - 상품 카드는 `/markets/[slug]/products/[productId]`로 이동합니다.
 - 공유하기는 `MarketShareBottomSheet`를 재사용하고, 공유 시트의 `앱으로 전단보기`는 PWA 설치 안내 시트로 전환합니다.
+- 전단 공유 링크는 운영 canonical origin인 `https://app.dongchiimi.com`과 현재 마트 route를 조합합니다.
 - 전화걸기는 확인 modal 후 `tel:` URL로 이동합니다.
 
 ## Layout And Sections
@@ -85,6 +86,9 @@
 - 오늘의 특가 상품에서 돌아오면 저장한 전체보기 펼침 상태를 먼저 적용해 클릭 상품 anchor를 다시 렌더링합니다.
 - 행사 할인 상품에서 돌아오면 저장한 category와 category 더보기 상태를 먼저 적용합니다.
 - 행사 할인 category 복원은 동일한 `marketId + category` query key를 다시 사용하므로 TanStack Query가 보유한 무한 목록 `pages/pageParams`를 그대로 렌더링합니다.
+- 인기 상품과 오늘의 특가 상품의 할인율이 `0` 이하이면 할인율 chip을 렌더링하지 않습니다.
+- 행사 할인 상품 영역은 한 행의 최소 높이를 예약하고, category 전환 요청 중에는 직전 상품 영역의 높이를 유지해 loading 문구로 교체될 때의 일시적인 layout shift를 방지합니다.
+- category 응답이 도착하면 직전 높이 예약을 해제하고 새 상품 수에 맞는 자연 높이를 사용합니다.
 - 행사 할인 무한 목록의 비활성 캐시는 상세 탐색 시간을 고려해 30분 동안 유지합니다.
 - 저장한 목록 history entry가 다시 활성화됐을 때만 snapshot을 복원하며 일반적인 목록 신규 진입에서는 과거 상태를 적용하지 않습니다.
 - Next App Router가 목록 컴포넌트를 재사용하는 경우에도 `popstate`를 구독해 snapshot을 React 상태로 반영합니다.
