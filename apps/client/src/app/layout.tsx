@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { Analytics } from '@vercel/analytics/next';
 import '@dongchimi/design-system/styles/reset.css';
 import '@dongchimi/design-system/styles/fonts.css';
 import './globals.css';
@@ -79,6 +80,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
         <div className='client-app-shell'>
           <AppProviders>{children}</AppProviders>
         </div>
+        <Analytics />
       </body>
     </html>
   );
