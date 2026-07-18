@@ -25,6 +25,7 @@
     "@tanstack/react-query": "catalog:",
     "@vanilla-extract/css": "catalog:",
     "@vanilla-extract/recipes": "catalog:",
+    "@vercel/analytics": "catalog:",
     "ky": "catalog:",
     "next": "catalog:",
     "overlay-kit": "1.9.0",
