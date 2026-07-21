@@ -5,39 +5,27 @@
 
 <br/>
 
-  <p>
-    <a href="https://www.typescriptlang.org/">
-      <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white" />
-    </a>
-    <a href="https://nextjs.org/">
-      <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white" />
-    </a>
-    <a href="https://react.dev/">
-      <img alt="React" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white" />
-    </a>
-    <a href="https://pnpm.io/ko/">
-      <img alt="pnpm" src="https://img.shields.io/badge/pnpm-11.7-F69220?logo=pnpm&logoColor=white" />
-    </a>
-    <a href="https://turborepo.com/">
-      <img alt="Turborepo" src="https://img.shields.io/badge/Turborepo-2.9-EF4444?logo=turborepo&logoColor=white" />
-    </a>
-    <a href="https://vercel.com/">
-      <img alt="Vercel" src="https://img.shields.io/badge/Vercel-CD-000000?logo=vercel&logoColor=white" />
-    </a>
-  </p>
+<p>
+  <a href="https://www.typescriptlang.org/"><img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white" /></a>
+  <a href="https://nextjs.org/"><img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white" /></a>
+  <a href="https://react.dev/"><img alt="React" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white" /></a>
+  <a href="https://pnpm.io/ko/"><img alt="pnpm" src="https://img.shields.io/badge/pnpm-11.7-F69220?logo=pnpm&logoColor=white" /></a>
+  <a href="https://turborepo.com/"><img alt="Turborepo" src="https://img.shields.io/badge/Turborepo-2.9-EF4444?logo=turborepo&logoColor=white" /></a>
+  <a href="https://vercel.com/"><img alt="Vercel" src="https://img.shields.io/badge/Vercel-CD-000000?logo=vercel&logoColor=white" /></a>
+</p>
 
   <p>
     <a href="#service">Service</a>
     ·
-    <a href="#workspace">Workspace</a>
-    ·
     <a href="#team">Team</a>
+    ·
+    <a href="#workspace">Workspace</a>
     ·
     <a href="#tech-stack">Tech Stack</a>
     ·
-    <a href="#convention">Convention</a>
-    ·
     <a href="#documents">Documents</a>
+    ·
+    <a href="#convention">Convention</a>
   </p>
 </div>
 
@@ -66,9 +54,11 @@
 <img width="5760" height="3240" alt="33768" src="https://github.com/user-attachments/assets/f6033d83-227c-4b83-b1a4-854e6edd3c93" />
 <img width="5760" height="3240" alt="33767" src="https://github.com/user-attachments/assets/77cd4872-393f-4071-8f87-2f53ff62f121" />
 
+<br />
+<br />
 
-
-## Web Developers
+## Team
+#### DONCHIMI Web Developers
 
 <table>
   <tr>
@@ -82,8 +72,6 @@
         <br />
         <strong>장민수</strong>
       </a>
-      <br />
-      <sub>@Tnalxmsk</sub>
     </td>
     <td align="center" width="20%">
       <a href="https://github.com/soyyyyy">
@@ -95,8 +83,6 @@
         <br />
         <strong>박소이</strong>
       </a>
-      <br />
-      <sub>@soyyyyy</sub>
     </td>
     <td align="center" width="20%">
       <a href="https://github.com/chaewon41">
@@ -108,8 +94,6 @@
         <br />
         <strong>이채원</strong>
       </a>
-      <br />
-      <sub>@chaewon41</sub>
     </td>
     <td align="center" width="20%">
       <a href="https://github.com/hdg0116">
@@ -121,8 +105,6 @@
         <br />
         <strong>한다경</strong>
       </a>
-      <br />
-      <sub>@hdg0116</sub>
     </td>
     <td align="center" width="20%">
       <a href="https://github.com/Navi-Up">
@@ -134,8 +116,6 @@
         <br />
         <strong>이현종</strong>
       </a>
-      <br />
-      <sub>@Navi-Up</sub>
     </td>
   </tr>
 </table>
@@ -199,67 +179,47 @@ flowchart LR
 
 ## Tech Stack
 
-| 역할 | 기술 |
-| --- | --- |
-| Language | <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" /> |
-| Monorepo | <img alt="pnpm" src="https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white" /> <img alt="Turborepo" src="https://img.shields.io/badge/Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white" /> |
-| Customer UI | <img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" /> |
-| Market Owner UI | <img alt="React" src="https://img.shields.io/badge/React-149ECA?style=for-the-badge&logo=react&logoColor=white" /> <img alt="React Router" src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white" /> |
-| Network | <img alt="ky" src="https://img.shields.io/badge/ky-2F2F2F?style=for-the-badge" /> |
-| Server State | <img alt="TanStack Query" src="https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white" /> |
-| Client State | <img alt="Zustand" src="https://img.shields.io/badge/Zustand-443E38?style=for-the-badge" /> |
-| Form | <img alt="React Hook Form" src="https://img.shields.io/badge/React_Hook_Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white" /> |
-| Validation | <img alt="Zod" src="https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge&logo=zod&logoColor=white" /> |
-| Styling | <img alt="vanilla-extract" src="https://img.shields.io/badge/vanilla--extract-DB7093?style=for-the-badge" /> |
-| API Schema | <img alt="openapi-typescript" src="https://img.shields.io/badge/openapi--typescript-6BA539?style=for-the-badge&logo=openapiinitiative&logoColor=white" /> |
-| Code Quality | <img alt="ESLint" src="https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" /> <img alt="Prettier" src="https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black" /> <img alt="Husky" src="https://img.shields.io/badge/Husky-42B883?style=for-the-badge" /> |
-| Testing | <img alt="Vitest" src="https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white" /> <img alt="Testing Library" src="https://img.shields.io/badge/Testing_Library-E33332?style=for-the-badge&logo=testinglibrary&logoColor=white" /> <img alt="MSW" src="https://img.shields.io/badge/MSW-FF6A33?style=for-the-badge&logo=mockserviceworker&logoColor=white" /> |
-| E2E | <img alt="Playwright" src="https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white" /> |
-| Component Docs | <img alt="Storybook" src="https://img.shields.io/badge/Storybook-FF4785?style=for-the-badge&logo=storybook&logoColor=white" /> <img alt="Chromatic" src="https://img.shields.io/badge/Chromatic-FF3A00?style=for-the-badge&logo=chromatic&logoColor=white" /> |
-| CI/CD | <img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" /> <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" /> |
-| Monitoring | <img alt="Sentry" src="https://img.shields.io/badge/Sentry-362D59?style=for-the-badge&logo=sentry&logoColor=white" /> |
-| Analytics | <img alt="Google Analytics" src="https://img.shields.io/badge/Google_Analytics-E37400?style=for-the-badge&logo=googleanalytics&logoColor=white" /> <img alt="Amplitude" src="https://img.shields.io/badge/Amplitude-005FF9?style=for-the-badge&logo=amplitude&logoColor=white" /> |
+Status는 현재 `develop`의 추적 파일과 팀 기술 결정 방향을 함께 반영합니다.
 
-<br />
 
 ### Core
 
-| Label                                                                                                                                                                                                                                               | Category     | Selection                                                         | Status | Why                                                                   |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------- | ------ | --------------------------------------------------------------------- |
-| <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white" />                                                                                                                 | Language     | [TypeScript](https://www.typescriptlang.org/)                     | 적용   | 앱, package, config 전반에서 타입 안정성을 기본값으로 둡니다.         |
-| <img alt="pnpm" src="https://img.shields.io/badge/pnpm-11.7-F69220?style=flat-square&logo=pnpm&logoColor=white" /> <img alt="Turborepo" src="https://img.shields.io/badge/Turborepo-2.9-EF4444?style=flat-square&logo=turborepo&logoColor=white" /> | Monorepo     | [pnpm](https://pnpm.io/ko/) + [Turborepo](https://turborepo.com/) | 적용   | workspace dependency, task cache, generator를 repo 단위로 관리합니다. |
-| <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white" />                                                                                                                         | 고객 UI      | [Next.js](https://nextjs.org/) App Router                         | 적용   | 고객 웹은 라우팅, 빌드, 배포 최적화가 필요한 제품 앱입니다.           |
-| <img alt="React" src="https://img.shields.io/badge/React-19-149ECA?style=flat-square&logo=react&logoColor=white" />                                                                                                                                 | 사장님 UI    | [React](https://react.dev/) SPA                                   | 적용   | 별도 제품 컨벤션이 없는 사장님 웹을 가볍고 명확하게 시작합니다.       |
-| <img alt="React Router" src="https://img.shields.io/badge/React_Router-7-CA4245?style=flat-square&logo=reactrouter&logoColor=white" />                                                                                                              | 사장님 Route | [React Router](https://reactrouter.com/)                          | 적용   | React SPA 안에서 명시적인 route config와 fallback route를 관리합니다. |
+| Label | Category | Selection | Status | Why |
+| --- | --- | --- | --- | --- |
+| <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" /> | Language | [TypeScript](https://www.typescriptlang.org/) | 적용 | 앱, package, config 전반에서 타입 안정성을 기본값으로 둡니다. |
+| <img alt="pnpm" src="https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white" /> <img alt="Turborepo" src="https://img.shields.io/badge/Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white" /> | Monorepo | [pnpm](https://pnpm.io/ko/) + [Turborepo](https://turborepo.com/) | 적용 | workspace dependency, task cache, generator를 repo 단위로 관리합니다. |
+| <img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" /> | 고객 UI | [Next.js](https://nextjs.org/) App Router | 적용 | 고객 웹은 라우팅, 빌드, 배포 최적화가 필요한 제품 앱입니다. |
+| <img alt="React" src="https://img.shields.io/badge/React-149ECA?style=for-the-badge&logo=react&logoColor=white" /> | 사장님 UI | [React](https://react.dev/) SPA | 적용 | 별도 제품 컨벤션이 없는 사장님 웹을 가볍고 명확하게 시작합니다. |
+| <img alt="React Router" src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white" /> | 사장님 Route | [React Router](https://reactrouter.com/) | 적용 | React SPA 안에서 명시적인 route config와 fallback route를 관리합니다. |
 
 <br />
 
 ### Product Foundation
 
-| Label                                                                                                                                                          | Category      | Selection                                           | Status    | Why                                                                      |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------- | --------- | ------------------------------------------------------------------------ |
-| <img alt="ky" src="https://img.shields.io/badge/ky-2.0-2F2F2F?style=flat-square" />                                                                            | Network       | [ky](https://github.com/sindresorhus/ky#readme)     | 적용      | 작은 API wrapper로 timeout, error normalization, JSON 응답을 통일합니다. |
-| <img alt="TanStack Query" src="https://img.shields.io/badge/TanStack_Query-5-FF4154?style=flat-square&logo=reactquery&logoColor=white" />                      | Server State  | [TanStack Query](https://tanstack.com/query/latest) | 적용      | 서버 캐시, loading/error 상태, refetch 정책을 앱 표준으로 둡니다.        |
-| <img alt="Zustand" src="https://img.shields.io/badge/Zustand-state-443E38?style=flat-square" />                                                                | Client State  | [Zustand](https://zustand-demo.pmnd.rs/)            | 결정      | 전역 UI/client state가 필요할 때 작은 store 단위로 분리합니다.           |
-| <img alt="React Hook Form" src="https://img.shields.io/badge/React_Hook_Form-form-EC5990?style=flat-square&logo=reacthookform&logoColor=white" />              | Form          | [React Hook Form](https://react-hook-form.com/)     | 결정      | form state와 validation 결합 비용을 줄입니다.                            |
-| <img alt="Zod" src="https://img.shields.io/badge/Zod-validation-3E67B1?style=flat-square&logo=zod&logoColor=white" />                                          | Validation    | [Zod](https://zod.dev/)                             | 결정      | TypeScript와 함께 runtime schema와 form validation을 공유합니다.         |
-| <img alt="vanilla-extract" src="https://img.shields.io/badge/vanilla--extract-styling-DB7093?style=flat-square" />                                             | Styling       | [vanilla-extract](https://vanilla-extract.style/)   | 결정      | 디자인 시스템 적용을 위해 type-safe CSS와 정적 추출을 우선합니다.        |
-| <img alt="Design System" src="https://img.shields.io/badge/Design_System-custom-111827?style=flat-square" />                                                   | Design System | 직접 구현                                           | 기본 적용 | `packages/design-system`에서 공통 컴포넌트와 스타일 계약을 관리합니다.   |
-| <img alt="openapi-typescript" src="https://img.shields.io/badge/openapi--typescript-schema-6BA539?style=flat-square&logo=openapiinitiative&logoColor=white" /> | API Schema    | [openapi-typescript](https://openapi-ts.dev/)       | 후속      | API contract가 안정되면 타입 생성으로 client drift를 줄입니다.           |
+| Label | Category | Selection | Status | Why |
+| --- | --- | --- | --- | --- |
+| <img alt="ky" src="https://img.shields.io/badge/ky-2F2F2F?style=for-the-badge" /> | Network | [ky](https://github.com/sindresorhus/ky#readme) | 적용 | 작은 API wrapper로 timeout, error normalization, JSON 응답을 통일합니다. |
+| <img alt="TanStack Query" src="https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white" /> | Server State | [TanStack Query](https://tanstack.com/query/latest) | 적용 | 서버 캐시, loading/error 상태, refetch 정책을 앱 표준으로 둡니다. |
+| <img alt="Zustand" src="https://img.shields.io/badge/Zustand-443E38?style=for-the-badge" /> | Client State | [Zustand](https://zustand-demo.pmnd.rs/) | 결정 | 전역 UI/client state가 필요할 때 작은 store 단위로 분리합니다. |
+| <img alt="React Hook Form" src="https://img.shields.io/badge/React_Hook_Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white" /> | Form | [React Hook Form](https://react-hook-form.com/) | 결정 | form state와 validation 결합 비용을 줄입니다. |
+| <img alt="Zod" src="https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge&logo=zod&logoColor=white" /> | Validation | [Zod](https://zod.dev/) | 결정 | TypeScript와 함께 runtime schema와 form validation을 공유합니다. |
+| <img alt="vanilla-extract" src="https://img.shields.io/badge/vanilla--extract-DB7093?style=for-the-badge" /> | Styling | [vanilla-extract](https://vanilla-extract.style/) | 결정 | 디자인 시스템 적용을 위해 type-safe CSS와 정적 추출을 우선합니다. |
+| <img alt="Design System" src="https://img.shields.io/badge/Design_System-111827?style=for-the-badge" /> | Design System | 직접 구현 | 기본 적용 | `packages/design-system`에서 공통 컴포넌트와 스타일 계약을 관리합니다. |
+| <img alt="openapi-typescript" src="https://img.shields.io/badge/openapi--typescript-6BA539?style=for-the-badge&logo=openapiinitiative&logoColor=white" /> | API Schema | [openapi-typescript](https://openapi-ts.dev/) | 후속 | API contract가 안정되면 타입 생성으로 client drift를 줄입니다. |
 
 <br />
 
 ### Quality, Delivery, Analytics
 
-| Label                                                                                                                                                                                                                                                                                                                                                                                                                  | Category                | Selection                                                                                                                                                                     | Status | Why                                                                     |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------- |
-| <img alt="ESLint" src="https://img.shields.io/badge/ESLint-9-4B32C3?style=flat-square&logo=eslint&logoColor=white" /> <img alt="Prettier" src="https://img.shields.io/badge/Prettier-3-F7B93E?style=flat-square&logo=prettier&logoColor=black" /> <img alt="Husky" src="https://img.shields.io/badge/Husky-hooks-42B883?style=flat-square" />                                                                          | Code Quality            | [ESLint](https://eslint.org/), [Prettier](https://prettier.io/), [Husky](https://typicode.github.io/husky/), [lint-staged](https://github.com/lint-staged/lint-staged#readme) | 적용   | 로컬과 CI에서 format, lint, typecheck를 같은 기준으로 실행합니다.       |
-| <img alt="Vitest" src="https://img.shields.io/badge/Vitest-test-6E9F18?style=flat-square&logo=vitest&logoColor=white" /> <img alt="Testing Library" src="https://img.shields.io/badge/Testing_Library-RTL-E33332?style=flat-square&logo=testinglibrary&logoColor=white" /> <img alt="MSW" src="https://img.shields.io/badge/MSW-mock-FF6A33?style=flat-square" />                                                      | Unit / Integration Test | [Vitest](https://vitest.dev/), [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/), [MSW](https://mswjs.io/)                               | 적용   | 컴포넌트 동작, hook, API mock 검증을 위한 기본 조합입니다.              |
-| <img alt="Playwright" src="https://img.shields.io/badge/Playwright-E2E-2EAD33?style=flat-square&logo=playwright&logoColor=white" />                                                                                                                                                                                                                                                                                    | E2E Test                | [Playwright](https://playwright.dev/)                                                                                                                                         | 적용   | 앱 bootstrap smoke부터 브라우저 기반 회귀 검증까지 확장합니다.          |
-| <img alt="Storybook" src="https://img.shields.io/badge/Storybook-docs-FF4785?style=flat-square&logo=storybook&logoColor=white" /> <img alt="Chromatic" src="https://img.shields.io/badge/Chromatic-visual-FF3A00?style=flat-square&logo=chromatic&logoColor=white" />                                                                                                                                                  | Component Docs          | [Storybook](https://storybook.js.org/) + [Chromatic](https://www.chromatic.com/)                                                                                              | 적용   | 디자인 시스템과 shared component의 상태별 문서화를 담당합니다.          |
-| <img alt="Vercel" src="https://img.shields.io/badge/Vercel-CD-000000?style=flat-square&logo=vercel&logoColor=white" />                                                                                                                                                                                                                                                                                                 | Deploy                  | [Vercel](https://vercel.com/)                                                                                                                                                 | 적용   | Next.js 최적화, preview deployment, GitHub 연동 자동 배포를 활용합니다. |
-| <img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub_Actions-CI-2088FF?style=flat-square&logo=githubactions&logoColor=white" /> <img alt="Vercel" src="https://img.shields.io/badge/Vercel-CD-000000?style=flat-square&logo=vercel&logoColor=white" />                                                                                                                                                   | CI/CD                   | [GitHub Actions](https://github.com/features/actions) + Vercel CD                                                                                                             | 적용   | PR에서는 검증을, main merge 이후에는 배포 자동화를 담당합니다.          |
-| <img alt="Sentry" src="https://img.shields.io/badge/Sentry-monitoring-362D59?style=flat-square&logo=sentry&logoColor=white" /> <img alt="Google Analytics" src="https://img.shields.io/badge/Google_Analytics-analytics-E37400?style=flat-square&logo=googleanalytics&logoColor=white" /> <img alt="Amplitude" src="https://img.shields.io/badge/Amplitude-005FF9?style=flat-square&logo=amplitude&logoColor=white" /> | Monitoring / Analytics  | Sentry + Discord, Google Analytics 또는 Vercel Analytics, Amplitude                                                                                                           | 후속   | 오류 감지, 알림, 사용자 행동 분석은 제품 지표가 생긴 뒤 연결합니다.     |
+| Label | Category | Selection | Status | Why |
+| --- | --- | --- | --- | --- |
+| <img alt="ESLint" src="https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" /> <img alt="Prettier" src="https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black" /> <img alt="Husky" src="https://img.shields.io/badge/Husky-42B883?style=for-the-badge" /> | Code Quality | [ESLint](https://eslint.org/), [Prettier](https://prettier.io/), [Husky](https://typicode.github.io/husky/), [lint-staged](https://github.com/lint-staged/lint-staged#readme) | 적용 | 로컬과 CI에서 format, lint, typecheck를 같은 기준으로 실행합니다. |
+| <img alt="Vitest" src="https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white" /> <img alt="Testing Library" src="https://img.shields.io/badge/Testing_Library-E33332?style=for-the-badge&logo=testinglibrary&logoColor=white" /> <img alt="MSW" src="https://img.shields.io/badge/MSW-FF6A33?style=for-the-badge&logo=mockserviceworker&logoColor=white" /> | Unit / Integration Test | [Vitest](https://vitest.dev/), [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/), [MSW](https://mswjs.io/) | 적용 | 컴포넌트 동작, hook, API mock 검증을 위한 기본 조합입니다. |
+| <img alt="Playwright" src="https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white" /> | E2E Test | [Playwright](https://playwright.dev/) | 적용 | 앱 bootstrap smoke부터 브라우저 기반 회귀 검증까지 확장합니다. |
+| <img alt="Storybook" src="https://img.shields.io/badge/Storybook-FF4785?style=for-the-badge&logo=storybook&logoColor=white" /> <img alt="Chromatic" src="https://img.shields.io/badge/Chromatic-FF3A00?style=for-the-badge&logo=chromatic&logoColor=white" /> | Component Docs | [Storybook](https://storybook.js.org/) + [Chromatic](https://www.chromatic.com/) | 적용 | 디자인 시스템과 shared component의 상태별 문서화를 담당합니다. |
+| <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" /> | Deploy | [Vercel](https://vercel.com/) | 적용 | Next.js 최적화, preview deployment, GitHub 연동 자동 배포를 활용합니다. |
+| <img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" /> <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" /> | CI/CD | [GitHub Actions](https://github.com/features/actions) + Vercel CD | 적용 | PR에서는 검증을, main merge 이후에는 배포 자동화를 담당합니다. |
+| <img alt="Sentry" src="https://img.shields.io/badge/Sentry-362D59?style=for-the-badge&logo=sentry&logoColor=white" /> <img alt="Google Analytics" src="https://img.shields.io/badge/Google_Analytics-E37400?style=for-the-badge&logo=googleanalytics&logoColor=white" /> <img alt="Amplitude" src="https://img.shields.io/badge/Amplitude-005FF9?style=for-the-badge&logo=amplitude&logoColor=white" /> | Monitoring / Analytics | Sentry + Discord, Google Analytics 또는 Vercel Analytics, Amplitude | 후속 | 오류 감지, 알림, 사용자 행동 분석은 제품 지표가 생긴 뒤 연결합니다. |
 
 <br />
 
@@ -303,18 +263,56 @@ git diff --check
 pnpm format:check
 ```
 
+<br />
+
+### Ground Rules
+
+| Rule          | Standard                                                                                        |
+| ------------- | ----------------------------------------------------------------------------------------------- |
+| Work source   | Jira는 작업 단위와 상태의 기준입니다.                                                           |
+| Decision log  | 회의나 메신저 결정도 구현에 영향을 주면 Jira 또는 docs에 남깁니다.                              |
+| Spec gate     | 새 page, form, API, shared component, 디자인시스템 컴포넌트는 spec 필요 여부를 먼저 판단합니다. |
+| Communication | 작업 공유는 `오늘 진행`, `막힌 점`, `다음 action` 중심으로 짧게 남깁니다.                       |
+| Schedule      | 일정은 Jira board와 milestone 기준으로 관리하고, 리스크는 발견 시점에 공유합니다.               |
+| Convention    | 컨벤션 변경은 README보다 가까운 source of truth 문서에 먼저 반영합니다.                         |
+
+<br />
+
+## Documents
+
+| Area            | Link                                                         |
+| --------------- | ------------------------------------------------------------ |
+| 문서 인덱스     | [docs/index.md](docs/index.md)                               |
+| 저장소 구조     | [Repo Structure](docs/architecture/repo-structure.md)        |
+| 앱 구조         | [App Structure](docs/architecture/app-structure.md)          |
+| 디자인 시스템   | [Design System](docs/architecture/design-system.md)          |
+| Package 관리    | [Package Management](docs/conventions/package-management.md) |
+| 로컬 개발       | [Local Development](docs/workflows/local-development.md)     |
+| CI              | [CI](docs/workflows/ci.md)                                   |
+| 테스트          | [Testing](docs/workflows/testing.md)                         |
+| Spec 작성       | [Spec Writing](docs/workflows/spec-writing.md)               |
+| Turbo Generator | [Turbo Generators](docs/workflows/turbo-generators.md)       |
+| Agent Guide     | [AGENTS.md](AGENTS.md)                                       |
+| Agent Harness   | [Agent Harness](docs/agent/index.md)                         |
+| Agent Indexing  | [Agent Indexing](docs/agent/indexing.md)                     |
+| Jira 템플릿     | [Jira Issue Template](templates/jira-issue-template.md)      |
+| Decision Log    | [Decision Log Guide](docs/decisions/index.md)                |
+
+<br />
+
 ## Convention
 
-세부 규칙은 문서가 source of truth입니다. README에는 리뷰 전에 빠르게 확인해야 하는 핵심만 둡니다.
+<details>
+<summary><strong>Code</strong></summary>
 
-### Code
+<br />
 
-| Target         | Convention   | Example                                        |
-| -------------- | ------------ | ---------------------------------------------- |
-| Folder         | `kebab-case` | `user-profile/`                                |
-| Component file | `PascalCase` | `UserCard.tsx`                                 |
+| Target | Convention | Example |
+| --- | --- | --- |
+| Folder | `kebab-case` | `user-profile/` |
+| Component file | `PascalCase` | `UserCard.tsx` |
 | Hook/API/Utils | `kebab-case` | `use-auth.ts`, `auth-api.ts`, `format-date.ts` |
-| TanStack Query | `kebab-case` | `use-user-query.ts`, `use-user-mutation.ts`    |
+| TanStack Query | `kebab-case` | `use-user-query.ts`, `use-user-mutation.ts` |
 
 - 컴포넌트는 arrow function으로 선언하고 일반 컴포넌트는 named export를 사용합니다.
 - 의미 없는 wrapper `div`는 피하고 Fragment 또는 semantic tag를 우선합니다.
@@ -325,14 +323,19 @@ pnpm format:check
 
 자세한 기준: [Coding Convention](docs/conventions/coding.md)
 
-### Git / Jira / PR
+</details>
 
-| Topic  | Rule                                                                                            |
-| ------ | ----------------------------------------------------------------------------------------------- |
-| Branch | `prefix/{scope}/{JIRAKEY}-work-summary`                                                         |
-| Commit | `prefix(scope): {JIRAKEY} work summary`                                                         |
-| PR     | `PREFIX(scope): {JIRAKEY} work summary` 형태이며, 실제 제목에서는 `PREFIX`를 대괄호로 감쌉니다. |
-| Jira   | root/docs/CI/workflow는 `DCMFE-*`, client는 `DCMCL-*`, design-system package/web은 `DCMDS-*`    |
+<details>
+<summary><strong>Git / Jira / PR</strong></summary>
+
+<br />
+
+| Topic | Rule |
+| --- | --- |
+| Branch | `prefix/{scope}/{JIRAKEY}-work-summary` |
+| Commit | `prefix(scope): {JIRAKEY} work summary` |
+| PR | `PREFIX(scope): {JIRAKEY} work summary` 형태이며, 실제 제목에서는 `PREFIX`를 대괄호로 감쌉니다. |
+| Jira | root/docs/CI/workflow는 `DCMFE-*`, client는 `DCMCL-*`, design-system package/web은 `DCMDS-*` |
 
 예시:
 
@@ -359,37 +362,9 @@ flowchart LR
 
 자세한 기준: [Git Convention](docs/conventions/git.md), [Jira Issue Authoring](docs/workflows/jira-issue-authoring.md), [PR Checklist](docs/workflows/pr-checklist.md)
 
-### Ground Rules
-
-| Rule          | Standard                                                                                        |
-| ------------- | ----------------------------------------------------------------------------------------------- |
-| Work source   | Jira는 작업 단위와 상태의 기준입니다.                                                           |
-| Decision log  | 회의나 메신저 결정도 구현에 영향을 주면 Jira 또는 docs에 남깁니다.                              |
-| Spec gate     | 새 page, form, API, shared component, 디자인시스템 컴포넌트는 spec 필요 여부를 먼저 판단합니다. |
-| Communication | 작업 공유는 `오늘 진행`, `막힌 점`, `다음 action` 중심으로 짧게 남깁니다.                       |
-| Schedule      | 일정은 Jira board와 milestone 기준으로 관리하고, 리스크는 발견 시점에 공유합니다.               |
-| Convention    | 컨벤션 변경은 README보다 가까운 source of truth 문서에 먼저 반영합니다.                         |
-
-## Documents
-
-| Area            | Link                                                         |
-| --------------- | ------------------------------------------------------------ |
-| 문서 인덱스     | [docs/index.md](docs/index.md)                               |
-| 저장소 구조     | [Repo Structure](docs/architecture/repo-structure.md)        |
-| 앱 구조         | [App Structure](docs/architecture/app-structure.md)          |
-| 디자인 시스템   | [Design System](docs/architecture/design-system.md)          |
-| Package 관리    | [Package Management](docs/conventions/package-management.md) |
-| 로컬 개발       | [Local Development](docs/workflows/local-development.md)     |
-| CI              | [CI](docs/workflows/ci.md)                                   |
-| 테스트          | [Testing](docs/workflows/testing.md)                         |
-| Spec 작성       | [Spec Writing](docs/workflows/spec-writing.md)               |
-| Turbo Generator | [Turbo Generators](docs/workflows/turbo-generators.md)       |
-| Agent Guide     | [AGENTS.md](AGENTS.md)                                       |
-| Agent Harness   | [Agent Harness](docs/agent/index.md)                         |
-| Agent Indexing  | [Agent Indexing](docs/agent/indexing.md)                     |
-| Jira 템플릿     | [Jira Issue Template](templates/jira-issue-template.md)      |
-| Decision Log    | [Decision Log Guide](docs/decisions/index.md)                |
+</details>
 
 
+<br />
 <img width="5760" height="3240" alt="33758" src="https://github.com/user-attachments/assets/bf96ed8a-0cf8-4ac6-bd74-347eeb23f512" />
 
