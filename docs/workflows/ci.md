@@ -147,7 +147,7 @@ pnpm e2e
 
 - web build와 native mobile build를 같은 성공 조건으로 보지 않습니다.
 - PR blocking E2E는 초기에는 Chromium smoke로 제한합니다.
-- Markdown 파일은 root Prettier 검증 대상입니다.
+- Markdown 파일은 root Prettier 검증 대상입니다. 단, 배지와 HTML 기반 레이아웃을 사용하는 root `README.md`는 `.prettierignore`에서 제외합니다.
 - Design-system icon source/generated/export drift는 root `pnpm check:icons`로 검증합니다.
 - Lighthouse CI는 별도 workflow에서 실행하고 report artifact를 남깁니다.
 - Turborepo remote cache 또는 CI cache는 별도 Jira 이슈로 다룹니다.
