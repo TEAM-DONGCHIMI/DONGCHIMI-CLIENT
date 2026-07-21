@@ -18,5 +18,6 @@ storybook-static
 dist
 dist-ssr
 pnpm-lock.yaml
+/README.md
 turbo/generators/templates/**/*.hbs
 packages/shared/src/api/__generated__
